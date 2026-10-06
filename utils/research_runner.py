@@ -110,23 +110,40 @@ MAX_CONCURRENT_RESEARCH = int(os.environ.get("MAX_CONCURRENT_RESEARCH", "2") or 
 
 def _admission_lock():
     """跨进程互斥（Flask 与三个 Streamlit 进程都可能发起研究），保证排队判断不冲突。"""
-    import fcntl
-
     from utils.task_runtime import queue_dir
 
     queue_dir().mkdir(parents=True, exist_ok=True)
     fh = open(queue_dir() / ".admission.lock", "a+")
-    fcntl.flock(fh, fcntl.LOCK_EX)
+    try:
+        import fcntl
+        fcntl.flock(fh, fcntl.LOCK_EX)
+    except ImportError:
+        try:
+            import msvcrt
+            msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+        except Exception:
+            pass
     return fh
 
 
 def _release(fh) -> None:
-    import fcntl
-
+    if fh is None:
+        return
     try:
+        import fcntl
         fcntl.flock(fh, fcntl.LOCK_UN)
+    except ImportError:
+        try:
+            import msvcrt
+            fh.seek(0)
+            msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+        except Exception:
+            pass
     finally:
-        fh.close()
+        try:
+            fh.close()
+        except Exception:
+            pass
 
 
 def active_research_tasks() -> List[str]:
