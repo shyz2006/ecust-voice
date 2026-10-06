@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园脉搏 · 微舆</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f0f2f5; --border: #e3e6eb;
+  --text: #1c2330; --text-2: #5b6573; --text-3: #8a93a0;
+  --accent: #2f6fdf; --accent-soft: #e8f0fd;
+  --good: #1f8a5b; --good-soft: #e3f4ec; --warn: #b7791f; --warn-soft: #fbf1df;
+  --bad: #c53b3b; --bad-soft: #fbe6e6; --meme: #7b4bd6; --meme-soft: #efe8fb;
+  --radius: 10px; --shadow: 0 1px 2px rgba(20,30,50,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --surface: #1a1f27; --surface-2: #222833; --border: #2e3541;
+    --text: #e6e9ee; --text-2: #aab2be; --text-3: #7b8491;
+    --accent: #6b9cf5; --accent-soft: #1f2d47;
+    --good: #4cc38a; --good-soft: #17302a; --warn: #e0a84c; --warn-soft: #33291a;
+    --bad: #ef6b6b; --bad-soft: #3a1f22; --meme: #a98af0; --meme-soft: #2a2140;
+    --shadow: none;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font: 14px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px 48px; }
+header { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--border); }
+.bar { max-width: 1180px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.brand { font-weight: 700; font-size: 17px; }
+.brand small { font-weight: 400; color: var(--text-3); margin-left: 6px; font-size: 12px; }
+.status { color: var(--text-2); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: 1px; }
+.spacer { flex: 1; }
+.btn { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 6px 12px; border-radius: 8px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: default; }
+.tabs { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; }
+.tab { padding: 8px 14px; border: none; background: none; color: var(--text-2); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.panel { display: none; padding-top: 18px; }
+.panel.active { display: block; }
+.note { color: var(--text-2); font-size: 12.5px; background: var(--surface-2); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); padding: 4px 10px; border-radius: 999px; font-size: 12.5px; }
+.chip.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); min-width: 0; }
+.card h3 { font-size: 15px; line-height: 1.45; margin-bottom: 6px; word-break: break-word; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--text-3); margin-bottom: 8px; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 12px; background: var(--surface-2); color: var(--text-2); }
+.tag.cat { background: var(--accent-soft); color: var(--accent); }
+.tag.meme { background: var(--meme-soft); color: var(--meme); }
+.tag.new { background: var(--good-soft); color: var(--good); }
+.tag.burst { background: var(--warn-soft); color: var(--warn); }
+.tag.risk-关注 { background: var(--warn-soft); color: var(--warn); }
+.tag.risk-重点 { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+.line { font-size: 13px; color: var(--text-2); margin: 4px 0; word-break: break-word; }
+.line b { color: var(--text); font-weight: 600; }
+.memebox { background: var(--meme-soft); border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 13px; }
+.heat { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin: 8px 0; }
+.heat > i { display: block; height: 100%; background: var(--accent); }
+.actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.actions .btn { padding: 3px 10px; font-size: 12.5px; }
+.spark { margin-top: 8px; }
+.empty { text-align: center; color: var(--text-3); padding: 48px 12px; }
+.ask { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.ask input { flex: 1 1 320px; min-width: 0; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+.ask select { padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+.examples { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.two { display: grid; grid-template-columns: 330px 1fr; gap: 14px; align-items: start; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
+.trace { list-style: none; position: relative; }
+.trace li { position: relative; padding: 0 0 12px 18px; font-size: 12.5px; }
+.trace li::before { content: ""; position: absolute; left: 4px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.trace li::after { content: ""; position: absolute; left: 7px; top: 16px; bottom: 0; width: 1px; background: var(--border); }
+.trace li:last-child::after { display: none; }
+.trace .who { font-weight: 600; }
+.trace .t { color: var(--text-3); margin-left: 6px; }
+.trace .sub { color: var(--text-2); word-break: break-word; }
+.section { margin-bottom: 16px; }
+.section h4 { font-size: 13px; color: var(--text-3); font-weight: 600; margin-bottom: 8px; letter-spacing: .5px; }
+.summary { font-size: 15px; line-height: 1.75; }
+ul.plain { padding-left: 18px; }
+ul.plain li { margin: 3px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-3); font-weight: 600; font-size: 12px; }
+.ok { color: var(--good); } .fail { color: var(--bad); }
+.stars button { border: none; background: none; font-size: 20px; color: var(--text-3); padding: 0 2px; }
+.stars button.on { color: var(--warn); }
+.ev { font-size: 12.5px; color: var(--text-2); margin: 3px 0; word-break: break-all; }
+.ev code { background: var(--surface-2); padding: 0 5px; border-radius: 4px; margin-right: 4px; color: var(--text); }
+.kpis { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.kpi { background: var(--surface-2); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--text-2); }
+.kpi b { display: block; font-size: 16px; color: var(--text); }
+.arch { font-size: 13px; color: var(--text-2); line-height: 1.8; }
+.arch b { color: var(--text); }
+.scroll-x { overflow-x: auto; }
+.alert { background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn); border-radius: 8px; padding: 8px 12px; margin: 12px 0 0; font-size: 13px; }
+.alert.bad { background: var(--bad-soft); color: var(--bad); border-color: var(--bad); }
+.tag.crisis-关注 { background: var(--warn-soft); color: var(--warn); }
+.tag.crisis-高危 { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+.tag.content-中, .tag.content-高 { background: var(--surface-2); color: var(--text); border: 1px dashed var(--text-3); }
+.tag.value { background: var(--good-soft); color: var(--good); }
+.draftbar { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; }
+.draftbar b { color: var(--warn); }
+.draftbar textarea { width: 100%; margin: 8px 0; min-height: 54px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; }
+.bar2 { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--surface-2); margin: 6px 0; }
+.bar2 i { display: block; height: 100%; }
+.settings { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.settings input { flex: 1 1 320px; min-width: 0; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+.evnote { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+.modal { position: fixed; inset: 0; background: rgba(10,14,20,.45); z-index: 20; display: none; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
+.modal.open { display: flex; }
+.modal-box { background: var(--bg); border-radius: 12px; width: 100%; max-width: 760px; padding: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.modal-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.modal-head h3 { flex: 1; font-size: 17px; }
+.post { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+.tier { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.tier-verified { background: var(--good); color: #fff; }
+.tier-observed { background: var(--accent-soft); color: var(--accent); }
+.tier-lead { background: var(--surface-2); color: var(--text-3); border: 1px dashed var(--text-3); }
+.fb { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+.fb button { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 999px; padding: 1px 9px; font-size: 12px; }
+.fb button.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.kind-label { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 0 6px; border-radius: 4px; margin-right: 4px; }
+.k-fact { background: var(--accent-soft); color: var(--accent); }
+.k-infer { background: var(--meme-soft); color: var(--meme); }
+.k-act { background: var(--good-soft); color: var(--good); }
+.v-支持 { color: var(--good); } .v-部分支持, .v-证据不足 { color: var(--warn); } .v-不支持 { color: var(--bad); font-weight: 600; }
+.qa { display: inline-block; font-size: 11px; padding: 0 5px; border-radius: 4px; background: var(--surface-2); color: var(--text-2); margin-right: 3px; }
+.qa-A { background: var(--good-soft); color: var(--good); } .qa-D { background: var(--warn-soft); color: var(--warn); }
+.post .body { white-space: pre-wrap; word-break: break-word; font-size: 14px; line-height: 1.7; margin: 6px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">校园脉搏<small>CampusPulse · 心理中心热点感知</small></div>
+    <div class="status" id="status">加载中…</div>
+    <div class="spacer"></div>
+    <button class="btn" id="collectBtn">立即采集</button>
+    <a class="btn" href="../">返回微舆</a>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="radar">热点雷达</button>
+    <button class="tab" data-tab="campus">本校社区信号</button>
+    <button class="tab" data-tab="trends">梗与玩法</button>
+    <button class="tab" data-tab="analyze">智能分析</button>
+    <button class="tab" data-tab="memes">梗词典</button>
+    <button class="tab" data-tab="system">工作流看板</button>
+  </nav>
+</header>
+<div class="wrap" id="alertWrap" style="padding-bottom:0"></div>
+<div class="modal" id="postModal" role="dialog" aria-modal="true"><div class="modal-box">
+  <div class="modal-head"><h3 id="postModalTitle">帖子</h3><button class="btn" id="postModalClose">关闭</button></div>
+  <div class="note">以下为本校公开帖子的脱敏正文：已去除发帖人信息，手机号、微信号、学号与人名已遮蔽；广告帖已过滤。仅供心理中心了解学生关注点，请勿截图外传。</div>
+  <div id="postModalBody"></div>
+</div></div>
+
+<main class="wrap">
+  <!-- 热点雷达 -->
+  <section class="panel active" id="panel-radar">
+    <div class="note">聚合各平台<b>公开热榜</b>与 B 站热门，不采集学生个人数据。排序综合热度、跨平台扩散、上升加速度、校园相关度与活动选题价值。
+      风险分三条独立维度：<b>心理危机</b>（自伤自杀等信号）、<b>内容风险</b>（诈骗、谣言、危险挑战等）、<b>选题价值</b>。标注由模型生成，仅供参考。<span id="batchInfo"></span></div>
+    <div class="chips" id="filters"></div>
+    <div class="grid" id="topics"></div>
+  </section>
+
+  <!-- 本校声音 -->
+  <section class="panel" id="panel-campus">
+    <div class="settings">
+      <input id="circleInput" placeholder="本校狐友圈子链接（可多个，空格分隔），如 https://hy.sns.sohu.com/circle/947622289439129600">
+      <input id="forumInput" placeholder="本校贴吧名或链接，如 华东理工大学">
+      <button class="btn" id="circleSave">保存数据源</button>
+    </div>
+    <div class="note"><b>本校公开社区信号</b>：数据来自狐友本校圈与本校贴吧的公开帖子（最新帖与热帖）。公开社区的活跃用户只是全体学生的一部分，
+      结果反映“公开社区里在讨论什么”，不代表全校学生意见。入库前已去除用户身份并隐去手机号、微信号、学号等；
+      页面只展示主题聚合与去标识化摘要，不展示原帖和发帖人。危机信号只计数，个体干预请按学校心理危机干预流程处理。</div>
+    <div id="campusBox"><div class="card empty">加载中…</div></div>
+  </section>
+
+  <!-- 梗与玩法 -->
+  <section class="panel" id="panel-trends">
+    <div class="note">不依赖标题点名：在 B 站热门的标题 / 标签 / 热评与狐友帖子中发现<b>新出现的流行语、句式模板</b>，
+      以及被多个视频共同使用的 <b>BGM、标签、投稿活动</b>；对卡点 / 快切视频截取切点前后画面，由视觉模型识别具体转场手法并聚成玩法模板。
+      候选分三级：<b>平台实测出现</b>（语料中有真实频次）、<b>外部热点线索</b>（仅媒体 / 检索提及，本校未观察到）、
+      <b>已验证趋势</b>（连续多批次增长且至少两类独立来源，或老师确认）——只有第三级才标“正在流行”。
+      卡片下方的快捷标注会用于过滤与改进模型筛选。</div>
+    <div class="card section" id="pollBox">
+      <h4>学生匿名问卷（校准公开社区偏差）</h4>
+      <div class="line">在下方卡片勾选“加入问卷”（最多 8 个），生成免登录的匿名投票链接发给学生。问卷只问“见过吗 / 最近关注吗”，不收集身份信息；
+        同一梗有 ≥20 人作答且 ≥30% 见过时，计为一类独立来源参与“已验证趋势”判定。</div>
+      <div class="settings" style="margin-top:8px"><input id="pollTitle" placeholder="问卷标题（可选），默认：你最近在网上见过这些梗 / 玩法吗？">
+        <button class="btn primary" id="pollCreate">生成投票链接（已选 <span id="pollCount">0</span>）</button></div>
+      <div id="pollList"></div>
+    </div>
+    <div class="chips" id="trendFilters"></div>
+    <div class="grid" id="trendList"></div>
+  </section>
+
+  <!-- 智能分析 -->
+  <section class="panel" id="panel-analyze">
+    <div class="ask">
+      <input id="q" maxlength="200" placeholder="例如：“哈基米”是什么梗？ / 最近学生在关注什么？ / 借“班味”策划一次减压活动">
+      <select id="intent">
+        <option value="">自动识别任务</option>
+        <option value="meme_explain">梗/流行语释义</option>
+        <option value="event_brief">热点事件简报</option>
+        <option value="trend_scan">学生关注趋势扫描</option>
+        <option value="activity_design">心理活动策划</option>
+        <option value="deep_opinion">全网深度舆情</option>
+      </select>
+      <button class="btn primary" id="goBtn">开始分析</button>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="two">
+      <div class="card">
+        <div class="section"><h4>编排过程</h4><ol class="trace" id="trace"><li class="sub" style="list-style:none">提交问题后，这里会实时显示路由、取证、专家分工与验证过程。</li></ol></div>
+        <div class="section"><h4>最近分析</h4><div id="history"></div></div>
+      </div>
+      <div id="result"><div class="card empty">分析结果会显示在这里</div></div>
+    </div>
+  </section>
+
+  <!-- 梗词典 -->
+  <section class="panel" id="panel-memes">
+    <div class="note">每次分析通过验证后，梗的释义会沉淀到这里，并作为后续分析的记忆证据复用。</div>
+    <div class="grid" id="memeList"></div>
+  </section>
+
+  <!-- 工作流看板 -->
+  <section class="panel" id="panel-system">
+    <div class="card section arch" id="archCard"></div>
+    <div class="card section"><h4>工作流变体与在线得分</h4><div class="scroll-x"><table id="wfTable"></table></div></div>
+    <div class="card section"><h4>运行监控（最近批次）</h4><div class="scroll-x"><table id="batchTable"></table></div>
+      <div class="line" id="costLine" style="margin-top:8px"></div></div>
+  </section>
+</main>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const SRC = { weibo: "微博", douyin: "抖音", "bilibili-hot-search": "B站热搜", "bilibili-popular": "B站热门", zhihu: "知乎", tieba: "贴吧", toutiao: "头条", baidu: "百度", thepaper: "澎湃", kuaishou: "快手", xiaohongshu: "小红书",
+  "huyou-school": "本校狐友", "tieba-school": "本校贴吧", "huyou-national": "狐友校园", "bilibili-title": "B站视频", "bilibili-comment": "B站评论", "hotlist": "热榜" };
+// 模型偶尔把字段写成对象：统一转成可读文本，避免显示 [object Object]
+const toText = (v) => v == null ? "" : typeof v === "string" ? v : Array.isArray(v) ? v.map(toText).filter(Boolean).join("；")
+  : typeof v === "object" ? (v.text || v.note || v.content || v.point || Object.values(v).filter((x) => typeof x === "string").join("；")) : String(v);
+const riskTags = (x) => [
+  x.crisis_level && x.crisis_level !== "无" ? `<span class="tag crisis-${esc(x.crisis_level)}">心理危机·${esc(x.crisis_level)}</span>` : "",
+  x.content_risk && !["无", "低"].includes(x.content_risk) ? `<span class="tag content-${esc(x.content_risk)}">内容风险·${esc(x.content_risk)}</span>` : "",
+  x.topic_value >= 2 ? `<span class="tag value">选题价值 ${x.topic_value}/3</span>` : "",
+].join("");
+// 短文本显示为标签；过长（模型写成了句子）则改为普通文字行，避免超长标签撑破卡片
+const TAG_MAX = 10;
+const tagOrNull = (text, cls = "") => text && String(text).length <= TAG_MAX ? `<span class="tag ${cls}">${esc(text)}</span>` : "";
+const longText = (items) => items.filter((t) => t && String(t).length > TAG_MAX);
+const fmtTime = (ts) => ts ? new Date(ts * 1000).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
+
+async function api(path, opts = {}) {
+  const res = await fetch("api/" + path, { credentials: "same-origin", headers: { "Content-Type": "application/json" }, ...opts });
+  let data = {};
+  try { data = await res.json(); } catch (e) { data = { success: false, message: `HTTP ${res.status}` }; }
+  if (!res.ok && data.success !== false) data.success = false;
+  return data;
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function showTab(name) {
+  document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + name));
+  if (name === "memes") loadMemes();
+  if (name === "campus") loadCampus();
+  if (name === "trends") loadTrends();
+  if (name === "system") loadSystem();
+  if (name === "analyze") loadHistory();
+}
+
+/* ---------- status ---------- */
+async function loadStatus() {
+  const s = await api("status");
+  if (!s.success) { $("#status").textContent = "状态获取失败"; return; }
+  const dot = (ok) => `<span class="dot" style="background:var(${ok ? "--good" : "--bad"})"></span>`;
+  $("#status").innerHTML = `<span>最近抓取 ${fmtTime(s.last_fetch)}</span><span>最近完整分析 ${fmtTime(s.last_complete)}${s.running ? `（${esc(s.stage || "处理中")}…）` : ""}</span>` +
+    `<span>${dot(s.llm_ready)}LLM</span><span>${dot(s.search_ready)}搜索 ${esc(s.search_tool)}</span>` +
+    (s.interval_min > 0 ? `<span>每 ${s.interval_min} 分钟自动采集</span>` : "") +
+    (s.last_error ? `<span class="fail">上次错误：${esc(s.last_error).slice(0, 60)}</span>` : "");
+  $("#collectBtn").disabled = !!s.running;
+  $("#alertWrap").innerHTML = s.alert ? `<div class="alert">⚠ ${esc(s.alert)}</div>` : "";
+  return s;
+}
+$("#collectBtn").addEventListener("click", async () => {
+  const r = await api("collect", { method: "POST" });
+  $("#collectBtn").disabled = true;
+  $("#status").textContent = r.message || "已开始采集";
+  const poll = setInterval(async () => {
+    const s = await loadStatus();
+    if (s && !s.running) { clearInterval(poll); loadTopics(); loadCampus(); loadTrends(); }
+  }, 5000);
+});
+
+/* ---------- radar ---------- */
+let TOPICS = [], FILTER = "all";
+const FILTERS = [
+  ["all", "全部"], ["value", "高选题价值"], ["meme", "梗文化 / 短视频"], ["campus", "校园 · 就业升学"], ["psych", "有心理议题"],
+  ["crisis", "心理危机信号"], ["content", "内容安全风险"], ["new", "新上榜 / 加速中"],
+];
+function passFilter(t) {
+  const l = t.lens || {};
+  switch (FILTER) {
+    case "meme": return l.is_meme || ["梗文化", "短视频玩法"].includes(l.category);
+    case "campus": return ["校园教育", "就业升学"].includes(l.category) || l.campus_relevance >= 3;
+    case "psych": return (l.psych_dimensions || []).length > 0;
+    case "value": return (l.topic_value || 0) >= 2;
+    case "crisis": return l.crisis_level && l.crisis_level !== "无";
+    case "content": return ["中", "高"].includes(l.content_risk);
+    case "new": return t.is_new || (t.burst || 0) > 1.5 || (t.rank_delta || 0) >= 5;
+    default: return true;
+  }
+}
+function renderFilters() {
+  $("#filters").innerHTML = FILTERS.map(([k, n]) => {
+    const count = TOPICS.filter((t) => { const f = FILTER; FILTER = k; const ok = passFilter(t); FILTER = f; return ok; }).length;
+    return `<button class="chip ${k === FILTER ? "active" : ""}" data-f="${k}">${n} ${count}</button>`;
+  }).join("");
+  document.querySelectorAll("#filters .chip").forEach((c) => c.addEventListener("click", () => { FILTER = c.dataset.f; renderFilters(); renderTopics(); }));
+}
+function topicCard(t, maxHeat) {
+  const l = t.lens || {};
+  const tags = [
+    l.category ? `<span class="tag cat">${esc(l.category)}</span>` : "",
+    l.is_meme ? `<span class="tag meme">梗</span>` : "",
+    t.is_new ? `<span class="tag new">新上榜</span>` : "",
+    (t.burst || 0) > 1.5 ? `<span class="tag burst">加速上升 ${t.burst.toFixed(1)}</span>` : "",
+    (t.rank_delta || 0) >= 5 ? `<span class="tag burst">名次 ↑${t.rank_delta}</span>` : "",
+    riskTags(l),
+  ].join("");
+  const meme = l.meme ? `<div class="memebox"><b>梗释义：</b>${esc(l.meme.meaning)}<br><span class="tag meme">${esc(l.meme.form)}</span> <span class="tag meme">${esc(l.meme.function)}</span></div>` : "";
+  const psych = (l.psych_dimensions || []).map((p) => `<span class="tag">${esc(p)}</span>`).join(" ");
+  const others = (t.titles || []).slice(1, 3).map(esc).join(" / ");
+  return `<div class="card">
+    <div class="meta">${tags}</div>
+    <h3>${t.entries && t.entries[0] && t.entries[0].url ? `<a href="${esc(t.entries[0].url)}" target="_blank" rel="noopener">${esc(t.label)}</a>` : esc(t.label)}</h3>
+    <div class="meta">${t.sources.map((s) => esc(SRC[s] || s)).join(" · ")} ｜ 最好第 ${t.best_rank} 名 ｜ 关键词 ${esc((t.keywords || []).slice(0, 4).join("、"))}</div>
+    <div class="heat"><i style="width:${Math.max(4, (100 * t.campus_score) / maxHeat).toFixed(0)}%"></i></div>
+    ${l.one_liner ? `<div class="line"><b>为何关注：</b>${esc(l.one_liner)}</div>` : ""}
+    ${meme}
+    ${psych ? `<div class="line"><b>心理维度：</b>${psych}</div>` : ""}
+    ${l.activity_hint ? `<div class="line"><b>活动切入：</b>${esc(l.activity_hint)}</div>` : ""}
+    ${others ? `<div class="line" style="color:var(--text-3)">相关：${others}</div>` : ""}
+    <div class="spark" id="spark-${t.id}"></div>
+    <div class="actions">
+      <button class="btn" data-analyze="${esc(t.label)}" data-intent="${l.is_meme ? "meme_explain" : "event_brief"}">深度解读</button>
+      <button class="btn" data-analyze="${esc(t.label)}" data-intent="activity_design">策划活动</button>
+      <button class="btn" data-spark="${t.id}">热度曲线</button>
+    </div>
+  </div>`;
+}
+function renderTopics() {
+  const list = TOPICS.filter(passFilter);
+  const maxHeat = Math.max(...TOPICS.map((t) => t.campus_score || 0), 1e-6);
+  $("#topics").innerHTML = list.length ? list.map((t) => topicCard(t, maxHeat)).join("") :
+    `<div class="card empty" style="grid-column:1/-1">${TOPICS.length ? "该筛选下暂无话题" : "还没有采集数据，点击右上角「立即采集」"}</div>`;
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-analyze]");
+  if (a) {
+    const intent = a.dataset.intent;
+    $("#q").value = intent === "activity_design" && !a.dataset.raw ? `借“${a.dataset.analyze}”这个热点，策划一次心理健康教育活动` : a.dataset.analyze;
+    $("#intent").value = intent;
+    showTab("analyze");
+    runAnalyze();
+  }
+  const s = e.target.closest("[data-spark]");
+  if (s) loadSpark(s.dataset.spark);
+});
+async function loadTopics() {
+  const r = await api("topics");
+  TOPICS = r.success ? r.topics : [];
+  const stale = TOPICS.length && TOPICS[0].stale_from;
+  $("#batchInfo").textContent = r.batch_ts ? (stale ? ` 公开热榜源暂不可用，当前展示的是 ${fmtTime(stale)} 的热榜话题。` : ` 当前展示 ${fmtTime(r.batch_ts)} 批次。`) : "";
+  renderFilters(); renderTopics();
+}
+async function loadSpark(id) {
+  const box = $("#spark-" + id);
+  box.textContent = "加载中…";
+  const r = await api(`topic/${id}/history`);
+  if (!r.success) { box.textContent = r.message || "加载失败"; return; }
+  const series = Object.entries(r.history || {});
+  const pts = series.flatMap(([, s]) => s);
+  if (pts.length < 2) { box.innerHTML = `<div class="line">历史数据不足（需多次采集后才能看到曲线）</div>`; return; }
+  const t0 = Math.min(...pts.map((p) => p.ts)), t1 = Math.max(...pts.map((p) => p.ts)) || t0 + 1;
+  const maxR = Math.max(...pts.map((p) => p.rank), 10);
+  const W = 300, H = 60;
+  const x = (ts) => 4 + ((ts - t0) / Math.max(1, t1 - t0)) * (W - 8);
+  const y = (rk) => 4 + ((rk - 1) / Math.max(1, maxR - 1)) * (H - 8);
+  const colors = ["var(--accent)", "var(--meme)", "var(--good)", "var(--warn)"];
+  const lines = series.slice(0, 4).map(([title, s], i) =>
+    `<polyline fill="none" stroke="${colors[i]}" stroke-width="1.8" points="${s.map((p) => `${x(p.ts).toFixed(1)},${y(p.rank).toFixed(1)}`).join(" ")}"><title>${esc(title)}</title></polyline>`).join("");
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="名次变化曲线"><rect width="${W}" height="${H}" fill="var(--surface-2)" rx="6"/>${lines}</svg>
+    <div class="meta">越靠上名次越高 ｜ ${fmtTime(t0)} → ${fmtTime(t1)}</div>`;
+}
+
+/* ---------- analyze ---------- */
+const EXAMPLES = ["最近大学生在关注什么热点和梗？", "“班味”是什么梗？", "借最近的热门短视频转场玩法策划一次心理健康宣传活动", "考研考公相关热点反映了学生哪些情绪？"];
+$("#examples").innerHTML = EXAMPLES.map((e) => `<button class="chip" data-ex="${esc(e)}">${esc(e)}</button>`).join("");
+document.querySelectorAll("[data-ex]").forEach((b) => b.addEventListener("click", () => { $("#q").value = b.dataset.ex; $("#intent").value = ""; runAnalyze(); }));
+$("#goBtn").addEventListener("click", runAnalyze);
+$("#q").addEventListener("keydown", (e) => { if (e.key === "Enter") runAnalyze(); });
+
+const AGENT_CN = { Router: "路由器", WorkflowSelector: "工作流选择器", MemeMemory: "梗词典记忆", TrendScout: "热榜侦察员", Orchestrator: "编排器", WebResearcher: "博查检索员", SoloWriter: "单智能体写手", Interpreter: "解读专家", PsychLens: "心理透镜专家", ActivityDesigner: "活动策划专家", Verifier: "中心验证器", Reviser: "修订者" };
+function traceItem(s) {
+  const bits = [];
+  if (s.topology) bits.push(`拓扑 <b>${esc(s.topology)}</b> · ${esc(s.intent)}`);
+  if (s.workflow) bits.push(`<b>${esc(s.workflow)}</b>`);
+  if (s.note) bits.push(esc(s.note));
+  if (s.added !== undefined) bits.push(`新增证据 ${s.added}`);
+  if (s.queries && s.queries.length) bits.push(`检索：${s.queries.map(esc).join("；")}`);
+  if (s.errors && s.errors.length) bits.push(`<span class="fail">${s.errors.map(esc).join("；")}</span>`);
+  if (s.score !== undefined) bits.push(`得分 <b>${s.score}</b> ${s.passed ? '<span class="ok">通过</span>' : '<span class="fail">未通过</span>'}`);
+  if (s.issues && s.issues.length) bits.push(s.issues.slice(0, 3).map(esc).join("<br>"));
+  if (s.ledger) bits.push(`待查：${esc((s.ledger.facts_to_lookup || []).slice(0, 3).join("；"))}`);
+  if (s.topics !== undefined) bits.push(`话题 ${s.topics}`);
+  if (s.activities !== undefined) bits.push(`活动 ${s.activities}`);
+  return `<li><span class="who">${esc(AGENT_CN[s.agent] || s.agent)}</span> ${esc(s.action)}<span class="t">${s.t}s</span><div class="sub">${bits.join("<br>")}</div></li>`;
+}
+let polling = null;
+async function runAnalyze() {
+  const query = $("#q").value.trim();
+  if (!query) return;
+  $("#goBtn").disabled = true;
+  $("#trace").innerHTML = `<li><span class="who">提交</span> ${esc(query)}</li>`;
+  $("#result").innerHTML = `<div class="card empty">智能体正在工作，通常需要 1~3 分钟…</div>`;
+  const r = await api("analyze", { method: "POST", body: JSON.stringify({ query, intent: $("#intent").value || null }) });
+  if (!r.success) { $("#result").innerHTML = `<div class="card empty fail">${esc(r.message)}</div>`; $("#goBtn").disabled = false; return; }
+  clearInterval(polling);
+  polling = setInterval(async () => {
+    const j = await api("job/" + r.job_id);
+    if (!j.success) return;
+    $("#trace").innerHTML = j.trace.map(traceItem).join("");
+    if (j.status === "done") { clearInterval(polling); renderResult(j.result, j.query); $("#goBtn").disabled = false; loadHistory(); }
+    if (j.status === "error") { clearInterval(polling); $("#result").innerHTML = `<div class="card empty fail">分析失败：${esc(j.error)}</div>`; $("#goBtn").disabled = false; }
+  }, 2500);
+}
+function evLinks(ids, evMap) {
+  return (ids || []).map((id) => { const e = evMap[String(id).replace(/[\[\] ]/g, "")]; return e && e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener" title="${esc(e.title)}">[${esc(id)}]</a>` : `[${esc(id)}]`; }).join(" ");
+}
+function renderResult(p, query) {
+  const r = p.result || {}, v = p.verdict || {}, u = p.usage || {};
+  const status = p.status || (p.degraded ? "degraded" : "formal");
+  const rateable = ["formal", "approved"].includes(status);
+  const evMap = Object.fromEntries((p.evidence || []).map((e) => [e.id, e]));
+  const claimsOf = (ti) => (v.claims || []).filter((c) => c.topic === ti);
+  const topics = (r.topics || []).map((t, ti) => `<div class="card section">
+    <div class="meta">${(t.psych_dimensions || []).map((d) => tagOrNull(d)).join("")}${riskTags(t)}</div>
+    <h3>${esc(t.name)}</h3>
+    <div class="line"><span class="kind-label k-fact">观察事实</span>${esc(t.what_happened)}</div>
+    ${claimsOf(ti).length ? `<div class="evnote">${claimsOf(ti).map((c) => `<span class="v-${esc(c.verdict)}">[${esc(c.verdict)}]</span> ${esc(c.text.slice(0, 30))}${c.note ? "（" + esc(c.note) + "）" : ""}`).join("<br>")}</div>` : ""}
+    <div class="line"><span class="kind-label k-infer">模型推断</span>${esc(t.why_students_care)}</div>
+    ${(() => { const d = [...(t.psych_detail || []), ...longText(t.psych_dimensions || [])]; return d.length ? `<div class="line"><b>心理层面：</b>${d.map(esc).join("；")}</div>` : ""; })()}
+    ${t.meme && typeof t.meme === "object" ? `<div class="memebox"><b>梗释义：</b>${esc(t.meme.meaning)}${t.meme.usage ? `<br><b>典型用法：</b>${esc(t.meme.usage)}` : ""}
+      ${(() => { const f = t.meme.form_detail || longText([t.meme.form])[0], g = t.meme.function_detail || longText([t.meme.function])[0];
+        return (f ? `<br><b>传播形式：</b>${esc(f)}` : "") + (g ? `<br><b>表达功能：</b>${esc(g)}` : ""); })()}
+      <br>${tagOrNull(t.meme.form, "meme")} ${tagOrNull(t.meme.function, "meme")}</div>` : ""}
+    <div class="ev">依据 ${evLinks(t.evidence, evMap) || "—"}</div>${(t.evidence_notes || []).length ? `<div class="evnote">依据说明：${t.evidence_notes.map((x) => esc(toText(x))).join("；")}</div>` : ""}</div>`).join("");
+  const acts = (r.activities || []).map((a) => `<div class="card section">
+    <div class="meta">${tagOrNull(a.format, "cat")}${tagOrNull(a.target)}</div>
+    <h3><span class="kind-label k-act">活动建议</span>${esc(a.title)}</h3>
+    ${longText([a.format]).length ? `<div class="line"><b>形式：</b>${esc(a.format)}</div>` : ""}
+    ${longText([a.target]).length ? `<div class="line"><b>对象：</b>${esc(a.target)}</div>` : ""}
+    <ol class="plain">${(a.steps || []).map((s) => `<li>${esc(toText(s))}</li>`).join("")}</ol>
+    ${a.short_video_idea ? `<div class="line"><b>短视频玩法：</b>${esc(a.short_video_idea)}</div>` : ""}
+    ${a.cautions ? `<div class="line"><b>注意事项：</b>${esc(a.cautions)}</div>` : ""}
+    <div class="ev">依据 ${evLinks(a.evidence, evMap) || "—"}</div>${(a.evidence_notes || []).length ? `<div class="evnote">依据说明：${a.evidence_notes.map((x) => esc(toText(x))).join("；")}</div>` : ""}</div>`).join("");
+  const checks = (v.checks || []).map((c) => `<tr><td>${esc(c.mast)}</td><td>${esc(c.desc)}</td><td class="${c.passed ? "ok" : "fail"}">${c.passed ? "通过" : esc(c.issues.join("；"))}</td></tr>`).join("");
+  const evidence = (p.evidence || []).map((e) => `<div class="ev"><code>${esc(e.id)}</code>${e.tier ? `<span class="qa qa-${esc(e.tier)}" title="${esc(e.tier_label)}">${esc(e.tier)}·${esc(e.tier_label)}</span>` : ""}${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>` : esc(e.title)} <span style="color:var(--text-3)">${esc(e.site || e.sources || "")}</span></div>`).join("");
+  const reasons = (v.hard_fail_reasons || []).concat((v.checks || []).filter((c) => !c.passed).map((c) => c.mast));
+  const draftBar = status === "draft" ? `<div class="draftbar"><b>待人工复核草稿</b>：本结果未通过中心验证（${esc([...new Set(reasons)].join("、") || "综合得分不足")}），
+      不会作为 AI 验证稿发布，不写入梗词典，也不计入工作流奖励。请核对下方“中心验证”与证据后决定：
+      <textarea id="reviewNote" placeholder="复核意见（可选）"></textarea>
+      <button class="btn primary" data-review="approve">教师复核通过，标为可执行</button> <button class="btn" data-review="reject">驳回</button> <span id="reviewMsg" class="line"></span></div>`
+    : status === "formal" ? `<div class="note"><b>AI 验证稿</b>：已通过自动验证（格式、证据编号、主张—证据蕴含、来源交叉验证、安全检查），但自动验证不等于心理专业结论可靠；
+      活动方案需教师复核后才能标为“可执行”。<textarea id="reviewNote" placeholder="复核意见（可选）" style="width:100%;margin:8px 0;min-height:44px"></textarea>
+      <button class="btn primary" data-review="approve">教师复核通过，标为可执行</button> <button class="btn" data-review="reject">驳回</button> <span id="reviewMsg" class="line"></span></div>`
+    : status === "approved" ? `<div class="note">✔ 已由 ${esc((p.review || {}).reviewer || "老师")} 复核${(p.review || {}).note ? "：" + esc(p.review.note) : ""}，活动方案可执行。</div>`
+    : status === "rejected" ? `<div class="alert bad">✘ 该草稿已被驳回${(p.review || {}).note ? "：" + esc(p.review.note) : ""}，仅供存档。</div>` : "";
+  $("#result").innerHTML = `
+    ${draftBar}
+    ${p.degraded ? `<div class="note fail">模型服务暂时不可用（已自动尝试全部备用模型）。下方保留了已检索到的资料，本次不计入工作流评分，请稍后重试。</div>` : ""}
+    ${p.escalate ? `<div class="note">这是全网深度舆情类问题。下方是校园视角速览；如需覆盖 30+ 平台评论与完整报告，请<a href="../?query=${encodeURIComponent(query)}">回到微舆主系统</a>用三引擎 + 论坛流程深挖。</div>` : ""}
+    <div class="kpis">
+      <div class="kpi"><b>${esc(p.profile && p.profile.topology)}</b>拓扑</div>
+      <div class="kpi"><b>${esc(p.workflow && p.workflow.name)}</b>工作流</div>
+      <div class="kpi"><b class="${v.passed ? "ok" : "fail"}">${v.score ?? "—"}</b>验证得分</div>
+      <div class="kpi"><b>${u.calls ?? 0} 次 / ${u.total_tokens ?? 0}</b>LLM 调用 / tokens</div>
+      <div class="kpi"><b>${u.wall_seconds ?? "—"}s</b>耗时</div>
+    </div>
+    <div class="card section"><h4>总览</h4><div class="summary">${esc(toText(r.summary))}</div>
+      ${r.emotional_tone ? `<div class="line" style="margin-top:8px"><b>情绪基调：</b>${esc(toText(r.emotional_tone))}</div>` : ""}</div>
+    ${(r.risk_notes || []).length ? `<div class="card section" style="border-color:var(--warn)"><h4>风险提示</h4><ul class="plain">${r.risk_notes.map((x) => `<li>${esc(toText(x))}</li>`).join("")}</ul></div>` : ""}
+    ${topics ? `<div class="section"><h4>话题解读</h4>${topics}</div>` : ""}
+    ${acts ? `<div class="section"><h4>活动建议 · ${status === "approved" ? '<span class="ok">教师已复核，可执行</span>' : '<span style="color:var(--warn)">待教师复核，暂不可执行</span>'}</h4>${acts}</div>` : ""}
+    ${(r.talking_points || []).length ? `<div class="card section"><h4>与学生沟通的切入语</h4><ul class="plain">${r.talking_points.map((x) => `<li>${esc(toText(x))}</li>`).join("")}</ul></div>` : ""}
+    <div class="card section"><h4>这次分析有用吗？（AI 验证稿与教师已复核结果的评分会反馈给工作流选择器）</h4>
+      ${!rateable ? `<div class="line">${status === "draft" ? "待复核草稿不参与评分，复核通过后可评分。" : "本次结果不参与评分。"}</div>` : `
+      <div class="stars" id="stars">${[1, 2, 3, 4, 5].map((n) => `<button data-star="${n}" aria-label="${n} 星">★</button>`).join("")}</div>
+      <div class="line" id="fbMsg"></div>`}</div>
+    <div class="card section"><h4>中心验证（MAST 失败模式检查）</h4><div class="scroll-x"><table><tr><th>失败模式</th><th>检查项</th><th>结果</th></tr>${checks}</table></div>
+      ${v.judge && v.judge.groundedness ? `<div class="line" style="margin-top:6px">审稿人评分：事实依据 ${esc(v.judge.groundedness)}/5，实用性 ${esc(v.judge.usefulness)}/5</div>` : ""}</div>
+    <div class="card section"><h4>证据池（${(p.evidence || []).length} 条）</h4>${evidence || '<div class="line">无</div>'}</div>`;
+  const paintStars = (n) => document.querySelectorAll("#stars button").forEach((x) => x.classList.toggle("on", +x.dataset.star <= (n || 0)));
+  const showFeedback = (fb, justSaved) => {
+    if (!fb) return;
+    paintStars(fb.my_rating);
+    const mine = fb.my_rating ? `${justSaved ? "已记录，" : ""}你的评分：${fb.my_rating} 星` : "还没有评分，点击星星打分（可随时修改）";
+    const all = fb.n_ratings ? ` · 共 ${fb.n_ratings} 位老师评分，平均 ${fb.avg_rating} 星` : "";
+    $("#fbMsg").textContent = mine + all;
+  };
+  if ($("#fbMsg")) showFeedback(p.feedback || { my_rating: null, n_ratings: 0 }, false);
+  document.querySelectorAll("[data-review]").forEach((b) => b.addEventListener("click", async () => {
+    const decision = b.dataset.review;
+    if (decision === "reject" && !confirm("确定驳回这份草稿？")) return;
+    const res = await api("review", { method: "POST", body: JSON.stringify({ analysis_id: p.id, decision, note: ($("#reviewNote") || {}).value || "" }) });
+    if (!res.success) { $("#reviewMsg").textContent = res.message || "操作失败"; return; }
+    const d = await api("analysis/" + p.id);
+    if (d.success) renderResult(d.result, d.query);
+    loadHistory();
+  }));
+  document.querySelectorAll("#stars button").forEach((b) => b.addEventListener("click", async () => {
+    const n = +b.dataset.star;
+    paintStars(n);
+    const res = await api("feedback", { method: "POST", body: JSON.stringify({ analysis_id: p.id, rating: n }) });
+    if (res.success) { p.feedback = res.feedback; showFeedback(res.feedback, true); loadHistory(); }
+    else { $("#fbMsg").textContent = res.message || "提交失败"; paintStars(p.feedback && p.feedback.my_rating); }
+  }));
+}
+async function loadHistory() {
+  const r = await api("analyses");
+  const items = r.success ? r.items : [];
+  $("#history").innerHTML = items.length ? items.slice(0, 10).map((a) => `<div class="ev"><a href="#" data-hist="${a.id}">${esc(a.query)}</a><br><span style="color:var(--text-3)">${fmtTime(a.ts)} · ${esc(a.topology)} · ${a.auto_score != null ? a.auto_score.toFixed(2) : "—"}${a.avg_rating != null ? ` · ★${a.avg_rating}` : ""}${({ draft: " · <b style='color:var(--warn)'>待复核草稿</b>", formal: " · AI验证稿", approved: " · 教师已复核", rejected: " · 已驳回", degraded: " · 降级" })[a.status] || ""}</span></div>`).join("") : `<div class="line">暂无</div>`;
+  document.querySelectorAll("[data-hist]").forEach((el) => el.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const d = await api("analysis/" + el.dataset.hist);
+    if (d.success) { $("#trace").innerHTML = (d.result.trace || []).map(traceItem).join(""); renderResult(d.result, d.query); }
+  }));
+}
+
+/* ---------- memes ---------- */
+async function loadMemes() {
+  const r = await api("memes");
+  const items = r.success ? r.items : [];
+  $("#memeList").innerHTML = items.length ? items.map((m) => `<div class="card"><h3>${esc(m.term)}</h3>
+    <div class="meta"><span class="tag meme">${esc(m.form)}</span><span class="tag meme">${esc(m.function)}</span></div>
+    <div class="line">${esc(m.meaning)}</div>${m.usage ? `<div class="line"><b>用法：</b>${esc(m.usage)}</div>` : ""}</div>`).join("") :
+    `<div class="card empty" style="grid-column:1/-1">还没有沉淀的梗，去「智能分析」问一个试试</div>`;
+}
+
+/* ---------- system ---------- */
+async function loadSystem() {
+  $("#archCard").innerHTML = `<h4>架构说明</h4>
+    <b>感知层（常驻、低成本）</b>：公开热榜 + B 站热门 + 狐友本校圈 → 加速度草图检测突发（TopicSketch）→ 跨平台聚类 + c-TF-IDF 主题词（BERTopic）→ 校园心理透镜标注（梗的形式/功能/主题；心理危机 / 内容风险 / 选题价值三维风险分层）。
+    梗与玩法发现：新词（邻字熵 + 凝固度）、句式模板、同款 BGM/标签/投稿活动，以及视频镜头切换与音频节拍对齐（卡点）分析。每批次两阶段提交，分析结果原子落库。LLM 只标注新内容并缓存。<br>
+    <b>推理层（按需）</b>：路由器按任务可分解度与工具强度选择拓扑（Scaling Agent Systems）：梗释义等顺序任务用单智能体，趋势扫描与活动策划用中心化多智能体，全网深度舆情移交微舆三引擎 + 论坛。<br>
+    编排器维护任务账本与进度账本（Magentic-One），所有结论必须引用证据编号；中心验证器按 MAST 失败模式检查并驱动修订，停滞即止。
+    <b>验证是安全门</b>：未通过的结果只保存为“待人工复核草稿”，不发布、不写入梗词典、不计入下表的工作流奖励，老师复核通过后才转为正式。<br>
+    <b>自我优化</b>：工作流由规划 / 推理 / 验证 / 反思 / 记忆模块组合而成（AgentSquare），UCB 依据验证得分、老师评分与 token 成本在线选择（AFlow、GPTSwarm 的在线化）。`;
+  const r = await api("workflows");
+  const rows = (r.items || []).map((w) => `<tr><td><b>${esc(w.name)}</b><br><span style="color:var(--text-3)">${esc(w.id)}</span></td><td>${esc(w.planning)}</td><td>${esc(w.reasoning)}</td><td>${esc(w.verification)}</td><td>${w.reflection}</td><td>${w.runs}</td><td>${w.mean_reward ?? "—"}</td></tr>`).join("");
+  const m = await api("metrics");
+  if (m.success) {
+    const sec = (x) => x == null ? "—" : `${x}s`;
+    $("#batchTable").innerHTML = `<tr><th>批次</th><th>状态</th><th>条目</th><th>抓取</th><th>快速分析</th><th>模型增强</th><th>模型调用 / tokens</th><th>失败</th><th>缓存命中</th></tr>` +
+      m.batches.slice(0, 15).map((b) => { const st = b.stats || {}; const hit = st.enrich_cache_hit_rate ?? st.analyze_cache_hit_rate;
+        return `<tr><td>${fmtTime(b.batch_ts)}</td><td>${esc(b.status)}${st.enriched ? " · 已增强" : ""}</td><td>${st.items ?? "—"}</td><td>${sec(st.fetch_seconds)}</td><td>${sec(st.analyze_seconds)}</td><td>${sec(st.enrich_seconds)}</td>
+          <td>${st.enrich_llm_calls ?? 0} / ${(st.enrich_llm_tokens ?? 0).toLocaleString()}</td><td class="${st.enrich_llm_failures ? "fail" : ""}">${st.enrich_llm_failures ?? 0}</td><td>${hit == null ? "—" : Math.round(hit * 100) + "%"}</td></tr>`; }).join("");
+    const bi = m.analysis_by_intent || {};
+    $("#costLine").innerHTML = "<b>深度分析平均成本：</b>" + (Object.entries(bi).map(([k, d]) => `${esc(k)} ${d.avg_tokens.toLocaleString()} tokens / ${d.avg_seconds}s（${d.n} 次）`).join("；") || "暂无");
+  }
+  $("#wfTable").innerHTML = `<tr><th>工作流</th><th>规划</th><th>推理</th><th>验证</th><th>修订轮数</th><th>运行次数</th><th>平均奖励</th></tr>${rows}`;
+}
+
+/* ---------- 本校声音 ---------- */
+$("#circleSave").addEventListener("click", async () => {
+  const r = await api("settings", { method: "POST", body: JSON.stringify({ circles: $("#circleInput").value, forums: $("#forumInput").value }) });
+  alert(r.message || (r.success ? "已保存" : "保存失败"));
+  loadCampus();
+});
+async function loadCampus() {
+  const r = await api("campus");
+  if (!r.success) { $("#campusBox").innerHTML = `<div class="card empty">加载失败</div>`; return; }
+  if (r.circles && r.circles.length && !$("#circleInput").value) $("#circleInput").value = r.circles.map((c) => "https://hy.sns.sohu.com/circle/" + c).join(" ");
+  if (r.forums && r.forums.length && !$("#forumInput").value) $("#forumInput").value = r.forums.join(" ");
+  const v = r.voice;
+  if ((!r.circles || !r.circles.length) && (!r.forums || !r.forums.length)) {
+    $("#campusBox").innerHTML = `<div class="card empty">尚未设置本校圈子。请在狐友打开本校圈子页面，复制地址栏链接粘贴到上方后保存；<br>在此之前只采集全国校园推荐流作为参照。</div>`;
+    if (!v) return;
+  }
+  if (!v) { $("#campusBox").innerHTML += `<div class="card empty">还没有完成分析的数据，下一次采集后显示。</div>`; return; }
+  const c = v.crisis || {};
+  const byS = v.by_source || {};
+  const conf = { 高: "var(--good)", 中: "var(--warn)", 低: "var(--bad)" }[v.confidence] || "var(--text-3)";
+  const coverage = `<div class="card section"><h4>样本与置信度</h4>
+    <div class="line">覆盖平台：狐友本校圈 ${byS["huyou-school"] || 0} 帖 · 本校贴吧 ${byS["tieba-school"] || 0} 帖（${esc((v.circles || []).join("、"))}）</div>
+    <div class="line">有效样本 <b>${v.school_posts}</b> 帖（原始 ${v.raw_posts ?? "—"}，相似帖合并 ${v.duplicates_merged ?? 0}，广告过滤 ${v.ads_filtered || 0}）· 观察时长 <b>${v.observed_days ?? "—"}</b> 天 ·
+      置信度 <b style="color:${conf}">${esc(v.confidence || "—")}</b></div>
+    <div class="line" style="color:var(--text-3)">${v.trend_ready ? "已满足趋势分析条件：卡片中的“趋势”为近 24 小时相对此前日均的倍数。" : `趋势结论需连续观察满 ${v.trend_min_days || 7} 天，目前只能说明“抓到的公开帖子里有哪些主题”，不能说明“最近上升了什么”。`}
+      热度按各平台内部的分位数标准化后合并（狐友曝光与贴吧回复不直接相加），灌水楼、交易、失物招领已降权。</div></div>`;
+  const crisisCard = (c["高危"] || c["关注"]) ? `<div class="alert bad">近 ${v.days} 天本校帖子中识别到心理危机信号：高危 ${c["高危"] || 0} 条、需关注 ${c["关注"] || 0} 条。
+      为保护学生隐私，系统不展示原帖${v.crisis_excerpts_enabled ? "，以下为去标识化摘要：" + (c.excerpts || []).map(esc).join("；") : ""}。请按学校心理危机干预流程在狐友本校圈中人工核查。</div>` : "";
+  const rows = (v.themes || []).map((t) => {
+    const trend = t.trend == null ? "—" : t.trend >= 1.5 ? `<b class="fail">↑ ${t.trend}×</b>` : t.trend <= 0.5 ? `↓ ${t.trend}×` : `${t.trend}×`;
+    const diff = t.share - t.national_share;
+    return `<div class="card">
+      <div class="meta">${t.psych.map((d) => `<span class="tag">${esc(d)}</span>`).join("")}${t.negative_ratio >= 0.4 ? `<span class="tag crisis-关注">消极情绪 ${Math.round(t.negative_ratio * 100)}%</span>` : ""}</div>
+      <h3>${esc(t.theme)}</h3>
+      <div class="line"><b>${t.posts}</b> 帖（近 24 小时 ${t.posts_24h}${t.duplicates_merged ? `，合并相似帖 ${t.duplicates_merged}` : ""}）· 热度 ${t.heat}${t.weight < 1 ? `（已降权 ×${t.weight}）` : ""}${v.trend_ready ? ` · 趋势 ${trend}` : ""}</div>
+      <div class="bar2" title="本校占比 vs 全国校园占比"><i style="width:${Math.round(t.share * 100)}%;background:var(--accent)"></i></div>
+      <div class="line" style="font-size:12px;color:var(--text-3)">本校占比 ${Math.round(t.share * 100)}% · 全国校园 ${Math.round(t.national_share * 100)}%${Math.abs(diff) >= 0.05 ? (diff > 0 ? " · <b>本校明显更多</b>" : " · 本校较少") : ""}</div>
+      ${t.examples.length ? `<div class="line"><b>摘要：</b>${t.examples.map(esc).join(" / ")}</div>` : ""}
+      <div class="actions"><button class="btn primary" data-theme="${esc(t.theme)}">查看帖子（${t.posts}）</button><button class="btn" data-raw="1" data-analyze="本校学生近期在“${esc(t.theme)}”方面讨论较多（如：${esc(t.examples.join("；"))}），请据此策划一次心理健康教育活动" data-intent="activity_design">据此策划活动</button></div>
+    </div>`;
+  }).join("");
+  $("#campusBox").innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><b>${v.school_posts}</b>有效样本（近 ${v.days} 天${v.by_source ? `；狐友 ${v.by_source["huyou-school"] || 0} / 贴吧 ${v.by_source["tieba-school"] || 0}` : ""}）</div>
+      <div class="kpi"><b>${v.annotated_by_llm}</b>其中模型标注</div>
+      <div class="kpi"><b>${v.ads_filtered || 0}</b>已过滤广告帖</div>
+      <div class="kpi"><b>${v.national_posts}</b>全国校园参照</div>
+      <div class="kpi"><b>${esc((v.circles || []).join("、") || "—")}</b>本校圈子 / 贴吧</div>
+      <div class="kpi"><b>${fmtTime(v.generated_at)}</b>统计时间</div>
+    </div>
+    ${coverage}
+    ${crisisCard}
+    <div class="grid">${rows || '<div class="card empty" style="grid-column:1/-1">本校圈子暂无帖子</div>'}</div>`;
+}
+
+/* 主题帖子明细 */
+const EMO = { 积极: "var(--good)", 中性: "var(--text-3)", 消极: "var(--bad)" };
+async function openTheme(theme) {
+  $("#postModalTitle").textContent = `「${theme}」相关帖子`;
+  $("#postModalBody").innerHTML = `<div class="card empty">加载中…</div>`;
+  $("#postModal").classList.add("open");
+  const r = await api("campus/posts?theme=" + encodeURIComponent(theme));
+  if (!r.success) { $("#postModalBody").innerHTML = `<div class="card empty">${esc(r.message || "加载失败")}</div>`; return; }
+  const posts = r.posts.map((p) => `<div class="post">
+    <div class="meta"><span class="tag">${esc(SRC[p.source] || p.source)}${p.circle ? " · " + esc(p.circle) : ""}</span>
+      <span>${fmtTime(p.published)}</span><span>${p.comments} 回复${p.exposure ? ` · ${p.exposure.toLocaleString()} 浏览` : ""}</span>
+      ${p.emotion ? `<span style="color:${EMO[p.emotion] || "inherit"}">● ${esc(p.emotion)}</span>` : ""}
+      ${(p.psych_dimensions || []).map((d) => `<span class="tag">${esc(d)}</span>`).join("")}${riskTags(p)}</div>
+    ${p.gist ? `<div class="line"><b>概括：</b>${esc(p.gist)}</div>` : ""}
+    <div class="body">${esc(p.content)}</div>
+    ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener" style="font-size:12.5px">查看原帖 ↗</a>` : ""}
+  </div>`).join("");
+  $("#postModalBody").innerHTML = (posts || `<div class="card empty">近 7 天没有该主题的帖子</div>`) +
+    (r.hidden_crisis ? `<div class="alert bad">另有 ${r.hidden_crisis} 条含心理危机信号的帖子按设置未显示原文，请按学校心理危机干预流程处理。</div>` : "") +
+    (r.total > r.posts.length ? `<div class="line">共 ${r.total} 条，显示前 ${r.posts.length} 条</div>` : "");
+}
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-theme]");
+  if (t) openTheme(t.dataset.theme);
+  if (e.target.id === "postModalClose" || e.target.id === "postModal") $("#postModal").classList.remove("open");
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("#postModal").classList.remove("open"); });
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-fb]"); if (b) memeFeedback(b.dataset.key, b.dataset.fb, b); });
+
+/* ---------- 梗与玩法 ---------- */
+let TRENDS = [], TFILTER = "all";
+const KIND = { word: "新流行语", template: "句式模板", bgm: "同款BGM", tag: "同款标签", mission: "投稿活动/挑战", web: "外部召回", transition: "转场玩法" };
+const FB = [["confirm", "确认流行"], ["not_meme", "不是梗"], ["outdated", "过时词"], ["common", "普通词"], ["duplicate", "重复候选"]];
+async function memeFeedback(key, label, btn) {
+  const card = btn.closest(".card");
+  const cur = card.querySelector(".fb button.on");
+  const clear = cur && cur.dataset.fb === label;
+  const r = await api("meme-feedback", { method: "POST", body: JSON.stringify({ key, label: clear ? "clear" : label }) });
+  if (!r.success) { alert(r.message || "提交失败"); return; }
+  card.querySelectorAll(".fb button").forEach((b) => b.classList.toggle("on", !clear && b.dataset.fb === label));
+  const note = card.querySelector(".fbnote");
+  note.textContent = clear ? "已撤销标注" : (label === "confirm" ? "已确认，下一批次起标为“已验证趋势”" : "已记录，下一批次起不再显示，并用于改进过滤");
+}
+function sparkline(tl) {
+  if (!tl || tl.length < 2) return `<div class="line" style="font-size:12px;color:var(--text-3)">首次出现 ${fmtTime(tl && tl[0] && tl[0].ts)}，积累更多批次后显示扩散曲线</div>`;
+  const W = 300, H = 44, t0 = tl[0].ts, t1 = tl[tl.length - 1].ts || t0 + 1, m = Math.max(...tl.map((p) => p.df), 1);
+  const pts = tl.map((p) => `${(4 + (p.ts - t0) / Math.max(1, t1 - t0) * (W - 8)).toFixed(1)},${(H - 4 - p.df / m * (H - 8)).toFixed(1)}`).join(" ");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="出现量变化"><rect width="${W}" height="${H}" rx="6" fill="var(--surface-2)"/><polyline fill="none" stroke="var(--meme)" stroke-width="1.8" points="${pts}"/></svg>
+    <div class="meta">${fmtTime(t0)} → ${fmtTime(t1)} · 峰值 ${m}</div>`;
+}
+function trendCard(c) {
+  const l = c.lens || {};
+  const styles = c.edit_styles || {};
+  const styleLine = c.analyzed_videos ? `<div class="line"><b>剪辑分析：</b>已分析 ${c.analyzed_videos} 个视频 · ${Object.entries(styles).map(([k, n]) => `${esc(k)} ${n}`).join("，")}</div>` : "";
+  return `<div class="card">
+    <div class="meta"><span class="tier tier-${c.tier || "observed"}">${c.tier === "verified" ? "正在流行 · 已验证" : esc(c.tier_label || "平台实测出现")}</span>
+      <span class="tag meme">${KIND[c.kind] || c.kind}</span>${l.type ? `<span class="tag cat">${esc(l.type)}</span>` : ""}${c.is_new ? '<span class="tag new">新出现</span>' : ""}${c.tier !== "lead" && c.growth && c.growth >= 1.5 ? `<span class="tag burst">增长 ${c.growth}×</span>` : ""}${riskTags(l)}</div>
+    <h3>${esc(c.label)}</h3>
+    ${c.tier_reason ? `<div class="line" style="font-size:12px;color:var(--text-3)">证据等级依据：${esc(c.tier_reason)}</div>` : ""}
+    ${l.meaning ? `<div class="memebox"><b>含义：</b>${esc(l.meaning)}${l.student_usage ? `<br><b>学生用法：</b>${esc(l.student_usage)}` : ""}<br>${tagOrNull(l.form, "meme")} ${tagOrNull(l.function, "meme")}</div>` : `<div class="line" style="color:var(--text-3)">统计信号（尚未经模型解读）</div>`}
+    <div class="line">站内出现 <b>${c.df}</b> 次 · 来源 ${(c.sources || []).map((x) => esc(SRC[x] || x)).join("、")}${c.views ? ` · 相关视频总播放 ${(c.views / 10000).toFixed(0)} 万` : ""}</div>
+    ${c.fillers ? `<div class="line"><b>填充词：</b>${c.fillers.map(esc).join(" / ")}</div>` : ""}
+    ${styleLine}
+    ${c.kind === "transition" ? `<div class="line"><b>识别到的手法：</b>${Object.entries(c.transition_types || {}).map(([k, n]) => `${esc(k)} ${n}`).join("，") || "—"}${(c.triggers || []).length ? ` · 触发动作：${c.triggers.map(esc).join("、")}` : ""}</div>` : ""}
+    ${c.kind === "web" ? `<div class="line"><b>站内核对：</b>${c.in_corpus ? `本校 / B站样本中已出现 ${c.df} 次` : "站内样本暂未出现（仅外部来源，可能尚未在学生中流行）"}</div>
+      <div class="line" style="font-size:12px">来源：${(c.web_links || []).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title.slice(0, 24))}</a>`).join(" / ")}</div>` : ""}
+    <div class="line" style="color:var(--text-3)">例：${(c.examples || []).slice(0, 3).map((e, i) => c.video_urls && c.video_urls[i] ? `<a href="${esc(c.video_urls[i])}" target="_blank" rel="noopener">${esc(e)}</a>` : esc(e)).join(" / ")}</div>
+    ${sparkline(c.timeline)}
+    <div class="actions"><button class="btn" data-analyze="${esc(c.label.replace(/^(BGM：|#|投稿活动：)/, ""))}" data-intent="meme_explain">深度解读</button>
+      <button class="btn" data-analyze="${esc(c.label.replace(/^(BGM：|#|投稿活动：)/, ""))}" data-intent="activity_design">借此策划活动</button></div>
+    ${c.poll ? `<div class="line"><b>学生问卷：</b>${c.poll.n} 人作答 · 见过 ${Math.round(c.poll.seen_pct * 100)}% · 最近关注 ${Math.round(c.poll.follow_pct * 100)}%</div>` : ""}
+    <label class="line" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-pollpick="${esc(c.key)}" ${POLL_PICK.has(c.key) ? "checked" : ""}> 加入问卷</label>
+    <div class="fb">${FB.map(([k, n]) => `<button data-fb="${k}" data-key="${esc(c.key)}" class="${c.feedback === k ? "on" : ""}">${n}</button>`).join("")}</div>
+    <div class="line fbnote" style="font-size:12px;color:var(--text-3)"></div>
+  </div>`;
+}
+const TFILTERS = [["all", "全部"], ["verified", "正在流行（已验证）"], ["observed", "平台实测出现"], ["lead", "外部热点线索"],
+  ["text", "流行语 / 句式"], ["video", "短视频同款"], ["transition", "转场玩法"], ["styled", "卡点 / 快切"]];
+function passTrend(c) {
+  switch (TFILTER) {
+    case "verified": case "observed": case "lead": return (c.tier || "observed") === TFILTER;
+    case "transition": return c.kind === "transition";
+    case "text": return ["word", "template", "web"].includes(c.kind);
+    case "video": return ["bgm", "tag", "mission"].includes(c.kind);
+    case "styled": return ((c.edit_styles || {})["卡点剪辑"] || 0) + ((c.edit_styles || {})["快切转场"] || 0) > 0;
+    case "new": return c.is_new || (c.growth || 0) >= 1.5;
+    default: return true;
+  }
+}
+function renderTrends() {
+  $("#trendFilters").innerHTML = TFILTERS.map(([k, n]) => {
+    const cnt = TRENDS.filter((c) => { const f = TFILTER; TFILTER = k; const ok = passTrend(c); TFILTER = f; return ok; }).length;
+    return `<button class="chip ${k === TFILTER ? "active" : ""}" data-tf="${k}">${n} ${cnt}</button>`;
+  }).join("");
+  document.querySelectorAll("[data-tf]").forEach((b) => b.addEventListener("click", () => { TFILTER = b.dataset.tf; renderTrends(); }));
+  const list = TRENDS.filter(passTrend);
+  $("#trendList").innerHTML = list.length ? list.map(trendCard).join("") : `<div class="card empty" style="grid-column:1/-1">${TRENDS.length ? "该筛选下暂无候选" : "还没有梗与玩法候选，采集并分析后显示"}</div>`;
+}
+async function loadTrends() {
+  const r = await api("meme-trends");
+  TRENDS = r.success ? r.topics : [];
+  renderTrends();
+  loadPolls();
+}
+const POLL_PICK = new Set();
+document.addEventListener("change", (e) => {
+  const k = e.target.dataset && e.target.dataset.pollpick;
+  if (!k) return;
+  if (e.target.checked) {
+    if (POLL_PICK.size >= 8) { e.target.checked = false; alert("每份问卷最多 8 个候选"); return; }
+    POLL_PICK.add(k);
+  } else POLL_PICK.delete(k);
+  $("#pollCount").textContent = POLL_PICK.size;
+});
+$("#pollCreate").addEventListener("click", async () => {
+  if (!POLL_PICK.size) { alert("请先在下方卡片勾选“加入问卷”"); return; }
+  const r = await api("polls", { method: "POST", body: JSON.stringify({ keys: [...POLL_PICK], title: $("#pollTitle").value.trim() || null }) });
+  if (!r.success) { alert(r.message || "生成失败"); return; }
+  POLL_PICK.clear(); $("#pollCount").textContent = 0; renderTrends(); loadPolls();
+});
+function pollUrl(token) { return new URL("poll/" + token, location.href).href; }
+async function loadPolls() {
+  const r = await api("polls");
+  const polls = r.success ? r.polls : [];
+  $("#pollList").innerHTML = polls.length ? polls.map((p) => {
+    const res = p.results || {};
+    const total = Math.max(0, ...Object.values(res).map((d) => d.n));
+    return `<div class="post"><div class="meta"><b>${esc(p.title)}</b><span>${fmtTime(p.created_ts)} 创建</span>
+        <span class="${p.open ? "ok" : ""}">${p.open ? "进行中" : "已结束"}</span><span>${total} 人作答</span></div>
+      <div class="line" style="word-break:break-all"><a href="${esc(pollUrl(p.token))}" target="_blank" rel="noopener">${esc(pollUrl(p.token))}</a>
+        <button class="btn" data-copy="${esc(pollUrl(p.token))}" style="padding:1px 8px;font-size:12px">复制链接</button>
+        ${p.open ? `<button class="btn" data-closepoll="${esc(p.token)}" style="padding:1px 8px;font-size:12px">结束投票</button>` : ""}</div>
+      ${p.items.map((i) => { const d = res[i.key]; return `<div class="line">· ${esc(i.label)}：${d ? `见过 ${Math.round(d.seen_pct * 100)}%（用过 ${d.used}）· 最近关注 ${Math.round(d.follow_pct * 100)}%（${d.n} 人）` : "暂无作答"}</div>`; }).join("")}</div>`;
+  }).join("") : `<div class="line" style="color:var(--text-3)">还没有问卷</div>`;
+}
+document.addEventListener("click", async (e) => {
+  const c = e.target.closest("[data-copy]");
+  if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); c.textContent = "已复制"; } catch (_) { prompt("复制链接", c.dataset.copy); } }
+  const x = e.target.closest("[data-closepoll]");
+  if (x && confirm("结束这份问卷？结束后学生无法再作答。")) { await api(`polls/${x.dataset.closepoll}/close`, { method: "POST" }); loadPolls(); }
+});
+
+loadStatus(); loadTopics();
+setInterval(loadStatus, 60000);
+</script>
+</body>
+</html>
