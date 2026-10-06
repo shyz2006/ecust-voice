@@ -1,0 +1,60 @@
+services:
+  bettafish:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    image: bettafish:local
+    # Speed up mirror
+    # image: ghcr.nju.edu.cn/666ghj/bettafish:latest
+    container_name: bettafish
+    restart: unless-stopped
+    env_file:
+      - .env.web-auth
+    environment:
+      - TZ=Asia/Shanghai
+      - PYTHONUNBUFFERED=1
+      - REPORT_DEFAULT_TEMPLATE=${REPORT_DEFAULT_TEMPLATE:-高校思政引领与心理育人研究报告模板}
+      - REPORT_STANCE=${REPORT_STANCE:-sizheng}
+      - RESEARCH_PARAGRAPH_CONCURRENCY=${RESEARCH_PARAGRAPH_CONCURRENCY:-3}
+      - REPORT_CHAPTER_CONCURRENCY=${REPORT_CHAPTER_CONCURRENCY:-4}
+      - MAX_CONCURRENT_RESEARCH=${MAX_CONCURRENT_RESEARCH:-2}
+      - LLM_MAX_CONCURRENCY=${LLM_MAX_CONCURRENCY:-12}
+      - REPORT_MAX_CONCURRENT=${REPORT_MAX_CONCURRENT:-2}
+      - STREAMLIT_SERVER_ENABLE_FILE_WATCHER=false
+      - LLM_FALLBACK_MODELS=${LLM_FALLBACK_MODELS:-deepseek-v4-pro}
+      - LLM_MODEL_COOLDOWN_SECONDS=${LLM_MODEL_COOLDOWN_SECONDS:-60}
+      - LLM_MAX_RETRIES=${LLM_MAX_RETRIES:-2}
+      - LLM_RETRY_INITIAL_DELAY=${LLM_RETRY_INITIAL_DELAY:-15}
+      - LLM_RETRY_BACKOFF_FACTOR=${LLM_RETRY_BACKOFF_FACTOR:-2}
+      - LLM_RETRY_MAX_DELAY=${LLM_RETRY_MAX_DELAY:-60}
+    ports:
+      - "127.0.0.1:5000:5000"
+      - "127.0.0.1:8501:8501"
+      - "127.0.0.1:8502:8502"
+      - "127.0.0.1:8503:8503"
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./runtime:/app/runtime
+      - ./final_reports:/app/final_reports
+      - ./.env:/app/.env  
+      - ./insight_engine_streamlit_reports:/app/insight_engine_streamlit_reports
+      - ./media_engine_streamlit_reports:/app/media_engine_streamlit_reports
+      - ./query_engine_streamlit_reports:/app/query_engine_streamlit_reports
+
+  db:
+    image: postgres:15
+    container_name: bettafish-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Postgres 官方镜像只识别 POSTGRES_* 用于初始化；
+      # 而本项目的应用侧读取 DB_*（见 .env）。这里做一次映射，确保两边一致。
+      POSTGRES_USER: ${DB_USER:-${POSTGRES_USER:-bettafish}}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-${POSTGRES_PASSWORD:-bettafish}}
+      POSTGRES_DB: ${DB_NAME:-${POSTGRES_DB:-bettafish}}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5444}:5432"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data

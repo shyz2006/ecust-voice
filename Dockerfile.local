@@ -1,0 +1,57 @@
+FROM ghcr.io/666ghj/bettafish:latest
+
+WORKDIR /app
+
+# Keep the upstream image and layer only the local Bocha compatibility changes & task isolation.
+COPY app.py app.py
+COPY templates/index.html templates/index.html
+COPY templates/login.html templates/login.html
+COPY static/css/bettafish.css static/css/bettafish.css
+COPY static/js/app-ui.js static/js/app-ui.js
+COPY static/img/ecust-lawn.jpg static/img/ecust-lawn.jpg
+COPY static/task_sidebar.js static/task_sidebar.js
+COPY static/task_isolation.js static/task_isolation.js
+COPY ForumEngine/task_store.py ForumEngine/task_store.py
+COPY ForumEngine/monitor.py ForumEngine/monitor.py
+COPY ForumEngine/llm_host.py ForumEngine/llm_host.py
+COPY utils/task_runtime.py utils/task_runtime.py
+COPY utils/research_runner.py utils/research_runner.py
+COPY utils/search_gateway.py utils/search_gateway.py
+COPY utils/campus_index.py utils/campus_index.py
+COPY utils/campus_sources.py utils/campus_sources.py
+COPY MediaEngine/tools/search.py MediaEngine/tools/search.py
+COPY utils/forum_reader.py utils/forum_reader.py
+COPY utils/llm_failover.py utils/llm_failover.py
+COPY utils/llm_usage.py utils/llm_usage.py
+COPY utils/retry_helper.py utils/retry_helper.py
+COPY QueryEngine/agent.py QueryEngine/agent.py
+COPY QueryEngine/nodes/summary_node.py QueryEngine/nodes/summary_node.py
+COPY QueryEngine/tools/__init__.py QueryEngine/tools/__init__.py
+COPY QueryEngine/tools/bocha_adapter.py QueryEngine/tools/bocha_adapter.py
+COPY QueryEngine/utils/config.py QueryEngine/utils/config.py
+COPY QueryEngine/llms/base.py QueryEngine/llms/base.py
+COPY MediaEngine/agent.py MediaEngine/agent.py
+COPY MediaEngine/nodes/summary_node.py MediaEngine/nodes/summary_node.py
+COPY MediaEngine/llms/base.py MediaEngine/llms/base.py
+COPY InsightEngine/agent.py InsightEngine/agent.py
+COPY InsightEngine/nodes/summary_node.py InsightEngine/nodes/summary_node.py
+COPY InsightEngine/llms/base.py InsightEngine/llms/base.py
+COPY InsightEngine/utils/db.py InsightEngine/utils/db.py
+COPY InsightEngine/tools/keyword_optimizer.py InsightEngine/tools/keyword_optimizer.py
+COPY ReportEngine/agent.py ReportEngine/agent.py
+COPY ReportEngine/flask_interface.py ReportEngine/flask_interface.py
+COPY ReportEngine/prompts/prompts.py ReportEngine/prompts/prompts.py
+COPY ReportEngine/nodes/chapter_generation_node.py ReportEngine/nodes/chapter_generation_node.py
+COPY ReportEngine/nodes/document_layout_node.py ReportEngine/nodes/document_layout_node.py
+COPY ReportEngine/nodes/word_budget_node.py ReportEngine/nodes/word_budget_node.py
+COPY ReportEngine/nodes/template_selection_node.py ReportEngine/nodes/template_selection_node.py
+COPY ReportEngine/report_template/高校思政引领与心理育人研究报告模板.md ReportEngine/report_template/高校思政引领与心理育人研究报告模板.md
+COPY ReportEngine/llms/base.py ReportEngine/llms/base.py
+COPY ReportEngine/renderers/pdf_renderer.py ReportEngine/renderers/pdf_renderer.py
+COPY ReportEngine/renderers/math_to_svg.py ReportEngine/renderers/math_to_svg.py
+COPY SingleEngineApp/query_engine_streamlit_app.py SingleEngineApp/query_engine_streamlit_app.py
+COPY SingleEngineApp/media_engine_streamlit_app.py SingleEngineApp/media_engine_streamlit_app.py
+COPY SingleEngineApp/insight_engine_streamlit_app.py SingleEngineApp/insight_engine_streamlit_app.py
+COPY SingleEngineApp/research_worker.py SingleEngineApp/research_worker.py
+COPY MindSpider/BroadTopicExtraction/topic_extractor.py MindSpider/BroadTopicExtraction/topic_extractor.py
+COPY CampusPulse CampusPulse
