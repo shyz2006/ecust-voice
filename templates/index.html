@@ -2370,6 +2370,35 @@ body.workspace-v2 {
 .workspace-v2 .metrics-editorial h2 {font-size:32px;line-height:1.3}
 @media(max-width:1000px){.workspace-v2 .lifetime-numbers {grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}}
 @media(max-width:760px){.workspace-v2 .account-metric--tokens {padding:18px 12px}.workspace-v2 .account-metric strong {font-size:30px}.workspace-v2 .metrics-editorial h2 {font-size:26px}}
+/* PRINT_REPORT_MODAL_PATCH */
+@media print {
+  body > *:not(#reportModal.open) { display: none !important; }
+  #reportModal.open {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  #reportModal.open .modal-dialog {
+    max-width: 100% !important;
+    max-height: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  #reportModal.open .modal-header,
+  #reportModal.open .modal-footer,
+  #reportModal.open .modal-close-btn,
+  #reportModal.open button {
+    display: none !important;
+  }
+  #reportModal.open .modal-body {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+}
 </style>
 </head>
 
@@ -4387,7 +4416,9 @@ async function saveConfig() {
 
   const payload = { ...CURRENT_SERVER_CONFIG };
 
-  // 1. 提取全局 Tab 的输入值（优先同步全局配置到全部智能体，符合用户直觉）
+  // 判断用户当前停留在哪个配置 Tab
+  const isAgentTab = $('cfgPaneAgents') && $('cfgPaneAgents').style.display !== 'none';
+
   const globalApiKey = ($('globalApiKeyInput') ? $('globalApiKeyInput').value : '').trim();
   const globalBaseUrl = ($('globalBaseUrlInput') ? $('globalBaseUrlInput').value : '').trim();
   let globalModel = '';
@@ -4401,39 +4432,67 @@ async function saveConfig() {
     globalModel = modelInp.value.trim();
   }
 
-  // 2. 遍历全部智能体进行同步
-  AGENT_GROUPS.forEach(g => {
-    const k = g.key;
-    const ak = $(`agent_${k}_API_KEY`);
-    const bu = $(`agent_${k}_BASE_URL`);
-    const mn = $(`agent_${k}_MODEL_NAME`);
+  if (isAgentTab) {
+    // 【Tab 2: 各智能体独立精细配置】严格尊重用户的个性化调整，绝不被 Tab 1 隐藏旧值覆盖
+    AGENT_GROUPS.forEach(g => {
+      const k = g.key;
+      const ak = $(`agent_${k}_API_KEY`);
+      const bu = $(`agent_${k}_BASE_URL`);
+      const mn = $(`agent_${k}_MODEL_NAME`);
+      const ms = $(`agent_${k}_MODEL_SELECT`);
 
-    // 如果用户在全局填写了，自动更新；如果用户在独立 Tab 中微调过，则保留微调值
-    let agentKey = (ak ? ak.value.trim() : '');
-    let agentUrl = (bu ? bu.value.trim() : '');
-    let agentModel = (mn ? mn.value.trim() : '');
+      let agentModel = '';
+      if (ms && ms.value === '__custom__') {
+        agentModel = (mn ? mn.value.trim() : '');
+      } else if (ms && ms.value) {
+        agentModel = ms.value.trim();
+      } else if (mn) {
+        agentModel = mn.value.trim();
+      }
 
-    // 全局覆盖
-    if (globalApiKey) agentKey = globalApiKey;
-    if (globalBaseUrl) agentUrl = globalBaseUrl;
-    if (globalModel) agentModel = globalModel;
+      if (ak) payload[`${k}_API_KEY`] = ak.value.trim();
+      if (bu) payload[`${k}_BASE_URL`] = bu.value.trim();
+      if (agentModel) payload[`${k}_MODEL_NAME`] = agentModel;
+    });
+  } else {
+    // 【Tab 1: 统一服务商快捷配置】一键同步给全部智能体
+    AGENT_GROUPS.forEach(g => {
+      const k = g.key;
+      const ak = $(`agent_${k}_API_KEY`);
+      const bu = $(`agent_${k}_BASE_URL`);
+      const mn = $(`agent_${k}_MODEL_NAME`);
+      const ms = $(`agent_${k}_MODEL_SELECT`);
 
-    payload[`${k}_API_KEY`] = agentKey;
-    payload[`${k}_BASE_URL`] = agentUrl;
-    payload[`${k}_MODEL_NAME`] = agentModel;
+      if (globalApiKey) { payload[`${k}_API_KEY`] = globalApiKey; if (ak) ak.value = globalApiKey; }
+      if (globalBaseUrl) { payload[`${k}_BASE_URL`] = globalBaseUrl; if (bu) bu.value = globalBaseUrl; }
+      if (globalModel) {
+        payload[`${k}_MODEL_NAME`] = globalModel;
+        if (mn) mn.value = globalModel;
+        if (ms) {
+          let found = false;
+          for (let i = 0; i < ms.options.length; i++) {
+            if (ms.options[i].value === globalModel) { ms.selectedIndex = i; found = true; break; }
+          }
+          if (!found) { ms.add(new Option(globalModel, globalModel, true, true), ms.options[0]); }
+        }
+      }
+    });
 
-    // 回显到表单
-    if (ak) ak.value = agentKey;
-    if (bu) bu.value = agentUrl;
-    if (mn) mn.value = agentModel;
-  });
+    if (globalApiKey) payload['MINDSPIDER_API_KEY'] = globalApiKey;
+    if (globalBaseUrl) payload['MINDSPIDER_BASE_URL'] = globalBaseUrl;
+    if (globalModel) payload['MINDSPIDER_MODEL_NAME'] = globalModel;
+  }
 
-  // 同步 MINDSPIDER
-  if (globalApiKey) payload['MINDSPIDER_API_KEY'] = globalApiKey;
-  if (globalBaseUrl) payload['MINDSPIDER_BASE_URL'] = globalBaseUrl;
-  if (globalModel) payload['MINDSPIDER_MODEL_NAME'] = globalModel;
+  // 关键：将主模型/全局配置直接同步写入 CampusPulse (核心研判工坊所用)
+  const activeModel = globalModel || payload['QUERY_ENGINE_MODEL_NAME'] || payload['INSIGHT_ENGINE_MODEL_NAME'] || '';
+  const activeKey = globalApiKey || payload['QUERY_ENGINE_API_KEY'] || payload['INSIGHT_ENGINE_API_KEY'] || '';
+  const activeUrl = globalBaseUrl || payload['QUERY_ENGINE_BASE_URL'] || payload['INSIGHT_ENGINE_BASE_URL'] || '';
 
-  // 3. 预警邮箱与搜索 Key
+  if (activeModel) payload['PULSE_LLM_MODEL_NAME'] = activeModel;
+  if (activeKey) payload['PULSE_LLM_API_KEY'] = activeKey;
+  if (activeUrl) payload['PULSE_LLM_BASE_URL'] = activeUrl;
+
+  // 3. 预警邮箱与搜索 Key（持久化写入服务器）
   if ($('cfgEmailInput')) payload.ALERT_EMAIL = $('cfgEmailInput').value.trim();
   if ($('cfgBochaKeyInput')) payload.BOCHA_WEB_SEARCH_API_KEY = $('cfgBochaKeyInput').value.trim();
 
@@ -4445,8 +4504,9 @@ async function saveConfig() {
 
     if (res && res.success) {
       CURRENT_SERVER_CONFIG = res.config || payload;
-      alert('平台大模型与参数配置已成功保存并持久化写入服务器！');
+      alert('平台大模型与参数配置已成功保存并立即生效！');
       closeConfigModal();
+      if (typeof loadStatus === 'function') loadStatus();
     } else {
       throw new Error((res && res.message) || '保存失败');
     }

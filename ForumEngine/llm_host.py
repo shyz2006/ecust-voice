@@ -286,3 +286,8 @@ def _strip_sizheng(text: str) -> str:
 def generate_host_speech(forum_logs: List[str], style: Optional[str] = None) -> Optional[str]:
     """生成主持人发言的便捷函数"""
     return get_forum_host().generate_host_speech(forum_logs, style=style)
+
+
+def reset_forum_host():
+    global _host_instance
+    _host_instance = None

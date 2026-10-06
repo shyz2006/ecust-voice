@@ -89,8 +89,14 @@ class _LLMSlot:
     def __enter__(self):
         if self.limit <= 0:
             return self
-        import fcntl
+        try:
+            import fcntl
+        except ImportError:
+            fcntl = None
         import random
+
+        if fcntl is None:
+            return self
 
         os.makedirs(self.dir, exist_ok=True)
         started = time.time()
@@ -112,10 +118,11 @@ class _LLMSlot:
 
     def __exit__(self, *exc):
         if self._fh is not None:
-            import fcntl
-
             try:
+                import fcntl
                 fcntl.flock(self._fh, fcntl.LOCK_UN)
+            except (ImportError, OSError):
+                pass
             finally:
                 self._fh.close()
                 self._fh = None
@@ -149,10 +156,28 @@ class _ModelStats:
         self.explore = _float_env("LLM_EXPLORE_RATE", 0.1)
 
     def _locked(self, mutate=None):
-        import fcntl
+        try:
+            import fcntl
+        except ImportError:
+            fcntl = None
         import json
 
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        if fcntl is None:
+            try:
+                with open(self.path, encoding="utf-8") as fh:
+                    data = json.load(fh)
+            except (OSError, ValueError):
+                data = {}
+            if mutate is None:
+                return data
+            mutate(data)
+            tmp = f"{self.path}.{os.getpid()}.tmp"
+            with open(tmp, "w", encoding="utf-8") as fh:
+                json.dump(data, fh, ensure_ascii=False)
+            os.replace(tmp, self.path)
+            return data
+
         with open(self.path + ".lock", "a+") as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
             try:

@@ -105,3 +105,14 @@ class PulseSettings:
 
 
 settings = PulseSettings()
+
+def reload_settings() -> PulseSettings:
+    global settings
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(PROJECT_ROOT / ".env", override=True)
+    except Exception:
+        pass
+    settings = PulseSettings()
+    return settings
+

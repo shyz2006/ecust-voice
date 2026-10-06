@@ -242,10 +242,22 @@ CONFIG_KEYS = [
     'KEYWORD_OPTIMIZER_API_KEY',
     'KEYWORD_OPTIMIZER_BASE_URL',
     'KEYWORD_OPTIMIZER_MODEL_NAME',
+    'MINDSPIDER_API_KEY',
+    'MINDSPIDER_BASE_URL',
+    'MINDSPIDER_MODEL_NAME',
+    'PULSE_LLM_API_KEY',
+    'PULSE_LLM_BASE_URL',
+    'PULSE_LLM_MODEL_NAME',
+    'ALERT_EMAIL',
     'TAVILY_API_KEY',
     'SEARCH_TOOL_TYPE',
+    'BOCHA_BASE_URL',
     'BOCHA_WEB_SEARCH_API_KEY',
-    'ANSPIRE_API_KEY'
+    'ANSPIRE_BASE_URL',
+    'ANSPIRE_API_KEY',
+    'LLM_FALLBACK_MODELS',
+    'LLM_MODEL_COOLDOWN_SECONDS',
+    'LLM_MAX_RETRIES'
 ]
 
 
@@ -253,6 +265,24 @@ def _load_config_module():
     try:
         import config
         config.reload_settings()
+    except Exception:
+        pass
+
+    try:
+        from CampusPulse.config import reload_settings as reload_pulse_settings
+        reload_pulse_settings()
+    except Exception:
+        pass
+
+    try:
+        from CampusPulse.llm import reset_client as reset_pulse_client
+        reset_pulse_client()
+    except Exception:
+        pass
+
+    try:
+        from ForumEngine.llm_host import reset_forum_host
+        reset_forum_host()
     except Exception:
         pass
     """Load or reload the config module to ensure latest values are available."""
@@ -369,6 +399,24 @@ def write_config_values(updates):
     try:
         import config
         config.reload_settings()
+    except Exception:
+        pass
+
+    try:
+        from CampusPulse.config import reload_settings as reload_pulse_settings
+        reload_pulse_settings()
+    except Exception:
+        pass
+
+    try:
+        from CampusPulse.llm import reset_client as reset_pulse_client
+        reset_pulse_client()
+    except Exception:
+        pass
+
+    try:
+        from ForumEngine.llm_host import reset_forum_host
+        reset_forum_host()
     except Exception:
         pass
 
@@ -1531,6 +1579,18 @@ def update_config():
     for key, value in payload.items():
         if key in CONFIG_KEYS:
             updates[key] = value if value is not None else ''
+
+    # 智能同步：如果设置了全局/Query/Insight模型，但未单独提供PULSE_LLM_*，自动同步到CampusPulse
+    pulse_model = updates.get('PULSE_LLM_MODEL_NAME') or updates.get('QUERY_ENGINE_MODEL_NAME') or updates.get('INSIGHT_ENGINE_MODEL_NAME')
+    pulse_key = updates.get('PULSE_LLM_API_KEY') or updates.get('QUERY_ENGINE_API_KEY') or updates.get('INSIGHT_ENGINE_API_KEY')
+    pulse_url = updates.get('PULSE_LLM_BASE_URL') or updates.get('QUERY_ENGINE_BASE_URL') or updates.get('INSIGHT_ENGINE_BASE_URL')
+
+    if pulse_model and not updates.get('PULSE_LLM_MODEL_NAME'):
+        updates['PULSE_LLM_MODEL_NAME'] = pulse_model
+    if pulse_key and not updates.get('PULSE_LLM_API_KEY'):
+        updates['PULSE_LLM_API_KEY'] = pulse_key
+    if pulse_url and not updates.get('PULSE_LLM_BASE_URL'):
+        updates['PULSE_LLM_BASE_URL'] = pulse_url
 
     if not updates:
         return jsonify({'success': False, 'message': '没有可更新的配置项'}), 400

@@ -183,3 +183,10 @@ def chat_json(system: str, user: str, temperature: float = 0.2,
         # 一次自我修复：把原文交回模型要求只输出合法 JSON
         fixed = chat("你是 JSON 修复器。", f"把下面内容整理为合法 JSON，只输出 JSON：\n{text}", 0.0, meter)
         return parse_json(fixed)
+
+
+def reset_client():
+    global _client, _failover
+    with _client_lock:
+        _client = None
+        _failover = None
