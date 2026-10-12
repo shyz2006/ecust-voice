@@ -2377,7 +2377,7 @@ body.workspace-v2 {
 .source-post-link {color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .source-post-links {margin-top:16px;font-size:14px;line-height:1.8}
 [data-metric-help] {cursor:help}
-.metric-help-panel {position:fixed;z-index:150;right:20px;bottom:20px;width:min(440px,calc(100vw - 32px));max-height:65vh;overflow:auto;background:#fff;color:#202f29;border:1px solid #bbc8bc;padding:18px;box-shadow:0 12px 36px #172a2020;font-size:14px;line-height:1.8}
+.metric-help-panel {position:fixed;z-index:1100;right:20px;bottom:20px;width:min(440px,calc(100vw - 32px));max-height:65vh;overflow:auto;overscroll-behavior:contain;background:#fff;color:#202f29;border:1px solid #bbc8bc;padding:18px;box-shadow:0 12px 36px #172a2020;font-size:14px;line-height:1.8}
 .metric-help-panel[hidden] {display:none}
 .metric-help-head {display:flex;align-items:center;justify-content:space-between;gap:16px}
 .metric-help-head button {min-height:44px;padding:0 12px;border:1px solid #bbc8bc;background:#fff;color:#234c40;cursor:pointer}
@@ -3596,8 +3596,8 @@ async function viewCampusPosts(themeName) {
         <div class="post-item-header">
           <span>原帖 ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}</span>
           <div style="display:flex;gap:6px;">
-            <span class="badge ${emoClass}">${esc(p.emotion || '中立')}</span>
-            ${p.heat != null ? `<span class="badge blue">来源内热度 ${p.heat}/100</span>` : ''}
+            <button type="button" class="badge ${emoClass}" data-metric-help="这是对原帖文字表达的情绪标签，不代表发帖人的心理状态或诊断；需结合原帖语境核对。">${esc(p.emotion || '中立')}</button>
+            ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="这是当前展示样本中的同来源热度排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算；不是浏览量、百分比或跨论坛统一分数。">来源内热度 ${p.heat}/100</button>` : ''}
           </div>
         </div>
         <div class="post-item-content">${sourcePostLink(p.link, p.content || '打开原帖') || esc(p.content || '（未采集到正文）')}${!p.link ? '<small class="data-note">历史采集未保存原帖地址，无法直接跳转</small>' : ''}</div>
@@ -5127,6 +5127,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('keydown', function (e) {
+    if (document.querySelector('.metric-help-panel:not([hidden])')) return;
     var overlay = topOpenModal();
     if (!overlay) return;
     if (e.key === 'Escape') {
@@ -6248,6 +6249,7 @@ renderCampusPulse();
   const forecast='24/48/72h分别指统计更新时间之后第1/2/3个24小时窗。数值外推的是关注强度H。需最近3窗有效且样本足够；不同模型按历史滚动误差与持平参考比较。误差参考带不是概率置信区间。“—”表示缺测或不满足外推条件，不是0。';
   const selectors='.kpi-num,.reader-count,.reader-position,.reader-number,.reader-row-context,.badge,.observation-number strong,.account-metric strong,.dashboard-health b,.frequency-list b,.forum-post-head,.forum-evidence,.post-item-header,.reader-content .card-meta-row span,.red-stat,.red-themes,.evolution-cell,.evolution-topic,.evolution-table th,.stat-table td,.stat-table th,.reader-content .card-desc,.auto-report small,.timeline-chart text,.process-chart text,.process-chart [data-process-day],.day-metrics span,.process-milestones time,.process-milestones p,.outlook-column,.projection-strip,.forecast-validation,.data-note,.status-meta,#obsCoverage,#forumTotal,#redHotspots,#campusWordcloud span,.report-row .report-meta,.report-row .report-index,.crisis-alert-stats,.campus-evidence-summary';
   const panel=document.createElement('aside');panel.className='metric-help-panel';panel.hidden=true;panel.setAttribute('aria-label','数字说明');panel.innerHTML='<div class="metric-help-head"><strong>数字说明</strong><button type="button" aria-label="关闭数字说明">关闭</button></div><p class="metric-help-value"></p><p class="metric-help-definition" id="metric-help-definition"></p>';
+  panel.setAttribute('role','dialog');
   document.body.appendChild(panel);const close=panel.querySelector('button');close.setAttribute('aria-describedby','metric-help-definition');let origin=null, originDay=null;
   function definition(e){
     const authored=e.closest('[data-readable-definition]');
@@ -6280,6 +6282,7 @@ renderCampusPulse();
   }
   function annotate(){document.querySelectorAll(selectors).forEach(original=>{
     let e=original;
+    if(e.matches('button[data-metric-help]'))return;
     if(e.closest('.metric-help-panel')||(!/\d/.test(e.textContent)&&!e.matches('.evolution-cell,#campusWordcloud span')))return;
     if(e.querySelector('button,a')||e.matches('a,summary')||e.closest('.source-post-links'))return;
     if(e.matches('#campusWordcloud span')&&!e.dataset.wordCount)e.dataset.wordCount=e.title;
@@ -6294,9 +6297,10 @@ renderCampusPulse();
     if(!e.closest('button,summary')||e.matches('button'))e.setAttribute('aria-label',(e.dataset.originalLabel||(e.dataset.originalLabel=e.getAttribute('aria-label')||e.textContent.trim()))+'；查看数字含义');
   });}
   function show(e){origin=e;originDay=e.hasAttribute('data-evolution-day')?{theme:e.closest('[data-evolution-theme]')?.dataset.evolutionTheme,day:e.dataset.evolutionDay}:null;panel.querySelector('.metric-help-value').textContent=e.textContent.trim();panel.querySelector('.metric-help-definition').textContent=e.dataset.metricHelp;panel.hidden=false;close.focus();}
-  function dismiss(){panel.hidden=true;if(origin?.isConnected)origin.focus();else if(originDay){const b=[...document.querySelectorAll('[data-evolution-day]')].find(b=>b.dataset.evolutionDay===originDay.day&&b.closest('[data-evolution-theme]')?.dataset.evolutionTheme===originDay.theme);b?.focus();}}
+  function dismiss(){panel.hidden=true;const parentModal=origin?.closest('.modal-overlay');if(origin?.isConnected&&(!parentModal||parentModal.classList.contains('open')))origin.focus({preventScroll:true});else if(!parentModal&&originDay){const b=[...document.querySelectorAll('[data-evolution-day]')].find(b=>b.dataset.evolutionDay===originDay.day&&b.closest('[data-evolution-theme]')?.dataset.evolutionTheme===originDay.theme);b?.focus();}}
   document.addEventListener('click',e=>{const item=e.target.closest('[data-metric-help]');if(item)show(item);});
-  document.addEventListener('keydown',e=>{const item=e.target.closest('[data-metric-help]');if(item&&!item.matches('button,summary')&&['Enter',' '].includes(e.key)){e.preventDefault();show(item);}if(e.key==='Escape'&&!panel.hidden){dismiss();}});
+  document.addEventListener('keydown',e=>{if(!panel.hidden){if(e.key==='Escape'){e.preventDefault();dismiss();}else if(e.key==='Tab'){e.preventDefault();close.focus();}return;}const item=e.target.closest('[data-metric-help]');if(item&&!item.matches('button,summary')&&['Enter',' '].includes(e.key)){e.preventDefault();show(item);}});
+  document.querySelectorAll('.modal-overlay').forEach(overlay=>new MutationObserver(()=>{if(!overlay.classList.contains('open')&&origin?.closest('.modal-overlay')===overlay&&!panel.hidden)dismiss();}).observe(overlay,{attributes:true,attributeFilter:['class']}));
   close.onclick=dismiss;
   let queued=false;new MutationObserver(()=>{if(!queued){queued=true;requestAnimationFrame(()=>{queued=false;annotate();});}}).observe(document.querySelector('main'),{childList:true,subtree:true});annotate();
 })();
