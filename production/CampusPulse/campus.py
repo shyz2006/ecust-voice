@@ -5,9 +5,8 @@
 每条帖子只标注一次（按内容哈希缓存），看板只展示聚合结果：
 主题帖数、互动量、24 小时趋势、情绪分布、心理维度，以及去标识化的短摘要。
 
-危机信号（自伤自杀等）只计数、不展示原文，默认也不提供原帖链接 ——
-是否对个体帖子开展干预属于学校心理危机干预制度的范畴，需由学校确定流程后再开启
-（PULSE_SHOW_CRISIS_EXCERPTS=1 时显示去标识化摘要）。
+危机信号采用单独的统计与帖子列表，登录后可进入风险核查入口。
+普通主题视图保持原有筛选规则；风险标签供教师结合原帖复核。
 """
 
 import hashlib
@@ -206,20 +205,30 @@ def _confidence(n: int, observed_days: float) -> str:
     return "低"
 
 
-def summarize(now_ts: int, use_llm: bool, days: int = 7) -> Dict:
-    """聚合近 N 天本校公开社区帖子，返回“本校公开社区信号”看板数据。"""
+def _post_samples(now_ts: int, days: int) -> Dict[str, Dict]:
+    """统计与风险核查共用同一采集窗口和正文去重口径。"""
     rows = storage.recent_items([*SCHOOL_SOURCES, "huyou-national"], now_ts - days * 86400)
     posts: Dict[str, Dict] = {}
     for r in rows:
+        if r["batch_ts"] > now_ts:
+            continue
         ex = r["extra"] or {}
         content = ex.get("content") or r["title"]
         h = _hash(content)
         p = posts.setdefault(h, {"content": content, "scope": r["source"], "first_seen": r["batch_ts"],
                                  "exposure": 0, "comments": 0, "circle": ex.get("circle", ""),
-                                 "link": ex.get("link"), "published": ex.get("published")})
+                                 "link": ex.get("link") or r.get("url"), "published": ex.get("published")})
         p["exposure"] = max(p["exposure"], ex.get("exposure") or 0)
         p["comments"] = max(p["comments"], ex.get("comments") or 0)
         p["first_seen"] = min(p["first_seen"], ex.get("published") or r["batch_ts"])
+        if not p.get("link"):
+            p["link"] = ex.get("link") or r.get("url")
+    return posts
+
+
+def summarize(now_ts: int, use_llm: bool, days: int = 7) -> Dict:
+    """聚合近 N 天本校公开社区帖子，返回“本校公开社区信号”看板数据。"""
+    posts = _post_samples(now_ts, days)
     raw_school = [p for p in posts.values() if p["scope"] in SCHOOL_SOURCES]
     school = _dedupe(raw_school)
     national = _dedupe([p for p in posts.values() if p["scope"] == "huyou-national"])
@@ -311,6 +320,36 @@ def summarize(now_ts: int, use_llm: bool, days: int = 7) -> Dict:
         "crisis_excerpts_enabled": show_crisis,
         "content_risk": dict(content_risk),
     }
+
+
+def crisis_posts(level: str, now_ts: int, days: int = 7) -> Dict:
+    """风险核查入口的数据；调用方须先验证登录。读取缓存标注，不触发模型。"""
+    if level not in ("高危", "关注"):
+        raise ValueError("无效风险等级")
+    from .sources.huyou import mask_names
+
+    school = _dedupe([p for p in _post_samples(now_ts, days).values() if p["scope"] in SCHOOL_SOURCES])
+    out = []
+    for p in school:
+        blob = storage.kv_get(_PREFIX + _hash(p["content"]))
+        annotation = json.loads(blob) if blob else _rule(p["content"])
+        if annotation.get("crisis_level") != level:
+            continue
+        out.append({
+            "content": mask_names(p["content"]),
+            "gist": annotation.get("gist") or "",
+            "emotion": annotation.get("emotion"),
+            "psych_dimensions": annotation.get("psych_dimensions") or [],
+            "crisis_level": level,
+            "source": p["scope"],
+            "circle": p.get("circle", ""),
+            "published": p.get("published") or p["first_seen"],
+            "time_basis": "published" if p.get("published") else "first_observed",
+            "link": p.get("link"),
+            "annotator": annotation.get("annotator"),
+        })
+    out.sort(key=lambda p: -(p["published"] or 0))
+    return {"level": level, "posts": out, "total": len(out), "generated_at": now_ts, "days": days}
 
 
 def theme_posts(theme: str, now_ts: int, days: int = 7, limit: Optional[int] = None) -> Dict:

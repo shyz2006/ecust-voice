@@ -1,0 +1,30 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/crisis-post-review-20261012",
+  "base_image": "bettafish:base-crisis-post-review-20261012",
+  "base_image_id": "sha256:9358ee6364b979b871682caadddd3b54bce0e104b01325e0af0473d00d634f47",
+  "candidate_image": "bettafish:candidate-crisis-post-review-20261012",
+  "candidate_image_id": "sha256:22efaef8d1a8379bbdd04fd91c86526006681bd8046941ada25d84d1ce52770c",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "before_sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf",
+      "candidate_sha256": "c4cfc432a6cb703a1d9c91440de128b574872fbf4931d5572606b407b7e36c19"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "before_sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf",
+      "candidate_sha256": "c4cfc432a6cb703a1d9c91440de128b574872fbf4931d5572606b407b7e36c19"
+    },
+    {
+      "path": "CampusPulse/campus.py",
+      "before_sha256": "c699f1ba8c4d531f66fd91b74c81c8c634249b75212b79a18b1d873a9e09b814",
+      "candidate_sha256": "b415e00ac6453b9a7d5d46db2ac7813fbf0205bd316ab6836690c0ce750782c2"
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "before_sha256": "1b93a649f0dcb9b1c67ff0bac8e1dae208d354a566652bc33fba8e0424ceb49b",
+      "candidate_sha256": "3d09f28186e9af855c88b8feb42c2b74c9768f4a284131bff20c1fca9a2e91c0"
+    }
+  ],
+  "activated": true
+}

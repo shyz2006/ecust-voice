@@ -79,6 +79,26 @@ def api_campus_posts():
     return jsonify({"success": True, **campus.theme_posts(theme, int(time.time()))})
 
 
+@pulse_bp.route("/api/campus/crisis-posts")
+def api_campus_crisis_posts():
+    if session.get("authenticated") is not True:
+        response = jsonify({"success": False, "message": "请登录后查看关注帖子"})
+        response.headers["Cache-Control"] = "no-store"
+        return response, 401
+    level = str(request.args.get("level", "")).strip()
+    if level not in ("高危", "关注"):
+        return jsonify({"success": False, "message": "请选择高危或重点关注"}), 400
+    from . import campus
+
+    blob = storage.kv_get("campus_voice")
+    voice = json.loads(blob) if blob else {}
+    now = int(time.time())
+    snapshot = min(int(voice.get("generated_at") or now), now)
+    response = jsonify({"success": True, **campus.crisis_posts(level, snapshot)})
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @pulse_bp.route("/api/plans/<int:plan_id>/export")
 def export_activity_plan(plan_id: int):
     if plan_id not in (0, 1, 2):

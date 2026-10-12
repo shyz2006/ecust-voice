@@ -7,7 +7,7 @@ module.exports=async function checkCopyPolish(page,out){
   for(const width of [1440,390]){
     await page.setViewportSize({width,height:width===1440?1000:844});
     await details.evaluate(el=>el.open=false);
-    await details.locator('summary').click();
+    await details.locator('summary .evidence-sample').click();
     assert(await details.evaluate(el=>el.open));
     const styles=await details.evaluate(el=>({
       background:getComputedStyle(el).backgroundColor,
@@ -24,7 +24,7 @@ module.exports=async function checkCopyPolish(page,out){
     assert(styles.text.includes('采集覆盖等级'));
     assert.equal(styles.overflow,false,'Page should fit mobile viewport');
     await details.screenshot({path:path.join(out,`copy-polish-${width}.png`)});
-    await details.locator('summary').click();assert(!(await details.evaluate(el=>el.open)));
+    await details.locator('summary .evidence-sample').click();assert(!(await details.evaluate(el=>el.open)));
     results.push({width,background:styles.background,banner:styles.banner,horizontalOverflow:styles.overflow});
   }
   return results;

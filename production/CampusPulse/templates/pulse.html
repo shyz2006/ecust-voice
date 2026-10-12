@@ -2724,6 +2724,11 @@ body.workspace-v2.campus-shell {
 
 
 /* 采集摘要：沿用纸色与细分隔线，关注信号作为次级信息。 */
+.crisis-posts-link { font: inherit; color: inherit; border: 0; background: transparent; cursor: pointer; padding: 3px 5px; text-decoration: underline; text-underline-offset: 4px; }
+.crisis-posts-link:hover { background: #234c400b; }
+.crisis-posts-link:focus-visible { outline: 2px solid var(--ink-2); outline-offset: 3px; }
+.post-item-header > div { flex-wrap: wrap; }
+#btnForwardPostToStudio[hidden] { display: none; }
 .campus-cover-active .campus-evidence {
   background: transparent; border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line); margin: 0 0 22px;
@@ -2923,12 +2928,12 @@ body.workspace-v2.campus-shell {
     <!-- 隐私伦理与危机信号预警 -->
     <div class="crisis-alert-banner">
       <div class="crisis-alert-text">
-        社区关注信号：按公开论坛采集内容汇总，供教师复核与跟进。涉及危机的内容仅显示统计数量。
+        社区关注信号：点击数量查看对应帖子，结合原帖核查并跟进。
       </div>
       <div class="crisis-alert-stats">
         <span>近 7 天关注信号：</span>
-        <span class="crisis-stat high">高危 <b id="crisisHighCount">—</b> 条</span>
-        <span class="crisis-stat warn">重点关注 <b id="crisisWarnCount">—</b> 条</span>
+        <button type="button" class="crisis-stat high crisis-posts-link" onclick="viewCrisisPosts('高危',event)">高危 <b id="crisisHighCount">—</b> 条</button>
+        <button type="button" class="crisis-stat warn crisis-posts-link" onclick="viewCrisisPosts('关注',event)">重点关注 <b id="crisisWarnCount">—</b> 条</button>
       </div>
     </div>
 
@@ -3584,20 +3589,28 @@ function filterCampusTheme(target, btn) {
 
 /* 3. 查看原帖详情弹窗 */
 let postRequestVersion = 0;
-async function viewCampusPosts(themeName) {
+function viewCrisisPosts(level, event) {
+  if(event){event.preventDefault();event.stopPropagation();}
+  if(!['高危','关注'].includes(level)) return;
+  return viewCampusPosts(level==='高危'?'高危关注帖子':'重点关注帖子', {
+    crisis:true, level, url:`/pulse/api/campus/crisis-posts?level=${encodeURIComponent(level)}`
+  });
+}
+async function viewCampusPosts(themeName, options = {}) {
   const requestVersion = ++postRequestVersion;
   $('postModalTitle').textContent = `华理本校社区学生心声 · 【${themeName}】`;
   $('postModalBody').innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">正在加载采集原帖…</div>';
+  $('btnForwardPostToStudio').hidden = !!options.crisis;
   $('btnForwardPostToStudio').onclick = () => {
     closePostModal();
     forwardToStudio(`华理学生关于【${themeName}】的诉求调研与思想心理引导策略`);
   };
   $('postModal').classList.add('open');
 
-  const res = await api(`/pulse/api/campus/posts?theme=${encodeURIComponent(themeName)}`);
+  const res = await api(options.url || `/pulse/api/campus/posts?theme=${encodeURIComponent(themeName)}`);
   if (requestVersion !== postRequestVersion || !$('postModal').classList.contains('open')) return;
   if (!res || res.success === false || !Array.isArray(res.posts)) {
-    $('postModalBody').innerHTML = '<div class="empty-state" role="alert">原帖读取失败，请关闭后重新打开。</div>';
+    $('postModalBody').innerHTML = `<div class="empty-state" role="alert">${esc(res?.message || '原帖读取失败，请关闭后重新打开。')}</div>`;
     return;
   }
   const posts = res.posts;
@@ -3606,9 +3619,12 @@ async function viewCampusPosts(themeName) {
   const countText = Number.isFinite(total) && total > posts.length
     ? `已展示 ${posts.length} 条 · 共 ${total} 条，当前列表尚不完整。`
     : `已展示 ${posts.length} 条原帖`;
-  const postListSummary = `<p class="post-list-summary" role="status">${countText}<br>议题计数取自已完成分析；原帖按当前近7天窗口重新筛选、近似去重，数量可能不同。</p>`;
+  const scopeText = options.crisis
+    ? `近${res.days || 7}天关注帖子 · 截至${new Date(res.generated_at*1000).toLocaleString('zh-CN')}。风险标注供教师结合原帖复核。`
+    : '议题计数取自已完成分析；原帖按当前近7天窗口重新筛选、近似去重，数量可能不同。';
+  const postListSummary = `<p class="post-list-summary" role="status">${countText}<br>${esc(scopeText)}</p>`;
   if (posts.length === 0) {
-    $('postModalBody').innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">该议题下暂无可展示的采集原帖</div>';
+    $('postModalBody').innerHTML = postListSummary + '<div class="empty-state">当前窗口暂无对应帖子</div>';
     return;
   }
 
@@ -3620,8 +3636,9 @@ async function viewCampusPosts(themeName) {
     return `
       <div class="post-item-card">
         <div class="post-item-header">
-          <span>原帖 ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}</span>
+          <span>原帖 ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}${p.time_basis==='first_observed'?' · 首次采集':''}</span>
           <div style="display:flex;gap:6px;">
+            ${options.crisis ? `<button type="button" class="badge red" data-metric-help="风险标签来自采集文本的规则或模型标注，供教师核查与跟进。">${esc(p.crisis_level==='关注'?'重点关注':p.crisis_level)}</button>` : ''}
             <button type="button" class="badge ${emoClass}" data-metric-help="标签概括原帖文字表达的情绪，供阅读参考；请结合上下文核对。心理状态与诊断需要专业评估。">${esc(p.emotion || '中立')}</button>
             ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="热度为当前展示样本中同来源互动量的排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算，各来源分别排序。">来源内热度 ${p.heat}/100</button>` : ''}
           </div>
@@ -5515,7 +5532,15 @@ window.addEventListener('DOMContentLoaded', () => {
         var sample = metrics.querySelector('.kpi-num');
         count.textContent = '近7天样本 ' + (sample ? sample.textContent : '—') + ' · 公开论坛采集样本';
         var signals = safety && safety.querySelector('.crisis-alert-stats');
-        alerts.textContent = signals ? signals.textContent.replace(/\s+/g, ' ').trim() : '公开论坛采集样本';
+        if(signals){
+          alerts.replaceChildren(document.createTextNode('近7天关注信号：'));
+          [['高危','高危','crisisHighCount'],['关注','重点关注','crisisWarnCount']].forEach(function(item){
+            var button=node('button','crisis-posts-link');button.type='button';
+            button.textContent=item[1]+' '+($(item[2])?.textContent || '—')+' 条';
+            button.onclick=function(event){viewCrisisPosts(item[0],event);};
+            alerts.appendChild(button);
+          });
+        }else alerts.textContent='公开论坛采集样本';
       }
       new MutationObserver(syncEvidence).observe(metrics, {childList:true, subtree:true, characterData:true});
       if (safety) new MutationObserver(syncEvidence).observe(safety, {childList:true, subtree:true, characterData:true});
@@ -6301,7 +6326,7 @@ renderCampusPulse();
     if(/负向|负面|消极|%/.test(context))return '负向情绪百分比=已分析样本中被标为消极的帖子数÷该主题已分析帖子数×100%。来自现有情绪标注，统计范围为该主题的已分析帖子。';
     if(e.closest('.reader-count,.reader-position,.reader-number'))return '索引序号是当前排序中的位置；“当前 / 总数”表示已选议题位置和可见议题总数，用于定位当前议题。';
     if(e.closest('.stat-table')){const cell=e.closest('th,td'),cells=[...cell.parentElement.children],i=cells.indexOf(cell),table=e.closest('table');const label=table.querySelectorAll('thead tr:last-child th')[i]?.textContent||'';return '本列：'+label+'。'+(/速度|加速度/.test(label)?change:/预测|外推/.test(label)?forecast:/帖子|独立/.test(label)?'当前窗口内本主题的已采集独立帖子数量，按来源与帖子键去重，广告与危机原文不展示。':/Token/i.test(label)?'该统计日服务商实际返回的已记录Token用量；未知用量留空。':/失败/.test(label)?'该统计日未成功完成的模型请求次数。':/请求/.test(label)?'该统计日台账记录的实际模型请求次数。':'日期为北京时间的统计日；该列值按紧邻表头的单位阅读。');}
-    if(/高危|预警|重点关注/.test(context))return '所选采集与分析窗口中被风险标注为高危或关注的帖子条数，单位为标注帖子条数，供教师复核；危机内容采用汇总统计展示。';
+    if(/高危|预警|重点关注/.test(context))return '所选窗口中标为高危或重点关注的帖子条数，点击数量可查看对应原帖，供教师核查与跟进。';
     if(/日窗|批次|窗口|更新时间|最近|\d+\/\d+.*:/.test(context))return context.trim()+'。日窗为连续24小时，完整窗要求两个论坛都有有效覆盖；日期/时间以北京时间显示。采集批次代表一次轮询，缺少采集记录的时段保留空值。';
     if(/帖|讨论|样本|主题/.test(context))return '本处显示所标统计窗口的已采集帖子或议题数量，统计范围为已采集样本。十日趋势按来源及帖子键去重；七日原帖重新筛选并近似去重；主题索引计数来自已完成分析，口径可能不同。';
     return '当前项：'+own+'。此数字是本项显示的数量、顺序或时间，请结合紧邻标签阅读；原帖与报告正文中的数字按作者语境阅读。';
