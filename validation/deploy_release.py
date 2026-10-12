@@ -1,5 +1,5 @@
 """Activate a verified prepared release only when deployment is authorized."""
-import pathlib,subprocess,json
+import pathlib,subprocess,json,os
 repo=pathlib.Path(__file__).resolve().parent.parent
 script=r'''
 import pathlib,json,subprocess,hashlib,time,urllib.request,urllib.error,datetime
@@ -42,7 +42,7 @@ except Exception as exc:
 manifest.update(result);(stage/'release-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
 (stage/'deployment-result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
 print(json.dumps(result))
-'''
+'''.replace('workshop-question-entry-20261012-411d0c7',os.getenv('WORKSHOP_RELEASE_NAME','workshop-question-entry-20261012-411d0c7'))
 key=repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'
 result=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(key),'-o','BatchMode=yes','-o','ConnectTimeout=15','ubuntu@3.144.33.23','python3 -'],input=script.encode(),capture_output=True,timeout=230)
 if result.returncode:

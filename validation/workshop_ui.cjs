@@ -26,6 +26,7 @@ const server=http.createServer((req,res)=>{
     if(url.pathname==='/pulse/api/issues')data={success:true,items:[]};
     if(url.pathname==='/pulse/api/observatory/posts')data={success:true,posts:[],total:0,generated_at:Math.floor(Date.now()/1000)};
     if(url.pathname==='/pulse/api/analyses')data={success:true,items:[]};
+    if(url.pathname==='/pulse/api/campus/posts')data={success:true,total:20,posts:Array.from({length:20},(_,i)=>({source:'huyou-school',content:`原帖阅读测试 ${i+1}：`+'这是用于验证滚动布局的示例正文。'.repeat(12),gist:'验证滚动布局的示例，不代表学校真实事件。',emotion:'中立',psych_dimensions:[],published:1791763200,link:'https://example.com/post/'+i}))};
     if(url.pathname==='/pulse/api/analysis/1')data={success:true,query:'验证用样例（模拟结果）',result:{summary:'此内容仅验证结果展示，不代表模型验收。',id:1}};
     res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return;
   }
@@ -81,6 +82,30 @@ const server=http.createServer((req,res)=>{
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>heroGoStudio());
   await page.evaluate(()=>{document.querySelector('#studioTimeline').style.display='none';document.querySelector('#issueChooser').hidden=true;});
   await page.locator('#pane-studio').screenshot({path:path.join(out,'workshop-mobile.png')});
+  for(const width of [1440,390]){
+    await page.setViewportSize({width,height:width===1440?1000:844});
+    await page.evaluate(()=>viewCampusPosts('校园设施与管理'));
+    await page.locator('#postModalBody .post-item-card').first().waitFor();
+    await page.waitForTimeout(250);
+    assert.equal(await page.locator('#postModalBody .post-list-summary').evaluate(el=>getComputedStyle(el).position),'static');
+    assert.equal(await page.evaluate(()=>getComputedStyle(document.body).overflow),'hidden');
+    const backgroundY=await page.evaluate(()=>window.scrollY);
+    await page.locator('#postModalBody').evaluate(el=>el.scrollTop=480);
+    const bodyBox=await page.locator('#postModalBody').boundingBox();
+    const summaryBox=await page.locator('#postModalBody .post-list-summary').boundingBox();
+    assert(summaryBox.y+summaryBox.height<bodyBox.y,'Summary should scroll away without overlaying posts');
+    const headerBox=await page.locator('#postModal .modal-header').boundingBox(),footerBox=await page.locator('#postModal .modal-footer').boundingBox();
+    assert(headerBox.y>=0&&footerBox.y+footerBox.height<= (width===1440?1000:844)+1);
+    await page.locator('#postModalBody').hover();await page.mouse.wheel(0,400);await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(()=>window.scrollY),backgroundY);
+    assert(!(await page.locator('#postModalBody').textContent()).includes('脱敏'));
+    await page.locator('#postModal').screenshot({path:path.join(out,`post-modal-${width}.png`)});
+    await page.evaluate(()=>closePostModal());await page.waitForTimeout(50);
+    assert.notEqual(await page.evaluate(()=>document.body.style.overflow),'hidden');
+    await page.evaluate(()=>viewCampusPosts('校园设施与管理'));await page.locator('#postModalBody .post-item-card').first().waitFor();
+    assert.equal(await page.locator('#postModalBody').evaluate(el=>el.scrollTop),0);
+    await page.evaluate(()=>closePostModal());
+  }
   assert.equal(errors.length,0,JSON.stringify(errors));
   fs.writeFileSync(path.join(out,'ui-results.json'),JSON.stringify({passed:true,requests:submitted.length,scriptErrors:errors,mode:'mock API; no real model result'},null,2));
   console.log('PASS: visible entry, routing, validation, all thinking modes, 429, errors, expired jobs, unknown states, degraded/missing results, report viewing, source chooser, mobile; no script errors.');

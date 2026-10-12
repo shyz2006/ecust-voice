@@ -1,8 +1,10 @@
 """Prepare isolated image and rollback artifacts; do not activate production."""
-import pathlib,subprocess,base64,tarfile,io,json,hashlib
+import pathlib,subprocess,base64,tarfile,io,json,hashlib,os
 repo=pathlib.Path(__file__).resolve().parent.parent
-paths=['templates/index.html','CampusPulse/templates/pulse.html','CampusPulse/blueprint.py']
-original={x['path']:x['sha256'] for x in json.loads((repo/'SOURCE_MANIFEST.json').read_text(encoding='utf-8'))}
+paths=os.getenv('WORKSHOP_RELEASE_FILES','templates/index.html,CampusPulse/templates/pulse.html,CampusPulse/blueprint.py').split(',')
+baseline=json.loads((repo/os.getenv('WORKSHOP_RELEASE_BASELINE','SOURCE_MANIFEST.json')).read_text(encoding='utf-8-sig'))
+original={x['path']:x.get('candidate_sha256',x.get('sha256')) for x in (baseline['files'] if isinstance(baseline,dict) else baseline)}
+release_name=os.getenv('WORKSHOP_RELEASE_NAME','workshop-question-entry-20261012-411d0c7')
 manifest=[{'path':p,'before_sha256':original[p],'candidate_sha256':hashlib.sha256((repo/'production'/p).read_bytes()).hexdigest()} for p in paths]
 buffer=io.BytesIO()
 with tarfile.open(fileobj=buffer,mode='w:gz') as archive:
@@ -48,7 +50,7 @@ rollback+='sudo -n docker tag '+base+' bettafish:local\n'+compose
 (stage/'rollback.sh').write_text(rollback)
 assert docker('inspect','bettafish','--format','{{.Image}}').decode().strip()==image_id
 print(json.dumps(metadata))
-'''.replace('MANIFEST',repr(manifest)).replace('PAYLOAD',repr(base64.b64encode(buffer.getvalue()).decode()))
+'''.replace('workshop-question-entry-20261012-411d0c7',release_name).replace('workshop-base-20261012-411d0c7','base-'+release_name).replace('workshop-candidate-20261012-411d0c7','candidate-'+release_name).replace('MANIFEST',repr(manifest)).replace('PAYLOAD',repr(base64.b64encode(buffer.getvalue()).decode()))
 key=repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'
 result=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(key),'-o','BatchMode=yes','ubuntu@3.144.33.23','python3 -'],input=script.encode(),capture_output=True,timeout=120)
 if result.returncode:
