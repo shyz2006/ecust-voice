@@ -1,0 +1,9 @@
+{
+  "started_at_utc": "2026-10-12T00:46:35.545656+00:00",
+  "activated": true,
+  "image_id": "sha256:03caf672c8ebfbf7d35fac02eb1d1a15d6730b79520f172dd1c6f7d3d4d3b6b8",
+  "application_ready": true,
+  "database_unchanged": true,
+  "mounts_unchanged": true,
+  "verified_files": 3
+}

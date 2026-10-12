@@ -3021,9 +3021,12 @@ body.workspace-v2.campus-shell {
        ======================================================================== -->
   <div class="tab-pane" id="pane-studio">
     <div class="studio-box">
+      <div class="issue-heading"><h2>自由提问与研究</h2><button type="button" class="issue-action text" onclick="openIssueChooser()">根据原帖研究</button></div>
 <div class="studio-input-group research-composer" id="researchComposer">
   <label class="composer-label" for="studioQueryInput">研究议题</label>
-  <textarea class="studio-input" id="studioQueryInput" aria-label="研判议题" rows="3" maxlength="200" placeholder="描述你想了解的校园议题，或希望开展的育人活动…"></textarea>
+  <textarea class="studio-input" id="studioQueryInput" aria-label="研判议题" aria-describedby="studioInputHint" rows="3" maxlength="200" placeholder="直接输入校园问题，或描述希望开展的育人活动…"></textarea>
+  <p id="studioInputHint" class="composer-summary">问题最多 200 字；无需先选择原帖。Ctrl / ⌘ + Enter 提交。</p>
+  <p id="studioInputError" class="issue-notice error" role="alert" hidden></p>
   <div class="composer-toolbar">
     <div class="composer-controls">
       <label class="composer-purpose"><span class="sr-only">生成内容</span><select id="workshopPurpose" aria-label="生成内容"><option value="event_brief">专题研报</option><option value="activity_design">活动方案</option></select></label>
@@ -3798,6 +3801,7 @@ function formatTimer(sec) {
 
 function fillStudio(text) {
   $('studioQueryInput').value = text;
+  $('studioInputError').hidden = true;
 }
 function forwardToStudio(text) {
   fillStudio(text);
@@ -3821,6 +3825,12 @@ const STUDIO_AGENTS = {
   Reviser: ['修', '修订者', '补充检索与修订', 'editor', 4],
 };
 let studioPolling = null;
+async function studioRequest(url, opts = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try { return await api(url, {...opts, signal: controller.signal}); }
+  finally { clearTimeout(timeout); }
+}
 
 function studioStepDetail(s) {
   const bits = [];
@@ -3850,7 +3860,14 @@ function studioStopTimer() {
 
 async function launchStudioAnalysis() {
   const q = $('studioQueryInput').value.trim();
-  if (!q) { alert('请输入要研判的议题名称'); return; }
+  const inputError = $('studioInputError');
+  if (!q || q.length > 200) {
+    inputError.textContent = !q ? '请输入想了解的问题。' : '问题超过 200 字，请缩短后再提交；内容未被截断。';
+    inputError.hidden = false;
+    $('studioQueryInput').focus();
+    return;
+  }
+  inputError.hidden = true;
   const launchBtn = $('btnLaunchStudio');
   if (launchBtn && launchBtn.disabled) return;
   if (launchBtn) {
@@ -3879,7 +3896,7 @@ async function launchStudioAnalysis() {
   studioSetStep(1);
   if (studioPolling) { clearInterval(studioPolling); studioPolling = null; }
 
-  const query = q.slice(0, 200);
+  const query = q;
   const options = readComposerOptions();
   const workflow = {quick:'lean',standard:'lean_verified',deep:'central_verified'}[options.thinking_effort];
   closeComposerMenus(false);
@@ -3908,13 +3925,12 @@ async function launchStudioAnalysis() {
 
   let started;
   try {
-    const res = await fetch('/pulse/api/analyze', {
+    started = await studioRequest('/pulse/api/analyze', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, intent: $('workshopPurpose').value, workflow, analysis_options: options }),
     });
-    started = await res.json().catch(() => null);
-    if (!res.ok || !started || !started.success) {
-      fail((started && started.message) || `提交失败（HTTP ${res.status}）`);
+    if (!started || !started.success || typeof started.job_id !== 'string' || !started.job_id) {
+      fail((started && started.message) || '提交失败或请求超时，请稍后重试。输入已保留。');
       return;
     }
   } catch (e) {
@@ -3925,12 +3941,16 @@ async function launchStudioAnalysis() {
   const jobId = started.job_id;
   let shown = 0;
   let misses = 0;
+  let pollingBusy = false;
   logBox.textContent += `[${new Date().toLocaleTimeString('zh-CN')}] 任务已受理，编号 ${jobId}，智能体开始工作（通常 1~3 分钟）\n`;
 
   const poll = async () => {
-    const j = await api(`/pulse/api/job/${jobId}`);
+    if (pollingBusy) return;
+    pollingBusy = true;
+    try {
+    const j = await studioRequest(`/pulse/api/job/${jobId}`);
     if (!j || !j.success) {
-      if (++misses >= 5) fail((j && j.message) || '无法获取任务进度（任务可能已过期），请重新发起');
+      if (j?.status === 401 || j?.status === 403 || j?.status === 404 || ++misses >= 5) fail((j && j.message) || '无法获取任务进度，请稍后查看历史研报确认结果。输入已保留。');
       return;
     }
     misses = 0;
@@ -3952,14 +3972,17 @@ async function launchStudioAnalysis() {
       $('timelinePercent').textContent = `进行中（已完成 ${trace.length} 步）`;
       return;
     }
+    if (j.status !== 'done' && j.status !== 'error') { fail('任务返回了无法识别的状态，请稍后查看历史研报。'); return; }
     clearInterval(studioPolling); studioPolling = null;
     studioStopTimer();
     releaseLaunch();
     if (j.status === 'error') { fail(`分析失败：${j.error || '未知错误'}`); return; }
     const p = j.result || {};
+    if (p.degraded || !p.id) { fail('模型未返回可阅读的报告，请稍后重试。输入已保留。'); return; }
     const v = p.verdict || {};
     for (let i = 1; i <= 4; i++) $('step' + i).className = 'step-item done';
     $('timelinePercent').textContent = '已完成 (100%)';
+    $('timelineTitle').textContent = `已完成：【${q}】`;
     const status = p.status === 'draft' ? '待人工复核草稿（未通过中心验证）' : p.degraded ? '降级结果（模型服务异常）' : 'AI 验证稿';
     updateThinkingStatus('研判完成', `${status}${v.score !== undefined ? ' · 验证得分 ' + v.score : ''}`);
     logBox.textContent += `[${new Date().toLocaleTimeString('zh-CN')}] 完成：${status}，报告编号 #${p.id ?? '—'}\n`;
@@ -3968,6 +3991,9 @@ async function launchStudioAnalysis() {
       $('btnOpenGeneratedReport').onclick = () => viewAnalysisDetail(p.id);
     }
     loadStudioReports();
+    } catch (error) {
+      fail('读取任务进度失败，请稍后查看历史研报。输入已保留。');
+    } finally { pollingBusy = false; }
   };
   studioPolling = setInterval(poll, 2500);
   poll();
@@ -6499,16 +6525,14 @@ workHost.innerHTML=`<div class="issue-heading"><h2>核查与跟进</h2><button t
 </div><p class="issue-notice" role="status" id="issueNotice"></p>
 <div id="issueDetail" hidden></div>
 <div class="issue-heading"><h2>议题跟进记录</h2><div class="issue-actions"><label class="sr-only" for="issueListState">筛选跟进状态</label><select id="issueListState"><option value="">全部状态</option>${Object.entries(ISSUE_STATES).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select><button type="button" class="issue-action text" id="issueRefresh">刷新记录</button></div></div><div id="issueList" aria-live="polite"></div>`;
-$('pane-studio').prepend(workHost);
-// Existing full research and activity generation remain available as advanced tools.
-const fullTools=document.createElement('details');fullTools.className='issue-full-tools';fullTools.innerHTML='<summary>自由研究与活动方案</summary>';
-const oldStudioBox=$('pane-studio').querySelector('.studio-box');oldStudioBox.before(fullTools);fullTools.append(oldStudioBox);
+// Both workflows remain directly accessible; free questions are the first section.
+const oldStudioBox=$('pane-studio').querySelector('.studio-box');oldStudioBox.after(workHost);
 const issueArchive=document.createElement('details');issueArchive.className='issue-full-tools';issueArchive.innerHTML='<summary>历史完整研报与定时报告</summary>';
 const oldReportList=$('studioReportList'),oldReportHeading=oldReportList.previousElementSibling,oldAutomatic=document.querySelector('#pane-studio .auto-section');
 oldReportHeading.before(issueArchive);issueArchive.append(oldReportHeading,oldReportList);if(oldAutomatic)issueArchive.append(oldAutomatic);
-window.heroGoStudio=()=>openIssueChooser();
+window.heroGoStudio=()=>{switchTab('studio');$('studioQueryInput').scrollIntoView({block:'center',behavior:'auto'});$('studioQueryInput').focus({preventScroll:true});};
 window.heroGoReports=()=>{switchTab('studio');issueArchive.open=true;issueArchive.scrollIntoView({block:'start',behavior:'instant'});};
-const oldHeroStudio=document.querySelector('[onclick="heroGoStudio()"]');if(oldHeroStudio)oldHeroStudio.textContent='建立核查议题';
+const oldHeroStudio=document.querySelector('[onclick="heroGoStudio()"]');if(oldHeroStudio)oldHeroStudio.textContent='提问与研究';
 const fullReportChoice=document.querySelector('#workshopPurpose option[value="event_brief"]');if(fullReportChoice)fullReportChoice.textContent='完整专题研报';
 function issueNotice(text,error=false){$('issueNotice').textContent=text;$('issueNotice').classList.toggle('error',error);}
 async function issueRequest(path,method='GET',body){
@@ -6646,9 +6670,9 @@ $('issueHideChooser').onclick=()=>{$('issueChooser').hidden=true;$('issueDetail'
 // Source-reading actions now reach the same evidence browser instead of discarding context.
 viewObservedPosts=function(params,title){openIssueChooser(params,title||params.theme||'校园讨论核查');};
 const issueForwardBase=forwardToStudio;
-forwardToStudio=function(text){const theme=(OBS.data?.themes||[]).find(t=>text.includes(t.theme))?.theme;
-  if(!theme&&!/本校|华理|华东理工|校园/.test(text)){fullTools.open=true;issueForwardBase(text);return;}
-  openIssueChooser(theme?{theme}: {},text);fillStudio(text);
+forwardToStudio=function(text){
+  issueForwardBase(text);
+  $('studioQueryInput').focus({preventScroll:true});
 };
 const issueSwitchBase=switchTab;
 switchTab=function(name){issueSwitchBase(name);if(name==='studio')issueLoadList();};
