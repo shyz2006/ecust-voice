@@ -26,10 +26,28 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
  await page.evaluate(()=>forwardToStudio('华理校园食堂晚间服务核查建议'));
  assert.equal(await page.locator('#studioQueryInput').inputValue(),'华理校园食堂晚间服务核查建议');
  assert.equal(errors.length,0,JSON.stringify(errors));
+  let modalPosts=0;
+  for(const width of [1440,390]){
+   await page.setViewportSize({width,height:width===1440?1000:844});
+   await page.evaluate(()=>viewCampusPosts('校园设施与管理'));
+   await page.locator('#postModalBody .post-item-card').first().waitFor();await page.waitForTimeout(250);
+   modalPosts=await page.locator('#postModalBody .post-item-card').count();
+   assert.equal(await page.locator('#postModalBody .post-list-summary').evaluate(e=>getComputedStyle(e).position),'static');
+   assert.equal(await page.evaluate(()=>document.body.style.overflow),'hidden');
+   const background=await page.evaluate(()=>window.scrollY);
+   await page.locator('#postModalBody').evaluate(e=>e.scrollTop=600);
+   const bodyBox=await page.locator('#postModalBody').boundingBox(),summaryBox=await page.locator('#postModalBody .post-list-summary').boundingBox();
+   assert(summaryBox.y+summaryBox.height<bodyBox.y);
+   await page.locator('#postModalBody').hover();await page.mouse.wheel(0,300);await page.waitForTimeout(100);
+   assert.equal(await page.evaluate(()=>window.scrollY),background);
+   assert(!(await page.locator('#postModalBody').textContent()).includes('脱敏'));
+   await page.evaluate(()=>closePostModal());await page.waitForTimeout(50);
+   assert.notEqual(await page.evaluate(()=>document.body.style.overflow),'hidden');
+  }
  // Public Cloudflare/TLS route: verify login page without accessing credentials.
  const response=await browser.newContext().then(c=>c.request.get('https://smydashuaige.2026515.xyz/login'));
  assert.equal(response.status(),200);assert((await response.text()).includes('password'));
- const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,script_errors:errors,production_writes:false};
+ const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,post_modal_scroll:true,post_modal_posts:modalPosts,script_errors:errors,production_writes:false};
  fs.writeFileSync(path.join(out,'live-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
