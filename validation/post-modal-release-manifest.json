@@ -1,0 +1,20 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/post-modal-scroll-20261012",
+  "base_image": "bettafish:base-post-modal-scroll-20261012",
+  "base_image_id": "sha256:03caf672c8ebfbf7d35fac02eb1d1a15d6730b79520f172dd1c6f7d3d4d3b6b8",
+  "candidate_image": "bettafish:candidate-post-modal-scroll-20261012",
+  "candidate_image_id": "sha256:6531417e0435fb67fdf757e21e637114cd8951e2ea4e87b05771d8c6534654b7",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "before_sha256": "c040e1d391545a32f45e48c998d3b771e155cda6439952f56aa60320df543d61",
+      "candidate_sha256": "60931ccda6d355d56ed52fa9464848a507dd3708ba5537adb88f5cc869305e33"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "before_sha256": "c040e1d391545a32f45e48c998d3b771e155cda6439952f56aa60320df543d61",
+      "candidate_sha256": "60931ccda6d355d56ed52fa9464848a507dd3708ba5537adb88f5cc869305e33"
+    }
+  ],
+  "activated": true
+}
