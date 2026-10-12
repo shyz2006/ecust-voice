@@ -273,9 +273,14 @@ def api_analyze():
         options = analysis_options.normalize(body.get('analysis_options'))
     except ValueError as exc:
         return jsonify(success=False, message=str(exc)), 400
-    query = str(body.get("query", "")).strip()[:200]
+    query = body.get("query", "")
+    if not isinstance(query, str):
+        return jsonify(success=False, message='问题必须是文字'), 400
+    query = query.strip()
     if not query:
         return jsonify({"success": False, "message": "请输入问题"}), 400
+    if len(query) > 200:
+        return jsonify(success=False, message='问题最多 200 字，请缩短后再提交'), 400
     with _jobs_lock:
         running = sum(1 for j in _jobs.values() if j["status"] == "running")
         if running >= _MAX_CONCURRENT:
