@@ -1,0 +1,122 @@
+{
+  "image_id": "sha256:f9104222bf04803a7fefdbca496b4e9d40c465c46fa52b22f6560962dce5e417",
+  "created": "2026-10-11T13:04:49.526847139Z",
+  "started_at": "2026-10-11T13:05:00.092890532Z",
+  "working_dir": "/app",
+  "mounts": [
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/.env",
+      "Destination": "/app/.env",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/data",
+      "Destination": "/app/data",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/final_reports",
+      "Destination": "/app/final_reports",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/insight_engine_streamlit_reports",
+      "Destination": "/app/insight_engine_streamlit_reports",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/logs",
+      "Destination": "/app/logs",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/media_engine_streamlit_reports",
+      "Destination": "/app/media_engine_streamlit_reports",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/query_engine_streamlit_reports",
+      "Destination": "/app/query_engine_streamlit_reports",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/home/ubuntu/bettafish/runtime",
+      "Destination": "/app/runtime",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ],
+  "captured_at_utc": "2026-10-12T00:26:04.068312+00:00",
+  "source": "running container bettafish:/app",
+  "host_source": "/home/ubuntu/bettafish",
+  "host_identical_files": 99,
+  "host_differences": [
+    {
+      "path": "docker-compose.override.yml",
+      "status": "host_only"
+    },
+    {
+      "path": "docker-compose.yml",
+      "status": "different"
+    },
+    {
+      "path": "Dockerfile.local",
+      "status": "host_only"
+    },
+    {
+      "path": "QueryEngine/agent.py.backup_20260923_1317",
+      "status": "host_only"
+    },
+    {
+      "path": "QueryEngine/utils/config.py.backup_20260923_1317",
+      "status": "host_only"
+    },
+    {
+      "path": "SingleEngineApp/query_engine_streamlit_app.py.backup_20260923_1317",
+      "status": "host_only"
+    },
+    {
+      "path": "SingleEngineApp/research_worker.py.backup_20260923_1317",
+      "status": "host_only"
+    },
+    {
+      "path": "templates/index.html.backup_20260923_1258",
+      "status": "host_only"
+    },
+    {
+      "path": "templates/index.html.backup_before_nav_upgrade_",
+      "status": "host_only"
+    },
+    {
+      "path": "templates/index.html.bak_nav",
+      "status": "host_only"
+    },
+    {
+      "path": "templates/index.html.before_massive_revamp",
+      "status": "host_only"
+    }
+  ]
+}
