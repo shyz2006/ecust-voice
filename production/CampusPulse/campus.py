@@ -358,7 +358,7 @@ def theme_posts(theme: str, now_ts: int, days: int = 7, limit: Optional[int] = N
             "comments": ex.get("comments") or 0,
             "exposure": ex.get("exposure") or 0,
             "published": ex.get("published") or r["batch_ts"],
-            "link": ex.get("link"),
+            "link": ex.get("link") or r.get("url"),
             "annotator": a.get("annotator"),
         })
     for o in out:

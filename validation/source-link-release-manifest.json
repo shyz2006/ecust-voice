@@ -1,0 +1,15 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/campus-post-source-links-20261012",
+  "base_image": "bettafish:base-campus-post-source-links-20261012",
+  "base_image_id": "sha256:6531417e0435fb67fdf757e21e637114cd8951e2ea4e87b05771d8c6534654b7",
+  "candidate_image": "bettafish:candidate-campus-post-source-links-20261012",
+  "candidate_image_id": "sha256:73db71ddbe949883aa90e30f804db518f05bd220feff7c0495b16e6c09fe7ab4",
+  "files": [
+    {
+      "path": "CampusPulse/campus.py",
+      "before_sha256": "2011b57029b9b8376e1a4d03d5076f6d548715432aa4afb3ced91c3c187de0a3",
+      "candidate_sha256": "c699f1ba8c4d531f66fd91b74c81c8c634249b75212b79a18b1d873a9e09b814"
+    }
+  ],
+  "activated": false
+}
