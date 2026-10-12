@@ -32,6 +32,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
    await page.evaluate(()=>viewCampusPosts('校园设施与管理'));
    await page.locator('#postModalBody .post-item-card').first().waitFor();await page.waitForTimeout(250);
    modalPosts=await page.locator('#postModalBody .post-item-card').count();
+   assert.equal(await page.locator('#postModalBody .post-item-content a').count(),modalPosts);
    assert.equal(await page.locator('#postModalBody .post-list-summary').evaluate(e=>getComputedStyle(e).position),'static');
    assert.equal(await page.evaluate(()=>document.body.style.overflow),'hidden');
    const background=await page.evaluate(()=>window.scrollY);
@@ -44,10 +45,19 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
    await page.evaluate(()=>closePostModal());await page.waitForTimeout(50);
    assert.notEqual(await page.evaluate(()=>document.body.style.overflow),'hidden');
   }
+  await page.evaluate(()=>viewCampusPosts('考试考证'));
+  await page.locator('#postModalBody .post-item-card').first().waitFor();
+  const examPosts=await page.locator('#postModalBody .post-item-card').count();
+  const examLinks=await page.locator('#postModalBody .post-item-content a').count();
+  assert.equal(examLinks,examPosts);
+  assert.equal(await page.locator('#postModalBody').getByText('历史采集未保存原帖地址，无法直接跳转',{exact:true}).count(),0);
+  const anchors=await page.locator('#postModalBody .post-item-content a').evaluateAll(els=>els.map(e=>({hostname:new URL(e.href).hostname,target:e.target,rel:e.rel})));
+  assert(anchors.every(a=>['hy.sns.sohu.com','tieba.baidu.com'].includes(a.hostname)&&a.target==='_blank'&&a.rel.includes('noopener')));
+  await page.evaluate(()=>closePostModal());
  // Public Cloudflare/TLS route: verify login page without accessing credentials.
  const response=await browser.newContext().then(c=>c.request.get('https://smydashuaige.2026515.xyz/login'));
  assert.equal(response.status(),200);assert((await response.text()).includes('password'));
- const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,post_modal_scroll:true,post_modal_posts:modalPosts,script_errors:errors,production_writes:false};
+ const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,post_modal_scroll:true,post_modal_posts:modalPosts,exam_posts:examPosts,exam_links:examLinks,script_errors:errors,production_writes:false};
  fs.writeFileSync(path.join(out,'live-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

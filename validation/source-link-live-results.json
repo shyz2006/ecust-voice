@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "live_page": "via authenticated SSH tunnel to running application",
+  "public_login_http_status": 200,
+  "question_visible": true,
+  "source_chooser": true,
+  "post_modal_scroll": true,
+  "post_modal_posts": 173,
+  "exam_posts": 73,
+  "exam_links": 73,
+  "script_errors": [],
+  "production_writes": false
+}
