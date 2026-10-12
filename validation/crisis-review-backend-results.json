@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "fixture_checks": [
+    "unauthenticated 401",
+    "invalid level 400",
+    "no-store",
+    "separate levels",
+    "same summary counts",
+    "duplicate polls merged",
+    "national excluded",
+    "snapshot end enforced",
+    "source URL fallback",
+    "first observed time",
+    "ordinary themes retain filtering",
+    "no model calls"
+  ],
+  "stored_data": {
+    "高危": {
+      "posts": 1,
+      "linked": 1,
+      "matches_summary": true
+    },
+    "关注": {
+      "posts": 43,
+      "linked": 43,
+      "matches_summary": true
+    }
+  },
+  "production_writes": false
+}
