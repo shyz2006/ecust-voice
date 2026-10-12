@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "live_page": "via authenticated SSH tunnel to running application",
+  "public_login_http_status": 200,
+  "question_visible": true,
+  "source_chooser": true,
+  "metric_help_above_modal": true,
+  "help_keyboard_and_escape": true,
+  "post_modal_scroll": true,
+  "post_modal_posts": 174,
+  "exam_posts": 73,
+  "exam_links": 73,
+  "script_errors": [],
+  "production_writes": false,
+  "copy_polish": {
+    "desktop_mobile": [
+      1440,
+      390
+    ],
+    "evidence_background": "transparent",
+    "signal_background": "rgb(233, 237, 228)",
+    "horizontal_overflow": false,
+    "expand_collapse": true
+  }
+}
