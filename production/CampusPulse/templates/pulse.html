@@ -1055,7 +1055,7 @@ main.portal-body {
   gap: 18px;
 }
 .agent-chat-container:empty::before {
-  content: "智能体发言将在这里依次出现";
+  content: "研究记录将在这里依次显示";
   color: var(--ink-muted);
   font-size: 13px;
   text-align: center;
@@ -2722,6 +2722,32 @@ body.workspace-v2.campus-shell {
 .activity-detail-counts strong { display:block; color:#234c40; font-size:24px; font-weight:500; margin-top:5px; }
 .activity-chart { min-width:760px; }
 
+
+/* 采集摘要：沿用纸色与细分隔线，关注信号作为次级信息。 */
+.campus-cover-active .campus-evidence {
+  background: transparent; border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line); margin: 0 0 22px;
+}
+.campus-cover-active .campus-evidence-summary { padding: 14px 0; color: var(--ink-2); }
+.campus-cover-active .campus-evidence-summary .evidence-alerts { color: #8e5948; }
+.campus-cover-active .campus-evidence[open] .campus-evidence-summary { margin-bottom: 0; }
+.campus-cover-active .campus-evidence .kpi-grid { background: transparent; padding: 8px 0 0; margin: 0; border: 0; }
+.campus-cover-active .campus-evidence .kpi-card { background: transparent; padding: 14px 18px; border-color: var(--line); }
+.campus-cover-active .campus-evidence .kpi-card:first-child { padding-left: 0; }
+.campus-cover-active .campus-evidence .kpi-num { color: var(--ink); font-size: 26px; }
+.campus-cover-active .campus-evidence .kpi-hint { border-color: var(--line); }
+.campus-cover-active .campus-evidence .crisis-alert-banner {
+  background: #e9ede4; border-top: 1px solid var(--line); padding: 12px 16px;
+  margin: 8px 0 14px; gap: 12px;
+}
+.campus-cover-active .campus-evidence .crisis-alert-text { color: var(--ink-2); }
+.campus-cover-active .campus-evidence .crisis-alert-stats { color: #8e5948; }
+@media (max-width: 640px) {
+  .campus-cover-active .campus-evidence .kpi-card { padding: 12px; }
+  .campus-cover-active .campus-evidence .kpi-card:nth-child(odd) { padding-left: 0; }
+  .campus-cover-active .campus-evidence .crisis-alert-banner { padding: 12px; }
+}
+
 </style>
 <style id="issue-workbench-style">
 /* The teacher's working surface shares the campus cover's paper, ink and rhythm. */
@@ -2878,7 +2904,7 @@ body.workspace-v2.campus-shell {
   <div class="status-banner">
     <div class="status-pills">
       <span class="pill-item"><span class="pill-dot"></span> 平台服务正常</span>
-      <span class="pill-item"><span class="pill-dot blue"></span> LLM 智能体连接就绪</span>
+      <span class="pill-item"><span class="pill-dot blue"></span> 研究服务已连接</span>
       <span class="pill-item"><span class="pill-dot blue"></span> 搜索工具就绪 (BochaAPI)</span>
       <span class="pill-item pill-muted" id="statusLastSync" role="status" aria-live="polite">最近分析: 同步中…</span>
     </div>
@@ -2892,15 +2918,15 @@ body.workspace-v2.campus-shell {
   <!-- ========================================================================
        TAB 1: 华理心声 · 本校社区 (Campus Voice)
        ======================================================================== -->
-  <div class="tab-pane active" id="pane-campus"><section class="red-editorial" aria-labelledby="redTitle"><div class="red-editorial-intro"><p class="section-kicker">价值引领 / 青年使命</p><h2 id="redTitle">红色育人观察</h2><p>坚持立德树人，凝聚青年力量。把理论学习、家国情怀与校园实践，连接到学生真实的关注与表达。</p></div>
+  <div class="tab-pane active" id="pane-campus"><section class="red-editorial" aria-labelledby="redTitle"><div class="red-editorial-intro"><p class="section-kicker">价值引领 / 青年使命</p><h2 id="redTitle">红色育人观察</h2><p>查看理论学习、校园实践与青年议题的相关讨论。</p></div>
 <div class="red-editorial-body" id="redHotspots" aria-live="polite">正在核对党建、思政与校园育人相关讨论…</div></section>
     <!-- 隐私伦理与危机信号预警 -->
     <div class="crisis-alert-banner">
       <div class="crisis-alert-text">
-        华理学生社区安全态势提示：基于公开论坛采集内容；危机信号只计数，不公开展出原帖。
+        社区关注信号：按公开论坛采集内容汇总，供教师复核与跟进。涉及危机的内容仅显示统计数量。
       </div>
       <div class="crisis-alert-stats">
-        <span>近 7 天预警信号：</span>
+        <span>近 7 天关注信号：</span>
         <span class="crisis-stat high">高危 <b id="crisisHighCount">—</b> 条</span>
         <span class="crisis-stat warn">重点关注 <b id="crisisWarnCount">—</b> 条</span>
       </div>
@@ -2910,22 +2936,22 @@ body.workspace-v2.campus-shell {
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-num" id="campusSampleCount">—</div>
-        <div class="kpi-label">近 7 天有效校本样本</div>
+        <div class="kpi-label">近 7 天校内帖子样本</div>
         <div class="kpi-hint"><span id="campusSourceCounts">正在统计论坛来源…</span></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-num orange" id="campusFilteredAds">—</div>
-        <div class="kpi-label">已过滤垃圾/广告帖</div>
-        <div class="kpi-hint">保证分析语料纯净真实</div>
+        <div class="kpi-label">已过滤广告与灌水帖</div>
+        <div class="kpi-hint">按采集规则过滤后统计</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-num purple" id="campusNationalCount">—</div>
-        <div class="kpi-label">全国高校平行参照</div>
-        <div class="kpi-hint">识别华理学生特有关注偏好</div>
+        <div class="kpi-label">其他高校参照样本</div>
+        <div class="kpi-hint">用于对照校内讨论</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-num green" id="campusConfidence">—</div>
-        <div class="kpi-label">样本置信度等级</div>
+        <div class="kpi-label">采集覆盖等级</div>
         <div class="kpi-hint"><span id="campusObservedDays">正在核对观察范围…</span></div>
       </div>
     </div>
@@ -2956,7 +2982,7 @@ body.workspace-v2.campus-shell {
 
   <div class="tab-pane" id="pane-trends">
     <div class="observatory-lead"><p class="section-kicker">CAMPUS / 10 DAYS</p>
-      <h2>校园议题，如何升温。</h2><p id="obsCoverage" class="data-note" role="status">正在读取真实论坛快照…</p></div>
+      <h2>校园议题，如何升温。</h2><p id="obsCoverage" class="data-note" role="status">正在读取论坛记录…</p></div>
     <div id="obsNumbers" class="observation-numbers" aria-live="polite"></div>
     <section class="outlook-overview" aria-label="校内整体与分类预测"><div id="campusOutlook"></div></section>
     <section class="stat-section evolution-section"><div class="stat-heading"><h3>议题趋势 · 对照阅读</h3><span id="evolutionScope">逐主题独立计算，包含升温、回落与暂不预测</span></div>
@@ -2970,8 +2996,8 @@ body.workspace-v2.campus-shell {
     </section>
     <section class="stat-section"><div class="stat-heading"><h3>十日热点词云</h3><span>字号表示出现该词的独立帖数</span></div>
       <div class="stat-tools"><label>论坛 <select id="cloudSource" onchange="renderWordcloud()"><option value="all">双论坛合并</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label></div>
-      <div id="campusWordcloud" class="campus-wordcloud" role="img" aria-label="真实采集热点词云"></div>
-      <details class="method-note"><summary>查看词频与计算口径</summary><div id="cloudFrequency"></div><p>每帖每词最多记1次。中文分词、去停用词和姓名后统计；仅覆盖采集到的公开列表，不能代表全校兴趣。</p></details>
+      <div id="campusWordcloud" class="campus-wordcloud" role="img" aria-label="采集样本词云"></div>
+      <details class="method-note"><summary>查看词频与计算口径</summary><div id="cloudFrequency"></div><p>每帖每词最多记1次。中文分词、去停用词和姓名后统计；统计范围为已采集的公开帖子。</p></details>
     </section>
     <section class="stat-section"><div class="stat-heading"><h3>双论坛热帖</h3></div>
       <div class="stat-tools"><label>来源 <select id="forumSource" onchange="loadForumPosts()"><option value="all">双论坛</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label>
@@ -3004,10 +3030,10 @@ body.workspace-v2.campus-shell {
   <div class="tab-pane" id="pane-memes">
     <div class="info-panel">
       <h3>
-        青年流行语的真实传播
+        青年流行语观察
       </h3>
       <p>
-        从双论坛采集正文统计独立帖频次、来源分布熵和增长。排序由公式计算，统计候选需人工核实，不直接判定学生心理。
+        从双论坛采集正文统计独立帖频次、来源分布熵和增长。按统计结果排序，由人工核对词语含义与使用语境。
       </p>
     </div>
 
@@ -3049,7 +3075,7 @@ body.workspace-v2.campus-shell {
           <p class="composer-menu-heading">分析任务</p>
           <label for="selectPsychLens">研究重点</label><select id="selectPsychLens" onchange="updateComposerSettings()"><option value="auto">按议题选择重点</option><option value="needs">诉求与服务问题</option><option value="stress">学习压力与支持资源</option><option value="conflict">关系冲突与沟通</option><option value="participation">活动参与与阻碍</option></select>
           <label for="selectIdeology">交付要求</label><select id="selectIdeology" onchange="updateComposerSettings()"><option value="evidence">事实核查与证据缺口</option><option value="actions">可执行改进清单</option><option value="communication">回应与沟通方案</option><option value="activity">活动执行与效果评估</option></select>
-          <p>设置会传给分析流程，要求报告列出证据或具体行动；不会凭空补造学校事实。</p><button class="btn sm" type="button" onclick="closeComposerMenus(true)">完成</button>
+          <p>设置用于本次分析。报告将围绕材料列出依据与行动建议，资料缺口会单独说明。</p><button class="btn sm" type="button" onclick="closeComposerMenus(true)">完成</button>
         </div>
       </div>
     </div>
@@ -3079,7 +3105,7 @@ body.workspace-v2.campus-shell {
         <div class="timeline-head">
           <span id="timelineTitle" style="display:flex;align-items:center;gap:6px;">
             <span class="live-dot" style="position:static;"></span>
-            <span>高校智库多智能体深度研判推进中…</span>
+            <span>正在整理材料与撰写报告…</span>
           </span>
           <span id="timelinePercent" style="color:var(--ecust-blue-light);font-weight:700;font-size:13px;">正在启动</span>
         </div>
@@ -3096,7 +3122,7 @@ body.workspace-v2.campus-shell {
         <div class="agent-thinking-banner" id="agentThinkingBanner" aria-live="polite">
           <div class="thinking-spinner"></div>
           <div class="thinking-text-wrap">
-            <span class="thinking-agent-name" id="thinkingAgentName">事实核查与溯源智能体</span>
+            <span class="thinking-agent-name" id="thinkingAgentName">材料核查</span>
             <span class="thinking-agent-status" id="thinkingAgentStatus">正在调度全网媒体与华理社区语料库，提取核心舆情事件事实链条...</span>
           </div>
           <div class="thinking-timer" id="thinkingTimer">00:01</div>
@@ -3105,7 +3131,7 @@ body.workspace-v2.campus-shell {
         <!-- 辩论视图切换 Tab -->
         <div class="chat-view-tabs">
           <button type="button" class="chat-view-tab active" id="btnTabChat" onclick="switchStudioView('chat')">
-            智能体交锋气泡辩论 (<span id="chatCount">0</span>)
+            研究过程 (<span id="chatCount">0</span>)
           </button>
           <button type="button" class="chat-view-tab" id="btnTabLogs" onclick="switchStudioView('logs')">
             原始执行控制台
@@ -3126,8 +3152,8 @@ body.workspace-v2.campus-shell {
         <!-- 生成完成高亮提示框 -->
         <div id="studioCompleteBar" class="studio-complete" role="status" style="display:none;">
           <div>
-            <div class="studio-complete-title">智库研报全文编纂完成！</div>
-            <div class="studio-complete-sub">已自动融合事实矩阵、心理防御机制归因与辅导员三全育人谈心锦囊。</div>
+            <div class="studio-complete-title">报告已生成</div>
+            <div class="studio-complete-sub">查看报告中的材料依据、分析与行动建议。</div>
           </div>
           <button type="button" class="btn success" id="btnOpenGeneratedReport">
             立即查阅智库研报全文与导出 PDF
@@ -3262,7 +3288,7 @@ body.workspace-v2.campus-shell {
           统一服务商配置 (一键应用)
         </button>
         <button type="button" class="config-tab-btn" id="cfgTabAgentsBtn" onclick="switchConfigTab('agents')">
-          各智能体独立精细配置
+          分模块模型配置
         </button>
         <button type="button" class="config-tab-btn" id="cfgTabEnvBtn" onclick="switchConfigTab('env')">
           思政预警与搜索服务
@@ -3326,7 +3352,7 @@ body.workspace-v2.campus-shell {
                 </select>
                 <input type="text" class="studio-input" id="globalModelInput" placeholder="如 deepseek-chat" style="flex:1;display:none;">
               </div>
-              <button type="button" class="btn sm" id="btnTestGlobalModel" onclick="testGlobalModelConnection()">测试模型连接</button><p class="data-note">获取模型列表不代表有调用权限；测试连接会发送一条短请求。保存后研究服务立即使用新配置。</p><div id="globalFetchStatus" style="font-size:12px;margin-top:6px;display:none;padding:6px 10px;border-radius:4px;"></div>
+              <button type="button" class="btn sm" id="btnTestGlobalModel" onclick="testGlobalModelConnection()">测试模型连接</button><p class="data-note">测试连接会发送一条短请求，验证模型调用权限。保存后研究服务立即使用新配置。</p><div id="globalFetchStatus" style="font-size:12px;margin-top:6px;display:none;padding:6px 10px;border-radius:4px;"></div>
             </div>
 
             <div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
@@ -3338,7 +3364,7 @@ body.workspace-v2.campus-shell {
         </div>
       </div>
 
-      <!-- TAB 2: 各智能体独立精细配置 -->
+      <!-- TAB 2: 分模块模型配置 -->
       <div id="cfgPaneAgents" style="display:none;">
         <div style="font-size:12.5px;color:var(--text-3);margin-bottom:12px;">
           您可以为不同的分析智能体配置专属的模型。例如：为 Query Agent 配置快速响应的轻量模型，为 Report Agent 配置具备深度长推理能力的大模型。
@@ -3381,7 +3407,7 @@ body.workspace-v2.campus-shell {
       <div id="cfgSaveNotice" style="font-size:12px;color:var(--text-3);"></div>
       <div style="display:flex;gap:8px;">
         <button type="button" class="btn sm ghost" onclick="closeConfigModal()">取消</button>
-        <button class="btn sm primary" id="btnSaveConfig" onclick="saveConfig()">保存并持久化配置</button>
+        <button class="btn sm primary" id="btnSaveConfig" onclick="saveConfig()">保存配置</button>
       </div>
     </div>
   </div>
@@ -3596,11 +3622,11 @@ async function viewCampusPosts(themeName) {
         <div class="post-item-header">
           <span>原帖 ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}</span>
           <div style="display:flex;gap:6px;">
-            <button type="button" class="badge ${emoClass}" data-metric-help="这是对原帖文字表达的情绪标签，不代表发帖人的心理状态或诊断；需结合原帖语境核对。">${esc(p.emotion || '中立')}</button>
-            ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="这是当前展示样本中的同来源热度排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算；不是浏览量、百分比或跨论坛统一分数。">来源内热度 ${p.heat}/100</button>` : ''}
+            <button type="button" class="badge ${emoClass}" data-metric-help="标签概括原帖文字表达的情绪，供阅读参考；请结合上下文核对。心理状态与诊断需要专业评估。">${esc(p.emotion || '中立')}</button>
+            ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="热度为当前展示样本中同来源互动量的排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算，各来源分别排序。">来源内热度 ${p.heat}/100</button>` : ''}
           </div>
         </div>
-        <div class="post-item-content">${sourcePostLink(p.link, p.content || '打开原帖') || esc(p.content || '（未采集到正文）')}${!p.link ? '<small class="data-note">历史采集未保存原帖地址，无法直接跳转</small>' : ''}</div>
+        <div class="post-item-content">${sourcePostLink(p.link, p.content || '打开原帖') || esc(p.content || '（未采集到正文）')}${!p.link ? '<small class="data-note">原帖地址未采集</small>' : ''}</div>
         ${p.gist ? `<div style="font-size:12px;color:var(--text-2);margin-bottom:6px;"><b>核心提炼：</b>${esc(p.gist)}</div>` : ''}
         <div class="post-item-tags">
           ${(p.psych_dimensions || []).map(d => `<span class="badge purple">${esc(d)}</span>`).join('')}
@@ -3823,7 +3849,7 @@ const STUDIO_AGENTS = {
   Interpreter: ['解', '解读专家', '现象解读', 'psych', 3],
   PsychLens: ['心', '心理透镜专家', '心理维度与风险', 'psych', 3],
   ActivityDesigner: ['策', '活动策划专家', '思政引领与活动方案', 'ideo', 3],
-  SoloWriter: ['写', '单智能体写手', '综合研判', 'editor', 3],
+  SoloWriter: ['写', '报告撰写', '综合研判', 'editor', 3],
   Verifier: ['验', '中心验证器', 'MAST 验证与证据核对', 'editor', 4],
   Reviser: ['修', '修订者', '补充检索与修订', 'editor', 4],
 };
@@ -3945,7 +3971,7 @@ async function launchStudioAnalysis() {
   let shown = 0;
   let misses = 0;
   let pollingBusy = false;
-  logBox.textContent += `[${new Date().toLocaleTimeString('zh-CN')}] 任务已受理，编号 ${jobId}，智能体开始工作（通常 1~3 分钟）\n`;
+  logBox.textContent += `[${new Date().toLocaleTimeString('zh-CN')}] 任务已受理，编号 ${jobId}，开始分析，完成时间取决于材料量与模型响应\n`;
 
   const poll = async () => {
     if (pollingBusy) return;
@@ -4125,7 +4151,7 @@ async function loadStudioReports() {
     const dt = a.ts ? new Date(a.ts * 1000).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     const meta = [
       dt,
-      a.topology === 'deep' || a.workflow_id === 'formal' ? '全网多智能体' : '快速研判',
+      a.topology === 'deep' || a.workflow_id === 'formal' ? '完整研究' : '快速研判',
       a.auto_score != null ? `自评 ${esc(a.auto_score)}` : '',
       a.avg_rating != null ? `教师评分 ${esc(a.avg_rating)}` : ''
     ].filter(Boolean).map(s => `<span>${esc(s)}</span>`).join('');
@@ -4394,11 +4420,11 @@ const LLM_PRESETS = {
 };
 
 const AGENT_GROUPS = [
-  { key: 'INSIGHT_ENGINE', title: '舆情洞察智能体 (Insight Agent)', desc: '负责深层舆情事实溯源与态势分析' },
-  { key: 'FORUM_HOST', title: '辩论主机 (Forum Host)', desc: '负责多智能体交叉推演与论证主持' },
+  { key: 'INSIGHT_ENGINE', title: '舆情洞察智能体 (Insight Agent)', desc: '核对材料来源与分析讨论变化' },
+  { key: 'FORUM_HOST', title: '辩论主机 (Forum Host)', desc: '汇总各模块观点与核对论证' },
   { key: 'QUERY_ENGINE', title: '搜索检索智能体 (Query Agent)', desc: '负责全网多渠道与本校语料检索' },
   { key: 'MEDIA_ENGINE', title: '媒体分析智能体 (Media Agent)', desc: '负责主流媒体报道与短视频视听分析' },
-  { key: 'REPORT_ENGINE', title: '智库研报生成智能体 (Report Agent)', desc: '负责高校思政与心理育人长篇报告编纂' },
+  { key: 'REPORT_ENGINE', title: '智库研报生成智能体 (Report Agent)', desc: '整理分析结果与撰写报告' },
   { key: 'KEYWORD_OPTIMIZER', title: '关键词优化智能体 (Keyword Optimizer)', desc: '负责搜索分词与情感倾向度微调' }
 ];
 
@@ -4627,7 +4653,7 @@ function applyGlobalToAllAgents() {
     }
   });
 
-  alert('已将全局配置成功覆盖应用到所有 6 个智能体！请点击下方【保存并持久化配置】生效。');
+  alert('已同步到全部 6 个模块，点击“保存配置”后生效。');
 }
 
 /* 密码显隐切换 */
@@ -4905,7 +4931,7 @@ async function saveConfig() {
     alert(`保存配置失败: ${err.message}`);
   } finally {
     saveBtn.disabled = false;
-    saveBtn.textContent = '保存并持久化配置';
+    saveBtn.textContent = '保存配置';
   }
 }
 
@@ -5487,9 +5513,9 @@ window.addEventListener('DOMContentLoaded', () => {
       if (safety) evidence.appendChild(safety);
       function syncEvidence() {
         var sample = metrics.querySelector('.kpi-num');
-        count.textContent = '近7天样本 ' + (sample ? sample.textContent : '—') + ' · 非全校随机样本';
+        count.textContent = '近7天样本 ' + (sample ? sample.textContent : '—') + ' · 公开论坛采集样本';
         var signals = safety && safety.querySelector('.crisis-alert-stats');
-        alerts.textContent = signals ? signals.textContent.replace(/\s+/g, ' ').trim() : '非全校随机样本';
+        alerts.textContent = signals ? signals.textContent.replace(/\s+/g, ' ').trim() : '公开论坛采集样本';
       }
       new MutationObserver(syncEvidence).observe(metrics, {childList:true, subtree:true, characterData:true});
       if (safety) new MutationObserver(syncEvidence).observe(safety, {childList:true, subtree:true, characterData:true});
@@ -5575,7 +5601,7 @@ loadCampus = async function() {
   }
   $('campusSourceCounts').textContent=Object.entries(v.by_source||{}).map(([s,n])=>`${FORUM_NAMES[s]||s} ${obsNumber(n)} 帖`).join(' · ')||'暂无来源统计';
   $('campusConfidence').textContent=v.confidence||'资料不足';
-  $('campusObservedDays').textContent=`实际覆盖 ${v.observed_days??'未知'} 天 · 非全校随机样本`;
+  $('campusObservedDays').textContent=`实际覆盖 ${v.observed_days??'未知'} 天 · 公开论坛采集样本`;
 };
 // 分类别名回归：同时兼容历史已归档标签。
 filterCampusTheme = function(target,btn) {
@@ -5639,7 +5665,7 @@ function renderObservatory() {
   const d=OBS.data; if(!d) return;
   const sourceCoverage=Object.fromEntries(['huyou-school','tieba-school'].map(s=>[s,d.coverage.filter(c=>c.sources[s].samples>0).length]));
   const first=d.observed_start;
-  $('obsCoverage').textContent=`统计窗口 ${obsTime(d.window_start)}—${obsTime(d.generated_at)} · 真实快照始于 ${obsTime(first)} · 狐友 ${sourceCoverage['huyou-school']} 个有采集的日窗 / 贴吧 ${sourceCoverage['tieba-school']} 个日窗。缺测留空；更新时间 ${obsTime(d.generated_at,true)}。`;
+  $('obsCoverage').textContent=`统计窗口 ${obsTime(d.window_start)}—${obsTime(d.generated_at)} · 采集记录始于 ${obsTime(first)} · 狐友 ${sourceCoverage['huyou-school']} 个有采集的日窗 / 贴吧 ${sourceCoverage['tieba-school']} 个日窗。缺测留空；更新时间 ${obsTime(d.generated_at,true)}。`;
   const rising=d.themes.filter(t=>t.velocity>0&&t.acceleration>0&&t.trend_ready).length;
   $('obsNumbers').innerHTML=[['可展示独立帖子',obsNumber(d.total)],['升温加速主题',obsNumber(rising)],['双源完整日窗',d.coverage.filter(c=>c.ready).length+' / 10']].map(([l,n])=>`<div class="observation-number"><strong>${n}</strong><span>${esc(l)}</span></div>`).join('');
   const category=$('trendCategory').value, sort=$('trendSort').value;
@@ -5648,7 +5674,7 @@ function renderObservatory() {
     return (b[sort]??0)-(a[sort]??0)||b.posts-a.posts;
   });
   if(!themes.some(t=>t.theme===OBS.selected)) OBS.selected=themes[0]?.theme||null;
-  $('trendRows').innerHTML=themes.map(t=>`<tr class="${t.theme===OBS.selected?'is-selected':''}"><td><button type="button" data-theme="${esc(t.theme)}" aria-pressed="${t.theme===OBS.selected}">${esc(t.theme)}</button></td><td>${obsNumber(t.posts)}</td><td>${obsSigned(t.velocity)}</td><td>${obsSigned(t.acceleration)}</td><td>${t.forecast_24h??'暂不预测'}</td><td>${esc(t.phase)}</td></tr>`).join('')||'<tr><td colspan="6">此分类暂无真实帖子</td></tr>';
+  $('trendRows').innerHTML=themes.map(t=>`<tr class="${t.theme===OBS.selected?'is-selected':''}"><td><button type="button" data-theme="${esc(t.theme)}" aria-pressed="${t.theme===OBS.selected}">${esc(t.theme)}</button></td><td>${obsNumber(t.posts)}</td><td>${obsSigned(t.velocity)}</td><td>${obsSigned(t.acceleration)}</td><td>${t.forecast_24h??'暂不预测'}</td><td>${esc(t.phase)}</td></tr>`).join('')||'<tr><td colspan="6">此分类暂无已采集帖子</td></tr>';
   $('trendRows').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{OBS.selected=b.dataset.theme;renderObservatory();}));
   const selected=themes.find(t=>t.theme===OBS.selected);
   if(selected) renderTrendReading(selected); else $('trendReading').innerHTML='';
@@ -5678,10 +5704,10 @@ function renderTrendReading(t) {
     const state=p.heat==null?'采集覆盖不足':delta==null?'开始完整观测':delta>0?'关注升温':delta<0?'关注回落':'保持平稳';
     return `<div class="timeline-entry ${delta>0?'is-rise':''}"><span>${obsTime(p.ts)}—${obsTime(p.ts+86400)}</span><b>${state}</b><span>${p.posts} 条帖子 · 强度 ${p.heat??'缺测'}</span></div>`;
   }).join('');
-  const verification=t.backtest?.windows?`历史滚动核验 ${t.backtest.windows} 窗：平均绝对误差 ${t.backtest.mae}（持平基线 ${t.backtest.baseline_mae}）；少量历史核验不等于预测保证。`:'完整历史窗口不足，暂不提供误差核验。';
+  const verification=t.backtest?.windows?`历史滚动核验 ${t.backtest.windows} 窗：平均绝对误差 ${t.backtest.mae}（持平基线 ${t.backtest.baseline_mae}）；历史核验样本有限，结果供后续观察与对照。`:'完整历史窗口不足，暂不提供误差核验。';
   $('trendReading').innerHTML=`<h4>${esc(t.theme)} · 关注发酵时间线</h4><p class="data-note">狐友 ${obsNumber(t.by_source['huyou-school']??0)} / 贴吧 ${obsNumber(t.by_source['tieba-school']??0)} · 关键词 ${esc(t.keywords.join('、'))} · 数据支持 ${esc(t.confidence)}。实线为观测，虚线为未经校准的统计外推。</p>${timelineSvg(points,t.forecast_24h)}<p class="data-note">${esc(verification)}</p><div class="fermentation-timeline">${entries}</div><div class="trend-actions"><button type="button" class="btn sm" id="trendPostsButton">查看此主题全部原帖</button><button type="button" class="btn sm primary" id="trendWorkshopButton">转为研报或活动议题</button></div>`;
   $('trendPostsButton').onclick=()=>viewObservedPosts({theme:t.theme},t.theme);
-  $('trendWorkshopButton').onclick=()=>forwardToStudio(`基于本校真实论坛统计，围绕【${t.theme}】开展专题研判与育人建议`);
+  $('trendWorkshopButton').onclick=()=>forwardToStudio(`基于本校论坛采集统计，围绕【${t.theme}】开展专题研判与育人建议`);
 }
 function renderWordcloud() {
   if(!OBS.data) return;
@@ -5694,14 +5720,14 @@ function renderWordcloud() {
 function renderRedHotspots() {
   const d=OBS.data;if(!d) return;
   const n=d.red.post_ids.length,terms=Object.entries(d.red.terms).sort((a,b)=>b[1]-a[1]);
-  $('redHotspots').innerHTML=n?`<div><span class="red-stat">${n}</span>条真实相关讨论</div><div class="red-themes">${terms.slice(0,6).map(([w,c])=>`${esc(w)} ${c}帖`).join(' · ')}</div><p class="data-note">按党建、思政、家国情怀与实践关键词匹配，非人工编造热点。关键词命中需结合原帖判断语境。</p><button type="button" class="btn sm" id="redPostsButton">阅读全部原帖</button>`:obsError('本窗口暂无采集到党建、思政或校园育人相关帖子。理论学习、家国情怀与立德树人方向持续保留，等待真实讨论。');
+  $('redHotspots').innerHTML=n?`<div><span class="red-stat">${n}</span>条相关讨论</div><div class="red-themes">${terms.slice(0,6).map(([w,c])=>`${esc(w)} ${c}帖`).join(' · ')}</div><p class="data-note">按党建、思政、家国情怀与实践关键词筛选，点击原帖查看语境。</p><button type="button" class="btn sm" id="redPostsButton">阅读全部原帖</button>`:obsError('本窗口暂无相关帖子，后续采集后更新。');
   if($('redPostsButton')) $('redPostsButton').onclick=()=>viewObservedPosts({red:'1'},'红色育人');
 }
 function renderStatMemes() {
   const list=OBS.data?.memes||[]; APP.memes=list;
   const candidates=OBS.data?.meme_candidates||[];
-  $('memeCandidateStats').innerHTML='<p class="data-note">PMI与邻字熵只发现重复的新词/句式，不能证明它们是梗。普通校园术语可能命中，人工确认前不进入梗榜。</p>'+candidates.map((m,i)=>`<div class="auto-report"><div>${esc(m.term)}<small>${esc(m.kind)} · ${m.df} 独立帖 · 传播分 ${m.diffusion_score}</small></div><button type="button" class="btn sm" onclick="viewStatisticalCandidate(${i})">核对依据</button></div>`).join('');
-  $('memesCardsGrid').innerHTML=list.map((m,i)=>`<div class="item-card"><div><div class="card-header-row"><h3 class="card-title">${esc(m.term)}</h3><span class="badge blue">传播分 ${m.diffusion_score}</span></div><div class="card-meta-row"><span>${esc(m.kind)}</span><span>${m.df}条独立帖 · ${m.active_days}日出现</span></div><p class="card-desc">${esc(m.status)}。来源分布熵 ${m.source_entropy}；近三日相对前三日 ${m.growth_3d==null?'资料不足':m.growth_3d+' 倍'}。狐友 ${m.by_source['huyou-school']??0} / 贴吧 ${m.by_source['tieba-school']??0}。</p>${m.examples.map(e=>`<div class="quote-box">${esc(e)}</div>`).join('')}<p class="data-note">公式：ln(1+DF) × (1+来源熵) × (1+正增长) × (1+持续性) × DF/(DF+5)。不使用模型评分；新词或句式不一定是梗，需核实。</p>${timelineSvg(m.timeline)}</div><div class="card-actions"><button class="btn sm" type="button" onclick="viewMemeEvidence(${i})">查看全部 ${m.df} 条依据帖</button><button class="btn sm primary" type="button" onclick="planMemeActivity(${i})">转为育人活动议题</button></div></div>`).join('')||obsError('当前真实语料没有满足重复出现阈值的梗候选，不用预置词典补榜。');
+  $('memeCandidateStats').innerHTML='<p class="data-note">候选词按重复频次、PMI与邻字熵筛选，包含校园术语和新句式；经人工核实后列入梗榜。</p>'+candidates.map((m,i)=>`<div class="auto-report"><div>${esc(m.term)}<small>${esc(m.kind)} · ${m.df} 独立帖 · 传播分 ${m.diffusion_score}</small></div><button type="button" class="btn sm" onclick="viewStatisticalCandidate(${i})">核对依据</button></div>`).join('');
+  $('memesCardsGrid').innerHTML=list.map((m,i)=>`<div class="item-card"><div><div class="card-header-row"><h3 class="card-title">${esc(m.term)}</h3><span class="badge blue">传播分 ${m.diffusion_score}</span></div><div class="card-meta-row"><span>${esc(m.kind)}</span><span>${m.df}条独立帖 · ${m.active_days}日出现</span></div><p class="card-desc">${esc(m.status)}。来源分布熵 ${m.source_entropy}；近三日相对前三日 ${m.growth_3d==null?'资料不足':m.growth_3d+' 倍'}。狐友 ${m.by_source['huyou-school']??0} / 贴吧 ${m.by_source['tieba-school']??0}。</p>${m.examples.map(e=>`<div class="quote-box">${esc(e)}</div>`).join('')}<p class="data-note">公式：ln(1+DF) × (1+来源熵) × (1+正增长) × (1+持续性) × DF/(DF+5)。按上述公式排序，词语含义与使用方式由人工核实。</p>${timelineSvg(m.timeline)}</div><div class="card-actions"><button class="btn sm" type="button" onclick="viewMemeEvidence(${i})">查看全部 ${m.df} 条依据帖</button><button class="btn sm primary" type="button" onclick="planMemeActivity(${i})">转为育人活动议题</button></div></div>`).join('')||obsError('当前采集样本中暂无达到重复出现阈值的候选词。');
 }
 loadMemes = async function() { await loadObservatory(); };
 function viewMemeEvidence(i) { const m=APP.memes[i];if(m) viewObservedPosts({meme:m.term},'梗候选：'+m.term); }
@@ -5712,7 +5738,7 @@ function sourcePostLink(raw, label='打开原帖') {
   } catch (_) {return '';}
 }
 function observedPostHtml(p,i) {
-  return `<article class="forum-post"><div class="forum-post-head"><span>#${i+1} · ${esc(FORUM_NAMES[p.source]||p.source)} · ${obsTime(p.published,true)}${p.time_basis==='first_observed'?'（首次采集时间）':''}</span><b>热度 ${p.heat} / 100</b></div><p>${sourcePostLink(p.link||p.url,p.content||'打开原帖')||esc(p.content||'（无可展示正文）')}</p>${!(p.link||p.url)?'<small class="data-note">历史采集未保存原帖地址，无法直接跳转</small>':''}<div class="forum-evidence">${esc(p.theme)} · 回复 ${obsNumber(p.comments)}${p.source==='huyou-school'?' · 曝光 '+obsNumber(p.exposure):''}${p.gist?' · 摘要 '+esc(p.gist):''}</div></article>`;
+  return `<article class="forum-post"><div class="forum-post-head"><span>#${i+1} · ${esc(FORUM_NAMES[p.source]||p.source)} · ${obsTime(p.published,true)}${p.time_basis==='first_observed'?'（首次采集时间）':''}</span><b>热度 ${p.heat} / 100</b></div><p>${sourcePostLink(p.link||p.url,p.content||'打开原帖')||esc(p.content||'（无可展示正文）')}</p>${!(p.link||p.url)?'<small class="data-note">原帖地址未采集</small>':''}<div class="forum-evidence">${esc(p.theme)} · 回复 ${obsNumber(p.comments)}${p.source==='huyou-school'?' · 曝光 '+obsNumber(p.exposure):''}${p.gist?' · 摘要 '+esc(p.gist):''}</div></article>`;
 }
 async function loadForumPosts() {
   const v=++OBS.postVersion;
@@ -5751,7 +5777,7 @@ async function loadDashboard() {
   const c=d.cost||{}, money=v=>v==null?'待核算':'¥'+Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const metrics=[
     ['完成报告',obsNumber(d.reports_completed),`校园工坊 ${d.campus_reports_completed} · 主研报 ${d.main_reports_completed} · 自动报告 ${d.automatic_statuses.complete??0}；含有效待复核稿，失败/降级稿不计`,true],
-    ['模型费用参考',money(c.model_estimate_cny),c.model_estimate_cny==null?'尚未提供实际单价，不能据Token推算实付金额':'已记录用量 × 统一参考单价；非服务商实付账单'],
+    ['模型费用参考',money(c.model_estimate_cny),c.model_estimate_cny==null?'填写参考单价后可估算模型费用，实付金额以账单为准':'已记录用量 × 统一参考单价；实付金额以服务商账单为准'],
     ['累计校内独立帖',obsNumber(d.unique_school_posts),'双论坛按来源与帖子地址/正文去重；重复轮询不重复计帖'],
     ['全来源采集条次',obsNumber(d.observations),'覆盖全部采集来源，含重复轮询；校内 '+obsNumber(d.school_observations)+' 条次'],
     ['全来源去重条目',obsNumber(d.unique_items),'包含全国热榜与校园帖子，按来源和条目键去重'],
@@ -5775,7 +5801,7 @@ async function loadAutomaticReports() {
   const s=d.schedule;
   $('reportSchedule').textContent=`北京时间 · ${s.macro}宏观报告 / ${s.brief}主题简析 · ${s.enabled?'调度已启用':'预览环境调度关闭'}。下一期：${obsTime(s.next_macro,true)} / ${obsTime(s.next_brief,true)}`;
   const labels={complete:'已完成',running:'生成中',failed:'失败',interrupted:'已中断',skipped:'无新鲜样本，跳过'};
-  $('automaticReports').innerHTML=d.items.map(r=>`<div class="auto-report"><div>${r.kind==='macro'?'校园宏观观察周报':'校园分主题三日简析'}<small>${obsTime(r.ts,true)} · ${esc(labels[r.status]||r.status)}${r.error?' · '+esc(r.error):''}</small></div>${r.status==='complete'?`<button type="button" class="btn sm" onclick="viewAutomaticReport(${r.id})">阅读报告</button>`:''}</div>`).join('')||obsError('尚无已运行的定时报告。到达设定时间后使用真实论坛统计生成并归档，不预置假报告。');
+  $('automaticReports').innerHTML=d.items.map(r=>`<div class="auto-report"><div>${r.kind==='macro'?'校园宏观观察周报':'校园分主题三日简析'}<small>${obsTime(r.ts,true)} · ${esc(labels[r.status]||r.status)}${r.error?' · '+esc(r.error):''}</small></div>${r.status==='complete'?`<button type="button" class="btn sm" onclick="viewAutomaticReport(${r.id})">阅读报告</button>`:''}</div>`).join('')||obsError('暂无定时报告。系统将在设定时间根据论坛统计生成并归档。');
 }
 async function viewAutomaticReport(id) {
   const v=++reportRequestVersion;
@@ -5961,7 +5987,7 @@ renderObservatory=function(){
   baseRenderObservatory();
   const d=OBS.data;if(!d)return;
   const eligible=d.themes.filter(t=>t.forecast?.ready).length;
-  $('obsNumbers').innerHTML=[['真实独立帖子',obsNumber(d.total)],['覆盖主题',d.themes.length],['可作外推 / 暂不外推',eligible+' / '+(d.themes.length-eligible)],['完整观测日窗',d.coverage.filter(c=>c.ready).length+' / 10']].map(([label,value])=>`<div class="observation-number"><strong>${value}</strong><span>${label}</span></div>`).join('');
+  $('obsNumbers').innerHTML=[['已采集独立帖子',obsNumber(d.total)],['覆盖主题',d.themes.length],['可作外推 / 暂不外推',eligible+' / '+(d.themes.length-eligible)],['完整观测日窗',d.coverage.filter(c=>c.ready).length+' / 10']].map(([label,value])=>`<div class="observation-number"><strong>${value}</strong><span>${label}</span></div>`).join('');
   renderCampusOutlook();renderThemeEvolution();
 };
 function renderCampusOutlook(){
@@ -5970,7 +5996,7 @@ function renderCampusOutlook(){
   $('campusOutlook').innerHTML='<div class="outlook-heading"><span>未来24小时</span><span>整体与四类议题分别外推 · 关注强度 / 非帖子数</span></div><div class="outlook-strip">'+groups.map(([key,label,t])=>{
     const projection=currentProjection(t)[0];
     return `<div class="outlook-column"><span>${label}</span><strong>${projection?evolutionValue(projection.value):'暂不外推'}</strong><small>当前 ${evolutionValue(t.timeline.at(-1)?.heat)} ${projection?'→ 24h · '+(projection.change>0?'↑':projection.change<0?'↓':'持平'):'· '+esc(t.forecast?.reason||'资料不足')}</small><span class="outlook-model">${esc(t.forecast?.label||'')}${projection?' · '+obsNumber(t.posts)+'帖':''}</span></div>`;
-  }).join('')+'</div><p class="data-note">覆盖全部真实主题，不把缺测或低样本当成零。每个主题、分类和校内整体独立比较历史误差；没有更好的依据时采用持平参考。</p>';
+  }).join('')+'</div><p class="data-note">覆盖已采集主题，缺测保留空值。每个主题、分类和校内整体独立比较历史误差；没有更好的依据时采用持平参考。</p>';
 }
 function evolutionThemes(){
   const category=$('trendCategory').value,sort=$('trendSort').value;
@@ -6013,16 +6039,16 @@ function renderThemeEvolution(){
   const dates=OBS.data.coverage;
   $('evolutionScope').textContent=`展示 ${themes.length} / ${all.length} 个主题 · 选中议题查看每日数据与原帖`;
   const legend=document.querySelector('.evolution-legend');
-  if(legend)legend.innerHTML=`<span>曲线：十个24小时窗，${esc(obsTime(dates[0]?.ts))}—${esc(obsTime(dates.at(-1)?.ts))}；全主题统一纵轴 0—${ceiling}，缺测断开。</span><span>综合关注不是帖子数；未来48 / 72小时与每日明细在选中议题下展开。</span>`;
-  const help='综合关注H：新增发帖与已有帖曝光、回复的对数增量，按各论坛本窗采集帖数归一化后等权合成。是关注指标，不是人数、帖子数、百分比或爆发概率，可超过100。';
+  if(legend)legend.innerHTML=`<span>曲线：十个24小时窗，${esc(obsTime(dates[0]?.ts))}—${esc(obsTime(dates.at(-1)?.ts))}；全主题统一纵轴 0—${ceiling}，缺测断开。</span><span>综合关注同时计入发帖与互动变化；未来48 / 72小时与每日明细在选中议题下展开。</span>`;
+  const help='综合关注H：新增发帖与已有帖曝光、回复的对数增量，按各论坛本窗采集帖数归一化后等权合成。该归一化指标用于比较关注变化，数值可超过100。';
   const number=(text,description)=>`<button type="button" class="evolution-number" data-metric-help="${esc(description)}">${esc(text)}</button>`;
   const body=themes.map(t=>{
     const {current,delta}=evolutionSummary(t),prediction=currentProjection(t)[0];
     const window=current?obsTime(current.ts,true)+'—'+obsTime(current.ts+86400,true):'未知日窗';
     const deltaLabel=evolutionChange(delta);
-    return `<tr class="${OBS.selected===t.theme?'selected-theme':''}" data-evolution-theme="${esc(t.theme)}"><th scope="row"><button type="button" class="evolution-topic" data-evolution-day="9" aria-pressed="${OBS.selected===t.theme}"><b>${esc(t.theme)}</b><small>${esc(CATEGORY_NAMES[t.category||obsCategory(t.theme)])} · ${obsNumber(t.posts)}帖</small></button></th><td class="evolution-history"><button type="button" class="evolution-chart-open" data-evolution-day="9" aria-label="查看${esc(t.theme)}每日变化与原帖">${evolutionMiniChart(t,ceiling)}</button></td><td>${number(obsNumber(current?.posts)+' 帖','该主题本24小时窗内按来源与帖子键去重的新增帖样本数，不是全校发帖总量。日窗：'+window)}</td><td>${number(evolutionValue(current?.heat),help+' 日窗：'+window)}</td><td class="evolution-delta">${number(deltaLabel,help+' 此处为本窗H减去紧邻前一24小时窗H，正数表示上升，负数表示回落。任一窗缺测不作比较。小于0.05的变化显示微升或微降；实际差：'+(delta==null?'未知':Number(delta.toFixed(6)))+'。')}</td><td class="evolution-next">${number(prediction?evolutionValue(prediction.value):'暂不外推',help+' 未来24小时统计参考：'+(prediction?projectionRange(prediction)+'。'+(t.forecast?.reason||''):t.forecast?.reason||'资料不足'))}<small>${esc(prediction?t.forecast?.label||'统计参考':'资料不足')}</small></td><td><span class="evolution-phase ${evolutionTone(t)}">${esc(t.phase)}</span></td></tr>`;
+    return `<tr class="${OBS.selected===t.theme?'selected-theme':''}" data-evolution-theme="${esc(t.theme)}"><th scope="row"><button type="button" class="evolution-topic" data-evolution-day="9" aria-pressed="${OBS.selected===t.theme}"><b>${esc(t.theme)}</b><small>${esc(CATEGORY_NAMES[t.category||obsCategory(t.theme)])} · ${obsNumber(t.posts)}帖</small></button></th><td class="evolution-history"><button type="button" class="evolution-chart-open" data-evolution-day="9" aria-label="查看${esc(t.theme)}每日变化与原帖">${evolutionMiniChart(t,ceiling)}</button></td><td>${number(obsNumber(current?.posts)+' 帖','该主题本24小时窗内按来源与帖子键去重的新增帖样本数，统计范围为已采集样本。日窗：'+window)}</td><td>${number(evolutionValue(current?.heat),help+' 日窗：'+window)}</td><td class="evolution-delta">${number(deltaLabel,help+' 此处为本窗H减去紧邻前一24小时窗H，正数表示上升，负数表示回落。任一窗缺测不作比较。小于0.05的变化显示微升或微降；实际差：'+(delta==null?'未知':Number(delta.toFixed(6)))+'。')}</td><td class="evolution-next">${number(prediction?evolutionValue(prediction.value):'暂不外推',help+' 未来24小时统计参考：'+(prediction?projectionRange(prediction)+'。'+(t.forecast?.reason||''):t.forecast?.reason||'资料不足'))}<small>${esc(prediction?t.forecast?.label||'统计参考':'资料不足')}</small></td><td><span class="evolution-phase ${evolutionTone(t)}">${esc(t.phase)}</span></td></tr>`;
   }).join('');
-  $('themeEvolution').innerHTML=themes.length?`<table class="evolution-ledger"><caption class="visually-hidden">议题十日走势、本窗新增帖、综合关注、较前窗变化、未来24小时参考和当前状态</caption><thead><tr><th scope="col">议题 / 十日样本</th><th scope="col">十日走势 · 点击阅读</th><th scope="col">本窗新增帖</th><th scope="col">综合关注</th><th scope="col">较前窗</th><th scope="col">未来24小时</th><th scope="col">当前状态</th></tr></thead><tbody>${body}</tbody></table>`:obsError('此分类暂无真实议题');
+  $('themeEvolution').innerHTML=themes.length?`<table class="evolution-ledger"><caption class="visually-hidden">议题十日走势、本窗新增帖、综合关注、较前窗变化、未来24小时参考和当前状态</caption><thead><tr><th scope="col">议题 / 十日样本</th><th scope="col">十日走势 · 点击阅读</th><th scope="col">本窗新增帖</th><th scope="col">综合关注</th><th scope="col">较前窗</th><th scope="col">未来24小时</th><th scope="col">当前状态</th></tr></thead><tbody>${body}</tbody></table>`:obsError('此分类暂无议题');
   $('themeEvolution').querySelectorAll('[data-evolution-day]').forEach(b=>b.onclick=()=>chooseEvolutionTheme(b.closest('[data-evolution-theme]').dataset.evolutionTheme,Number(b.dataset.evolutionDay)));
 }
 function processChart(t){
@@ -6081,15 +6107,15 @@ renderTrendReading=function(t){
   const acceleration=velocity!=null&&t.timeline[day-2]?.heat!=null?point.heat-2*t.timeline[day-1].heat+t.timeline[day-2].heat:null;
   $('trendReading').innerHTML=`<div class="process-header"><div><h4>${esc(t.theme)}</h4><p class="data-note">${obsNumber(t.posts)} 条独立帖 · 狐友 ${obsNumber(t.by_source['huyou-school']||0)} / 贴吧 ${obsNumber(t.by_source['tieba-school']||0)} · ${esc(t.keywords.join('、'))}</p></div><label class="process-source">过程视角 <select id="processSource"><option value="all" ${source==='all'?'selected':''}>双论坛综合</option><option value="huyou-school" ${source==='huyou-school'?'selected':''}>狐友华理圈</option><option value="tieba-school" ${source==='tieba-school'?'selected':''}>华理贴吧</option></select></label></div>
     <div class="process-legend"><span><i style="background:#2a5c4c"></i>综合</span><span><i style="background:#8e9b58"></i>狐友</span><span><i style="background:#7999ac"></i>贴吧</span><span><i style="background:#b59157"></i>未来外推</span><span>选中日窗会联动讨论依据</span></div><div class="process-chart-scroll">${processChart(t)}</div><p class="process-curve-note">曲线平滑连接日窗数据点，窗内形态仅作阅读辅助；缺测处保持断开。</p>
-    <div class="process-context"><section class="day-evidence"><h5>${obsTime(point.ts,true)}—${obsTime(point.ts+86400,true)}</h5><div class="day-metrics"><span><b>${point.posts}</b>新增帖</span><span>狐友 <b>${point.by_source['huyou-school']||0}</b></span><span>贴吧 <b>${point.by_source['tieba-school']||0}</b></span></div><p>${point.heat==null?'本窗采集覆盖不足，保留已采集帖子，不给出强度结论。':`综合强度 ${evolutionValue(point.heat)} · 速度 ${velocity==null?'缺测':evolutionValue(velocity)} · 加速度 ${acceleration==null?'缺测':evolutionValue(acceleration)}`}</p><button class="btn sm" id="processDayPosts" type="button">阅读本窗 ${point.posts} 条原帖</button><p class="data-note">无发布时间的帖子按首次观察归窗；不同论坛的出现不等于转发关系。</p></section>
+    <div class="process-context"><section class="day-evidence"><h5>${obsTime(point.ts,true)}—${obsTime(point.ts+86400,true)}</h5><div class="day-metrics"><span><b>${point.posts}</b>新增帖</span><span>狐友 <b>${point.by_source['huyou-school']||0}</b></span><span>贴吧 <b>${point.by_source['tieba-school']||0}</b></span></div><p>${point.heat==null?'本窗覆盖不足，显示已采集帖子；关注强度待覆盖完整后计算。':`综合强度 ${evolutionValue(point.heat)} · 速度 ${velocity==null?'缺测':evolutionValue(velocity)} · 加速度 ${acceleration==null?'缺测':evolutionValue(acceleration)}`}</p><button class="btn sm" id="processDayPosts" type="button">阅读本窗 ${point.posts} 条原帖</button><p class="data-note">无发布时间的帖子按首次观察归窗；跨论坛传播关系需结合原帖核实。</p></section>
     <section class="process-milestones"><h5>发酵过程的可核查节点</h5><ol>${(t.milestones||[]).map(e=>`<li><time>${obsTime(e.ts,true)}</time><div><b>${e.source?esc(FORUM_NAMES[e.source])+' · ':''}${esc(e.title)}</b><p>${esc(e.detail)}</p></div></li>`).join('')}</ol></section></div>
-    <section class="theme-projection"><div class="stat-heading"><h3>这个议题接下来如何变化</h3><span>${esc(forecast?.label||'暂不外推')}</span></div><div class="projection-strip">${predictions.map(p=>`<div><span>未来 ${p.hours} 小时</span><strong>${evolutionValue(p.value)}</strong><small>相对当前 ${p.change>0?'+':''}${evolutionValue(p.change)}</small><small>${projectionRange(p)}</small></div>`).join('')||obsError(forecast?.reason||'资料不足，暂不外推')}</div><p class="data-note">${esc(forecast?.reason||'')}。外推的是关注强度，不是帖子数或爆发概率；越远的时段不确定性越大。</p>
-    <details class="method-note"><summary>模型核验与误差参考依据</summary><div class="forecast-validation">${(forecast?.validation||[]).map(v=>`<div><span>${esc(v.label)}${forecast.model===v.model?' · 本次采用':''}</span><b>${v.mae==null?'未核验':evolutionValue(v.mae)}</b><small>${v.windows} 个单步滚动核验窗 · MAE</small></div>`).join('')}</div><p>${esc(forecast?.error_basis||'完整窗口不足')}。模型选择和核验使用同一短历史序列，尚无独立长期验证，不作为准确率保证。</p></details></section>
+    <section class="theme-projection"><div class="stat-heading"><h3>这个议题接下来如何变化</h3><span>${esc(forecast?.label||'暂不外推')}</span></div><div class="projection-strip">${predictions.map(p=>`<div><span>未来 ${p.hours} 小时</span><strong>${evolutionValue(p.value)}</strong><small>相对当前 ${p.change>0?'+':''}${evolutionValue(p.change)}</small><small>${projectionRange(p)}</small></div>`).join('')||obsError(forecast?.reason||'资料不足，暂不外推')}</div><p class="data-note">${esc(forecast?.reason||'')}。外推对象为关注强度；时间跨度越长，参考误差越大。</p>
+    <details class="method-note"><summary>模型核验与误差参考依据</summary><div class="forecast-validation">${(forecast?.validation||[]).map(v=>`<div><span>${esc(v.label)}${forecast.model===v.model?' · 本次采用':''}</span><b>${v.mae==null?'未核验':evolutionValue(v.mae)}</b><small>${v.windows} 个单步滚动核验窗 · MAE</small></div>`).join('')}</div><p>${esc(forecast?.error_basis||'完整窗口不足')}。模型选择与核验采用同一段短期历史数据，长期效果仍需持续验证。</p></details></section>
     <div class="trend-actions"><button type="button" class="btn sm" id="trendPostsButton">查看此主题全部 ${t.posts} 条原帖</button><button type="button" class="btn sm primary" id="trendWorkshopButton">转为研报或活动议题</button></div>`;
   $('processSource').onchange=e=>{EVOLUTION.source=e.target.value;renderTrendReading(t);};
   $('processDayPosts').onclick=()=>viewObservedPosts({theme:t.theme,from:point.ts,until:point.ts+86400},t.theme+' · '+obsTime(point.ts)+'日窗');
   $('trendPostsButton').onclick=()=>viewObservedPosts({theme:t.theme},t.theme);
-  $('trendWorkshopButton').onclick=()=>forwardToStudio(`基于本校真实论坛统计，围绕【${t.theme}】开展专题研判与育人建议`);
+  $('trendWorkshopButton').onclick=()=>forwardToStudio(`基于本校论坛采集统计，围绕【${t.theme}】开展专题研判与育人建议`);
   $('trendReading').querySelectorAll('[data-process-day]').forEach(g=>{
     const select=()=>{EVOLUTION.day=Number(g.dataset.processDay);renderObservatory();};
     g.onclick=select;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select();}};
@@ -6201,14 +6227,14 @@ function renderCampusPulse(failed=false){
   if(data)PULSE_FAILED=false;
   failed=PULSE_FAILED;
   if(!data){
-    el.innerHTML=heading+`<div class="pulse-empty" ${failed?'role="alert"':'role="status"'}>${failed?'讨论统计读取失败。':'正在读取两个论坛的真实讨论…'}${failed?'<button type="button" class="pulse-retry">重新读取</button>':''}</div>`;
+    el.innerHTML=heading+`<div class="pulse-empty" ${failed?'role="alert"':'role="status"'}>${failed?'讨论统计读取失败。':'正在读取两个论坛的讨论…'}${failed?'<button type="button" class="pulse-retry">重新读取</button>':''}</div>`;
     el.querySelector('.pulse-open').onclick=()=>pulseOpenTimeline();
     const retry=el.querySelector('.pulse-retry');if(retry)retry.onclick=async()=>{retry.disabled=true;try{await loadObservatory(true);}finally{if(retry.isConnected)retry.disabled=false;}};
     return;
   }
   const b=pulseBrief(data),m=b.model,current=b.current;
   const period=current?obsTime(current.ts,true)+'—'+obsTime(current.ts+PULSE_DAY,true):'暂无日窗';
-  const help='新增帖样本数：本24小时窗内按来源和帖子键去重的公开帖子；无合法发帖时间时按首次采集时间归窗。不是全校发帖总数。统计范围：'+period+'。缺测不按零参与比较。';
+  const help='新增帖样本数：本24小时窗内按来源和帖子键去重的公开帖子；无合法发帖时间时按首次采集时间归窗。统计范围为已采集样本。统计范围：'+period+'。缺测留空，比较采用有效日窗。';
   const change=b.delta==null?'采集覆盖不足，暂不比较增减':b.delta===0?'与前一24小时窗持平':`比前一24小时窗${b.delta>0?'多':'少'} ${Math.abs(b.delta)} 帖`;
   const numbers=(label,definition)=>`<button type="button" class="pulse-inline-number" data-metric-help="${esc(definition)}">${esc(label)}</button>`;
   const sourceButton=s=>`<button type="button" class="pulse-source" data-pulse-source="${s}">${s==='huyou-school'?'狐友华理圈':'华理贴吧'} ${obsNumber(current?.by_source?.[s])} 帖 · 查看原帖</button>`;
@@ -6224,8 +6250,8 @@ function renderCampusPulse(failed=false){
     return `<tr><th scope="row"><button type="button" class="pulse-topic-name" data-pulse-theme="${esc(t.theme)}">${esc(t.theme)}</button><span class="pulse-row-sources">狐友 ${obsNumber(t.by_source['huyou-school'])} · 贴吧 ${obsNumber(t.by_source['tieba-school'])}</span></th><td><button type="button" class="pulse-post-count" data-pulse-posts="${esc(t.theme)}" aria-label="查看${esc(t.theme)}本24小时窗${t.count}条原帖">${obsNumber(t.count)} 帖</button></td><td>${numbers(t.delta==null?'无法比较':t.delta===0?'持平':(t.delta>0?'多 ':'少 ')+Math.abs(t.delta)+' 帖',help+'本主题相邻两个有效日窗的新增帖数量差，与综合关注强度变化不同。')}</td><td class="pulse-excerpt">${excerpt}${post?`<span class="pulse-excerpt-source">${esc(FORUM_NAMES[post.source]||post.source)} · ${esc(obsTime(post.published,true))}${post.time_basis==='first_observed'?'（首次采集）':''} · 原帖摘录</span>`:''}</td></tr>`;
   }).join('');
   const overallReason=data.outlook?.overall?.forecast?.reason||'历史资料不足';
-  const intensity=String(data.method?.intensity||'')+'。关注强度是归一化指标，不是帖子数、百分比或人数；可超过100。';
-  el.innerHTML=heading+`<div class="pulse-lead"><p>已采集 ${numbers(obsNumber(b.count)+' 条新增帖样本',help)}，${numbers(change,help+'比较窗：'+(b.previous?obsTime(b.previous.ts,true)+'—'+obsTime(b.previous.ts+PULSE_DAY,true):'未知'))}。${b.topics.length?`具体议题中，新增讨论最多的是${b.topics.map(t=>'“'+esc(t.theme)+'”').join('、')}。`:'本窗暂未采集到可展示的具体议题。'}</p><div class="pulse-source-links">${sourceButton('huyou-school')}${sourceButton('tieba-school')}</div></div><div class="pulse-brief-body"><div class="pulse-discussions"><table class="pulse-discussion-table"><caption class="sr-only">近24小时新增讨论最多的三个议题、与前窗的数量变化和真实原帖摘录</caption><thead><tr><th scope="col">具体议题</th><th scope="col">新增帖</th><th scope="col">较前窗</th><th scope="col">同学具体在说什么</th></tr></thead><tbody>${rows||'<tr><td colspan="4">暂无可展示的新讨论；采集缺失不等于校园没有讨论。</td></tr>'}</tbody></table>${status==='error'?'<button type="button" class="pulse-retry" id="pulseEvidenceRetry">重新读取原帖摘录</button>':''}</div><aside class="pulse-watch"><h3>哪些议题值得继续观察</h3>${b.accelerating.map(t=>`<button type="button" class="pulse-watch-topic" data-pulse-theme="${esc(t.theme)}"><strong>${esc(t.theme)}</strong><span>发帖与互动综合关注正在加速上升</span></button>`).join('')||'<p>暂无连续观测有效且持续升温加速的议题。</p>'}<button type="button" class="pulse-open" data-metric-help="这里观察的是发帖与互动综合关注强度，不只看新增帖数。要求最近三窗有效，速度和加速度均为正，最近三窗至少3条新增帖；按加速度降序排列。具体日窗、来源与原帖可进入主题核对，不代表未来一定爆发。">查看判断依据</button></aside></div><div class="pulse-scope">${pulseFinite(current?.heat)?'两个论坛本窗均满足采集覆盖要求。':'本窗采集覆盖不足，已采集数量仅作样本展示。'}议题榜不含未细分的“其他”和灌水类；原帖摘录仅举例，点击帖数可核对完整日窗样本。</div><details class="pulse-technical" ${wasOpen?'open':''}><summary>查看整体关注曲线与统计方法</summary><div class="pulse-technical-body"><figure class="pulse-chart"><button type="button" class="pulse-chart-button" data-metric-help="${esc(intensity+' 横轴为日窗结束时间；缺测断线。阴影为历史误差参考，不是置信区间。')}" aria-label="查看整体曲线统计口径">${m.latest?pulseChart(m):'<p>尚无完整日窗，暂不绘制。</p>'}</button><figcaption><span class="pulse-key">观测</span><span class="pulse-key pulse-key--future">外推参考</span><span class="pulse-key pulse-key--gap">缺测断开</span></figcaption></figure><div><p>${esc(intensity)}</p><p>${esc(overallReason)}。预测表示统计参考；当前为持平参考时，不能据此判断明天没有热点。</p><button type="button" class="pulse-open" data-pulse-full>核对全部议题与日窗</button></div></div></details>`;
+  const intensity=String(data.method?.intensity||'')+'。关注强度采用归一化指标，可超过100。';
+  el.innerHTML=heading+`<div class="pulse-lead"><p>已采集 ${numbers(obsNumber(b.count)+' 条新增帖样本',help)}，${numbers(change,help+'比较窗：'+(b.previous?obsTime(b.previous.ts,true)+'—'+obsTime(b.previous.ts+PULSE_DAY,true):'未知'))}。${b.topics.length?`具体议题中，新增讨论最多的是${b.topics.map(t=>'“'+esc(t.theme)+'”').join('、')}。`:'本窗暂未采集到可展示的具体议题。'}</p><div class="pulse-source-links">${sourceButton('huyou-school')}${sourceButton('tieba-school')}</div></div><div class="pulse-brief-body"><div class="pulse-discussions"><table class="pulse-discussion-table"><caption class="sr-only">近24小时新增讨论最多的三个议题、与前窗的数量变化和原帖摘录</caption><thead><tr><th scope="col">具体议题</th><th scope="col">新增帖</th><th scope="col">较前窗</th><th scope="col">同学具体在说什么</th></tr></thead><tbody>${rows||'<tr><td colspan="4">本窗暂无可展示的新讨论，可查看其他日窗。</td></tr>'}</tbody></table>${status==='error'?'<button type="button" class="pulse-retry" id="pulseEvidenceRetry">重新读取原帖摘录</button>':''}</div><aside class="pulse-watch"><h3>哪些议题值得继续观察</h3>${b.accelerating.map(t=>`<button type="button" class="pulse-watch-topic" data-pulse-theme="${esc(t.theme)}"><strong>${esc(t.theme)}</strong><span>发帖与互动综合关注正在加速上升</span></button>`).join('')||'<p>暂无连续观测有效且持续升温加速的议题。</p>'}<button type="button" class="pulse-open" data-metric-help="这里同时观察发帖与互动的综合关注变化。要求最近三窗有效，速度和加速度均为正，最近三窗至少3条新增帖；按加速度降序排列。具体日窗、来源与原帖可进入主题核对，后续变化需继续观察。">查看判断依据</button></aside></div><div class="pulse-scope">${pulseFinite(current?.heat)?'两个论坛本窗均满足采集覆盖要求。':'本窗采集覆盖不足，已采集数量仅作样本展示。'}议题榜不含未细分的“其他”和灌水类；原帖摘录仅举例，点击帖数可核对完整日窗样本。</div><details class="pulse-technical" ${wasOpen?'open':''}><summary>查看整体关注曲线与统计方法</summary><div class="pulse-technical-body"><figure class="pulse-chart"><button type="button" class="pulse-chart-button" data-metric-help="${esc(intensity+' 横轴为日窗结束时间；缺测断线。阴影展示历史误差参考范围。')}" aria-label="查看整体曲线统计口径">${m.latest?pulseChart(m):'<p>尚无完整日窗，暂不绘制。</p>'}</button><figcaption><span class="pulse-key">观测</span><span class="pulse-key pulse-key--future">外推参考</span><span class="pulse-key pulse-key--gap">缺测断开</span></figcaption></figure><div><p>${esc(intensity)}</p><p>${esc(overallReason)}。预测表示统计参考；当前为持平参考时，后续变化随新采集数据更新。</p><button type="button" class="pulse-open" data-pulse-full>核对全部议题与日窗</button></div></div></details>`;
   el.querySelector('.pulse-updated').textContent=period+' · 北京时间';
   el.querySelector('.pulse-heading .pulse-open').onclick=()=>pulseOpenTimeline();
   el.querySelector('[data-pulse-full]').onclick=()=>pulseOpenTimeline();
@@ -6244,9 +6270,9 @@ renderCampusPulse();
 /* Numerical provenance stays beside the real data; it never changes a metric. */
 (function(){
   'use strict';
-  const intensity='关注强度 H：每个24小时窗内的新增帖，每帖计1；再加已有帖曝光、回复的对数增量。除以该论坛本窗独立采集帖数，乘100，两个论坛等权平均。它是归一化关注指标，不是帖子数、百分比、全校人数或爆发概率；可能超过100。';
-  const change='速度 v=本窗H−上一窗H；加速度 a=本窗H−2×上一窗H+上上窗H，单位分别为关注指标/24小时、关注指标/(24小时)²。正值表示上升或加速，负值表示下降或减速。缺测不按0参与计算。';
-  const forecast='24/48/72h分别指统计更新时间之后第1/2/3个24小时窗。数值外推的是关注强度H。需最近3窗有效且样本足够；不同模型按历史滚动误差与持平参考比较。误差参考带不是概率置信区间。“—”表示缺测或不满足外推条件，不是0。';
+  const intensity='关注强度 H：每个24小时窗内的新增帖，每帖计1；再加已有帖曝光、回复的对数增量。除以该论坛本窗独立采集帖数，乘100，两个论坛等权平均。该归一化指标用于比较关注变化，数值可超过100；帖子数量、人数与概率各有独立的计量口径。';
+  const change='速度 v=本窗H−上一窗H；加速度 a=本窗H−2×上一窗H+上上窗H，单位分别为关注指标/24小时、关注指标/(24小时)²。正值表示上升或加速，负值表示下降或减速。缺测保留空值，计算仅采用有效日窗。';
+  const forecast='24/48/72h分别指统计更新时间之后第1/2/3个24小时窗。数值外推的是关注强度H。需最近3窗有效且样本足够；不同模型按历史滚动误差与持平参考比较。参考带展示历史误差范围；“—”表示资料缺失或外推条件不足。概率置信区间需要另行估计。';
   const selectors='.kpi-num,.reader-count,.reader-position,.reader-number,.reader-row-context,.badge,.observation-number strong,.account-metric strong,.dashboard-health b,.frequency-list b,.forum-post-head,.forum-evidence,.post-item-header,.reader-content .card-meta-row span,.red-stat,.red-themes,.evolution-cell,.evolution-topic,.evolution-table th,.stat-table td,.stat-table th,.reader-content .card-desc,.auto-report small,.timeline-chart text,.process-chart text,.process-chart [data-process-day],.day-metrics span,.process-milestones time,.process-milestones p,.outlook-column,.projection-strip,.forecast-validation,.data-note,.status-meta,#obsCoverage,#forumTotal,#redHotspots,#campusWordcloud span,.report-row .report-meta,.report-row .report-index,.crisis-alert-stats,.campus-evidence-summary';
   const panel=document.createElement('aside');panel.className='metric-help-panel';panel.hidden=true;panel.setAttribute('aria-label','数字说明');panel.innerHTML='<div class="metric-help-head"><strong>数字说明</strong><button type="button" aria-label="关闭数字说明">关闭</button></div><p class="metric-help-value"></p><p class="metric-help-definition" id="metric-help-definition"></p>';
   panel.setAttribute('role','dialog');
@@ -6255,30 +6281,30 @@ renderCampusPulse();
     const authored=e.closest('[data-readable-definition]');
     if(authored)return authored.dataset.readableDefinition;
     const own=e.textContent.trim(),context=(e.closest('tr,.account-metric,.observation-number,.kpi-card,.frequency-list,.forecast-validation,.outlook-column')||e.parentElement)?.textContent||own;
-    if(e.closest('.process-chart,.timeline-chart')&&/^\d+\/\d+$/.test(own))return '横轴日期表示连续24小时统计窗的起点，具体起止时间在日窗面板显示，不是自然日0点。'+forecast;
-    if(e.closest('.observation-number'))return /可作外推/.test(context)?'左侧是满足当前外推条件的主题数，右侧是暂不满足条件的主题数，二者相加为覆盖主题总数。不是预测概率或正确率。':/完整观测|完整日窗/.test(context)?'左侧是两个论坛均满足采集覆盖要求的完整24小时窗数，右侧是总计10个观测窗。缺测窗不当成0。':/覆盖主题/.test(context)?'本窗口内可展示帖子覆盖的不同主题数量；主题来自已分析分类，非学校全部议题总量。':'十日统计窗口内，按来源与帖子链接/正文键去重并过滤广告、危机原文的独立帖子数；不是全校总量。';
+    if(e.closest('.process-chart,.timeline-chart')&&/^\d+\/\d+$/.test(own))return '横轴日期表示连续24小时统计窗的起点，具体起止时间在日窗面板显示，起点以面板标注的时间为准。'+forecast;
+    if(e.closest('.observation-number'))return /可作外推/.test(context)?'左侧是满足当前外推条件的主题数，右侧是暂不满足条件的主题数，二者相加为覆盖主题总数。单位为主题数。':/完整观测|完整日窗/.test(context)?'左侧是两个论坛均满足采集覆盖要求的完整24小时窗数，右侧是总计10个观测窗。缺测窗留空。':/覆盖主题/.test(context)?'本窗口内可展示帖子覆盖的不同主题数量；主题来自已分析分类，统计范围为已采集主题。':'十日统计窗口内，按来源与帖子链接/正文键去重并过滤广告、危机原文的独立帖子数；统计范围为已采集样本。';
     if(e.closest('.evolution-cell,.process-chart')&&!e.closest('.evolution-topic'))return intensity+'\n'+forecast+'\n点击日窗同时保留原有联动：在下方查看该窗来源、新增帖和原帖。';
-    if(e.closest('.evolution-topic'))return '“帖”是当前十日窗口内该主题可展示的独立帖子数，按来源和帖子地址或正文键去重，过滤广告与危机原文。分类由主题映射；不是全校发帖总量。';
-    if(e.closest('.evolution-table th'))return '日期是24小时统计窗的起点，具体起止时间可在所选日窗查看；并非自然日0点。'+forecast;
+    if(e.closest('.evolution-topic'))return '“帖”是当前十日窗口内该主题可展示的独立帖子数，按来源和帖子地址或正文键去重，过滤广告与危机原文。分类由主题映射；统计范围为已采集样本。';
+    if(e.closest('.evolution-table th'))return '日期是24小时统计窗的起点，具体起止时间可在所选日窗查看；起点以面板标注的时间为准。'+forecast;
     if(/加速度|速度/.test(context))return change+'\n'+intensity;
     if(/强度|外推|误差|24h|48h|72h/.test(context))return intensity+'\n'+forecast;
-    if(/爆款系数|升温信号/.test(own))return '关键词升温统计量：(快衰减计数−慢衰减计数)/√(慢衰减计数+0.05)。用于比较近期升温信号，不是点击率、倍数或概率；来源为已采集热榜。';
-    if(/校园关联度|选题排序分/.test(own))return '这是选题排序分，非关联百分比：话题排序分×(0.4+0.3×校园相关级别)×(0.6+0.3×选题价值级别)，再乘梗、危机、内容风险权重。包含规则/模型标签，只用于排序。';
-    if(/最高榜位/.test(own))return '该聚合议题在已采集来源榜单中最靠前的名次。#1表示第一名；不同平台榜单的名次不能直接等同浏览量。';
-    if(/费用|实付/.test(context))return context.trim()+'。模型费参考=已记录输入Token×输入单价/100万+已记录输出Token×输出单价/100万。单价由用户按实际服务商填写；固定实付按已支付账单登记。旧主研报缺失用量、缓存优惠和模型差价未计入，不等于系统全部真实支出。';
-    if(/TOKEN|Token|token/.test(context))return 'Token是模型服务商返回的文本计量单位，不等于中文字数。'+context.trim()+'。已记录用量只累计可核实usage；未知用量不作0，历史可能重叠的批次汇总单独列出。';
-    if(e.closest('.account-metric,.dashboard-health'))return context.trim()+'。累计独立帖子按来源与链接/正文哈希去重；条次包括重复轮询；完成报告按成功归档计数，未完成草稿不算完成；请求数来自实际模型调用台账。';
+    if(/爆款系数|升温信号/.test(own))return '关键词升温统计量：(快衰减计数−慢衰减计数)/√(慢衰减计数+0.05)。用于比较近期升温信号，采用已采集热榜计算，单位为升温统计分。';
+    if(/校园关联度|选题排序分/.test(own))return '选题排序分计算方式：话题排序分×(0.4+0.3×校园相关级别)×(0.6+0.3×选题价值级别)，再乘梗、危机、内容风险权重。包含规则/模型标签，只用于排序。';
+    if(/最高榜位/.test(own))return '该聚合议题在已采集来源榜单中最靠前的名次。#1表示第一名；各平台名次按本平台榜单理解，浏览量另行统计。';
+    if(/费用|实付/.test(context))return context.trim()+'。模型费参考=已记录输入Token×输入单价/100万+已记录输出Token×输出单价/100万。单价由用户按实际服务商填写；固定实付按已支付账单登记。旧主研报缺失用量、缓存优惠和模型差价未计入，完整支出以服务商账单和费用登记为准。';
+    if(/TOKEN|Token|token/.test(context))return 'Token是模型服务商返回的文本计量单位，按服务商分词规则计算。'+context.trim()+'。已记录用量只累计可核实usage；未知用量留空，历史可能重叠的批次汇总单独列出。';
+    if(e.closest('.account-metric,.dashboard-health'))return context.trim()+'。累计独立帖子按来源与链接/正文哈希去重；条次包括重复轮询；完成报告按成功归档计数，只统计成功归档的报告；请求数来自实际模型调用台账。';
     if(e.closest('#campusWordcloud,.frequency-list'))return '词频/字号表示统计窗口内含该词的独立帖子数，每帖每词最多记1次；并非这个词在文本中重复出现的总次数。'+((e.dataset.wordCount||e.title)?'\n'+(e.dataset.wordCount||e.title):'');
-    if(/传播分|来源分布熵|相对前三日|持续性/.test(context))return 'DF为含该词/句式的独立帖子数；出现日数为窗口内至少出现一次的日窗数。传播分=ln(1+DF)×(1+来源熵)×(1+截断正增长)×(1+持续性)×DF/(DF+5)，仅用于相对排序。来源熵=−Σp·log₂p；两个来源时0表示集中单一来源，1表示均匀。增长倍数=(最近3日含词帖数+1)/(前3日含词帖数+1)，加1平滑；正增长项为max(0,倍数−1)，最高截断为2。持续性=出现日窗数/有效观测日窗数，最高记1。缺少资料时不算0。不能据此证明转发链。';
-    if(/热度/.test(context))return '热度0—100为本来源内的互动量分位数。同互动量同分；零互动为0。狐友原始量=ln(1+曝光)+2ln(1+回复)，贴吧=2ln(1+回复)。不是全网热度或互动总数；不同来源分别计算。列表序号是当前排列位置；时间为发帖时间，缺失时标注首次采集时间，不是采集次数。';
-    if(/回复|曝光/.test(context))return '回复为采集时原论坛显示的评论/回复数量；曝光为狐友页面显示的曝光次数，不是独立访问人数。序号仅代表当前列表位置；时间为发帖时间，缺失时标注首次采集时间。';
-    if(/负向|负面|消极|%/.test(context))return '负向情绪百分比=已分析样本中被标为消极的帖子数÷该主题已分析帖子数×100%。来自现有情绪标注，不能代表全校学生情绪比例。';
-    if(e.closest('.reader-count,.reader-position,.reader-number'))return '索引序号是当前排序中的位置；“当前 / 总数”表示已选议题位置和可见议题总数，不表示热度。';
-    if(e.closest('.stat-table')){const cell=e.closest('th,td'),cells=[...cell.parentElement.children],i=cells.indexOf(cell),table=e.closest('table');const label=table.querySelectorAll('thead tr:last-child th')[i]?.textContent||'';return '本列：'+label+'。'+(/速度|加速度/.test(label)?change:/预测|外推/.test(label)?forecast:/帖子|独立/.test(label)?'当前窗口内本主题的已采集独立帖子数量，按来源与帖子键去重，广告与危机原文不展示。':/Token/i.test(label)?'该统计日服务商实际返回的已记录Token用量；未知用量不算0。':/失败/.test(label)?'该统计日未成功完成的模型请求次数。':/请求/.test(label)?'该统计日台账记录的实际模型请求次数。':'日期为北京时间的统计日；该列值按紧邻表头的单位阅读。');}
-    if(/高危|预警|重点关注/.test(context))return '所选采集与分析窗口中被风险标注为高危或关注的帖子条数，不是已确诊人数；需教师复核。公开原帖视图不展示危机原文。';
-    if(/日窗|批次|窗口|更新时间|最近|\d+\/\d+.*:/.test(context))return context.trim()+'。日窗为连续24小时，完整窗要求两个论坛都有有效覆盖；日期/时间以北京时间显示。采集批次代表一次轮询，未采集不等于0帖。';
-    if(/帖|讨论|样本|主题/.test(context))return '本处显示所标统计窗口的已采集帖子或议题数量，非全校总量。十日趋势按来源及帖子键去重；七日原帖重新筛选并近似去重；主题索引计数来自已完成分析，口径可能不同。';
-    return '当前项：'+own+'。此数字是本项显示的数量、顺序或时间，请结合紧邻标签阅读；原始帖子与研报正文中的数字保留作者语境，不自动当作系统指标。';
+    if(/传播分|来源分布熵|相对前三日|持续性/.test(context))return 'DF为含该词/句式的独立帖子数；出现日数为窗口内至少出现一次的日窗数。传播分=ln(1+DF)×(1+来源熵)×(1+截断正增长)×(1+持续性)×DF/(DF+5)，仅用于相对排序。来源熵=−Σp·log₂p；两个来源时0表示集中单一来源，1表示均匀。增长倍数=(最近3日含词帖数+1)/(前3日含词帖数+1)，加1平滑；正增长项为max(0,倍数−1)，最高截断为2。持续性=出现日窗数/有效观测日窗数，最高记1。资料缺失时留空；传播路径需结合原帖链接核实。';
+    if(/热度/.test(context))return '热度0—100为本来源内的互动量分位数。同互动量同分；零互动为0。狐友原始量=ln(1+曝光)+2ln(1+回复)，贴吧=2ln(1+回复)。各来源分别计算，原始互动量可查看对应帖子。列表序号是当前排列位置；时间为发帖时间，缺失时标注首次采集时间，采集次数另行统计。';
+    if(/回复|曝光/.test(context))return '回复为采集时原论坛显示的评论/回复数量；曝光为狐友页面显示的曝光次数，单位为展示次数。序号仅代表当前列表位置；时间为发帖时间，缺失时标注首次采集时间。';
+    if(/负向|负面|消极|%/.test(context))return '负向情绪百分比=已分析样本中被标为消极的帖子数÷该主题已分析帖子数×100%。来自现有情绪标注，统计范围为该主题的已分析帖子。';
+    if(e.closest('.reader-count,.reader-position,.reader-number'))return '索引序号是当前排序中的位置；“当前 / 总数”表示已选议题位置和可见议题总数，用于定位当前议题。';
+    if(e.closest('.stat-table')){const cell=e.closest('th,td'),cells=[...cell.parentElement.children],i=cells.indexOf(cell),table=e.closest('table');const label=table.querySelectorAll('thead tr:last-child th')[i]?.textContent||'';return '本列：'+label+'。'+(/速度|加速度/.test(label)?change:/预测|外推/.test(label)?forecast:/帖子|独立/.test(label)?'当前窗口内本主题的已采集独立帖子数量，按来源与帖子键去重，广告与危机原文不展示。':/Token/i.test(label)?'该统计日服务商实际返回的已记录Token用量；未知用量留空。':/失败/.test(label)?'该统计日未成功完成的模型请求次数。':/请求/.test(label)?'该统计日台账记录的实际模型请求次数。':'日期为北京时间的统计日；该列值按紧邻表头的单位阅读。');}
+    if(/高危|预警|重点关注/.test(context))return '所选采集与分析窗口中被风险标注为高危或关注的帖子条数，单位为标注帖子条数，供教师复核；危机内容采用汇总统计展示。';
+    if(/日窗|批次|窗口|更新时间|最近|\d+\/\d+.*:/.test(context))return context.trim()+'。日窗为连续24小时，完整窗要求两个论坛都有有效覆盖；日期/时间以北京时间显示。采集批次代表一次轮询，缺少采集记录的时段保留空值。';
+    if(/帖|讨论|样本|主题/.test(context))return '本处显示所标统计窗口的已采集帖子或议题数量，统计范围为已采集样本。十日趋势按来源及帖子键去重；七日原帖重新筛选并近似去重；主题索引计数来自已完成分析，口径可能不同。';
+    return '当前项：'+own+'。此数字是本项显示的数量、顺序或时间，请结合紧邻标签阅读；原帖与报告正文中的数字按作者语境阅读。';
   }
   function annotate(){document.querySelectorAll(selectors).forEach(original=>{
     let e=original;
@@ -6367,7 +6393,7 @@ renderCampusPulse=function(failed=false){
   const post=feature?pulseEvidenceFor(posts,feature.theme,current):null;
   const headline=pulseCoverHeadline(feature);
   const period=current?obsTime(current.ts,true)+'—'+obsTime(current.ts+PULSE_DAY,true)+' · 北京时间':'统计窗口正在读取';
-  const countsHelp='本日窗采集、按来源与帖子键去重的公开帖子；无有效发帖时间时按首次采集时间归窗。不是全校发帖总量。窗口：'+period+'。';
+  const countsHelp='本日窗采集、按来源与帖子键去重的公开帖子；无有效发帖时间时按首次采集时间归窗。统计范围为已采集样本。窗口：'+period+'。';
   const comparisonHelp=countsHelp+'变化是相邻两个有效24小时窗的采集篇数之差；覆盖不足不比较，缺测不计作零。';
   const metric=(label,help)=>`<button type="button" class="cover-metric" data-metric-help="${esc(help)}">${esc(label)}</button>`;
   coverDate.textContent=data?.generated_at?new Date(data.generated_at*1000).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai',month:'long',day:'numeric',weekday:'long'}):'校园观察';
@@ -6379,7 +6405,7 @@ renderCampusPulse=function(failed=false){
   const excerptState=!data?(PULSE_FAILED?'统计读取失败，请重新读取。':'正在读取真实校园讨论…'):!ready?(PULSE_EVIDENCE.status==='error'?'原帖读取失败，可重新读取或查看完整样本。':'正在读取这个日窗的原帖…'):'这个议题暂无可展示原帖，未用生成文字补齐。';
   const excerpt=(p,theme)=>p?(sourcePostLink(p.link||p.url,pulseCoverSnippet(p))||`<button type="button" class="cover-excerpt-fallback" data-cover-posts="${esc(theme)}">${esc(pulseCoverSnippet(p))}</button>`):`<p class="cover-loading" role="status">${esc(excerptState)}</p>`;
   const shell=document.createElement('div');shell.className='cover-shell';
-  shell.innerHTML=`<section class="cover-feature"><figure class="cover-photo"><a class="cover-photo-source" href="https://commons.wikimedia.org/wiki/File:20150919--16-09_Xuhui_Campus--%E5%A4%A7%E8%8D%89%E5%9D%AA.jpg" target="_blank" rel="noopener noreferrer" aria-label="查看校园照片来源：摄影 Simhan2016，CC BY-SA 4.0" title="徐汇校区大草坪 · 摄影 Simhan2016 · CC BY-SA 4.0"><img src="/static/img/ecust-lawn.jpg" width="2000" height="1125" alt="华东理工大学徐汇校区大草坪与主楼" fetchpriority="high"></a></figure><div class="cover-feature-copy"><h1 id="campusCoverTitle">${esc(headline[0])}<br>${esc(headline[1])}</h1><div class="cover-feature-counts">${feature?`<span>${esc(feature.theme)}</span>${metric(feature.count+' 篇采集样本',countsHelp)}${metric(feature.delta==null?'前窗无法比较':feature.delta===0?'与前窗持平':'较前窗 '+(feature.delta>0?'+':'')+feature.delta+' 篇',comparisonHelp)}`:`<p role="status">${data?'本窗暂无具体议题':'正在核对讨论样本…'}</p>`}</div><div class="cover-actions"><button type="button" id="coverReadFeature" class="cover-primary" ${feature?'':'disabled'}>阅读${feature?esc(feature.theme):'议题'}原帖</button><button type="button" id="coverBrowseAll" class="cover-text-action">浏览全部议题</button></div></div></section><section class="cover-topics" aria-labelledby="coverTopicsTitle"><div class="cover-section-heading"><h2 id="coverTopicsTitle">校园正在谈论</h2><details class="cover-scope" ${scopeOpen?'open':''}><summary>${brief?esc((brief.count??'未知')+' 篇采集样本'):'统计窗口与采集口径'}</summary><p>${esc(period)}</p><p>采集样本不代表论坛全部发帖量或全体学生意见；覆盖不足不比较增减。</p><div class="cover-source-actions">${current?['huyou-school','tieba-school'].map(s=>`<button type="button" class="cover-text-action" data-cover-source="${s}">${esc(FORUM_NAMES[s])} ${esc(obsNumber(current.by_source?.[s]))}篇 · 查看原帖</button>`).join(''):''}</div></details></div><div class="cover-topic-index">${brief?.topics.length?brief.topics.map((t,i)=>{const p=pulseEvidenceFor(posts.filter(p=>p!==post),t.theme,current);return `<article><div class="cover-topic-title"><button type="button" id="coverTopic${i}" class="cover-topic-name" data-cover-theme="${esc(t.theme)}">${esc(t.theme)}</button><button type="button" class="cover-topic-count" data-cover-posts="${esc(t.theme)}" aria-label="查看${esc(t.theme)}本日窗${t.count}篇原帖">${t.count} 篇</button></div><div class="cover-topic-excerpt">${!p&&t.theme===feature?.theme&&post?`<button type="button" class="cover-text-action" data-cover-posts="${esc(t.theme)}">阅读这个日窗的原帖</button>`:excerpt(p,t.theme)}</div>${p?`<p class="cover-source-note">${esc(FORUM_NAMES[p.source]||p.source)} · ${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</p>`:''}</article>`;}).join(''):`<p class="cover-loading" role="status">${esc(excerptState)}</p>`}</div></section><section class="cover-voice" aria-labelledby="coverVoiceTitle"><div><h2 id="coverVoiceTitle">从原帖开始</h2><p>${feature?esc(feature.theme):'学生原声'}</p></div><div><blockquote>${post?excerpt(post,feature.theme):`<p class="cover-loading" role="status">${esc(excerptState)}</p>`}</blockquote>${post?`<p class="cover-source-note">${esc(FORUM_NAMES[post.source]||post.source)} · ${esc(obsTime(post.published,true))}${post.time_basis==='first_observed'?' · 首次采集':''}</p>`:''}<div class="cover-reading-actions"><button type="button" id="coverAllFeaturePosts" class="cover-text-action" ${feature?'':'disabled'}>查看本日窗全部${feature?feature.count:''} 篇原帖</button><button type="button" id="coverResearch" class="cover-text-action" ${feature?'':'disabled'}>研究${feature?esc(feature.theme):'这个议题'}</button><button type="button" id="coverRetry" class="cover-text-action" ${!data||PULSE_EVIDENCE.status==='error'?'':'hidden'}>重新读取</button></div></div></section>`;
+  shell.innerHTML=`<section class="cover-feature"><figure class="cover-photo"><a class="cover-photo-source" href="https://commons.wikimedia.org/wiki/File:20150919--16-09_Xuhui_Campus--%E5%A4%A7%E8%8D%89%E5%9D%AA.jpg" target="_blank" rel="noopener noreferrer" aria-label="查看校园照片来源：摄影 Simhan2016，CC BY-SA 4.0" title="徐汇校区大草坪 · 摄影 Simhan2016 · CC BY-SA 4.0"><img src="/static/img/ecust-lawn.jpg" width="2000" height="1125" alt="华东理工大学徐汇校区大草坪与主楼" fetchpriority="high"></a></figure><div class="cover-feature-copy"><h1 id="campusCoverTitle">${esc(headline[0])}<br>${esc(headline[1])}</h1><div class="cover-feature-counts">${feature?`<span>${esc(feature.theme)}</span>${metric(feature.count+' 篇采集样本',countsHelp)}${metric(feature.delta==null?'前窗无法比较':feature.delta===0?'与前窗持平':'较前窗 '+(feature.delta>0?'+':'')+feature.delta+' 篇',comparisonHelp)}`:`<p role="status">${data?'本窗暂无具体议题':'正在核对讨论样本…'}</p>`}</div><div class="cover-actions"><button type="button" id="coverReadFeature" class="cover-primary" ${feature?'':'disabled'}>阅读${feature?esc(feature.theme):'议题'}原帖</button><button type="button" id="coverBrowseAll" class="cover-text-action">浏览全部议题</button></div></div></section><section class="cover-topics" aria-labelledby="coverTopicsTitle"><div class="cover-section-heading"><h2 id="coverTopicsTitle">校园正在谈论</h2><details class="cover-scope" ${scopeOpen?'open':''}><summary>${brief?esc((brief.count??'未知')+' 篇采集样本'):'统计窗口与采集口径'}</summary><p>${esc(period)}</p><p>统计范围为已采集的公开论坛帖子；增减比较采用覆盖完整的日窗。</p><div class="cover-source-actions">${current?['huyou-school','tieba-school'].map(s=>`<button type="button" class="cover-text-action" data-cover-source="${s}">${esc(FORUM_NAMES[s])} ${esc(obsNumber(current.by_source?.[s]))}篇 · 查看原帖</button>`).join(''):''}</div></details></div><div class="cover-topic-index">${brief?.topics.length?brief.topics.map((t,i)=>{const p=pulseEvidenceFor(posts.filter(p=>p!==post),t.theme,current);return `<article><div class="cover-topic-title"><button type="button" id="coverTopic${i}" class="cover-topic-name" data-cover-theme="${esc(t.theme)}">${esc(t.theme)}</button><button type="button" class="cover-topic-count" data-cover-posts="${esc(t.theme)}" aria-label="查看${esc(t.theme)}本日窗${t.count}篇原帖">${t.count} 篇</button></div><div class="cover-topic-excerpt">${!p&&t.theme===feature?.theme&&post?`<button type="button" class="cover-text-action" data-cover-posts="${esc(t.theme)}">阅读这个日窗的原帖</button>`:excerpt(p,t.theme)}</div>${p?`<p class="cover-source-note">${esc(FORUM_NAMES[p.source]||p.source)} · ${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</p>`:''}</article>`;}).join(''):`<p class="cover-loading" role="status">${esc(excerptState)}</p>`}</div></section><section class="cover-voice" aria-labelledby="coverVoiceTitle"><div><h2 id="coverVoiceTitle">从原帖开始</h2><p>${feature?esc(feature.theme):'学生原声'}</p></div><div><blockquote>${post?excerpt(post,feature.theme):`<p class="cover-loading" role="status">${esc(excerptState)}</p>`}</blockquote>${post?`<p class="cover-source-note">${esc(FORUM_NAMES[post.source]||post.source)} · ${esc(obsTime(post.published,true))}${post.time_basis==='first_observed'?' · 首次采集':''}</p>`:''}<div class="cover-reading-actions"><button type="button" id="coverAllFeaturePosts" class="cover-text-action" ${feature?'':'disabled'}>查看本日窗全部${feature?feature.count:''} 篇原帖</button><button type="button" id="coverResearch" class="cover-text-action" ${feature?'':'disabled'}>研究${feature?esc(feature.theme):'这个议题'}</button><button type="button" id="coverRetry" class="cover-text-action" ${!data||PULSE_EVIDENCE.status==='error'?'':'hidden'}>重新读取</button></div></div></section>`;
   host.append(shell,archive);
   if(coverStatusBanner){const details=document.createElement('details');details.className='cover-platform-status';details.open=statusOpen;const statusTitle=document.createElement('summary');statusTitle.textContent='系统运行状态';details.append(statusTitle,coverStatusBanner);host.append(details);}
   const openPosts=theme=>viewObservedPosts({theme,from:current.ts,until:current.ts+PULSE_DAY},theme+' · 本24小时窗');
@@ -6417,9 +6443,9 @@ updateCoverReaderScope();
 document.body.classList.add('campus-shell');
 
 /* Count-based forecasts and source counters. Never relabel a heat score as views. */
-const activityCountsHelp='按来源与帖子键去重的公开采集样本；按发帖时间归入连续24小时窗，缺少发布时间时按首次采集时间归窗。不是全校发帖总量。';
-const activityExposureHelp='狐友采集字段 exposureCount（曝光次数），每帖取最新采集的累计值、去重求和。不是独立浏览人数，也不是统计窗内新增浏览量。贴吧没有采集曝光量，不混入这项指标。';
-const activityRepliesHelp='双论坛每帖最新采集时显示的累计评论/回复数，去重求和。按新帖归窗，不是本日新增回复，也不是独立参与人数。';
+const activityCountsHelp='按来源与帖子键去重的公开采集样本；按发帖时间归入连续24小时窗，缺少发布时间时按首次采集时间归窗。统计范围为已采集样本。';
+const activityExposureHelp='狐友采集字段 exposureCount（曝光次数），每帖取最新采集的累计值、去重求和。单位为曝光次数，统计已采集的累计值；来源为狐友。';
+const activityRepliesHelp='双论坛每帖最新采集时显示的累计评论/回复数，去重求和。按新帖归窗，统计这些新帖的累计回复条数。';
 function activityNumber(n){return n==null?'未采集':obsNumber(Math.round(n));}
 function activitySigned(n){return n==null?'无法比较':(n>0?'+':'')+activityNumber(n)+' 篇';}
 function activityMetric(text,help,cls='activity-metric'){
@@ -6428,10 +6454,10 @@ function activityMetric(text,help,cls='activity-metric'){
 function activityWindow(p){return p?obsTime(p.ts,true)+'—'+obsTime(p.ts+86400,true)+' · 北京时间':'日窗未知';}
 function activityCounterHelp(a,key){
   const s=a?.summary||a||{},exposure=key==='exposure';
-  return (exposure?activityExposureHelp:activityRepliesHelp)+` 本项已记录 ${s[key+'_known_posts']??0} / ${s[key+'_sample_posts']??0} 篇样本帖；缺少计数的帖子未计入，未知不显示为0。`;
+  return (exposure?activityExposureHelp:activityRepliesHelp)+` 本项已记录 ${s[key+'_known_posts']??0} / ${s[key+'_sample_posts']??0} 篇样本帖；缺少计数的帖子未计入，未知值显示为“—”。`;
 }
 function activityProjectionHelp(f,p){
-  return `预计未来第${p?.hours/24||1}个24小时窗新增帖子（篇），由历史新增帖数量计算，已取整展示。不是未来浏览量、曝光量或爆发概率。${f?.reason||'资料不足'}。参考范围来自历史平均绝对误差，不是置信区间。`;
+  return `预计未来第${p?.hours/24||1}个24小时窗新增帖子（篇），由历史新增帖数量计算，已取整展示。预计对象为采集样本中的新增帖数。${f?.reason||'资料不足'}。参考范围按历史平均绝对误差计算；概率置信区间需要另行估计。`;
 }
 function activityRange(p){return p?.lower==null?'误差资料不足':Math.floor(p.lower)+'—'+Math.ceil(p.upper)+' 篇（误差参考）';}
 function activityThemes(){
@@ -6446,25 +6472,25 @@ evolutionThemes=activityThemes;
 renderCampusOutlook=function(){
   const o=OBS.data?.outlook;if(!o?.overall?.activity){$('campusOutlook').innerHTML=obsError('明确指标读取失败，请刷新数据。');return;}
   const groups=[['校内论坛整体',o.overall],...Object.keys(CATEGORY_NAMES).map(k=>[CATEGORY_NAMES[k],o.categories[k]])];
-  $('campusOutlook').innerHTML='<div class="outlook-heading"><span>预计未来24小时新增帖</span><span>单位：篇 · 按真实发帖样本计算</span></div><div class="outlook-strip">'+groups.map(([label,t])=>{
+  $('campusOutlook').innerHTML='<div class="outlook-heading"><span>预计未来24小时新增帖</span><span>单位：篇 · 按采集样本计算</span></div><div class="outlook-strip">'+groups.map(([label,t])=>{
     const a=t.activity,p=a.forecast.path[0],now=a.timeline.at(-1);
     return `<div class="outlook-column"><span>${esc(label)}</span><strong>${activityMetric(p?'约 '+activityNumber(p.value)+' 篇':'暂不预计',activityProjectionHelp(a.forecast,p))}</strong><small>本窗 ${now.new_posts==null?'覆盖不足':now.posts+' 篇'} · ${esc(a.forecast.label)}</small><span class="outlook-model">十日 ${a.summary.posts} 篇采集样本</span></div>`;
-  }).join('')+'</div><p class="data-note">各分类与整体独立预计，分类之和不一定等于整体。覆盖不足或近期少于3篇样本时暂不预计。</p>';
+  }).join('')+'</div><p class="data-note">各分类与整体分别计算预计值。覆盖不足或近期少于3篇样本时暂不预计。</p>';
 };
 renderThemeEvolution=function(){
   const themes=activityThemes(),all=OBS.data.themes;
   const ceiling=Math.max(1,...all.flatMap(t=>(t.activity?.timeline||[]).map(p=>p.new_posts||0)));
   $('evolutionScope').textContent=`展示 ${themes.length} / ${all.length} 个主题 · 点击走势查看日窗与原帖`;
   const legend=document.querySelector('.evolution-legend');
-  if(legend)legend.innerHTML='<span>十日曲线表示每个24小时窗的新增帖数，统一纵轴 0—'+ceiling+' 篇；缺测断开。</span><span>累计曝光与回复仅对应本窗新帖样本，取最新采集计数；不是当天新增浏览或回复。贴吧曝光未采集。</span>';
+  if(legend)legend.innerHTML='<span>十日曲线表示每个24小时窗的新增帖数，统一纵轴 0—'+ceiling+' 篇；缺测断开。</span><span>累计曝光与回复仅对应本窗新帖样本，取最新采集计数；统计对应新帖的累计互动量。贴吧曝光未采集。</span>';
   const rows=themes.map(t=>{
     const a=t.activity;if(!a)return '';const p=a.timeline.at(-1),prediction=a.forecast.path[0];
     const plot={timeline:a.timeline.map(q=>({...q,heat:q.new_posts}))};
     const mini=evolutionMiniChart(plot,ceiling).replaceAll('综合关注','新增帖（篇）');
     const metric=(text,help)=>activityMetric(text,help+' 日窗：'+activityWindow(p),'evolution-number');
-    return `<tr class="${OBS.selected===t.theme?'selected-theme':''}" data-evolution-theme="${esc(t.theme)}"><th scope="row"><button type="button" class="evolution-topic" data-evolution-day="9" aria-pressed="${OBS.selected===t.theme}"><b>${esc(t.theme)}</b><small>${esc(CATEGORY_NAMES[t.category])} · 十日 ${a.summary.posts} 篇</small></button></th><td><button type="button" class="evolution-chart-open" data-evolution-day="9" aria-label="查看${esc(t.theme)}每日新增帖与原帖">${mini}</button></td><td>${metric(p.posts+' 篇',activityCountsHelp+(p.observed?'':'本窗覆盖不足，显示已采集样本，不参与比较。'))}</td><td>${metric(activityNumber(p.exposure),activityCounterHelp(p,'exposure'))}</td><td>${metric(activityNumber(p.replies),activityCounterHelp(p,'replies'))}</td><td>${metric(activitySigned(a.delta_posts),activityCountsHelp+' 本窗新增帖数减去紧邻前窗新增帖数。覆盖不足时不计算。')}</td><td>${metric(prediction?'约 '+activityNumber(prediction.value)+' 篇':'暂不预计',activityProjectionHelp(a.forecast,prediction))}</td><td><span class="evolution-phase">${esc(a.phase)}</span></td></tr>`;
+    return `<tr class="${OBS.selected===t.theme?'selected-theme':''}" data-evolution-theme="${esc(t.theme)}"><th scope="row"><button type="button" class="evolution-topic" data-evolution-day="9" aria-pressed="${OBS.selected===t.theme}"><b>${esc(t.theme)}</b><small>${esc(CATEGORY_NAMES[t.category])} · 十日 ${a.summary.posts} 篇</small></button></th><td><button type="button" class="evolution-chart-open" data-evolution-day="9" aria-label="查看${esc(t.theme)}每日新增帖与原帖">${mini}</button></td><td>${metric(p.posts+' 篇',activityCountsHelp+(p.observed?'':'本窗覆盖不足，显示已采集样本；比较采用完整日窗。'))}</td><td>${metric(activityNumber(p.exposure),activityCounterHelp(p,'exposure'))}</td><td>${metric(activityNumber(p.replies),activityCounterHelp(p,'replies'))}</td><td>${metric(activitySigned(a.delta_posts),activityCountsHelp+' 本窗新增帖数减去紧邻前窗新增帖数。覆盖完整后计算。')}</td><td>${metric(prediction?'约 '+activityNumber(prediction.value)+' 篇':'暂不预计',activityProjectionHelp(a.forecast,prediction))}</td><td><span class="evolution-phase">${esc(a.phase)}</span></td></tr>`;
   }).join('');
-  $('themeEvolution').innerHTML=rows?`<table class="evolution-ledger activity-ledger"><caption class="visually-hidden">主题新增帖走势、本窗新帖样本、狐友累计曝光、双论坛累计回复、数量变化及预计新增帖</caption><thead><tr><th>议题 / 十日样本</th><th>新增帖走势</th><th>本窗新帖</th><th>累计曝光<span class="activity-unit">狐友 · 次</span></th><th>累计回复<span class="activity-unit">双论坛 · 条</span></th><th>较前窗新帖</th><th>预计24h新帖</th><th>发帖变化</th></tr></thead><tbody>${rows}</tbody></table>`:obsError('此分类暂无真实议题');
+  $('themeEvolution').innerHTML=rows?`<table class="evolution-ledger activity-ledger"><caption class="visually-hidden">主题新增帖走势、本窗新帖样本、狐友累计曝光、双论坛累计回复、数量变化及预计新增帖</caption><thead><tr><th>议题 / 十日样本</th><th>新增帖走势</th><th>本窗新帖</th><th>累计曝光<span class="activity-unit">狐友 · 次</span></th><th>累计回复<span class="activity-unit">双论坛 · 条</span></th><th>较前窗新帖</th><th>预计24h新帖</th><th>发帖变化</th></tr></thead><tbody>${rows}</tbody></table>`:obsError('此分类暂无议题');
   $('themeEvolution').querySelectorAll('[data-evolution-day]').forEach(b=>b.onclick=()=>chooseEvolutionTheme(b.closest('[data-evolution-theme]').dataset.evolutionTheme,9));
 };
 function activityChart(t){
@@ -6474,7 +6500,7 @@ function activityChart(t){
   const sources=source==='all'?['all','huyou-school','tieba-school']:[source],colors={'all':'#234c40','huyou-school':'#6e7940','tieba-school':'#527b8f'};
   const max=Math.max(1,...points.flatMap(p=>sources.map(s=>val(p,s)||0)),...future.map(p=>p.upper??p.value)),ceiling=Math.max(4,Math.ceil(max/4)*4),y=v=>bottom-(bottom-top)*v/ceiling;
   let svg='<text x="48" y="18">新增帖（篇 / 24小时）</text>';
-  for(let i=0;i<5;i++){const n=ceiling*i/4;svg+=`<line x1="${left}" y1="${y(n)}" x2="${w-right}" y2="${y(n)}" stroke="#d6ddd5"/><text x="${left-10}" y="${y(n)+4}" text-anchor="end" data-readable-definition="纵轴表示该24小时窗新增帖的篇数，不是浏览量或人数。" data-metric-help="纵轴表示新增帖篇数。">${n}</text>`;}
+  for(let i=0;i<5;i++){const n=ceiling*i/4;svg+=`<line x1="${left}" y1="${y(n)}" x2="${w-right}" y2="${y(n)}" stroke="#d6ddd5"/><text x="${left-10}" y="${y(n)+4}" text-anchor="end" data-readable-definition="纵轴表示该24小时窗新增帖的篇数，单位为新增帖篇数。" data-metric-help="纵轴表示新增帖篇数。">${n}</text>`;}
   sources.forEach(s=>{
     let segment=[];const flush=()=>{if(segment.length>1)svg+=`<path d="${smoothTrendPath(segment)}" fill="none" stroke="${colors[s]}" stroke-width="${s==='all'?3:1.8}" ${s==='all'?'':'stroke-dasharray="3 5"'} stroke-linecap="round"/>`;segment=[];};
     points.forEach((p,i)=>{const n=val(p,s);if(n==null)flush();else segment.push([x(i),y(n)]);});flush();
@@ -6486,7 +6512,7 @@ function activityChart(t){
     future.forEach((p,i)=>{if(p.lower!=null)svg+=`<line x1="${x(10+i)}" y1="${y(p.lower)}" x2="${x(10+i)}" y2="${y(p.upper)}" stroke="#947245" stroke-width="2"/>`;svg+=`<circle cx="${x(10+i)}" cy="${y(p.value)}" r="4" fill="#947245"><title>预计新增约${Math.round(p.value)}篇；${activityRange(p)}</title></circle>`;});
   }
   points.forEach((p,i)=>{
-    const n=val(p,source),help=activityCountsHelp+' 日窗：'+activityWindow(p)+'；'+(n==null?'覆盖不足，不作比较。':n+'篇。');
+    const n=val(p,source),help=activityCountsHelp+' 日窗：'+activityWindow(p)+'；'+(n==null?'覆盖不足，待完整采集后比较。':n+'篇。');
     svg+=`<g role="button" tabindex="0" data-process-day="${i}" data-readable-definition="${esc(help)}" data-metric-help="${esc(help)}" aria-label="${obsTime(p.ts)}，${n==null?'覆盖不足':n+'篇新增帖'}"><rect x="${x(i)-22}" y="${top}" width="44" height="${bottom-top+12}" fill="${i===EVOLUTION.day?'#234c400b':'transparent'}"/>${n!=null?`<circle cx="${x(i)}" cy="${y(n)}" r="${i===EVOLUTION.day?5:3}" fill="#f5f4ee" stroke="${colors[source]}" stroke-width="2"/>`:`<text x="${x(i)}" y="${bottom-8}" text-anchor="middle">缺测</text>`}</g><text x="${x(i)}" y="251" text-anchor="middle" data-readable-definition="${esc(activityWindow(p))}" data-metric-help="统计窗结束时间">${obsTime(p.ts+86400)}</text>`;
   });
   [24,48,72].forEach((n,i)=>{svg+=`<text x="${x(10+i)}" y="251" text-anchor="middle" data-readable-definition="统计更新时间后的第${i+1}个24小时窗，数字表示预计新增帖。" data-metric-help="预计日窗">+${n}h</text>`;});
@@ -6499,12 +6525,12 @@ renderTrendReading=function(t){
   const metric=(text,help)=>activityMetric(text,help+' 日窗：'+activityWindow(p));
   const days=a.timeline.filter(q=>q.new_posts!=null),peak=days.length?days.reduce((best,q)=>q.posts>best.posts?q:best):null;
   const events=(t.milestones||[]).filter(e=>['source','cross_source'].includes(e.kind));
-  if(peak)events.push({ts:peak.ts,title:'窗口内新增帖最多的日窗',detail:peak.posts+' 篇新增帖；峰值按采集样本计算，不代表浏览量峰值'});
-  $('trendReading').innerHTML=`<div class="process-header"><div><h4>${esc(t.theme)}</h4><p class="data-note">十日 ${a.summary.posts} 篇独立样本 · 狐友 ${t.by_source['huyou-school']||0} / 贴吧 ${t.by_source['tieba-school']||0}</p></div><label class="process-source">曲线与预计来源 <select id="processSource"><option value="all" ${source==='all'?'selected':''}>双论坛</option><option value="huyou-school" ${source==='huyou-school'?'selected':''}>狐友华理圈</option><option value="tieba-school" ${source==='tieba-school'?'selected':''}>华理贴吧</option></select></label></div><div class="process-legend"><span>深绿：双论坛新增帖</span><span>橄榄：狐友</span><span>蓝灰：贴吧</span><span>棕色虚线：预计新增帖；竖线：历史误差参考</span></div><div class="process-chart-scroll">${activityChart(t)}</div><p class="process-curve-note">横轴为日窗结束时间；每个点是此前24小时的真实新增帖样本数，缺测断开。</p><div class="process-context"><section class="day-evidence"><h5>${activityWindow(p)}</h5><div class="activity-detail-counts"><div><span>本窗新增帖 · 双论坛</span><strong>${metric(p.posts+' 篇',activityCountsHelp)}</strong></div><div><span>新帖累计曝光 · 狐友</span><strong>${metric(activityNumber(p.exposure)+' 次',activityCounterHelp(p,'exposure'))}</strong></div><div><span>新帖累计回复 · 双论坛</span><strong>${metric(activityNumber(p.replies)+' 条',activityCounterHelp(p,'replies'))}</strong></div></div><p>曝光与回复取这些新帖的最新累计计数；不是当天新增浏览或回复。贴吧未采集曝光。</p><button class="btn sm" id="processDayPosts" type="button">阅读${esc(sourceName)}本窗 ${sourceCount} 条原帖</button></section><section class="process-milestones"><h5>可核查的讨论节点</h5><ol>${events.sort((x,y)=>x.ts-y.ts).map(e=>`<li><time>${obsTime(e.ts,true)}</time><div><b>${e.source?esc(FORUM_NAMES[e.source])+' · ':''}${esc(e.title)}</b><p>${esc(e.detail)}</p></div></li>`).join('')}</ol></section></div><section class="theme-projection"><div class="stat-heading"><h3>未来预计新增帖 · ${esc(sourceName)}</h3><span>${esc(f.label)}</span></div><div class="projection-strip">${f.path.map(q=>`<div><span>未来第 ${q.hours/24} 个24小时窗</span><strong>${activityMetric('约 '+activityNumber(q.value)+' 篇',activityProjectionHelp(f,q)+' 来源：'+sourceName+'。')}</strong><small>${activityRange(q)}</small></div>`).join('')||obsError(f.reason)}</div><p class="data-note">${esc(f.reason)}；只预计采集样本的新增帖子数量，不能据此判断事件一定发生。</p><details class="method-note"><summary>核对预计方法与历史误差</summary><div class="forecast-validation">${f.validation.map(v=>`<div><span>${esc({'persistence':'发帖量持平','damped':'发帖增长衰减','momentum':'发帖增速变化'}[v.model])}</span><b>${activityMetric(v.mae==null?'未核验':'约 '+activityNumber(v.mae)+' 篇','预测发帖数量的历史平均绝对误差MAE，单位为篇；误差越小越好，不是准确率。')}</b><small>${v.windows} 个历史日窗用于比较</small></div>`).join('')}</div><p>至少4个可核验日窗且平均误差比持平低5%才采用趋势模型；同一短历史序列用于选模和核验，尚无长期独立验证。</p></details></section><div class="trend-actions"><button type="button" class="btn sm" id="trendPostsButton">查看此主题全部 ${a.summary.posts} 条原帖</button><button type="button" class="btn sm primary" id="trendWorkshopButton">转为研报或活动议题</button></div>`;
+  if(peak)events.push({ts:peak.ts,title:'窗口内新增帖最多的日窗',detail:peak.posts+' 篇新增帖；峰值按采集样本计算，单位为新增帖篇数'});
+  $('trendReading').innerHTML=`<div class="process-header"><div><h4>${esc(t.theme)}</h4><p class="data-note">十日 ${a.summary.posts} 篇独立样本 · 狐友 ${t.by_source['huyou-school']||0} / 贴吧 ${t.by_source['tieba-school']||0}</p></div><label class="process-source">曲线与预计来源 <select id="processSource"><option value="all" ${source==='all'?'selected':''}>双论坛</option><option value="huyou-school" ${source==='huyou-school'?'selected':''}>狐友华理圈</option><option value="tieba-school" ${source==='tieba-school'?'selected':''}>华理贴吧</option></select></label></div><div class="process-legend"><span>深绿：双论坛新增帖</span><span>橄榄：狐友</span><span>蓝灰：贴吧</span><span>棕色虚线：预计新增帖；竖线：历史误差参考</span></div><div class="process-chart-scroll">${activityChart(t)}</div><p class="process-curve-note">横轴为日窗结束时间；每个点是此前24小时的已采集新增帖样本数，缺测断开。</p><div class="process-context"><section class="day-evidence"><h5>${activityWindow(p)}</h5><div class="activity-detail-counts"><div><span>本窗新增帖 · 双论坛</span><strong>${metric(p.posts+' 篇',activityCountsHelp)}</strong></div><div><span>新帖累计曝光 · 狐友</span><strong>${metric(activityNumber(p.exposure)+' 次',activityCounterHelp(p,'exposure'))}</strong></div><div><span>新帖累计回复 · 双论坛</span><strong>${metric(activityNumber(p.replies)+' 条',activityCounterHelp(p,'replies'))}</strong></div></div><p>曝光与回复为这些新帖截至最近采集时的累计计数。贴吧未采集曝光。</p><button class="btn sm" id="processDayPosts" type="button">阅读${esc(sourceName)}本窗 ${sourceCount} 条原帖</button></section><section class="process-milestones"><h5>可核查的讨论节点</h5><ol>${events.sort((x,y)=>x.ts-y.ts).map(e=>`<li><time>${obsTime(e.ts,true)}</time><div><b>${e.source?esc(FORUM_NAMES[e.source])+' · ':''}${esc(e.title)}</b><p>${esc(e.detail)}</p></div></li>`).join('')}</ol></section></div><section class="theme-projection"><div class="stat-heading"><h3>未来预计新增帖 · ${esc(sourceName)}</h3><span>${esc(f.label)}</span></div><div class="projection-strip">${f.path.map(q=>`<div><span>未来第 ${q.hours/24} 个24小时窗</span><strong>${activityMetric('约 '+activityNumber(q.value)+' 篇',activityProjectionHelp(f,q)+' 来源：'+sourceName+'。')}</strong><small>${activityRange(q)}</small></div>`).join('')||obsError(f.reason)}</div><p class="data-note">${esc(f.reason)}；预计采集样本中的新增帖数量，供后续观察与对照。</p><details class="method-note"><summary>核对预计方法与历史误差</summary><div class="forecast-validation">${f.validation.map(v=>`<div><span>${esc({'persistence':'发帖量持平','damped':'发帖增长衰减','momentum':'发帖增速变化'}[v.model])}</span><b>${activityMetric(v.mae==null?'未核验':'约 '+activityNumber(v.mae)+' 篇','预测发帖数量的历史平均绝对误差MAE，单位为篇；误差越小，历史拟合越接近观测值。')}</b><small>${v.windows} 个历史日窗用于比较</small></div>`).join('')}</div><p>至少4个可核验日窗且平均误差比持平低5%才采用趋势模型；同一短历史序列用于选模和核验，尚无长期独立验证。</p></details></section><div class="trend-actions"><button type="button" class="btn sm" id="trendPostsButton">查看此主题全部 ${a.summary.posts} 条原帖</button><button type="button" class="btn sm primary" id="trendWorkshopButton">转为研报或活动议题</button></div>`;
   $('processSource').onchange=e=>{EVOLUTION.source=e.target.value;renderTrendReading(t);};
   $('processDayPosts').onclick=()=>viewObservedPosts({theme:t.theme,from:p.ts,until:p.ts+86400,...(source==='all'?{}:{source})},t.theme+' · '+obsTime(p.ts)+'日窗');
   $('trendPostsButton').onclick=()=>viewObservedPosts({theme:t.theme},t.theme);
-  $('trendWorkshopButton').onclick=()=>forwardToStudio('基于本校真实发帖、曝光与回复数据，围绕【'+t.theme+'】开展专题研判与育人建议');
+  $('trendWorkshopButton').onclick=()=>forwardToStudio('基于本校采集的发帖、曝光与回复数据，围绕【'+t.theme+'】开展专题研判与育人建议');
   $('trendReading').querySelectorAll('[data-process-day]').forEach(g=>{const select=()=>{EVOLUTION.day=Number(g.dataset.processDay);renderObservatory();};g.onclick=select;g.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();select();}};});
 };
 const activityBaseRender=renderObservatory;
@@ -6524,7 +6550,7 @@ const readableSortLabels={trend_score:'新增帖增长优先',acceleration:'新�
 for(const option of $('trendSort').options)option.textContent=readableSortLabels[option.value]||option.textContent;
 observedPostHtml=function(p,i){
   const top=p.source==='huyou-school'?'曝光 '+activityNumber(p.exposure)+' 次':'回复 '+activityNumber(p.comments)+' 条';
-  return `<article class="forum-post"><div class="forum-post-head"><span>#${i+1} · ${esc(FORUM_NAMES[p.source])} · ${obsTime(p.published,true)}${p.time_basis==='first_observed'?'（首次采集）':''}</span>${activityMetric(top,p.source==='huyou-school'?activityExposureHelp:activityRepliesHelp)}</div><p>${sourcePostLink(p.link||p.url,p.content||'打开原帖')||esc(p.content||'（无可展示正文）')}</p>${!(p.link||p.url)?'<small class="data-note">历史采集未保存原帖地址，无法直接跳转</small>':''}<div class="forum-evidence">${esc(p.theme)} · 回复 ${activityNumber(p.comments)} 条${p.gist?' · '+esc(p.gist):''}</div></article>`;
+  return `<article class="forum-post"><div class="forum-post-head"><span>#${i+1} · ${esc(FORUM_NAMES[p.source])} · ${obsTime(p.published,true)}${p.time_basis==='first_observed'?'（首次采集）':''}</span>${activityMetric(top,p.source==='huyou-school'?activityExposureHelp:activityRepliesHelp)}</div><p>${sourcePostLink(p.link||p.url,p.content||'打开原帖')||esc(p.content||'（无可展示正文）')}</p>${!(p.link||p.url)?'<small class="data-note">原帖地址未采集</small>':''}<div class="forum-evidence">${esc(p.theme)} · 回复 ${activityNumber(p.comments)} 条${p.gist?' · '+esc(p.gist):''}</div></article>`;
 };
 renderObservatory();
 
@@ -6574,7 +6600,7 @@ function issueTextScope(p){return p.content_truncated?'采集正文达到长度�
 function issueFiltered(){const q=$('issueSearch').value.trim().toLowerCase();return ISSUE.posts.filter(p=>!q||p.content.toLowerCase().includes(q));}
 function renderIssueMaterials(){
   const posts=issueFiltered(),pages=Math.max(1,Math.ceil(posts.length/25));ISSUE.page=Math.min(ISSUE.page,pages-1);
-  $('issueMaterials').innerHTML=posts.slice(ISSUE.page*25,(ISSUE.page+1)*25).map(p=>`<article class="issue-material"><input type="checkbox" data-issue-post="${esc(p.id)}" aria-label="选择原帖：${esc(p.content.slice(0,40))}" ${ISSUE.selected.has(p.id)?'checked':''}><div><p>${esc(p.content)}</p><div class="issue-actions">${sourcePostLink(p.link||p.url,'打开原帖')||'<span>原帖地址未采集</span>'}${issueTextScope(p)?'<span class="issue-notice">'+esc(issueTextScope(p))+'</span>':''}</div></div><div class="issue-material-meta"><span>${esc(FORUM_NAMES[p.source]||p.source)}</span><span>${esc(p.theme)}</span><time>${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</time>${issueMetric(issueCountText(p),'原论坛每帖最新采集的累计计数。狐友曝光为展示次数，不是独立浏览人数；贴吧曝光未采集。回复为原论坛显示的评论/回复数量。')}</div></article>`).join('')||'<p class="issue-notice">此筛选下没有原帖。可切换论坛、扩大时间范围或清除关键词。</p>';
+  $('issueMaterials').innerHTML=posts.slice(ISSUE.page*25,(ISSUE.page+1)*25).map(p=>`<article class="issue-material"><input type="checkbox" data-issue-post="${esc(p.id)}" aria-label="选择原帖：${esc(p.content.slice(0,40))}" ${ISSUE.selected.has(p.id)?'checked':''}><div><p>${esc(p.content)}</p><div class="issue-actions">${sourcePostLink(p.link||p.url,'打开原帖')||'<span>原帖地址未采集</span>'}${issueTextScope(p)?'<span class="issue-notice">'+esc(issueTextScope(p))+'</span>':''}</div></div><div class="issue-material-meta"><span>${esc(FORUM_NAMES[p.source]||p.source)}</span><span>${esc(p.theme)}</span><time>${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</time>${issueMetric(issueCountText(p),'原论坛每帖最新采集的累计计数。狐友曝光为展示次数，单位为曝光次数；贴吧曝光未采集。回复为原论坛显示的评论/回复数量。')}</div></article>`).join('')||'<p class="issue-notice">此筛选下没有原帖。可切换论坛、扩大时间范围或清除关键词。</p>';
   $('issuePage').textContent=`第 ${ISSUE.page+1} / ${pages} 页 · ${posts.length} 篇匹配原帖`;
   $('issuePrevious').disabled=ISSUE.page===0;$('issueNext').disabled=ISSUE.page>=pages-1;
   $('issueMaterials').querySelectorAll('[data-issue-post]').forEach(box=>box.onchange=()=>{
@@ -6586,7 +6612,7 @@ function renderIssueMaterials(){
   });
 }
 async function issueLoadPosts(){
-  const version=++ISSUE.version;issueNotice('正在读取真实原帖…');$('issueReloadPosts').disabled=true;
+  const version=++ISSUE.version;issueNotice('正在读取原帖…');$('issueReloadPosts').disabled=true;
   const params={...ISSUE.filters,source:$('issueSource').value,theme:$('issueTheme').value,sort:'newest'};
   if($('issueWindow').value!=='exact'){delete params.until;params.from=(OBS.data?.generated_at||Math.floor(Date.now()/1000))-Number($('issueWindow').value)*86400;}
   try{const d=await issueRequest('observatory/posts?'+new URLSearchParams(params));if(version!==ISSUE.version)return;
@@ -6616,7 +6642,7 @@ async function issueLoadList(){
 function renderIssueDetail(i){
   ISSUE.current=i;ISSUE.dirty=false;$('issueDetail').hidden=false;
   const b=i.brief;
-  const facts=i.evidence.map((p,index)=>`<details class="issue-fact" ${index===0?'open':''}><summary>[${p.ref}] ${esc(FORUM_NAMES[p.source]||p.source)} · ${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</summary><blockquote>${esc(p.content)}</blockquote><p>${sourcePostLink(p.link,'打开对应原帖')||'原帖地址未采集'}</p>${issueTextScope(p)?'<p class="issue-notice">'+esc(issueTextScope(p))+'</p>':''}${issueMetric(issueCountText(p),'选中这篇原帖时采集的累计曝光/回复；不是当天新增浏览或独立人数。证据随议题冻结，后续变化请查看原帖。')}</details>`).join('');
+  const facts=i.evidence.map((p,index)=>`<details class="issue-fact" ${index===0?'open':''}><summary>[${p.ref}] ${esc(FORUM_NAMES[p.source]||p.source)} · ${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</summary><blockquote>${esc(p.content)}</blockquote><p>${sourcePostLink(p.link,'打开对应原帖')||'原帖地址未采集'}</p>${issueTextScope(p)?'<p class="issue-notice">'+esc(issueTextScope(p))+'</p>':''}${issueMetric(issueCountText(p),'选中这篇原帖时采集的累计曝光/回复；统计选中帖子截至采集时的累计互动量。证据随议题冻结，后续变化请查看原帖。')}</details>`).join('');
   $('issueDetail').innerHTML=`<article class="issue-brief-sheet"><div class="issue-heading"><h3>${esc(i.title)}</h3><a href="/pulse/api/issues/${i.id}/export" class="issue-action" download>导出简报与证据</a></div>
   <p class="issue-notice">${esc(i.state_label)} · ${i.evidence.length} 篇所选原帖 · 建立于 ${esc(obsTime(i.created_at,true))}${i.reviewed_at?' · '+esc(i.reviewed_by)+'复核于 '+esc(obsTime(i.reviewed_at,true)):''}</p>
   <div class="issue-actions"><label for="issueThinking">思考程度</label><select id="issueThinking"><option value="quick">快速</option><option value="standard" selected>标准</option><option value="deep">深入</option></select><label for="issueFocus">研究重点</label><select id="issueFocus"><option value="auto">按原帖归纳</option><option value="needs">诉求与服务问题</option><option value="stress">学习压力与支持资源</option><option value="conflict">冲突与沟通</option><option value="participation">活动参与阻碍</option></select><button type="button" class="issue-action primary" id="issueGenerate">${b?'重新生成一页简报':'生成一页简报'}</button><button type="button" class="issue-action" id="issueFull">生成完整研报</button>${i.full_analysis_id?'<button type="button" class="issue-action text" id="issueReadFull">阅读完整研报</button>':''}</div>
@@ -6721,16 +6747,16 @@ loadDashboard=async function(){try{const d=await issueRequest('dashboard');const
   issueLedgerScope(`可追溯起点 ${obsTime(d.observed_since,true)} · 最新采集 ${obsTime(d.latest_fetch,true)}`);
   const money=v=>v==null?'未登记':'¥'+Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const metrics=[
-    ['完成报告',obsNumber(d.reports_completed),`完整研报 ${d.campus_reports_completed} · 主研报 ${d.main_reports_completed} · 自动报告 ${d.automatic_statuses.complete??0} · 一页简报 ${w.briefs_completed}；含有效待复核稿，同议题简报重生成不重复计数。`],
-    ['累计校内帖子记录',obsNumber(d.unique_school_posts),'按历史版本的来源及帖子键累计去重记录。重复轮询不重复计数；早期缺少原帖ID，跨版本的旧重复和已清理记录无法完全回溯，因此不是全校实际发帖总量。'],
-    ['已记录 Token',obsNumber(d.recorded_tokens),'已有明确用量的历史研报及台账启用后的模型请求；未知用量不当作0。'],
-    ['已登记实付',money(c.registered_fixed_paid_cny),'已登记的服务器、域名等固定账单累计，尚未登记不表示没有支出；模型实付须按服务商账单核对。']
+    ['完成报告',obsNumber(d.reports_completed),`完整研报 ${d.campus_reports_completed} · 主研报 ${d.main_reports_completed} · 自动报告 ${d.automatic_statuses.complete??0} · 一页简报 ${w.briefs_completed}；含有效待复核稿，同一议题简报计一次。`],
+    ['累计校内帖子记录',obsNumber(d.unique_school_posts),'按历史版本的来源及帖子键累计去重记录。重复轮询合并计数；早期缺少原帖ID，跨版本的旧重复和已清理记录无法完全回溯，统计范围为历史采集记录。'],
+    ['已记录 Token',obsNumber(d.recorded_tokens),'已有明确用量的历史研报及台账启用后的模型请求；未知用量留空。'],
+    ['已登记实付',money(c.registered_fixed_paid_cny),'已登记的服务器、域名等固定账单累计，待补全账单登记；模型实付须按服务商账单核对。']
   ];
   $('lifetimeNumbers').innerHTML=metrics.map(([l,n,h],index)=>`<div class="account-metric ${index===0?'account-metric--tokens':''}"><strong>${issueMetric(n,h)}</strong><span>${l}</span></div>`).join('');
   let costLine=$('issueCostLine');if(!costLine){costLine=document.createElement('p');costLine.id='issueCostLine';costLine.className='issue-cost-line';$('lifetimeNumbers').after(costLine);}
-  costLine.innerHTML='模型费用参考 '+issueMetric(c.model_estimate_cny==null?'尚无计价依据':money(c.model_estimate_cny),'已记录输入/输出Token乘已填写的统一参考单价；不是服务商实付账单。')+' · 累计投入参考 '+issueMetric(c.total_reference_cny==null?'暂无法合计':money(c.total_reference_cny),'模型费用参考加已登记固定实付；二者均有依据才合计，仍不是完整实付总额。');
+  costLine.innerHTML='模型费用参考 '+issueMetric(c.model_estimate_cny==null?'尚无计价依据':money(c.model_estimate_cny),'已记录输入/输出Token乘已填写的统一参考单价；实付金额请核对服务商账单。')+' · 累计投入参考 '+issueMetric(c.total_reference_cny==null?'暂无法合计':money(c.total_reference_cny),'模型费用参考加已登记固定实付；二者均有依据才合计，完整投入以已登记账单为准。');
   let strip=$('issueOutcomes');if(!strip){strip=document.createElement('div');strip.id='issueOutcomes';strip.className='issue-outcomes';$('lifetimeNumbers').after(strip);}
-  strip.innerHTML=[['一页简报',w.briefs_completed,'已成功保存简报的议题数；同一议题重新生成不重复计数。'],['教师已复核',w.reviewed_issues,'有教师账号和复核时间的议题数；不是模型自动校验次数。'],['建议已采纳',w.adopted_issues,'教师明确勾选“已实际采纳”的议题数。'],['正在跟进',w.following_issues,'当前状态为跟进中的议题数。'],['已解决',w.resolved_issues,'教师填写核实结果并标为已解决的议题数。']].map(([l,n,h])=>`<button type="button" data-metric-help="${esc(h)}">${l}<strong>${n}</strong></button>`).join('');
+  strip.innerHTML=[['一页简报',w.briefs_completed,'已成功保存简报的议题数；同一议题计一次。'],['教师已复核',w.reviewed_issues,'有教师账号和复核时间的议题数；按教师人工复核记录计数。'],['建议已采纳',w.adopted_issues,'教师明确勾选“已实际采纳”的议题数。'],['正在跟进',w.following_issues,'当前状态为跟进中的议题数。'],['已解决',w.resolved_issues,'教师填写核实结果并标为已解决的议题数。']].map(([l,n,h])=>`<button type="button" data-metric-help="${esc(h)}">${l}<strong>${n}</strong></button>`).join('');
   const pricing=c.pricing||{};
   for(const [id,key] of [['costInputRate','input_cny_per_million'],['costOutputRate','output_cny_per_million'],['costFixedPaid','fixed_paid_cny'],['costBasis','basis']])if(document.activeElement!==$(id))$(id).value=pricing[key]??'';
   $('dashboardNotes').innerHTML=[...(c.notes||[]),...d.notes].map(n=>`<p>${esc(n)}</p>`).join('');
@@ -6752,8 +6778,8 @@ renderThemeEvolution=function(){
   const themes=activityThemes();$('evolutionScope').textContent=`${themes.length} 个主题 · 本24小时窗`;
   const legend=document.querySelector('.evolution-legend');if(legend)legend.innerHTML='';
   $('themeEvolution').innerHTML=themes.length?`<table class="issue-list"><thead><tr><th>议题</th><th>新帖样本</th><th>较前窗</th><th>发帖变化</th><th>来源与走势</th></tr></thead><tbody>${themes.map(t=>{
-    const a=t.activity,p=a.timeline.at(-1);return `<tr><td><button type="button" class="issue-action text" data-issue-trend="${esc(t.theme)}">${esc(t.theme)}</button></td><td>${issueMetric(p.posts+' 篇','本24小时窗已采集的独立新帖样本；不是全校全部发帖量。'+activityWindow(p))}</td><td>${issueMetric(activitySigned(a.delta_posts),activityCountsHelp+'相邻两个完整24小时窗新增帖的数量差。'+activityWindow(p))}</td><td>${esc(a.phase)}</td><td><button type="button" class="issue-action text" data-issue-trend="${esc(t.theme)}">查看原帖与走势</button></td></tr>`;
-  }).join('')}</tbody></table>`:obsError('此分类暂无真实议题');
+    const a=t.activity,p=a.timeline.at(-1);return `<tr><td><button type="button" class="issue-action text" data-issue-trend="${esc(t.theme)}">${esc(t.theme)}</button></td><td>${issueMetric(p.posts+' 篇','本24小时窗已采集的独立新帖样本；统计范围为已采集样本。'+activityWindow(p))}</td><td>${issueMetric(activitySigned(a.delta_posts),activityCountsHelp+'相邻两个完整24小时窗新增帖的数量差。'+activityWindow(p))}</td><td>${esc(a.phase)}</td><td><button type="button" class="issue-action text" data-issue-trend="${esc(t.theme)}">查看原帖与走势</button></td></tr>`;
+  }).join('')}</tbody></table>`:obsError('此分类暂无议题');
   $('themeEvolution').querySelectorAll('[data-issue-trend]').forEach(b=>b.onclick=()=>chooseEvolutionTheme(b.dataset.issueTrend,9));
 };
 const issueOutlookBase=renderCampusOutlook;

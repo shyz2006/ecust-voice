@@ -67,5 +67,6 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
  assert.equal(response.status(),200);assert((await response.text()).includes('password'));
  const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,metric_help_above_modal:true,help_keyboard_and_escape:true,post_modal_scroll:true,post_modal_posts:modalPosts,exam_posts:examPosts,exam_links:examLinks,script_errors:errors,production_writes:false};
  fs.writeFileSync(path.join(out,'live-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+ console.log(JSON.stringify(await require('./copy_polish_checks.cjs')(page,out)));
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
