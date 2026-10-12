@@ -1,0 +1,20 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/metric-help-layer-20261012",
+  "base_image": "bettafish:base-metric-help-layer-20261012",
+  "base_image_id": "sha256:73db71ddbe949883aa90e30f804db518f05bd220feff7c0495b16e6c09fe7ab4",
+  "candidate_image": "bettafish:candidate-metric-help-layer-20261012",
+  "candidate_image_id": "sha256:910543c65dd4609c2b5b0d28fc42d0caade6c46fb9f996d6690d854be8919788",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "before_sha256": "60931ccda6d355d56ed52fa9464848a507dd3708ba5537adb88f5cc869305e33",
+      "candidate_sha256": "544e298257c97552ccd298a31654a6934f2b1877695aeda006a6b9adf6ae5da9"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "before_sha256": "60931ccda6d355d56ed52fa9464848a507dd3708ba5537adb88f5cc869305e33",
+      "candidate_sha256": "544e298257c97552ccd298a31654a6934f2b1877695aeda006a6b9adf6ae5da9"
+    }
+  ],
+  "activated": false
+}

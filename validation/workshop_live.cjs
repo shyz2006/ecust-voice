@@ -33,6 +33,14 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
    await page.locator('#postModalBody .post-item-card').first().waitFor();await page.waitForTimeout(250);
    modalPosts=await page.locator('#postModalBody .post-item-card').count();
    assert.equal(await page.locator('#postModalBody .post-item-content a').count(),modalPosts);
+   const badges=page.locator('#postModalBody .post-item-card').first().locator('button.badge');
+   assert.equal(await badges.count(),2);
+   for(let i=0;i<2;i++){
+    const badge=badges.nth(i);await badge.click();const help=page.locator('.metric-help-panel');await help.waitFor({state:'visible'});
+    assert(await help.evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}));
+    await page.keyboard.press('Tab');assert(await help.locator('button').evaluate(el=>el===document.activeElement));
+    await page.keyboard.press('Escape');assert.equal(await help.isVisible(),false);assert(await page.locator('#postModal').isVisible());assert(await badge.evaluate(el=>el===document.activeElement));
+   }
    assert.equal(await page.locator('#postModalBody .post-list-summary').evaluate(e=>getComputedStyle(e).position),'static');
    assert.equal(await page.evaluate(()=>document.body.style.overflow),'hidden');
    const background=await page.evaluate(()=>window.scrollY);
@@ -57,7 +65,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert');
  // Public Cloudflare/TLS route: verify login page without accessing credentials.
  const response=await browser.newContext().then(c=>c.request.get('https://smydashuaige.2026515.xyz/login'));
  assert.equal(response.status(),200);assert((await response.text()).includes('password'));
- const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,post_modal_scroll:true,post_modal_posts:modalPosts,exam_posts:examPosts,exam_links:examLinks,script_errors:errors,production_writes:false};
+ const result={passed:true,live_page:'via authenticated SSH tunnel to running application',public_login_http_status:response.status(),question_visible:true,source_chooser:true,metric_help_above_modal:true,help_keyboard_and_escape:true,post_modal_scroll:true,post_modal_posts:modalPosts,exam_posts:examPosts,exam_links:examLinks,script_errors:errors,production_writes:false};
  fs.writeFileSync(path.join(out,'live-results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
  await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

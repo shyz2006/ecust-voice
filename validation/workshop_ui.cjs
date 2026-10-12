@@ -26,7 +26,7 @@ const server=http.createServer((req,res)=>{
     if(url.pathname==='/pulse/api/issues')data={success:true,items:[]};
     if(url.pathname==='/pulse/api/observatory/posts')data={success:true,posts:[],total:0,generated_at:Math.floor(Date.now()/1000)};
     if(url.pathname==='/pulse/api/analyses')data={success:true,items:[]};
-    if(url.pathname==='/pulse/api/campus/posts')data={success:true,total:20,posts:Array.from({length:20},(_,i)=>({source:'huyou-school',content:`原帖阅读测试 ${i+1}：`+'这是用于验证滚动布局的示例正文。'.repeat(12),gist:'验证滚动布局的示例，不代表学校真实事件。',emotion:'中立',psych_dimensions:[],published:1791763200,link:'https://example.com/post/'+i}))};
+    if(url.pathname==='/pulse/api/campus/posts')data={success:true,total:20,posts:Array.from({length:20},(_,i)=>({source:'huyou-school',content:`原帖阅读测试 ${i+1}：`+'这是用于验证滚动布局的示例正文。'.repeat(12),gist:'验证滚动布局的示例，不代表学校真实事件。',emotion:'中立',heat:77,psych_dimensions:[],published:1791763200,link:'https://example.com/post/'+i}))};
     if(url.pathname==='/pulse/api/analysis/1')data={success:true,query:'验证用样例（模拟结果）',result:{summary:'此内容仅验证结果展示，不代表模型验收。',id:1}};
     res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));return;
   }
@@ -87,6 +87,16 @@ const server=http.createServer((req,res)=>{
     await page.evaluate(()=>viewCampusPosts('校园设施与管理'));
     await page.locator('#postModalBody .post-item-card').first().waitFor();
     await page.waitForTimeout(250);
+    for(const label of ['中立','来源内热度 77/100']){
+      const badge=page.locator('#postModalBody').getByRole('button',{name:label,exact:true}).first();
+      await badge.click();const help=page.locator('.metric-help-panel');await help.waitFor({state:'visible'});
+      assert(await help.evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),'Help must be above modal and receive pointer input');
+      await page.keyboard.press('Tab');assert(await help.locator('button').evaluate(el=>el===document.activeElement));
+      await page.keyboard.press('Escape');assert.equal(await help.isVisible(),false);assert(await page.locator('#postModal').isVisible());
+      assert(await badge.evaluate(el=>el===document.activeElement));
+    }
+    await page.locator('#postModalBody').getByRole('button',{name:'中立',exact:true}).first().focus();await page.keyboard.press('Enter');
+    assert(await page.locator('.metric-help-panel').isVisible());await page.locator('.metric-help-panel button').click();
     assert.equal(await page.locator('#postModalBody .post-list-summary').evaluate(el=>getComputedStyle(el).position),'static');
     assert.equal(await page.evaluate(()=>getComputedStyle(document.body).overflow),'hidden');
     const backgroundY=await page.evaluate(()=>window.scrollY);
