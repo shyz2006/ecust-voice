@@ -41,7 +41,9 @@ def pulse_redirect():
 
 @pulse_bp.route("/")
 def pulse_page():
-    return send_from_directory(_TEMPLATE_DIR, "pulse.html")
+    resp = send_from_directory(_TEMPLATE_DIR, "pulse.html", max_age=0)
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    return resp
 
 
 @pulse_bp.route("/api/status")
@@ -58,8 +60,10 @@ def api_topics():
 
 @pulse_bp.route("/api/meme-trends")
 def api_meme_trends():
-    """梗 / 短视频玩法候选（含扩散时间线与视频剪辑风格统计）。"""
-    return jsonify({"success": True, **storage.latest_topics("meme")})
+    """梗 / 短视频玩法候选（聚合 B站、抖音、微博、百度、知乎等全网平台及校内共鸣）。"""
+    from . import memes
+    items = memes.network_meme_catalog()
+    return jsonify({"success": True, "topics": items, "items": items})
 
 
 @pulse_bp.route("/api/campus")
@@ -86,8 +90,8 @@ def api_campus_crisis_posts():
         response.headers["Cache-Control"] = "no-store"
         return response, 401
     level = str(request.args.get("level", "")).strip()
-    if level not in ("高危", "关注"):
-        return jsonify({"success": False, "message": "请选择高危或重点关注"}), 400
+    if level not in ("高危", "关注", "all", "ads"):
+        return jsonify({"success": False, "message": "请选择有效的查看类别"}), 400
     from . import campus
 
     blob = storage.kv_get("campus_voice")

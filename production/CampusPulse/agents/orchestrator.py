@@ -52,7 +52,7 @@ class Orchestrator:
         profile = router.route(query, force_intent)
         self.budget = TOKEN_BUDGET.get(profile.intent, 3000)
         effort = self.options.get('thinking_effort')
-        if effort:
+        if effort and effort != 'auto':
             selected = selection.EFFORTS[effort]
             wf, pick_reason = workflows.WORKFLOWS[selected['workflow']], '输入栏指定思考程度：' + selected['label']
             self.budget = selection.budget(self.budget, effort)

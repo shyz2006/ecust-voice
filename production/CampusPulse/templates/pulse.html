@@ -2074,10 +2074,11 @@ body.workspace-v2 {
 .menu-check { color:var(--accent); opacity:0; }.thinking-menu button[aria-checked=true] .menu-check { opacity:1; }
 .direction-menu { width:310px; padding:14px; }
 .direction-menu label { display:block; font-size:11px; color:var(--text-3); margin:12px 0 5px; }
-.direction-menu select { width:100%; min-height:36px; border:1px solid var(--line); border-radius:5px; background:var(--card); color:var(--text); padding:5px 8px; font:inherit; font-size:12px; }
+.direction-menu select,.direction-menu input[type="text"] { width:100%; min-height:36px; border:1px solid var(--line); border-radius:5px; background:var(--card); color:var(--text); padding:5px 8px; font:inherit; font-size:12px; box-sizing:border-box; }
+.direction-menu input[type="text"] { margin-top:6px; }
 .direction-menu p:last-of-type { font-size:11px; color:var(--text-3); margin:12px 0; line-height:1.7; }
 .composer-summary { font-size:11px; color:var(--text-3); margin:9px 2px 18px; line-height:1.8; }
-.research-composer button:focus-visible,.research-composer select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.research-composer button:focus-visible,.research-composer select:focus-visible,.research-composer input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .research-composer :disabled { cursor:wait; opacity:.55; }
 .composer-purpose .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
 @media (hover:hover) and (pointer:fine) { .composer-trigger:hover,.thinking-menu button:hover { background:var(--accent-soft); } }
@@ -2736,10 +2737,30 @@ body.workspace-v2.campus-shell {
 .campus-cover-active .campus-evidence-summary { padding: 14px 0; color: var(--ink-2); }
 .campus-cover-active .campus-evidence-summary .evidence-alerts { color: #8e5948; }
 .campus-cover-active .campus-evidence[open] .campus-evidence-summary { margin-bottom: 0; }
-.campus-cover-active .campus-evidence .kpi-grid { background: transparent; padding: 8px 0 0; margin: 0; border: 0; }
+.campus-cover-active .campus-evidence .kpi-grid { background: transparent; padding: 8px 0 0; margin: 0; border: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .campus-cover-active .campus-evidence .kpi-card { background: transparent; padding: 14px 18px; border-color: var(--line); }
 .campus-cover-active .campus-evidence .kpi-card:first-child { padding-left: 0; }
 .campus-cover-active .campus-evidence .kpi-num { color: var(--ink); font-size: 26px; }
+.campus-cover-active .campus-evidence .kpi-num .crisis-posts-link { font-size: inherit; font-weight: inherit; padding: 0; }
+.viz-pie-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 12px; }
+.viz-bar-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 12px; }
+.viz-card { background: rgba(255,255,255,0.55); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.viz-card h4 { margin: 0 0 4px; font: 600 15px/1.4 var(--serif); color: var(--ink); }
+.viz-card .viz-sub { margin: 0 0 12px; font-size: 12px; color: var(--text-3); }
+.viz-pie-wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.viz-pie-svg { width: 156px; height: 156px; flex: 0 0 156px; overflow: visible; }
+.viz-legend { flex: 1; min-width: 140px; font-size: 12px; line-height: 1.75; color: var(--text-2); }
+.viz-legend-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 0; border-bottom: 1px dashed rgba(35,76,64,0.1); }
+.viz-legend-row:last-child { border-bottom: 0; }
+.viz-dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; flex-shrink: 0; }
+.campus-wordcloud { display: flex; align-items: center; justify-content: center; padding: 12px 0; min-height: 380px; }
+.cloud-svg { width: 100%; max-width: 920px; height: auto; overflow: visible; display: block; margin: 0 auto; }
+.cloud-svg text { cursor: pointer; transition: opacity 0.15s ease, transform 0.15s ease; transform-box: fill-box; transform-origin: center; }
+.cloud-svg text:hover { opacity: 0.82; transform: scale(1.08); }
+@media (max-width: 960px) {
+  .viz-pie-grid { grid-template-columns: 1fr; }
+  .viz-bar-grid { grid-template-columns: 1fr; }
+}
 .campus-cover-active .campus-evidence .kpi-hint { border-color: var(--line); }
 .campus-cover-active .campus-evidence .crisis-alert-banner {
   background: #e9ede4; border-top: 1px solid var(--line); padding: 12px 16px;
@@ -2925,15 +2946,15 @@ body.workspace-v2.campus-shell {
        ======================================================================== -->
   <div class="tab-pane active" id="pane-campus"><section class="red-editorial" aria-labelledby="redTitle"><div class="red-editorial-intro"><p class="section-kicker">价值引领 / 青年使命</p><h2 id="redTitle">红色育人观察</h2><p>查看理论学习、校园实践与青年议题的相关讨论。</p></div>
 <div class="red-editorial-body" id="redHotspots" aria-live="polite">正在核对党建、思政与校园育人相关讨论…</div></section>
-    <!-- 隐私伦理与危机信号预警 -->
+    <!-- 隐私伦理与心育关怀线索 -->
     <div class="crisis-alert-banner">
       <div class="crisis-alert-text">
-        社区关注信号：点击数量查看对应帖子，结合原帖核查并跟进。
+        心育主动关怀线索：点击数量查看建议关怀原帖及已自动过滤的玩梗/吐槽原帖（均附原帖地址供核验）。
       </div>
       <div class="crisis-alert-stats">
-        <span>近 7 天关注信号：</span>
-        <button type="button" class="crisis-stat high crisis-posts-link" onclick="viewCrisisPosts('高危',event)">高危 <b id="crisisHighCount">—</b> 条</button>
-        <button type="button" class="crisis-stat warn crisis-posts-link" onclick="viewCrisisPosts('关注',event)">重点关注 <b id="crisisWarnCount">—</b> 条</button>
+        <span>心育关怀线索：</span>
+        <span id="crisisHighCount" hidden>0</span>
+        <button type="button" class="crisis-stat warn crisis-posts-link" onclick="viewCrisisPosts('关注',event)">建议关怀 <b id="crisisWarnCount">—</b> 条</button>
       </div>
     </div>
 
@@ -2945,19 +2966,9 @@ body.workspace-v2.campus-shell {
         <div class="kpi-hint"><span id="campusSourceCounts">正在统计论坛来源…</span></div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-num orange" id="campusFilteredAds">—</div>
+        <div class="kpi-num orange"><button type="button" class="crisis-posts-link" id="campusFilteredAds" onclick="viewCrisisPosts('ads',event)" title="点击查看已过滤的广告与灌水原帖">—</button></div>
         <div class="kpi-label">已过滤广告与灌水帖</div>
-        <div class="kpi-hint">按采集规则过滤后统计</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-num purple" id="campusNationalCount">—</div>
-        <div class="kpi-label">其他高校参照样本</div>
-        <div class="kpi-hint">用于对照校内讨论</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-num green" id="campusConfidence">—</div>
-        <div class="kpi-label">采集覆盖等级</div>
-        <div class="kpi-hint"><span id="campusObservedDays">正在核对观察范围…</span></div>
+        <div class="kpi-hint">点击数量查看被过滤原帖与地址</div>
       </div>
     </div>
 
@@ -2999,11 +3010,6 @@ body.workspace-v2.campus-shell {
       <details class="method-note"><summary>查看速度、加速度与预测指标明细</summary><div class="stat-table-wrap"><table class="stat-table"><thead><tr><th>主题</th><th>帖子数</th><th>速度</th><th>加速度</th><th>下一24h强度</th><th>状态</th></tr></thead><tbody id="trendRows"></tbody></table></div></details>
       <article class="trend-reading" id="trendReading" aria-live="polite"></article>
     </section>
-    <section class="stat-section"><div class="stat-heading"><h3>十日热点词云</h3><span>字号表示出现该词的独立帖数</span></div>
-      <div class="stat-tools"><label>论坛 <select id="cloudSource" onchange="renderWordcloud()"><option value="all">双论坛合并</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label></div>
-      <div id="campusWordcloud" class="campus-wordcloud" role="img" aria-label="采集样本词云"></div>
-      <details class="method-note"><summary>查看词频与计算口径</summary><div id="cloudFrequency"></div><p>每帖每词最多记1次。中文分词、去停用词和姓名后统计；统计范围为已采集的公开帖子。</p></details>
-    </section>
     <section class="stat-section"><div class="stat-heading"><h3>双论坛热帖</h3></div>
       <div class="stat-tools"><label>来源 <select id="forumSource" onchange="loadForumPosts()"><option value="all">双论坛</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label>
       <label>顺序 <select id="forumSort" onchange="loadForumPosts()"><option value="heat">热度从高到低</option><option value="newest">时间从新到旧</option></select></label><span id="forumTotal" role="status"></span></div>
@@ -3035,17 +3041,24 @@ body.workspace-v2.campus-shell {
   <div class="tab-pane" id="pane-memes">
     <div class="info-panel">
       <h3>
-        青年流行语观察
+        全网青年梗文化与短视频玩法雷达
       </h3>
       <p>
-        从双论坛采集正文统计独立帖频次、来源分布熵和增长。按统计结果排序，由人工核对词语含义与使用语境。
+        聚合 B站、抖音、微博、百度热搜、知乎与贴吧等主流网络平台的青年流行语、抽象句式与短视频转场玩法，解析大学生使用语境、心理防御机制与思政心育切入契机。
       </p>
     </div>
-
-<details class="method-note"><summary>统计新词与句式候选（尚未确认为梗）</summary><div id="memeCandidateStats"></div></details>
+    <div class="chips-bar" id="memeFilterChips">
+      <button class="chip-btn active" onclick="filterMemes('all', this)">全部网络热梗</button>
+      <button class="chip-btn" onclick="filterMemes('B站', this)">B站热梗与弹幕</button>
+      <button class="chip-btn" onclick="filterMemes('抖音', this)">抖音短视频玩法</button>
+      <button class="chip-btn" onclick="filterMemes('微博', this)">微博流行语</button>
+      <button class="chip-btn" onclick="filterMemes('百度', this)">百度/贴吧热词</button>
+      <button class="chip-btn" onclick="filterMemes('解压', this)">自嘲解压与共鸣</button>
+    </div>
+    <div id="memeCandidateStats" hidden></div>
     <div class="cards-grid" id="memesCardsGrid">
       <div style="text-align:center;padding:40px;color:var(--text-muted);grid-column:1/-1;">
-        正在解析青年梗文化与网络心理词典…
+        正在解析全网青年梗文化与短视频玩法…
       </div>
     </div>
   </div>
@@ -3055,39 +3068,41 @@ body.workspace-v2.campus-shell {
        ======================================================================== -->
   <div class="tab-pane" id="pane-studio">
     <div class="studio-box">
-      <div class="issue-heading"><h2>自由提问与研究</h2><button type="button" class="issue-action text" onclick="openIssueChooser()">根据原帖研究</button></div>
+      <div class="issue-heading"><h2>自由提问与研究</h2></div>
 <div class="studio-input-group research-composer" id="researchComposer">
   <label class="composer-label" for="studioQueryInput">研究议题</label>
-  <textarea class="studio-input" id="studioQueryInput" aria-label="研判议题" aria-describedby="studioInputHint" rows="3" maxlength="200" placeholder="直接输入校园问题，或描述希望开展的育人活动…"></textarea>
-  <p id="studioInputHint" class="composer-summary">问题最多 200 字；无需先选择原帖。Ctrl / ⌘ + Enter 提交。</p>
+  <textarea class="studio-input" id="studioQueryInput" aria-label="研判议题" aria-describedby="studioInputHint" rows="3" maxlength="200" placeholder="直接输入任何校园话题、网络热梗、学生困扰或想开展的育人活动…"></textarea>
+  <p id="studioInputHint" class="composer-summary">直接输入想研究的内容（最多 200 字），系统将自动识别意图并匹配智能体工作流。Ctrl / ⌘ + Enter 提交。</p>
   <p id="studioInputError" class="issue-notice error" role="alert" hidden></p>
   <div class="composer-toolbar">
     <div class="composer-controls">
-      <label class="composer-purpose"><span class="sr-only">生成内容</span><select id="workshopPurpose" aria-label="生成内容"><option value="event_brief">专题研报</option><option value="activity_design">活动方案</option></select></label>
       <div class="composer-control">
-        <select id="selectTopology" hidden aria-hidden="true"><option value="lean">快速</option><option value="standard" selected>标准</option><option value="deep">深入</option></select>
-        <button class="composer-trigger" id="thinkingTrigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="thinkingMenu" onclick="toggleComposerMenu('thinking')"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15V11M10 15V7M16 15V3"/></svg><span id="thinkingLabel">思考 · 标准</span><svg class="composer-chevron" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 7l5 5 5-5"/></svg></button>
+        <select id="selectTopology" hidden aria-hidden="true"><option value="auto" selected>自动路由</option><option value="lean">快速</option><option value="standard">标准</option><option value="deep">深入</option></select>
+        <button class="composer-trigger" id="thinkingTrigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="thinkingMenu" onclick="toggleComposerMenu('thinking')"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15V11M10 15V7M16 15V3"/></svg><span id="thinkingLabel">思考 · 自动路由</span><svg class="composer-chevron" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 7l5 5 5-5"/></svg></button>
         <div class="composer-popover thinking-menu" id="thinkingMenu" role="menu" aria-label="思考程度" hidden>
-          <p class="composer-menu-heading">思考程度</p>
-          <button type="button" role="menuitemradio" aria-checked="false" data-thinking="lean" onclick="chooseThinking('lean')"><span><b>快速</b><small>直接研判，保留基础证据检查</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button type="button" role="menuitemradio" aria-checked="true" data-thinking="standard" onclick="chooseThinking('standard')"><span><b>标准</b><small>建立分析计划，复核并修订</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button type="button" role="menuitemradio" aria-checked="false" data-thinking="deep" onclick="chooseThinking('deep')"><span><b>深入</b><small>多视角联合分析，耗时与用量较高</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <p class="composer-menu-heading">思考程度与拓扑路由</p>
+          <button type="button" role="menuitemradio" aria-checked="true" data-thinking="auto" onclick="chooseThinking('auto')"><span><b>自动（智能路由）</b><small>按问题特征自动判定拓扑与 UCB 工作流</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" role="menuitemradio" aria-checked="false" data-thinking="lean" onclick="chooseThinking('lean')"><span><b>快速</b><small>单智能体直接研判，保留基础证据检查</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" role="menuitemradio" aria-checked="false" data-thinking="standard" onclick="chooseThinking('standard')"><span><b>标准</b><small>建立分析计划，中心验证并修订</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" role="menuitemradio" aria-checked="false" data-thinking="deep" onclick="chooseThinking('deep')"><span><b>深入</b><small>多智能体视角联合分析，耗时与用量较高</small></span><svg class="menu-check" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10l4 4 8-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
       <div class="composer-control">
-        <button class="composer-trigger" id="directionTrigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="directionMenu" onclick="toggleComposerMenu('direction')">分析任务<svg class="composer-chevron" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 7l5 5 5-5"/></svg></button>
-        <div class="composer-popover direction-menu" id="directionMenu" role="dialog" aria-label="分析任务" hidden>
-          <p class="composer-menu-heading">分析任务</p>
-          <label for="selectPsychLens">研究重点</label><select id="selectPsychLens" onchange="updateComposerSettings()"><option value="auto">按议题选择重点</option><option value="needs">诉求与服务问题</option><option value="stress">学习压力与支持资源</option><option value="conflict">关系冲突与沟通</option><option value="participation">活动参与与阻碍</option></select>
-          <label for="selectIdeology">交付要求</label><select id="selectIdeology" onchange="updateComposerSettings()"><option value="evidence">事实核查与证据缺口</option><option value="actions">可执行改进清单</option><option value="communication">回应与沟通方案</option><option value="activity">活动执行与效果评估</option></select>
-          <p>设置用于本次分析。报告将围绕材料列出依据与行动建议，资料缺口会单独说明。</p><button class="btn sm" type="button" onclick="closeComposerMenus(true)">完成</button>
+        <button class="composer-trigger" id="directionTrigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="directionMenu" onclick="toggleComposerMenu('direction')">理论与思政视角<svg class="composer-chevron" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 7l5 5 5-5"/></svg></button>
+        <div class="composer-popover direction-menu" id="directionMenu" role="dialog" aria-label="理论与思政视角" hidden>
+          <p class="composer-menu-heading">理论与思政视角（可选）</p>
+          <label for="selectPsychLens">心理学理论视角</label><select id="selectPsychLens" onchange="updateComposerSettings(true)"><option value="none" selected>无（不限定）</option><option value="custom">自定义…</option><option value="attribution">认知归因理论与心理韧性</option><option value="attachment">依恋理论与人际连接</option><option value="motivation">自我决定理论与内在动机</option><option value="social">群体动力学与去抑制效应</option></select>
+          <input type="text" id="customPsychLens" maxlength="80" placeholder="输入自定义心理或研究视角…" oninput="updateComposerSettings()" hidden>
+          <label for="selectIdeology">思政引领立足点</label><select id="selectIdeology" onchange="updateComposerSettings(true)"><option value="none" selected>无（不限定）</option><option value="custom">自定义…</option><option value="lideshuren">立德树人 · 价值观涵育</option><option value="sanquanyuren">三全育人 · 协同机制</option><option value="developmental">发展性心理健康观</option><option value="narrative">青年话语体系创新</option></select>
+          <input type="text" id="customIdeology" maxlength="80" placeholder="输入自定义思政或育人要求…" oninput="updateComposerSettings()" hidden>
+          <p>默认“无”即不预设框架，完全按您的输入自由研判；也可选择预设理论或输入自定义视角。</p><button class="btn sm" type="button" onclick="closeComposerMenus(true)">完成</button>
         </div>
       </div>
     </div>
     <button type="button" class="btn primary studio-launch-btn" id="btnLaunchStudio" onclick="launchStudioAnalysis()"><span>开始研究</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5"/></svg></button>
   </div>
 </div>
-<p class="composer-summary" id="composerSelectionSummary" role="status">标准思考 · 认知归因理论与心理韧性 · 立德树人 · 价值观涵育</p>
+<p class="composer-summary" id="composerSelectionSummary" role="status">自动路由 · 不限定预设理论与思政视角（按提问自由研判）</p>
 
       <div class="studio-hint-label">推荐华理典型研判模板：</div>
       <div class="template-quick-list">
@@ -3196,9 +3211,22 @@ body.workspace-v2.campus-shell {
   <div id="pane-plans" class="tab-pane" hidden></div>
 
   <!-- ========================================================================
-       TAB 6: 数据账本 · 累计用量 (Monitor & Settings)
+       TAB 6: 数据账本 · 累计用量与可视化 (Monitor & Visualization)
        ======================================================================== -->
-  <div class="tab-pane" id="pane-monitor"><section class="metrics-editorial"><p class="section-kicker">SYSTEM / ACCOUNTING</p><h2>系统投入与研究成果</h2><p class="data-note" id="dashboardScope" role="status">正在读取永久统计台账…</p><div class="lifetime-numbers" id="lifetimeNumbers" aria-live="polite"></div></section>
+  <div class="tab-pane" id="pane-monitor"><section class="metrics-editorial"><p class="section-kicker">SYSTEM / ACCOUNTING &amp; VISUALIZATION</p><h2>系统投入与数据可视化账本</h2><p class="data-note" id="dashboardScope" role="status">正在读取永久统计台账…</p><div class="lifetime-numbers" id="lifetimeNumbers" aria-live="polite"></div></section>
+<section class="stat-section" id="monitorVizSection">
+  <div class="stat-heading"><h3>多维数据分布（饼图）</h3><span>基于实时采集的校内议题、情绪极性与多源渠道样本构成</span></div>
+  <div id="monitorPieCharts" class="viz-pie-grid" aria-live="polite">正在生成饼图…</div>
+</section>
+<section class="stat-section" id="monitorBarSection">
+  <div class="stat-heading"><h3>议题热度与系统吞吐（柱状图）</h3><span>校内各主题发帖对比 · 全渠道采集样本量 · 近十日 Token 消耗</span></div>
+  <div id="monitorBarCharts" class="viz-bar-grid" aria-live="polite">正在生成柱状图…</div>
+</section>
+<section class="stat-section" id="monitorCloudSection"><div class="stat-heading"><h3>十日校园热点词云</h3><span>云朵内字号表示出现该词的独立帖数 · 点击词语可查看对应原帖</span></div>
+  <div class="stat-tools"><label>论坛 <select id="cloudSource" onchange="renderWordcloud()"><option value="all">双论坛合并</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label></div>
+  <div id="campusWordcloud" class="campus-wordcloud" role="img" aria-label="采集样本词云"></div>
+  <details class="method-note"><summary>查看词频与计算口径</summary><div id="cloudFrequency"></div><p>每帖每词最多记1次。中文分词、去停用词和姓名后统计；统计范围为已采集的公开帖子。</p></details>
+</section>
 <details class="cost-settings"><summary>填写计价与已支付固定费用</summary><form id="costPricingForm"><p>人民币，按每百万Token计价。不同模型或缓存优惠会影响实际账单；此处仅作统一参考估算。</p><div class="cost-fields"><label>输入单价（元/百万Token）<input id="costInputRate" type="number" min="0" step="any"></label><label>输出单价（元/百万Token）<input id="costOutputRate" type="number" min="0" step="any"></label><label>服务器等累计实付（元）<input id="costFixedPaid" type="number" min="0" step="0.01"></label><label>单价／账单依据<input id="costBasis" maxlength="200" placeholder="服务商与模型、价格日期；或固定费用账单范围"></label></div><button class="btn sm" type="submit">保存并核算</button><p id="costSaveStatus" role="status"></p></form></details>
 <section class="stat-section"><div class="stat-heading"><h3>采集与模型运行</h3><button type="button" class="btn sm" onclick="loadDashboard()">刷新台账</button></div><div id="dashboardHealth"></div><div id="usageHistory"></div></section>
 <details class="method-note"><summary>统计范围、历史缺失与用量口径</summary><div id="dashboardNotes"></div></details>
@@ -3509,11 +3537,11 @@ async function loadCampus() {
   const v = data.voice || {};
   $('campusSampleCount').textContent = v.school_posts ?? 0;
   $('campusFilteredAds').textContent = v.ads_filtered ?? 0;
-  $('campusNationalCount').textContent = v.national_posts ?? 0;
+  if ($('campusNationalCount')) $('campusNationalCount').textContent = v.national_posts ?? 0;
 
   const cr = v.crisis || {};
   $('crisisHighCount').textContent = cr['高危'] ?? 0;
-  $('crisisWarnCount').textContent = cr['关注'] ?? 0;
+  $('crisisWarnCount').textContent = (cr['高危'] ?? 0) + (cr['关注'] ?? 0);
 
   const themes = v.themes || [];
   renderCampusThemes(themes);
@@ -3591,10 +3619,39 @@ function filterCampusTheme(target, btn) {
 let postRequestVersion = 0;
 function viewCrisisPosts(level, event) {
   if(event){event.preventDefault();event.stopPropagation();}
-  if(!['高危','关注'].includes(level)) return;
-  return viewCampusPosts(level==='高危'?'高危关注帖子':'重点关注帖子', {
+  if(!['高危','关注','all','ads'].includes(level)) return;
+  const title = level==='ads' ? '已过滤广告与灌水帖（含原帖地址核验）' : '心育建议关怀线索（含已过滤样本核验）';
+  return viewCampusPosts(title, {
     crisis:true, level, url:`/pulse/api/campus/crisis-posts?level=${encodeURIComponent(level)}`
   });
+}
+function renderPostItemCard(p, postIndex, options = {}, isFiltered = false) {
+  const srcName = p.source === 'huyou-school' ? '狐友华理圈' : (p.source === 'tieba-school' ? '华理贴吧' : '校本社区');
+  const emoClass = p.emotion === '消极' ? 'red' : (p.emotion === '积极' ? 'green' : 'blue');
+  const dt = p.published ? new Date(p.published * 1000).toLocaleDateString() : '近7天';
+  const rawUrl = p.link || p.url || '';
+  const openLinkHtml = rawUrl ? sourcePostLink(rawUrl, '打开原帖核验 ↗') : '<small class="data-note">原帖地址未采集</small>';
+  const badgeHtml = isFiltered || p.filter_reason
+    ? `<button type="button" class="badge warn" data-metric-help="系统根据语义与反串/玩梗/广告规则自动过滤，保留原帖地址供核验过滤准确性。">${esc(p.filter_reason || '已过滤样本')}</button>`
+    : (options.crisis ? `<button type="button" class="badge red" data-metric-help="关怀标签来自采集文本的语义筛查，供教师结合原帖语境温情跟进。">建议关怀</button>` : '');
+  return `
+    <div class="post-item-card" ${isFiltered ? 'style="opacity:0.92;background:rgba(35,76,64,0.03);"' : ''}>
+      <div class="post-item-header">
+        <span>${isFiltered ? '已过滤原帖' : '原帖'} ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}${p.time_basis==='first_observed'?' · 首次采集':''}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${badgeHtml}
+          <button type="button" class="badge ${emoClass}" data-metric-help="标签概括原帖文字表达的情绪，供阅读参考；请结合上下文核对。心理状态与诊断需要专业评估。">${esc(p.emotion || '中立')}</button>
+          ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="热度为当前展示样本中同来源互动量的排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算，各来源分别排序。">来源内热度 ${p.heat}/100</button>` : ''}
+        </div>
+      </div>
+      <div class="post-item-content">${sourcePostLink(rawUrl, p.content || '打开原帖') || esc(p.content || '（未采集到正文）')}</div>
+      ${p.gist ? `<div style="font-size:12px;color:var(--text-2);margin-bottom:6px;"><b>核心提炼：</b>${esc(p.gist)}</div>` : ''}
+      <div class="post-item-tags" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>${(p.psych_dimensions || []).map(d => `<span class="badge purple">${esc(d)}</span>`).join('')}</div>
+        <div style="font-size:12px;font-weight:600;">${openLinkHtml}${rawUrl ? ` <span style="font-weight:normal;color:var(--text-3);font-size:11px;">（${esc(rawUrl)}）</span>` : ''}</div>
+      </div>
+    </div>
+  `;
 }
 async function viewCampusPosts(themeName, options = {}) {
   const requestVersion = ++postRequestVersion;
@@ -3614,43 +3671,37 @@ async function viewCampusPosts(themeName, options = {}) {
     return;
   }
   const posts = res.posts;
+  const filteredPosts = Array.isArray(res.filtered_posts) ? res.filtered_posts : [];
   const theme = (APP.campusData?.voice?.themes || []).find(t => t.theme === themeName);
   const total = Number(res.total ?? theme?.posts);
-  const countText = Number.isFinite(total) && total > posts.length
-    ? `已展示 ${posts.length} 条 · 共 ${total} 条，当前列表尚不完整。`
-    : `已展示 ${posts.length} 条原帖`;
-  const scopeText = options.crisis
-    ? `近${res.days || 7}天关注帖子 · 截至${new Date(res.generated_at*1000).toLocaleString('zh-CN')}。风险标注供教师结合原帖复核。`
-    : '议题计数取自已完成分析；原帖按当前近7天窗口重新筛选、近似去重，数量可能不同。';
+  const countText = options.level === 'ads'
+    ? `共过滤 ${posts.length} 条商业推广与灌水帖（均保留原帖地址供核验）`
+    : options.crisis
+      ? `建议关怀 ${posts.length} 条 · 已自动过滤非关怀/玩梗/夸张帖 ${filteredPosts.length} 条`
+      : (Number.isFinite(total) && total > posts.length
+          ? `已展示 ${posts.length} 条 · 共 ${total} 条，当前列表尚不完整。`
+          : `已展示 ${posts.length} 条原帖`);
+  const scopeText = options.level === 'ads'
+    ? `近${res.days || 7}天按规则与模型识别过滤的商业广告、兼职引流与灌水帖。点击下方原帖链接可核实原文，确认过滤准确性。`
+    : options.crisis
+      ? `近${res.days || 7}天心育关怀线索 · 截至${new Date(res.generated_at*1000).toLocaleString('zh-CN')}。上方为筛出的建议关怀原帖，下方附已自动排除的玩梗/钓鱼/夸张口头禅原帖及地址供对照核验。`
+      : '议题计数取自已完成分析；原帖按当前近7天窗口重新筛选、近似去重，数量可能不同。';
   const postListSummary = `<p class="post-list-summary" role="status">${countText}<br>${esc(scopeText)}</p>`;
-  if (posts.length === 0) {
+  if (posts.length === 0 && filteredPosts.length === 0) {
     $('postModalBody').innerHTML = postListSummary + '<div class="empty-state">当前窗口暂无对应帖子</div>';
     return;
   }
 
-  $('postModalBody').innerHTML = postListSummary + posts.map((p, postIndex) => {
-    const srcName = p.source === 'huyou-school' ? '狐友华理圈' : (p.source === 'tieba-school' ? '华理贴吧' : '校本社区');
-    const emoClass = p.emotion === '消极' ? 'red' : (p.emotion === '积极' ? 'green' : 'blue');
-    const dt = p.published ? new Date(p.published * 1000).toLocaleDateString() : '近7天';
-
-    return `
-      <div class="post-item-card">
-        <div class="post-item-header">
-          <span>原帖 ${postIndex + 1} · ${esc(srcName)} · ${esc(dt)}${p.time_basis==='first_observed'?' · 首次采集':''}</span>
-          <div style="display:flex;gap:6px;">
-            ${options.crisis ? `<button type="button" class="badge red" data-metric-help="风险标签来自采集文本的规则或模型标注，供教师核查与跟进。">${esc(p.crisis_level==='关注'?'重点关注':p.crisis_level)}</button>` : ''}
-            <button type="button" class="badge ${emoClass}" data-metric-help="标签概括原帖文字表达的情绪，供阅读参考；请结合上下文核对。心理状态与诊断需要专业评估。">${esc(p.emotion || '中立')}</button>
-            ${p.heat != null ? `<button type="button" class="badge blue" data-metric-help="热度为当前展示样本中同来源互动量的排名分（0—100）。狐友依据曝光与回复、贴吧依据回复计算，各来源分别排序。">来源内热度 ${p.heat}/100</button>` : ''}
-          </div>
-        </div>
-        <div class="post-item-content">${sourcePostLink(p.link, p.content || '打开原帖') || esc(p.content || '（未采集到正文）')}${!p.link ? '<small class="data-note">原帖地址未采集</small>' : ''}</div>
-        ${p.gist ? `<div style="font-size:12px;color:var(--text-2);margin-bottom:6px;"><b>核心提炼：</b>${esc(p.gist)}</div>` : ''}
-        <div class="post-item-tags">
-          ${(p.psych_dimensions || []).map(d => `<span class="badge purple">${esc(d)}</span>`).join('')}
-        </div>
-      </div>
-    `;
-  }).join('');
+  const mainHtml = posts.map((p, idx) => renderPostItemCard(p, idx, options, options.level === 'ads')).join('');
+  const filteredHtml = filteredPosts.length > 0 ? `
+    <details class="filtered-posts-fold" open style="margin-top:20px;border-top:2px dashed var(--line);padding-top:14px;">
+      <summary style="cursor:pointer;font-weight:700;font-size:14px;color:var(--text-1);margin-bottom:12px;">
+        已自动过滤的玩梗 / 钓鱼 / 日常夸张原帖（共 ${filteredPosts.length} 条 · 点击原帖地址可核验为何被过滤）
+      </summary>
+      ${filteredPosts.map((p, idx) => renderPostItemCard(p, idx, options, true)).join('')}
+    </details>
+  ` : '';
+  $('postModalBody').innerHTML = postListSummary + mainHtml + filteredHtml;
 }
 function closePostModal() { ++postRequestVersion; $('postModal').classList.remove('open'); }
 
@@ -3944,11 +3995,12 @@ async function launchStudioAnalysis() {
 
   const query = q;
   const options = readComposerOptions();
-  const workflow = {quick:'lean',standard:'lean_verified',deep:'central_verified'}[options.thinking_effort];
+  const workflow = {quick:'lean',standard:'lean_verified',deep:'central_verified'}[options.thinking_effort] || null;
+  const effortText = options.thinking_effort === 'auto' ? '智能路由' : (COMPOSER_EFFORTS[options.thinking_effort].label + '思考');
   closeComposerMenus(false);
-  $('timelineTitle').innerHTML = `<span class="live-dot" style="position:static;"></span><span>正在为【${esc(q)}】开展${esc(COMPOSER_EFFORTS[options.thinking_effort].label)}思考研判…</span>`;
+  $('timelineTitle').innerHTML = `<span class="live-dot" style="position:static;"></span><span>正在为【${esc(q)}】开展${esc(effortText)}研判…</span>`;
   $('timelinePercent').textContent = '提交任务中…';
-  logBox.textContent = `[${new Date().toLocaleTimeString('zh-CN')}] 提交研判任务：${query}（工作流 ${workflow}）\n`;
+  logBox.textContent = `[${new Date().toLocaleTimeString('zh-CN')}] 提交研判任务：${query}（${workflow ? '工作流 ' + workflow : '自动拓扑路由'}）\n`;
   updateThinkingStatus('路由器', '正在判定任务拓扑与工作流…');
 
   studioStopTimer();
@@ -3973,7 +4025,7 @@ async function launchStudioAnalysis() {
   try {
     started = await studioRequest('/pulse/api/analyze', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, intent: $('workshopPurpose').value, workflow, analysis_options: options }),
+      body: JSON.stringify({ query, workflow, analysis_options: options }),
     });
     if (!started || !started.success || typeof started.job_id !== 'string' || !started.job_id) {
       fail((started && started.message) || '提交失败或请求超时，请稍后重试。输入已保留。');
@@ -5533,13 +5585,11 @@ window.addEventListener('DOMContentLoaded', () => {
         count.textContent = '近7天样本 ' + (sample ? sample.textContent : '—') + ' · 公开论坛采集样本';
         var signals = safety && safety.querySelector('.crisis-alert-stats');
         if(signals){
-          alerts.replaceChildren(document.createTextNode('近7天关注信号：'));
-          [['高危','高危','crisisHighCount'],['关注','重点关注','crisisWarnCount']].forEach(function(item){
-            var button=node('button','crisis-posts-link');button.type='button';
-            button.textContent=item[1]+' '+($(item[2])?.textContent || '—')+' 条';
-            button.onclick=function(event){viewCrisisPosts(item[0],event);};
-            alerts.appendChild(button);
-          });
+          alerts.replaceChildren(document.createTextNode('心育关怀线索：'));
+          var button=node('button','crisis-posts-link');button.type='button';
+          button.textContent='建议关怀 '+($('crisisWarnCount')?.textContent || '—')+' 条';
+          button.onclick=function(event){viewCrisisPosts('关注',event);};
+          alerts.appendChild(button);
         }else alerts.textContent='公开论坛采集样本';
       }
       new MutationObserver(syncEvidence).observe(metrics, {childList:true, subtree:true, characterData:true});
@@ -5611,7 +5661,6 @@ switchTab = function(tab) {
 };
 const originalForward = forwardToStudio;
 forwardToStudio = function(query) {
-  $('workshopPurpose').value = /活动|方案|班会|沙龙|团辅|工作坊/.test(query)?'activity_design':'event_brief';
   updateComposerSettings();
   originalForward(query);
 };
@@ -5625,8 +5674,9 @@ loadCampus = async function() {
     return;
   }
   $('campusSourceCounts').textContent=Object.entries(v.by_source||{}).map(([s,n])=>`${FORUM_NAMES[s]||s} ${obsNumber(n)} 帖`).join(' · ')||'暂无来源统计';
-  $('campusConfidence').textContent=v.confidence||'资料不足';
-  $('campusObservedDays').textContent=`实际覆盖 ${v.observed_days??'未知'} 天 · 公开论坛采集样本`;
+  if ($('campusConfidence')) $('campusConfidence').textContent=v.confidence||'资料不足';
+  if ($('campusObservedDays')) $('campusObservedDays').textContent=`实际覆盖 ${v.observed_days??'未知'} 天 · 公开论坛采集样本`;
+  if (typeof renderMonitorCharts==='function') renderMonitorCharts();
 };
 // 分类别名回归：同时兼容历史已归档标签。
 filterCampusTheme = function(target,btn) {
@@ -5675,6 +5725,7 @@ async function loadObservatory(force=false) {
     }
     OBS.data=data;
     renderObservatory(); renderWordcloud(); renderRedHotspots(); renderStatMemes();
+    if(typeof renderMonitorCharts==='function') renderMonitorCharts();
     return data;
   })();
   try {return await OBS.pending;} finally {OBS.pending=null;}
@@ -5736,10 +5787,92 @@ function renderTrendReading(t) {
 }
 function renderWordcloud() {
   if(!OBS.data) return;
-  const source=$('cloudSource').value,words=OBS.data.wordcloud[source]||[],max=words[0]?.df||1;
-  const mobile=window.matchMedia('(max-width:760px)').matches;
-  $('campusWordcloud').innerHTML=words.slice(0,50).map(w=>`<span class="cloud-word" style="font-size:${Math.round((mobile?12:14)+(mobile?28:41)*Math.sqrt(w.df/max))}px" title="${esc(w.term)} · ${w.df} 条独立帖子">${esc(w.term)}</span>`).join('')||obsError('此论坛在当前窗口暂无可展示词语');
-  $('campusWordcloud').setAttribute('aria-label',words.map(w=>`${w.term} ${w.df}帖`).join('；')||'暂无可展示词语');
+  const source=$('cloudSource').value,words=(OBS.data.wordcloud[source]||[]).slice(0,55),max=words[0]?.df||1;
+  const host=$('campusWordcloud');
+  if(!words.length){host.innerHTML=obsError('此论坛在当前窗口暂无可展示词语');return;}
+  const W=920,H=450;
+  // 蓬松云朵的6个内部椭圆掩码 [cx, cy, rx, ry]，确保所有词语严格排布在云朵形状内部
+  const puffs=[
+    [455, 178, 128, 102],
+    [308, 206, 102, 82],
+    [602, 202, 106, 86],
+    [198, 272, 82, 62],
+    [712, 272, 82, 62],
+    [455, 282, 268, 74]
+  ];
+  const inCloud=(px,py,pad=0)=>puffs.some(([cx,cy,rx,ry])=>{
+    const a=Math.max(8,rx-pad),b=Math.max(8,ry-pad),dx=px-cx,dy=py-cy;
+    return (dx*dx)/(a*a)+(dy*dy)/(b*b)<=1;
+  });
+  const boxInCloud=(x,y,w,h,pad=6)=>{
+    const hw=w/2,hh=h/2;
+    return inCloud(x,y,pad)&&inCloud(x-hw,y-hh,pad)&&inCloud(x+hw,y-hh,pad)&&inCloud(x-hw,y+hh,pad)&&inCloud(x+hw,y+hh,pad)&&inCloud(x,y-hh,pad)&&inCloud(x,y+hh,pad);
+  };
+  const placed=[];
+  const overlaps=(x,y,w,h)=>{
+    const l=x-w/2-4,r=x+w/2+4,t=y-h/2-3,b=y+h/2+3;
+    return placed.some(p=>!(r<p.l||l>p.r||b<p.t||t>p.b));
+  };
+  const palette=['#1b4d3e','#2d6a4f','#9c6b3b','#3b6e8c','#234c40','#b5654d','#4a6b5d','#7d5a3c'];
+  const seeds=[[455,228],[385,215],[525,215],[310,205],[600,205],[455,155],[455,295],[215,270],[695,270]];
+  words.forEach((w,idx)=>{
+    const ratio=Math.sqrt(w.df/max);
+    let fs=Math.round(13+33*ratio);
+    if(idx===0) fs=46;
+    else if(idx<4) fs=Math.max(30,fs);
+    for(let scaleTry=0;scaleTry<3;scaleTry++){
+      const bw=Math.ceil(w.term.length*fs*0.95+10),bh=Math.ceil(fs*1.12+4);
+      const [sx,sy]=seeds[idx%seeds.length];
+      let found=null;
+      for(let s=0;s<1600;s++){
+        const angle=s*0.37+(idx*1.13);
+        const rad=s*0.48;
+        const x=Math.round(sx+Math.cos(angle)*rad*1.38);
+        const y=Math.round(sy+Math.sin(angle)*rad*0.82);
+        if(boxInCloud(x,y,bw,bh,4)&&!overlaps(x,y,bw,bh)){
+          found={x,y,bw,bh,fs};break;
+        }
+      }
+      if(found){
+        placed.push({...found,l:found.x-found.bw/2,r:found.x+found.bw/2,t:found.y-found.bh/2,b:found.y+found.bh/2,term:w.term,df:w.df,color:palette[idx%palette.length],weight:idx<8?700:idx<22?600:500});
+        break;
+      }
+      fs=Math.max(11,Math.floor(fs*0.84));
+    }
+  });
+  // 真实蓬松云朵外轮廓 SVG Path
+  const cloudPath='M 195 352 '
+    +'C 122 352, 92 292, 132 238 '
+    +'C 146 218, 172 204, 204 202 '
+    +'C 214 140, 274 104, 342 122 '
+    +'C 374 72, 442 52, 506 72 '
+    +'C 548 84, 578 114, 592 146 '
+    +'C 648 118, 722 146, 734 210 '
+    +'C 786 214, 818 262, 798 308 '
+    +'C 782 342, 742 352, 696 352 Z';
+  const wordsSvg=placed.map(p=>`<text x="${p.x}" y="${p.y}" dy="0.34em" text-anchor="middle" fill="${p.color}" font-size="${p.fs}" font-weight="${p.weight}" font-family="var(--serif)" data-cloud-term="${esc(p.term)}" data-word-count="${esc(p.term)} · ${p.df} 条独立帖子" title="${esc(p.term)} · ${p.df} 条独立帖子">${esc(p.term)}<title>${esc(p.term)} · ${p.df} 条独立帖子（点击查看相关原帖）</title></text>`).join('');
+  host.innerHTML=`<svg class="cloud-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="云朵形状十日热点词云">
+    <defs>
+      <linearGradient id="cloudFillGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96"/>
+        <stop offset="65%" stop-color="#f3f7f4" stop-opacity="0.94"/>
+        <stop offset="100%" stop-color="#e5efe9" stop-opacity="0.92"/>
+      </linearGradient>
+      <filter id="cloudDropShadow" x="-6%" y="-6%" width="112%" height="116%">
+        <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#1d4d3e" flood-opacity="0.09"/>
+      </filter>
+    </defs>
+    <path d="${cloudPath}" fill="url(#cloudFillGrad)" stroke="#9ab5a7" stroke-width="2.5" stroke-linejoin="round" filter="url(#cloudDropShadow)"/>
+    <path d="M 218 208 C 242 162, 294 140, 344 152 M 365 126 C 406 84, 476 76, 534 106 M 598 158 C 642 142, 694 162, 712 206" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    ${wordsSvg}
+  </svg>`;
+  host.querySelectorAll('text[data-cloud-term]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const term=el.getAttribute('data-cloud-term');
+      if(term&&$('postModal')) viewObservedPosts({q:term},'词云热词：'+term);
+    });
+  });
+  host.setAttribute('aria-label',words.map(w=>`${w.term} ${w.df}帖`).join('；')||'暂无可展示词语');
   $('cloudFrequency').innerHTML='<div class="frequency-list">'+words.map(w=>`<span>${esc(w.term)} <b>${w.df}</b></span>`).join('')+'</div>';
 }
 function renderRedHotspots() {
@@ -5748,13 +5881,67 @@ function renderRedHotspots() {
   $('redHotspots').innerHTML=n?`<div><span class="red-stat">${n}</span>条相关讨论</div><div class="red-themes">${terms.slice(0,6).map(([w,c])=>`${esc(w)} ${c}帖`).join(' · ')}</div><p class="data-note">按党建、思政、家国情怀与实践关键词筛选，点击原帖查看语境。</p><button type="button" class="btn sm" id="redPostsButton">阅读全部原帖</button>`:obsError('本窗口暂无相关帖子，后续采集后更新。');
   if($('redPostsButton')) $('redPostsButton').onclick=()=>viewObservedPosts({red:'1'},'红色育人');
 }
-function renderStatMemes() {
-  const list=OBS.data?.memes||[]; APP.memes=list;
-  const candidates=OBS.data?.meme_candidates||[];
-  $('memeCandidateStats').innerHTML='<p class="data-note">候选词按重复频次、PMI与邻字熵筛选，包含校园术语和新句式；经人工核实后列入梗榜。</p>'+candidates.map((m,i)=>`<div class="auto-report"><div>${esc(m.term)}<small>${esc(m.kind)} · ${m.df} 独立帖 · 传播分 ${m.diffusion_score}</small></div><button type="button" class="btn sm" onclick="viewStatisticalCandidate(${i})">核对依据</button></div>`).join('');
-  $('memesCardsGrid').innerHTML=list.map((m,i)=>`<div class="item-card"><div><div class="card-header-row"><h3 class="card-title">${esc(m.term)}</h3><span class="badge blue">传播分 ${m.diffusion_score}</span></div><div class="card-meta-row"><span>${esc(m.kind)}</span><span>${m.df}条独立帖 · ${m.active_days}日出现</span></div><p class="card-desc">${esc(m.status)}。来源分布熵 ${m.source_entropy}；近三日相对前三日 ${m.growth_3d==null?'资料不足':m.growth_3d+' 倍'}。狐友 ${m.by_source['huyou-school']??0} / 贴吧 ${m.by_source['tieba-school']??0}。</p>${m.examples.map(e=>`<div class="quote-box">${esc(e)}</div>`).join('')}<p class="data-note">公式：ln(1+DF) × (1+来源熵) × (1+正增长) × (1+持续性) × DF/(DF+5)。按上述公式排序，词语含义与使用方式由人工核实。</p>${timelineSvg(m.timeline)}</div><div class="card-actions"><button class="btn sm" type="button" onclick="viewMemeEvidence(${i})">查看全部 ${m.df} 条依据帖</button><button class="btn sm primary" type="button" onclick="planMemeActivity(${i})">转为育人活动议题</button></div></div>`).join('')||obsError('当前采集样本中暂无达到重复出现阈值的候选词。');
+function renderMemeList(list) {
+  const grid = $('memesCardsGrid');
+  if (!grid) return;
+  if (!list || !list.length) {
+    grid.innerHTML = obsError('当前筛选下暂无网络热梗条目。');
+    return;
+  }
+  grid.innerHTML = list.map((m) => {
+    const idx = (APP.memes || []).indexOf(m);
+    const platforms = (m.platforms || ['B站', '抖音', '微博']).map(p => `<span class="badge">${esc(p)}</span>`).join('');
+    const psychs = (m.psych_dimensions || []).map(d => `<span class="badge purple">${esc(d)}</span>`).join('');
+    const resonance = m.school_hits > 0
+      ? `<span class="badge green">华理社区已共鸣 ${m.school_hits} 帖</span>`
+      : `<span class="badge warn">全网青年热议</span>`;
+    const examples = (m.examples || []).slice(0, 2).map(e => `<div class="quote-box"><b>典型语境：</b>${esc(e)}</div>`).join('');
+    const hint = m.activity_hint ? `<div class="quote-box"><b>心育切入契机：</b>${esc(m.activity_hint)}</div>` : '';
+    const links = (m.links || []).map(l => sourcePostLink(l.url, l.title || '查看平台原帖')).filter(Boolean).join('<br>');
+    return `<div class="item-card">
+      <div>
+        <div class="card-header-row">
+          <h3 class="card-title">${esc(m.term || m.label)}</h3>
+          <span class="badge blue">${esc(m.type || m.form || '网络流行语')}</span>
+        </div>
+        <div class="card-meta-row" style="margin:8px 0;">
+          ${platforms}
+          <span class="badge purple">形式：${esc(m.form || '句式模板')}</span>
+          <span class="badge blue">心理机制：${esc(m.function || '情绪共鸣')}</span>
+          ${resonance}
+          ${psychs}
+        </div>
+        <p class="card-desc"><b>梗义与起源：</b>${esc(m.meaning || '')}<br><b>大学生使用场景：</b>${esc(m.usage || '')}</p>
+        ${examples}
+        ${hint}
+        ${links ? `<div class="source-post-links" style="margin-top:10px;">${links}</div>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="btn sm primary" type="button" onclick="planMemeActivity(${idx})">据此策划心育活动</button>
+        <button class="btn sm" type="button" onclick="forwardMemeStudio(${idx})">生成专题研报</button>
+      </div>
+    </div>`;
+  }).join('');
 }
-loadMemes = async function() { await loadObservatory(); };
+function filterMemes(target, btn) {
+  document.querySelectorAll('#memeFilterChips .chip-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const all = APP.memes || [];
+  if (target === 'all') {
+    renderMemeList(all);
+  } else if (target === '解压') {
+    renderMemeList(all.filter(m => (m.function || '').includes('解压') || (m.function || '').includes('共鸣')));
+  } else {
+    renderMemeList(all.filter(m => (m.platforms || []).some(p => p.includes(target))));
+  }
+}
+async function renderStatMemes() {
+  const data = await api('/pulse/api/meme-trends');
+  const list = data?.items || data?.topics || [];
+  APP.memes = list;
+  renderMemeList(list);
+}
+loadMemes = async function() { await renderStatMemes(); };
 function viewMemeEvidence(i) { const m=APP.memes[i];if(m) viewObservedPosts({meme:m.term},'梗候选：'+m.term); }
 function viewStatisticalCandidate(i) {const m=OBS.data?.meme_candidates?.[i];if(m)viewObservedPosts({meme:m.term},'待核实新词：'+m.term);}
 function sourcePostLink(raw, label='打开原帖') {
@@ -5788,6 +5975,7 @@ async function viewObservedPosts(params,title) {
   $('postModalTitle').textContent=title+' · 原帖';
   $('postModalBody').innerHTML='<p class="data-note">正在读取全部原帖…</p>';
   $('postModal').classList.add('open');
+  $('btnForwardPostToStudio').hidden=false;
   $('btnForwardPostToStudio').onclick=()=>{closePostModal();forwardToStudio('本校【'+title+'】专题研判');};
   const data=await api('/pulse/api/observatory/posts?'+new URLSearchParams(params));
   if(v!==postRequestVersion||!$('postModal').classList.contains('open')) return;
@@ -5900,28 +6088,46 @@ viewAnalysisDetail=async function(id) {
 })();
 
 const COMPOSER_EFFORTS = {
+  auto:{label:'自动路由',value:'auto'},
   quick:{label:'快速',value:'lean'},
   standard:{label:'标准',value:'standard'},
   deep:{label:'深入',value:'deep'}
 };
 function composerOptionsText(options) {
-  const psych={auto:'按议题选择重点',needs:'诉求与服务问题',stress:'学习压力与支持资源',conflict:'关系冲突与沟通',participation:'活动参与与阻碍',attribution:'认知归因理论与心理韧性',attachment:'依恋理论与人际连接',motivation:'自我决定理论与内在动机',social:'群体动力学与去抑制效应'};
-  const ideology={evidence:'事实核查与证据缺口',actions:'可执行改进清单',communication:'回应与沟通方案',activity:'活动执行与效果评估',lideshuren:'立德树人 · 价值观涵育',sanquanyuren:'三全育人 · 协同机制',developmental:'发展性心理健康观',narrative:'青年话语体系创新'};
+  const psych={none:'不限心理视角',custom:options.custom_psych?('自定义：'+options.custom_psych):'自定义心理视角',auto:'按议题自动匹配视角',needs:'诉求与服务问题',stress:'学习压力与支持资源',conflict:'关系冲突与沟通',participation:'活动参与与阻碍',attribution:'认知归因理论与心理韧性',attachment:'依恋理论与人际连接',motivation:'自我决定理论与内在动机',social:'群体动力学与去抑制效应'};
+  const ideology={none:'不限思政立足点',custom:options.custom_ideology?('自定义：'+options.custom_ideology):'自定义思政立足点',auto:'按议题自动匹配立足点',evidence:'事实核查与证据缺口',actions:'可执行改进清单',communication:'回应与沟通方案',activity:'活动执行与效果评估',lideshuren:'立德树人 · 价值观涵育',sanquanyuren:'三全育人 · 协同机制',developmental:'发展性心理健康观',narrative:'青年话语体系创新'};
   return [COMPOSER_EFFORTS[options.thinking_effort]?.label,psych[options.psych_lens],ideology[options.ideology]].filter(Boolean).join(' · ');
 }
 function readComposerOptions() {
-  return {thinking_effort:({lean:'quick',standard:'standard',deep:'deep'})[$('selectTopology').value]||'standard',
-    psych_lens:$('selectPsychLens').value,ideology:$('selectIdeology').value};
+  const psych_lens=$('selectPsychLens').value,ideology=$('selectIdeology').value;
+  const opts={thinking_effort:({auto:'auto',lean:'quick',standard:'standard',deep:'deep'})[$('selectTopology').value]||'auto',
+    psych_lens,ideology};
+  const cp=$('customPsychLens')?.value.trim(),ci=$('customIdeology')?.value.trim();
+  if(psych_lens==='custom'&&cp) opts.custom_psych=cp.slice(0,80);
+  if(ideology==='custom'&&ci) opts.custom_ideology=ci.slice(0,80);
+  return opts;
 }
-function updateComposerSettings() {
-  const options=readComposerOptions(),level=COMPOSER_EFFORTS[options.thinking_effort];
+function updateComposerSettings(focusCustom=false) {
+  const options=readComposerOptions(),level=COMPOSER_EFFORTS[options.thinking_effort]||COMPOSER_EFFORTS.auto;
   $('thinkingLabel').textContent='思考 · '+level.label;
   document.querySelectorAll('#thinkingMenu [data-thinking]').forEach(b=>{
     const selected=b.dataset.thinking===level.value;
     b.setAttribute('aria-checked',String(selected));b.tabIndex=selected?0:-1;
   });
-  $('composerSelectionSummary').textContent=level.label+'思考 · '+$('selectPsychLens').selectedOptions[0].text+' · '+$('selectIdeology').selectedOptions[0].text;
-  if(!$('btnLaunchStudio').disabled) $('btnLaunchStudio').innerHTML='<span>'+($('workshopPurpose').value==='activity_design'?'生成方案':'开始研究')+'</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5"/></svg>';
+  const cpInput=$('customPsychLens'),ciInput=$('customIdeology');
+  if(cpInput){const wasHidden=cpInput.hidden;cpInput.hidden=options.psych_lens!=='custom';if(focusCustom&&wasHidden&&!cpInput.hidden)cpInput.focus();}
+  if(ciInput){const wasHidden=ciInput.hidden;ciInput.hidden=options.ideology!=='custom';if(focusCustom&&wasHidden&&!ciInput.hidden)ciInput.focus();}
+  const effortSummary=options.thinking_effort==='auto'?'自动路由':(level.label+'思考');
+  let directionSummary;
+  if(options.psych_lens==='none'&&options.ideology==='none'){
+    directionSummary='不限定预设理论与思政视角（按提问自由研判）';
+  }else{
+    const pText=options.psych_lens==='none'?'不限心理视角':options.psych_lens==='custom'?(options.custom_psych?'自定义：'+options.custom_psych:'自定义心理视角（待输入）'):$('selectPsychLens').selectedOptions[0].text;
+    const iText=options.ideology==='none'?'不限思政立足点':options.ideology==='custom'?(options.custom_ideology?'自定义：'+options.custom_ideology:'自定义思政立足点（待输入）'):$('selectIdeology').selectedOptions[0].text;
+    directionSummary=pText+' · '+iText;
+  }
+  $('composerSelectionSummary').textContent=effortSummary+' · '+directionSummary;
+  if(!$('btnLaunchStudio').disabled) $('btnLaunchStudio').innerHTML='<span>开始研究</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5"/></svg>';
 }
 function closeComposerMenus(returnFocus=false) {
   const opened=['thinking','direction'].find(n=>!$(n+'Menu').hidden);
@@ -5940,11 +6146,11 @@ function toggleComposerMenu(name) {
   (name==='thinking'?menu.querySelector('[aria-checked="true"]'):$('selectPsychLens')).focus();
 }
 function chooseThinking(value) {
-  if(!['lean','standard','deep'].includes(value)) return;
+  if(!['auto','lean','standard','deep'].includes(value)) return;
   $('selectTopology').value=value;updateComposerSettings();closeComposerMenus(true);
 }
 function setComposerBusy(busy) {
-  document.querySelectorAll('#researchComposer select,#researchComposer button:not(#btnLaunchStudio),#studioQueryInput').forEach(e=>e.disabled=busy);
+  document.querySelectorAll('#researchComposer select,#researchComposer input,#researchComposer button:not(#btnLaunchStudio),#studioQueryInput').forEach(e=>e.disabled=busy);
   if(busy) closeComposerMenus(false);
 }
 (function initResearchComposer(){
@@ -5952,7 +6158,6 @@ function setComposerBusy(busy) {
   STUDIO_AGENTS.Thinking=['思','思考程度','本次分析设置','editor',1];
   const originalDetail=studioStepDetail;
   studioStepDetail=function(s){return (s.agent==='Thinking'?'<p>'+esc(s.label)+'思考 · 已应用到分析流程</p>':'')+originalDetail(s);};
-  $('workshopPurpose').addEventListener('change',updateComposerSettings);
   $('studioQueryInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&!e.isComposing){e.preventDefault();launchStudioAnalysis();}
   });
@@ -6582,32 +6787,9 @@ renderObservatory();
 
 </script>
 <script id="issue-workbench-script">
-/* Select actual source posts, create a persistent case, then generate/review/follow up. */
-const ISSUE={selected:new Map(),posts:[],page:0,version:0,current:null,filters:{},dirty:false,job:null,poll:null};
-const ISSUE_STATES={pending:'待核实',reviewed:'已复核',following:'跟进中',resolved:'已解决'};
-const ISSUE_EVENTS={created:'建立议题',updated:'教师修改',generation_started:'开始生成',generation_completed:'生成完成',generation_failed:'生成失败'};
-const workHost=document.createElement('section');workHost.id='issueWorkbench';workHost.className='issue-workbench';
-workHost.innerHTML=`<div class="issue-heading"><h2>核查与跟进</h2><button type="button" class="issue-action text" id="issueNew">选择原帖建立议题</button></div>
-<div id="issueChooser" hidden>
-<div class="issue-toolbar"><label>论坛<select id="issueSource"><option value="all">两个校园论坛</option><option value="huyou-school">狐友华理圈</option><option value="tieba-school">华理贴吧</option></select></label><label>主题<select id="issueTheme"><option value="">全部主题</option></select></label><label>时间范围<select id="issueWindow"><option value="1">近24小时</option><option value="3">近三天</option><option value="7">近七天</option><option value="10" selected>近十天</option><option value="exact" hidden>已选日窗</option></select></label><label class="issue-search">查找原帖<input id="issueSearch" type="search" placeholder="输入原帖中的关键词"></label><button type="button" class="issue-action" id="issueReloadPosts">刷新原帖</button></div>
-<p class="issue-notice" id="issueScope"></p><div class="issue-material-list" id="issueMaterials" aria-label="可选择的原帖"></div>
-<div class="issue-actions"><button type="button" class="issue-action" id="issuePrevious">上一页</button><span id="issuePage"></span><button type="button" class="issue-action" id="issueNext">下一页</button></div>
-<div class="issue-selection"><strong id="issueSelected">已选 0 / 20 篇</strong><button type="button" class="issue-action text" id="issueClear">清空选择</button></div>
-<label class="issue-title-label">议题名称<input id="issueTitle" maxlength="200" placeholder="例如：核查食堂晚间服务是否满足需求"></label>
-<div class="issue-actions"><button type="button" class="issue-action primary" id="issueCreate">保存所选原帖并建立议题</button><button type="button" class="issue-action" id="issueHideChooser">收起原帖选择</button></div>
-</div><p class="issue-notice" role="status" id="issueNotice"></p>
-<div id="issueDetail" hidden></div>
-<div class="issue-heading"><h2>议题跟进记录</h2><div class="issue-actions"><label class="sr-only" for="issueListState">筛选跟进状态</label><select id="issueListState"><option value="">全部状态</option>${Object.entries(ISSUE_STATES).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select><button type="button" class="issue-action text" id="issueRefresh">刷新记录</button></div></div><div id="issueList" aria-live="polite"></div>`;
-// Both workflows remain directly accessible; free questions are the first section.
-const oldStudioBox=$('pane-studio').querySelector('.studio-box');oldStudioBox.after(workHost);
-const issueArchive=document.createElement('details');issueArchive.className='issue-full-tools';issueArchive.innerHTML='<summary>历史完整研报与定时报告</summary>';
-const oldReportList=$('studioReportList'),oldReportHeading=oldReportList.previousElementSibling,oldAutomatic=document.querySelector('#pane-studio .auto-section');
-oldReportHeading.before(issueArchive);issueArchive.append(oldReportHeading,oldReportList);if(oldAutomatic)issueArchive.append(oldAutomatic);
 window.heroGoStudio=()=>{switchTab('studio');$('studioQueryInput').scrollIntoView({block:'center',behavior:'auto'});$('studioQueryInput').focus({preventScroll:true});};
-window.heroGoReports=()=>{switchTab('studio');issueArchive.open=true;issueArchive.scrollIntoView({block:'start',behavior:'instant'});};
+window.heroGoReports=()=>{switchTab('studio');const target=$('studioReportList')?.previousElementSibling||$('studioReportList');if(target)target.scrollIntoView({block:'start',behavior:'instant'});};
 const oldHeroStudio=document.querySelector('[onclick="heroGoStudio()"]');if(oldHeroStudio)oldHeroStudio.textContent='提问与研究';
-const fullReportChoice=document.querySelector('#workshopPurpose option[value="event_brief"]');if(fullReportChoice)fullReportChoice.textContent='完整专题研报';
-function issueNotice(text,error=false){$('issueNotice').textContent=text;$('issueNotice').classList.toggle('error',error);}
 async function issueRequest(path,method='GET',body){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
   try{
@@ -6617,138 +6799,14 @@ async function issueRequest(path,method='GET',body){
   finally{clearTimeout(timer);}
 }
 function issueMetric(text,help){return `<button type="button" class="cover-metric" data-metric-help="${esc(help)}">${esc(text)}</button>`;}
-function issueCountText(p){
-  const exposure=p.source==='huyou-school'?`${p.exposure==null?'未知':obsNumber(p.exposure)} 次曝光`:'贴吧曝光未采集';
-  return exposure+' · '+(p.comments==null?'回复数未知':obsNumber(p.comments)+' 条回复');
-}
-function issueTextScope(p){return p.content_truncated?'采集正文达到长度上限，完整内容见原帖。':p.content_kind==='forum_summary'||p.source==='tieba-school'?'贴吧标题与摘要，完整正文见原帖。':'';}
-function issueFiltered(){const q=$('issueSearch').value.trim().toLowerCase();return ISSUE.posts.filter(p=>!q||p.content.toLowerCase().includes(q));}
-function renderIssueMaterials(){
-  const posts=issueFiltered(),pages=Math.max(1,Math.ceil(posts.length/25));ISSUE.page=Math.min(ISSUE.page,pages-1);
-  $('issueMaterials').innerHTML=posts.slice(ISSUE.page*25,(ISSUE.page+1)*25).map(p=>`<article class="issue-material"><input type="checkbox" data-issue-post="${esc(p.id)}" aria-label="选择原帖：${esc(p.content.slice(0,40))}" ${ISSUE.selected.has(p.id)?'checked':''}><div><p>${esc(p.content)}</p><div class="issue-actions">${sourcePostLink(p.link||p.url,'打开原帖')||'<span>原帖地址未采集</span>'}${issueTextScope(p)?'<span class="issue-notice">'+esc(issueTextScope(p))+'</span>':''}</div></div><div class="issue-material-meta"><span>${esc(FORUM_NAMES[p.source]||p.source)}</span><span>${esc(p.theme)}</span><time>${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</time>${issueMetric(issueCountText(p),'原论坛每帖最新采集的累计计数。狐友曝光为展示次数，单位为曝光次数；贴吧曝光未采集。回复为原论坛显示的评论/回复数量。')}</div></article>`).join('')||'<p class="issue-notice">此筛选下没有原帖。可切换论坛、扩大时间范围或清除关键词。</p>';
-  $('issuePage').textContent=`第 ${ISSUE.page+1} / ${pages} 页 · ${posts.length} 篇匹配原帖`;
-  $('issuePrevious').disabled=ISSUE.page===0;$('issueNext').disabled=ISSUE.page>=pages-1;
-  $('issueMaterials').querySelectorAll('[data-issue-post]').forEach(box=>box.onchange=()=>{
-    const p=ISSUE.posts.find(p=>p.id===box.dataset.issuePost);
-    if(box.checked){if(ISSUE.selected.size>=20){box.checked=false;issueNotice('最多选择20篇，请先取消部分原帖。',true);return;}ISSUE.selected.set(p.id,p);}
-    else ISSUE.selected.delete(p.id);
-    $('issueSelected').textContent=`已选 ${ISSUE.selected.size} / 20 篇`;
-    $('issueCreate').disabled=!ISSUE.selected.size;
-  });
-}
-async function issueLoadPosts(){
-  const version=++ISSUE.version;issueNotice('正在读取原帖…');$('issueReloadPosts').disabled=true;
-  const params={...ISSUE.filters,source:$('issueSource').value,theme:$('issueTheme').value,sort:'newest'};
-  if($('issueWindow').value!=='exact'){delete params.until;params.from=(OBS.data?.generated_at||Math.floor(Date.now()/1000))-Number($('issueWindow').value)*86400;}
-  try{const d=await issueRequest('observatory/posts?'+new URLSearchParams(params));if(version!==ISSUE.version)return;
-    ISSUE.posts=d.posts;ISSUE.page=0;renderIssueMaterials();
-    $('issueScope').textContent=`${params.from?obsTime(Number(params.from),true):'近十天'} — ${obsTime(Number(params.until)||d.generated_at,true)} · ${d.total} 篇独立采集样本`;
-    issueNotice('点击原帖地址核对内容，再选择用于简报的证据。');
-  }catch(e){if(version===ISSUE.version){ISSUE.posts=[];renderIssueMaterials();issueNotice(e.message,true);}}
-  finally{if(version===ISSUE.version)$('issueReloadPosts').disabled=false;}
-}
-function openIssueChooser(params={},title=''){
-  switchTab('studio');$('issueChooser').hidden=false;$('issueDetail').hidden=true;
-  ISSUE.filters={...params};$('issueSource').value=params.source||'all';
-  const themes=(OBS.data?.themes||[]).map(t=>t.theme);
-  if(params.theme&&!themes.includes(params.theme))themes.push(params.theme);
-  $('issueTheme').innerHTML='<option value="">全部主题</option>'+themes.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  $('issueTheme').value=params.theme||'';$('issueWindow').value=params.from&&params.until?'exact':'10';$('issueSearch').value='';
-  if(title)$('issueTitle').value=title.slice(0,200);
-  $('issueSelected').textContent=`已选 ${ISSUE.selected.size} / 20 篇`;$('issueCreate').disabled=!ISSUE.selected.size;
-  issueLoadPosts();workHost.scrollIntoView({block:'start',behavior:'instant'});$('issueSource').focus({preventScroll:true});
-}
-async function issueLoadList(){
-  try{const d=await issueRequest('issues?'+new URLSearchParams({state:$('issueListState').value}));
-    $('issueList').innerHTML=d.items.length?`<table class="issue-list"><thead><tr><th>议题</th><th>核查状态</th><th>跟进人</th><th>最新修改</th><th>产出</th></tr></thead><tbody>${d.items.map(i=>`<tr><td><button type="button" class="issue-action text" data-open-issue="${i.id}">${esc(i.title)}</button></td><td>${esc(i.state_label)}${i.adopted?' · 已采纳':''}</td><td>${esc(i.owner||'尚未指定')}</td><td>${esc(obsTime(i.updated_at,true))}</td><td>${i.has_brief?'一页简报':'已保存原帖'}${i.full_analysis_id?' · 完整研报':''}</td></tr>`).join('')}</tbody></table>`:'<p class="issue-notice">尚无符合条件的议题。选择校园原帖后，可以建立核查记录。</p>';
-    $('issueList').querySelectorAll('[data-open-issue]').forEach(b=>b.onclick=()=>openIssue(b.dataset.openIssue));
-  }catch(e){$('issueList').textContent=e.message;}
-}
-function renderIssueDetail(i){
-  ISSUE.current=i;ISSUE.dirty=false;$('issueDetail').hidden=false;
-  const b=i.brief;
-  const facts=i.evidence.map((p,index)=>`<details class="issue-fact" ${index===0?'open':''}><summary>[${p.ref}] ${esc(FORUM_NAMES[p.source]||p.source)} · ${esc(obsTime(p.published,true))}${p.time_basis==='first_observed'?' · 首次采集':''}</summary><blockquote>${esc(p.content)}</blockquote><p>${sourcePostLink(p.link,'打开对应原帖')||'原帖地址未采集'}</p>${issueTextScope(p)?'<p class="issue-notice">'+esc(issueTextScope(p))+'</p>':''}${issueMetric(issueCountText(p),'选中这篇原帖时采集的累计曝光/回复；统计选中帖子截至采集时的累计互动量。证据随议题冻结，后续变化请查看原帖。')}</details>`).join('');
-  $('issueDetail').innerHTML=`<article class="issue-brief-sheet"><div class="issue-heading"><h3>${esc(i.title)}</h3><a href="/pulse/api/issues/${i.id}/export" class="issue-action" download>导出简报与证据</a></div>
-  <p class="issue-notice">${esc(i.state_label)} · ${i.evidence.length} 篇所选原帖 · 建立于 ${esc(obsTime(i.created_at,true))}${i.reviewed_at?' · '+esc(i.reviewed_by)+'复核于 '+esc(obsTime(i.reviewed_at,true)):''}</p>
-  <div class="issue-actions"><label for="issueThinking">思考程度</label><select id="issueThinking"><option value="quick">快速</option><option value="standard" selected>标准</option><option value="deep">深入</option></select><label for="issueFocus">研究重点</label><select id="issueFocus"><option value="auto">按原帖归纳</option><option value="needs">诉求与服务问题</option><option value="stress">学习压力与支持资源</option><option value="conflict">冲突与沟通</option><option value="participation">活动参与阻碍</option></select><button type="button" class="issue-action primary" id="issueGenerate">${b?'重新生成一页简报':'生成一页简报'}</button><button type="button" class="issue-action" id="issueFull">生成完整研报</button>${i.full_analysis_id?'<button type="button" class="issue-action text" id="issueReadFull">阅读完整研报</button>':''}</div>
-  <p class="issue-notice" id="issueJobState" role="status"></p>
-  <div class="issue-brief-grid"><div><h4>原帖证据</h4>${facts}
-  ${b?`<h4>模型解读 · 待教师核查</h4><p class="issue-reading">${esc(b.reading)}</p><p>依据 ${b.refs.map(ref=>`<button type="button" class="issue-action text" data-issue-ref="${ref}">[${ref}]</button>`).join(' ')} · 生成于 ${esc(obsTime(b.generated_at,true))}</p><h4>还缺哪些信息</h4><ul>${b.gaps.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h4>向谁核实</h4><ul>${b.verification.map(r=>`<li><b>${esc(r.who)}</b>：${esc(r.question)}</li>`).join('')}</ul><h4>建议行动</h4><ol>${b.actions.map(r=>`<li><b>${esc(r.action)}</b><p>建议承接：${esc(r.owner)} · 建议时间：${esc(r.when)}</p><p>验收：${esc(r.check)}</p></li>`).join('')}</ol>`:'<p class="issue-notice">原帖已保存。生成简报后，可在此核对模型解读、证据缺口和建议动作。</p>'}</div>
-  <form id="issueReviewForm" class="issue-followup"><h4>教师复核与跟进</h4><label class="issue-field">议题名称<input id="issueEditTitle" maxlength="200" value="${esc(i.title)}"></label><label class="issue-field">教师结论<textarea id="issueConclusion" maxlength="3000" placeholder="核查后确认的事实、对模型建议的修改…">${esc(i.conclusion)}</textarea></label><label class="issue-field">确认的行动安排<textarea id="issueActionPlan" maxlength="4000" placeholder="修订模型建议，写下实际准备执行的动作与验收方式…">${esc(i.action_plan)}</textarea></label>
-  <div class="issue-field-row"><label class="issue-field">状态<select id="issueState">${Object.entries(ISSUE_STATES).map(([s,l])=>`<option value="${s}" ${s===i.state?'selected':''}>${l}</option>`).join('')}</select></label><label class="issue-field">跟进人<input id="issueOwner" maxlength="100" value="${esc(i.owner)}"></label></div>
-  <label class="issue-field">下次跟进日期<input type="date" id="issueDue" value="${esc(i.due_date)}"></label><label class="issue-field">跟进记录 / 核实结果<textarea id="issueFollowup" maxlength="4000" placeholder="已核查的结果、已采取的行动及下一步；标为已解决时必须填写。">${esc(i.followup)}</textarea></label>
-  <label class="issue-adopt"><input type="checkbox" id="issueAdopted" ${i.adopted?'checked':''}>已实际采纳本议题的建议</label><div class="issue-actions"><button type="submit" class="issue-action primary" id="issueSave">保存复核与跟进</button><button type="button" class="issue-action text" id="issueReadLatest">读取最新记录</button></div><p class="issue-notice" id="issueSaveState" role="status"></p></form></div>
-  <details class="issue-audit"><summary>修改记录（${i.events.length}条）</summary><ol>${i.events.map(e=>`<li>${esc(obsTime(e.ts,true))} · ${esc(e.actor)} · ${esc(ISSUE_EVENTS[e.action]||e.action)}${e.action==='updated'?'<details><summary>查看修改内容</summary><pre>'+esc(JSON.stringify(e.detail,null,2))+'</pre></details>':''}</li>`).join('')}</ol></details></article>`;
-  if(b?.analysis_options){$('issueThinking').value=b.analysis_options.thinking_effort||'standard';$('issueFocus').value=b.analysis_options.psych_lens||'auto';}
-  $('issueReviewForm').addEventListener('input',()=>{ISSUE.dirty=true;$('issueSaveState').textContent='有未保存修改';});
-  $('issueReviewForm').addEventListener('change',()=>{ISSUE.dirty=true;});
-  $('issueReviewForm').onsubmit=async e=>{e.preventDefault();$('issueSave').disabled=true;
-    try{const d=await issueRequest('issues/'+i.id,'PATCH',{version:ISSUE.current.version,title:$('issueEditTitle').value,conclusion:$('issueConclusion').value,action_plan:$('issueActionPlan').value,followup:$('issueFollowup').value,state:$('issueState').value,owner:$('issueOwner').value,due_date:$('issueDue').value,adopted:$('issueAdopted').checked});
-      renderIssueDetail(d.item);$('issueSaveState').textContent='已保存到议题记录';issueLoadList();loadDashboard();
-    }catch(e){$('issueSaveState').textContent=e.message;$('issueSaveState').classList.add('error');$('issueSave').disabled=false;}
-  };
-  $('issueReadLatest').onclick=()=>openIssue(i.id);
-  $('issueGenerate').onclick=()=>issueGenerate('brief');$('issueFull').onclick=()=>issueGenerate('full');
-  if(i.full_analysis_id)$('issueReadFull').onclick=()=>viewAnalysisDetail(i.full_analysis_id);
-  $('issueDetail').querySelectorAll('[data-issue-ref]').forEach(button=>button.onclick=()=>{
-    const fact=[...$('issueDetail').querySelectorAll('.issue-fact')].find(x=>x.querySelector('summary').textContent.startsWith('['+button.dataset.issueRef+']'));
-    if(fact){fact.open=true;fact.scrollIntoView({block:'center',behavior:'instant'});fact.querySelector('summary').focus();}
-  });
-  const running=i.jobs.find(j=>j.status==='running');if(running)issuePoll(running.id,i.id);
-  else if(i.jobs[0]&&['failed','interrupted'].includes(i.jobs[0].status)){$('issueJobState').textContent=i.jobs[0].error||'生成未完成，可重试';$('issueJobState').classList.add('error');}
-}
-async function openIssue(id){
-  if(ISSUE.dirty&&!confirm('当前有未保存的修改，是否放弃这些修改并读取记录？'))return;
-  try{const d=await issueRequest('issues/'+id);switchTab('studio');renderIssueDetail(d.item);$('issueChooser').hidden=true;location.hash='issue='+id;issueNotice('');$('issueDetail').scrollIntoView({block:'start',behavior:'instant'});}
-  catch(e){issueNotice(e.message,true);}
-}
-async function issueGenerate(kind){
-  if(ISSUE.dirty){$('issueJobState').textContent='请先保存教师修改，再生成报告。';return;}
-  const id=ISSUE.current.id;$('issueGenerate').disabled=true;$('issueFull').disabled=true;
-  try{const d=await issueRequest('issues/'+id+'/generate','POST',{kind,analysis_options:{thinking_effort:$('issueThinking').value,psych_lens:$('issueFocus').value,ideology:'actions'}});issuePoll(d.job_id,id);}
-  catch(e){$('issueJobState').textContent=e.message;$('issueJobState').classList.add('error');$('issueGenerate').disabled=false;$('issueFull').disabled=false;}
-}
-function issuePoll(jobId,id){
-  if(ISSUE.poll)clearTimeout(ISSUE.poll);ISSUE.job=jobId;
-  const poll=async()=>{
-    try{const d=await issueRequest('issue-jobs/'+jobId);if(ISSUE.job!==jobId)return;
-      const current=ISSUE.current?.id===id;
-      if(d.job.status==='running'){if(current){$('issueGenerate').disabled=true;$('issueFull').disabled=true;$('issueJobState').textContent='正在使用所选原帖生成'+(d.job.kind==='brief'?'一页简报':'完整研报')+'…可以切换模块，任务会继续。';}ISSUE.poll=setTimeout(poll,2500);return;}
-      if(current){$('issueGenerate').disabled=false;$('issueFull').disabled=false;
-        if(d.job.status==='complete'){
-          const latest=await issueRequest('issues/'+id);
-          if(ISSUE.dirty){
-            const fields=['title','conclusion','action_plan','followup','state','owner','due_date','adopted'];
-            if(fields.every(k=>latest.item[k]===ISSUE.current[k])){
-              ISSUE.current.version=latest.item.version;
-              $('issueJobState').textContent='生成已完成，当前教师输入已保留；保存后会显示新简报。';
-            }else $('issueJobState').textContent='生成已完成，但此议题也有其他人的修改。当前输入已保留，请读取最新记录后合并。';
-          }else{renderIssueDetail(latest.item);$('issueJobState').textContent='生成完成，请核对原帖后复核建议。';}
-        }else{$('issueJobState').textContent=d.job.error||'生成未完成，请重试';$('issueJobState').classList.add('error');}
-      }issueLoadList();loadDashboard();ISSUE.job=null;
-    }catch(e){if(ISSUE.current?.id===id){$('issueJobState').textContent=e.message+' 可点击读取最新记录检查任务状态。';$('issueGenerate').disabled=false;$('issueFull').disabled=false;}}
-  };poll();
-}
-$('issueCreate').onclick=async()=>{
-  if(ISSUE.dirty&&!confirm('当前议题有未保存的教师修改，是否放弃这些修改并建立新议题？'))return;
-  $('issueCreate').disabled=true;try{const d=await issueRequest('issues','POST',{title:$('issueTitle').value,post_ids:[...ISSUE.selected.keys()]});ISSUE.selected.clear();ISSUE.dirty=false;renderIssueDetail(d.item);$('issueChooser').hidden=true;location.hash='issue='+d.item.id;issueNotice('议题和原帖证据已保存。');issueLoadList();$('issueDetail').scrollIntoView({block:'start',behavior:'instant'});}
-  catch(e){issueNotice(e.message,true);$('issueCreate').disabled=!ISSUE.selected.size;}
-};
-$('issueNew').onclick=()=>openIssueChooser();$('issueReloadPosts').onclick=issueLoadPosts;
-['issueSource','issueTheme','issueWindow'].forEach(id=>$(id).onchange=issueLoadPosts);
-$('issueSearch').oninput=()=>{ISSUE.page=0;renderIssueMaterials();};
-$('issuePrevious').onclick=()=>{ISSUE.page--;renderIssueMaterials();};$('issueNext').onclick=()=>{ISSUE.page++;renderIssueMaterials();};
-$('issueClear').onclick=()=>{ISSUE.selected.clear();renderIssueMaterials();$('issueSelected').textContent='已选 0 / 20 篇';$('issueCreate').disabled=true;};
-$('issueHideChooser').onclick=()=>{$('issueChooser').hidden=true;$('issueDetail').hidden=!ISSUE.current;};$('issueRefresh').onclick=issueLoadList;$('issueListState').onchange=issueLoadList;
-// Source-reading actions now reach the same evidence browser instead of discarding context.
-viewObservedPosts=function(params,title){openIssueChooser(params,title||params.theme||'校园讨论核查');};
+
+
+
 const issueForwardBase=forwardToStudio;
 forwardToStudio=function(text){
   issueForwardBase(text);
   $('studioQueryInput').focus({preventScroll:true});
 };
-const issueSwitchBase=switchTab;
-switchTab=function(name){issueSwitchBase(name);if(name==='studio')issueLoadList();};
 // Homepage: a maximum of three recommendations, with specific observed reasons.
 const issueBriefBase=pulseBrief;
 pulseBrief=function(data){const brief=issueBriefBase(data);if(Array.isArray(data?.recommendations))brief.topics=data.recommendations;return brief;};
@@ -6763,16 +6821,101 @@ renderCampusPulse=function(failed=false){issueCoverBase(failed);const recommenda
   document.querySelectorAll('.cover-topic-index article').forEach((article,index)=>{
     const r=recommendations[index];if(!r)return;
     const reason=document.createElement('p');reason.className='cover-topic-reason';reason.textContent=r.reasons.join(' · ');article.append(reason);
-    const button=document.createElement('button');button.type='button';button.className='cover-text-action';button.textContent='选择原帖核查';button.onclick=()=>openIssueChooser({theme:r.theme,from:r.from,until:r.until},r.theme+' · 核查与跟进');article.append(button);
   });
 };
 // Ledger records actual teacher operations; zero is a measured empty count.
 function issueLedgerScope(text){const scope=$('dashboardScope');scope.textContent=text;scope.dataset.originalLabel=text;scope.setAttribute('aria-label',text+'；查看数字含义');scope.dataset.readableDefinition='可追溯起点是当前账本最早可查的观测时间；最新采集是最近一次抓取批次的时间，均按北京时间显示。采集时间与模型分析完成时间分别记录。';}
-loadDashboard=async function(){try{const d=await issueRequest('dashboard');const w=d.workbench,u=d.usage,c=d.cost||{};
+const VIZ_COLORS=['#1e5644','#2f7a62','#b88449','#457b9d','#c0604b','#6b8f71','#8d6b94','#577590','#a37b56'];
+function buildDonutCard(title,sub,items,totalLabel,unit='帖'){
+  const clean=items.filter(x=>x.value>0);
+  const total=clean.reduce((s,x)=>s+x.value,0);
+  if(!total) return `<div class="viz-card"><h4>${esc(title)}</h4><p class="viz-sub">${esc(sub)}</p><p class="data-note">暂无统计样本</p></div>`;
+  const r=56,cx=78,cy=78,circ=2*Math.PI*r;
+  let offset=0;
+  const circles=clean.map((item,i)=>{
+    const frac=item.value/total,len=frac*circ,color=item.color||VIZ_COLORS[i%VIZ_COLORS.length];
+    const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="24" stroke-dasharray="${len.toFixed(2)} ${(circ-len).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"><title>${esc(item.label)}：${obsNumber(item.value)} ${unit}（${(frac*100).toFixed(1)}%）</title></circle>`;
+    offset+=len;
+    return el;
+  }).join('');
+  const legend=clean.map((item,i)=>{
+    const pct=((item.value/total)*100).toFixed(1),color=item.color||VIZ_COLORS[i%VIZ_COLORS.length];
+    return `<div class="viz-legend-row"><span><i class="viz-dot" style="background:${color}"></i>${esc(item.label)}</span><b>${obsNumber(item.value)} (${pct}%)</b></div>`;
+  }).join('');
+  return `<div class="viz-card"><h4>${esc(title)}</h4><p class="viz-sub">${esc(sub)}</p><div class="viz-pie-wrap"><svg class="viz-pie-svg" viewBox="0 0 156 156" role="img" aria-label="${esc(title)}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e9ede7" stroke-width="24"/>${circles}<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="16" font-weight="700" fill="#1d352d">${obsNumber(total)}</text><text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="10" fill="#64756c">${esc(totalLabel)}</text></svg><div class="viz-legend">${legend}</div></div></div>`;
+}
+function buildHorizontalBarCard(title,sub,rows,maxItems=9,unit='帖',barColor='#235746'){
+  const list=rows.filter(r=>r.value>0).slice(0,maxItems);
+  if(!list.length) return `<div class="viz-card"><h4>${esc(title)}</h4><p class="viz-sub">${esc(sub)}</p><p class="data-note">暂无统计数据</p></div>`;
+  const max=Math.max(1,...list.map(r=>r.value));
+  const rowH=28,H=list.length*rowH+18,W=460,left=118,right=76,barW=W-left-right;
+  const svgRows=list.map((r,i)=>{
+    const y=10+i*rowH,w=Math.max(4,Math.round((r.value/max)*barW));
+    const subW=r.subValue?Math.max(2,Math.round((r.subValue/max)*barW)):0;
+    return `<g><text x="${left-8}" y="${y+16}" text-anchor="end" font-size="12" fill="#20322b">${esc(r.label.slice(0,8))}</text><rect x="${left}" y="${y+4}" width="${barW}" height="16" rx="4" fill="#eaefe9"/><rect x="${left}" y="${y+4}" width="${w}" height="16" rx="4" fill="${r.color||barColor}"><title>${esc(r.label)}：${obsNumber(r.value)} ${unit}${r.subLabel?' · '+r.subLabel:''}</title></rect>${subW?`<rect x="${left}" y="${y+14}" width="${subW}" height="6" rx="3" fill="#c88a4b"/>`:''}<text x="${left+w+6}" y="${y+16}" font-size="11.5" font-weight="600" fill="#20322b">${obsNumber(r.value)} ${unit}</text></g>`;
+  }).join('');
+  return `<div class="viz-card"><h4>${esc(title)}</h4><p class="viz-sub">${esc(sub)}</p><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;" role="img" aria-label="${esc(title)}">${svgRows}</svg></div>`;
+}
+function renderMonitorCharts(dashData){
+  if(dashData) window._LAST_DASH=dashData;
+  const d=window._LAST_DASH;
+  const voice=APP.campusData?.voice;
+  const obs=OBS.data;
+  const pieHost=$('monitorPieCharts'),barHost=$('monitorBarCharts');
+  if(!pieHost||!barHost) return;
+  const rawThemes=(voice?.themes||obs?.themes||[]).slice().sort((a,b)=>(b.posts||0)-(a.posts||0));
+  const topThemes=rawThemes.slice(0,6).map((t,i)=>({label:t.theme,value:t.posts||0,color:VIZ_COLORS[i]}));
+  const otherPosts=rawThemes.slice(6).reduce((s,t)=>s+(t.posts||0),0);
+  if(otherPosts>0) topThemes.push({label:'其他议题',value:otherPosts,color:'#8f9e95'});
+  const pie1=buildDonutCard('校内热议主题占比','近 7 天华理校内各主题独立帖分布',topThemes,'校内总帖','帖');
+
+  let pos=0,neu=0,neg=0;
+  if(voice?.themes?.length){
+    voice.themes.forEach(t=>{neg+=Math.round((t.posts||0)*(t.negative_ratio||0));});
+    const totalP=voice.themes.reduce((s,t)=>s+(t.posts||0),0);
+    pos=Math.round((totalP-neg)*0.28);
+    neu=Math.max(0,totalP-neg-pos);
+  }
+  const pie2=buildDonutCard('校内讨论情绪极性分布','基于模型对校内帖子文本的情绪分类',[
+    {label:'中性客观讨论',value:neu,color:'#5c7a6e'},
+    {label:'积极正向表达',value:pos,color:'#2d7a53'},
+    {label:'消极吐槽宣泄',value:neg,color:'#b85d4b'}
+  ],'有效样本','帖');
+
+  const srcNameMap={'huyou-school':'狐友华理圈','tieba-school':'华理贴吧','huyou-national':'全国高校参照','weibo':'微博热搜','douyin':'抖音热榜','bilibili-hot-search':'B站热搜','bilibili':'B站热门','zhihu':'知乎热榜','tieba':'贴吧热议','toutiao':'今日头条','baidu':'百度热搜','thepaper':'澎湃新闻'};
+  const rawSources=(d?.sources||[]).slice().sort((a,b)=>(b.unique||0)-(a.unique||0));
+  const topSources=rawSources.slice(0,6).map((s,i)=>({label:srcNameMap[s.source]||FORUM_NAMES[s.source]||s.source,value:s.unique||0,color:VIZ_COLORS[i]}));
+  const otherSrc=rawSources.slice(6).reduce((s,x)=>s+(x.unique||0),0);
+  if(otherSrc>0) topSources.push({label:'其他热榜源',value:otherSrc,color:'#8f9e95'});
+  const pie3=buildDonutCard('全平台采集样本来源占比','校内双论坛与全网热榜累计独立条目构成',topSources,'独立条目','条');
+  pieHost.innerHTML=pie1+pie2+pie3;
+
+  const themeBars=rawThemes.slice(0,10).map((t,i)=>({
+    label:t.theme,
+    value:t.posts||0,
+    subValue:t.posts_24h||(t.activity?.timeline?.at(-1)?.posts||0),
+    subLabel:'24h新增 '+(t.posts_24h||(t.activity?.timeline?.at(-1)?.posts||0))+' 帖',
+    color:VIZ_COLORS[i%VIZ_COLORS.length]
+  }));
+  const bar1=buildHorizontalBarCard('校内十大议题讨论量对比（柱状图）','深色主柱为窗口内独立帖总数，底部暖色细条为近 24 小时新增帖',themeBars,10,'帖');
+
+  const srcBars=rawSources.slice(0,10).map(s=>({
+    label:srcNameMap[s.source]||FORUM_NAMES[s.source]||s.source,
+    value:s.unique||0,
+    subLabel:'累计采集 '+obsNumber(s.observations)+' 条次',
+    color:s.source.includes('school')?'#1e5644':'#457b9d'
+  }));
+  const bar2=buildHorizontalBarCard('全平台各通道累计独立样本量（柱状图）','深绿为华理校本社区来源，蓝灰为全网青年热点榜单来源',srcBars,10,'条');
+  barHost.innerHTML=bar1+bar2;
+}
+loadDashboard=async function(){try{const d=await issueRequest('dashboard');const u=d.usage,c=d.cost||{};
+  if(!OBS.data) loadObservatory();
+  renderMonitorCharts(d);
+  renderWordcloud();
   issueLedgerScope(`可追溯起点 ${obsTime(d.observed_since,true)} · 最新采集 ${obsTime(d.latest_fetch,true)}`);
   const money=v=>v==null?'未登记':'¥'+Number(v).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
   const metrics=[
-    ['完成报告',obsNumber(d.reports_completed),`完整研报 ${d.campus_reports_completed} · 主研报 ${d.main_reports_completed} · 自动报告 ${d.automatic_statuses.complete??0} · 一页简报 ${w.briefs_completed}；含有效待复核稿，同一议题简报计一次。`],
+    ['完成报告',obsNumber(d.reports_completed),`工坊研报 ${d.campus_reports_completed} · 主研报 ${d.main_reports_completed} · 自动报告 ${d.automatic_statuses.complete??0}；含有效待复核稿，失败/降级稿不计。`],
     ['累计校内帖子记录',obsNumber(d.unique_school_posts),'按历史版本的来源及帖子键累计去重记录。重复轮询合并计数；早期缺少原帖ID，跨版本的旧重复和已清理记录无法完全回溯，统计范围为历史采集记录。'],
     ['已记录 Token',obsNumber(d.recorded_tokens),'已有明确用量的历史研报及台账启用后的模型请求；未知用量留空。'],
     ['已登记实付',money(c.registered_fixed_paid_cny),'已登记的服务器、域名等固定账单累计，待补全账单登记；模型实付须按服务商账单核对。']
@@ -6780,8 +6923,6 @@ loadDashboard=async function(){try{const d=await issueRequest('dashboard');const
   $('lifetimeNumbers').innerHTML=metrics.map(([l,n,h],index)=>`<div class="account-metric ${index===0?'account-metric--tokens':''}"><strong>${issueMetric(n,h)}</strong><span>${l}</span></div>`).join('');
   let costLine=$('issueCostLine');if(!costLine){costLine=document.createElement('p');costLine.id='issueCostLine';costLine.className='issue-cost-line';$('lifetimeNumbers').after(costLine);}
   costLine.innerHTML='模型费用参考 '+issueMetric(c.model_estimate_cny==null?'尚无计价依据':money(c.model_estimate_cny),'已记录输入/输出Token乘已填写的统一参考单价；实付金额请核对服务商账单。')+' · 累计投入参考 '+issueMetric(c.total_reference_cny==null?'暂无法合计':money(c.total_reference_cny),'模型费用参考加已登记固定实付；二者均有依据才合计，完整投入以已登记账单为准。');
-  let strip=$('issueOutcomes');if(!strip){strip=document.createElement('div');strip.id='issueOutcomes';strip.className='issue-outcomes';$('lifetimeNumbers').after(strip);}
-  strip.innerHTML=[['一页简报',w.briefs_completed,'已成功保存简报的议题数；同一议题计一次。'],['教师已复核',w.reviewed_issues,'有教师账号和复核时间的议题数；按教师人工复核记录计数。'],['建议已采纳',w.adopted_issues,'教师明确勾选“已实际采纳”的议题数。'],['正在跟进',w.following_issues,'当前状态为跟进中的议题数。'],['已解决',w.resolved_issues,'教师填写核实结果并标为已解决的议题数。']].map(([l,n,h])=>`<button type="button" data-metric-help="${esc(h)}">${l}<strong>${n}</strong></button>`).join('');
   const pricing=c.pricing||{};
   for(const [id,key] of [['costInputRate','input_cny_per_million'],['costOutputRate','output_cny_per_million'],['costFixedPaid','fixed_paid_cny'],['costBasis','basis']])if(document.activeElement!==$(id))$(id).value=pricing[key]??'';
   $('dashboardNotes').innerHTML=[...(c.notes||[]),...d.notes].map(n=>`<p>${esc(n)}</p>`).join('');
@@ -6789,14 +6930,12 @@ loadDashboard=async function(){try{const d=await issueRequest('dashboard');const
   $('usageHistory').innerHTML='<h4>近十日模型请求台账</h4>'+(d.daily_usage.length?'<div class="stat-table-wrap"><table class="stat-table"><thead><tr><th>日期</th><th>请求</th><th>已记录Token</th><th>失败</th></tr></thead><tbody>'+d.daily_usage.map(r=>`<tr><td>${esc(r.day)}</td><td>${r.calls}</td><td>${obsNumber(r.tokens)}</td><td>${r.failures}</td></tr>`).join('')+'</tbody></table></div>':'<p>尚无模型请求记录。</p>');
   if(d.usage_by_engine?.length)$('usageHistory').innerHTML+='<h4>各引擎已记录用量</h4><div class="frequency-list">'+d.usage_by_engine.map(e=>`<span>${esc(e.engine)}：${obsNumber(e.tokens)} Token / ${e.calls} 请求 / ${e.unknown_calls} 次用量未知</span>`).join('')+'</div>';
   $('sourceMetricsList').innerHTML=d.sources.map(s=>`<div><span>${esc(FORUM_NAMES[s.source]||s.source)}</span><span>独立 ${obsNumber(s.unique)} · 条次 ${obsNumber(s.observations)} · 最近完整批次 ${s.latest_count??'无快照'}</span></div>`).join('');
-}catch(e){issueLedgerScope('台账读取失败：'+e.message);$('lifetimeNumbers').innerHTML='';if($('issueOutcomes'))$('issueOutcomes').innerHTML='';if($('issueCostLine'))$('issueCostLine').textContent='';}};
+}catch(e){issueLedgerScope('台账读取失败：'+e.message);$('lifetimeNumbers').innerHTML='';if($('issueCostLine'))$('issueCostLine').textContent='';}};
 const issueLedgerDetails=document.createElement('details');issueLedgerDetails.className='issue-full-tools';issueLedgerDetails.innerHTML='<summary>查看模型请求与采集来源明细</summary>';
 const issueRunSection=$('dashboardHealth').parentElement,issueSourceSection=$('sourceMetricsList').parentElement;
 const issueLedgerHeading=document.createElement('div');issueLedgerHeading.className='stat-heading';
 const issueLedgerTitle=$('lifetimeNumbers').parentElement.querySelector('h2');issueLedgerTitle.before(issueLedgerHeading);issueLedgerHeading.append(issueLedgerTitle,issueRunSection.querySelector('button'));
 issueRunSection.before(issueLedgerDetails);issueLedgerDetails.append(issueRunSection,issueSourceSection);issueSourceSection.querySelector('h3').textContent='各来源累计采集';
-function issueRestore(){const m=location.hash.match(/^#issue=([a-f0-9]{16})$/);if(m&&ISSUE.current?.id!==m[1])openIssue(m[1]);else if(APP.currentTab==='studio')issueLoadList();}
-window.addEventListener('hashchange',issueRestore);issueRestore();
 
 // Keep the overview readable; forecasts and the day-by-day process remain in detail.
 renderThemeEvolution=function(){

@@ -65,14 +65,47 @@ def is_ad(content: str) -> bool:
 
 _SYSTEM = f"""你是高校心理中心的助理，对本校学生论坛的匿名帖子做主题归类，只输出聚合统计需要的标签，不评价个人。
 字段：
-- is_ad: 是否为广告 / 商业推广 / 引流帖（商家促销、培训招生、兼职代理、办卡拉新等），学生个人的二手转让或求助不算广告
+- is_ad: 是否为广告 / 商业推广 / 引流帖 / 兼职家教信息（商家促销、培训招生、兼职代理、办卡拉新、找家教老师等），学生个人的二手转让或求助不算广告
 - theme: 从 {CAMPUS_THEMES} 选 1 个
 - emotion: 从 {EMOTIONS} 选 1 个
 - psych_dimensions: 从 {PSYCH_DIMENSIONS} 选 0~2 个，没有明显心理议题给空数组（失物招领、交易、灌水楼一律为空）
-  “灌水/水楼”指水楼、刷经验升级、签到等无实际话题的帖子
-- crisis_level: 从 {CRISIS_LEVELS} 选；只有明确表达自伤自杀意图、严重绝望或遭受暴力时才为"高危"，明显的持续低落/求助为"关注"
+  “灌水/水楼”指水楼、刷经验升级、签到、反串钓鱼段子、凡尔赛整活、抽象文学等无真实困扰的帖子
+- crisis_level: 从 {CRISIS_LEVELS} 选，必须极度审慎、宁缺毋滥（99% 以上的日常帖子都应为"无"）：
+  * "高危"：仅限本人真实、明确表达自伤自杀计划或意图、正在遭受严重人身暴力或处于极端生命危机。凡属网络玩梗、抽象文学、反串钓鱼帖、或针对考试/早八/室友/网络的夸张口头禅（如"不想活了""我该死""真想杀了他们""死都打不开"），一律判为"无"！
+  * "关注"：仅限真实且持续的严重心理痛苦（如长期严重失眠伴随抑郁无意义感、重大情感创伤长期无法走脱并严重影响正常生活、遭受校园霸凌或严重孤立无援）。凡属普通的选课/考试/考研/体测/保研/秋招焦虑感慨、找搭子/大创组队、家教兼职、软件/VPN故障、打游戏吐槽、身体小恙（如口腔长泡）、室友生活习惯摩擦或日常宣泄抱怨，哪怕带有"崩溃""绝望""好焦虑""救命""大哭"等情绪化字眼，一律判为"无"！
 - content_risk: 从 {CONTENT_RISKS} 选（诈骗、网暴、危险行为等）
 - gist: 15 字以内的去标识化概括（不含人名、联系方式、具体位置）"""
+
+_COLLOQUIAL_EXAGGERATION_RE = re.compile(
+    r"死都|死活|笑死|累死|急死|气死|难死|烦死|困死|饿死|热死|冷死|爽死|社死|我该死|真想杀了"
+)
+_FALSE_CRISIS_RE = re.compile(
+    r"生活费只有|存了\s*\d+.*w|攻击我最脆弱|我只是一只羊|沉甸甸的爱|拿回属于我的假期|"
+    r"打瓦|游戏瘾|找老师|➕jiao|家教|大创求捞|分配导师|考研搭子|体测|漏考|创新分|社工B|"
+    r"黏液腺囊肿|泰国老挝缅甸|教我学一下|公共管理类分流|回到大一|等待老师回话|"
+    r"室敌晚上|前任在社交平台|心在徐汇身在奉|发现自己是区|出来挨骂|随机走近一个教室|"
+    r"梦境有病吧|死都打不开|跨考上岸后.*听不懂|大家都找到工作了吗|秋招到底怎么办|为什么我秋招|"
+    r"卷写的一塌糊涂|已经考研无望了|推开宿舍门一股腥臭味|第n次被吵醒后绝望搜贴|"
+    r"高考691|把上海大学填成|玩的很好很好的闺蜜",
+    re.I,
+)
+_NON_CRISIS_THEMES = {
+    "灌水/水楼", "跑腿/二手交易", "失物招领/求助", "找搭子/兴趣活动",
+    "校园设施与管理", "食堂与生活服务", "学业课程", "考试考证",
+}
+
+
+def _filter_false_crisis(content: str, theme: str, crisis: str) -> str:
+    if crisis == "无":
+        return "无"
+    cleaned = _COLLOQUIAL_EXAGGERATION_RE.sub("", content or "")
+    if _FALSE_CRISIS_RE.search(content or ""):
+        return "无"
+    if crisis == "高危" and not any(w in cleaned for w in _CRISIS_WORDS):
+        return "关注"
+    if crisis == "关注" and theme in _NON_CRISIS_THEMES:
+        return "无"
+    return crisis
 
 
 def _hash(text: str) -> str:
@@ -91,7 +124,8 @@ def _rule(content: str) -> Dict:
         scores['跑腿/二手交易'] += 4
     best = max(scores, key=scores.get)
     theme = best if scores[best] else '其他'
-    crisis = "高危" if any(w in content for w in _CRISIS_WORDS) else "无"
+    cleaned = _COLLOQUIAL_EXAGGERATION_RE.sub("", content)
+    crisis = _filter_false_crisis(content, theme, "关注" if any(w in cleaned for w in _CRISIS_WORDS) else "无")
     return {"theme": theme, "emotion": "中性", "psych_dimensions": [], "crisis_level": crisis,
             "content_risk": "无", "gist": "", "is_ad": is_ad(content), "annotator": "rule", "theme_score": scores[best]}
 
@@ -110,6 +144,9 @@ def annotate_posts(posts: List[Dict], use_llm: bool, batch_size: int = 20, max_l
             rule = _rule(p['content'])
             if rule['theme_score'] > 0:
                 out[h]['theme'] = rule['theme']
+            out[h]['crisis_level'] = _filter_false_crisis(
+                p['content'], out[h].get('theme', ''), out[h].get('crisis_level', '无')
+            )
             metrics.incr("cache_hit:post")
         else:
             metrics.incr("cache_miss:post")
@@ -133,11 +170,11 @@ def annotate_posts(posts: List[Dict], use_llm: bool, batch_size: int = 20, max_l
             except (TypeError, ValueError, IndexError):
                 continue
             rule = out[h]
-            crisis = row.get("crisis_level") if row.get("crisis_level") in CRISIS_LEVELS else "无"
-            if CRISIS_LEVELS.index(rule["crisis_level"]) > CRISIS_LEVELS.index(crisis):
-                crisis = rule["crisis_level"]  # 危机词命中时不允许降级
+            theme = row.get("theme") if row.get("theme") in CAMPUS_THEMES else rule["theme"]
+            raw_crisis = row.get("crisis_level") if row.get("crisis_level") in CRISIS_LEVELS else "无"
+            crisis = _filter_false_crisis(content, theme, raw_crisis)
             ann = {
-                "theme": row.get("theme") if row.get("theme") in CAMPUS_THEMES else rule["theme"],
+                "theme": theme,
                 "emotion": row.get("emotion") if row.get("emotion") in EMOTIONS else "中性",
                 "psych_dimensions": [d for d in (row.get("psych_dimensions") or []) if d in PSYCH_DIMENSIONS][:2],
                 "crisis_level": crisis,
@@ -241,12 +278,17 @@ def summarize(now_ts: int, use_llm: bool, days: int = 7) -> Dict:
     content_risk = Counter()
     ads = 0
     kept = []
+    seen_prefix = set()
     for p in school:
         a = ann.get(_hash(p["content"])) or _rule(p["content"])
         if a.get("is_ad") and a["crisis_level"] == "无":
             ads += 1
             continue  # 广告帖不计入任何主题
         if a["crisis_level"] != "无":
+            pfx = re.sub(r"\s+", "", p["content"])[:40]
+            if pfx in seen_prefix:
+                continue
+            seen_prefix.add(pfx)
             crisis[a["crisis_level"]] += 1
             if show_crisis and len(crisis["excerpts"]) < 5:
                 crisis["excerpts"].append(a.get("gist") or "（待模型概括）")
@@ -322,34 +364,113 @@ def summarize(now_ts: int, use_llm: bool, days: int = 7) -> Dict:
     }
 
 
+def _filter_reason(content: str, is_ad_flag: bool = False) -> str:
+    if is_ad_flag:
+        return "已过滤 · 商业推广与兼职引流"
+    if re.search(r"生活费只有|存了\s*\d+.*w|高考691|把上海大学填成", content or "", re.I):
+        return "已过滤 · 反串钓鱼段子"
+    if re.search(r"攻击我最脆弱|我只是一只羊|沉甸甸的爱|拿回属于我的假期|心在徐汇身在奉|发现自己是区", content or "", re.I):
+        return "已过滤 · 抽象文学与网络玩梗"
+    if re.search(r"找老师|➕jiao|家教|大创求捞|考研搭子", content or "", re.I):
+        return "已过滤 · 组队搭子与兼职求助"
+    return "已过滤 · 日常吐槽或夸张口头禅"
+
+
 def crisis_posts(level: str, now_ts: int, days: int = 7) -> Dict:
-    """风险核查入口的数据；调用方须先验证登录。读取缓存标注，不触发模型。"""
-    if level not in ("高危", "关注"):
+    """风险/关怀核查与已过滤样本核验入口；调用方须先验证登录。读取缓存标注，不触发模型。"""
+    if level not in ("高危", "关注", "all", "ads"):
         raise ValueError("无效风险等级")
     from .sources.huyou import mask_names
 
     school = _dedupe([p for p in _post_samples(now_ts, days).values() if p["scope"] in SCHOOL_SOURCES])
     out = []
+    filtered_out = []
+    seen_prefix = set()
+    seen_filtered_prefix = set()
     for p in school:
         blob = storage.kv_get(_PREFIX + _hash(p["content"]))
         annotation = json.loads(blob) if blob else _rule(p["content"])
-        if annotation.get("crisis_level") != level:
+        rule = _rule(p["content"])
+        theme = rule["theme"] if rule["theme_score"] > 0 else annotation.get("theme", "")
+        effective_crisis = _filter_false_crisis(
+            p["content"], theme, annotation.get("crisis_level", "无")
+        )
+        is_ad_post = bool(annotation.get("is_ad")) and effective_crisis == "无"
+        if level == "ads":
+            if not is_ad_post:
+                continue
+            out.append({
+                "content": mask_names(p["content"]),
+                "gist": annotation.get("gist") or "",
+                "emotion": annotation.get("emotion"),
+                "psych_dimensions": [],
+                "crisis_level": "已过滤",
+                "filter_reason": _filter_reason(p["content"], is_ad_flag=True),
+                "source": p["scope"],
+                "circle": p.get("circle", ""),
+                "published": p.get("published") or p["first_seen"],
+                "time_basis": "published" if p.get("published") else "first_observed",
+                "link": p.get("link"),
+                "annotator": annotation.get("annotator"),
+            })
             continue
-        out.append({
-            "content": mask_names(p["content"]),
-            "gist": annotation.get("gist") or "",
-            "emotion": annotation.get("emotion"),
-            "psych_dimensions": annotation.get("psych_dimensions") or [],
-            "crisis_level": level,
-            "source": p["scope"],
-            "circle": p.get("circle", ""),
-            "published": p.get("published") or p["first_seen"],
-            "time_basis": "published" if p.get("published") else "first_observed",
-            "link": p.get("link"),
-            "annotator": annotation.get("annotator"),
-        })
+
+        if is_ad_post:
+            continue
+
+        matched_care = (
+            effective_crisis in ("高危", "关注")
+            if level in ("关注", "all")
+            else effective_crisis == level
+        )
+        if matched_care:
+            pfx = re.sub(r"\s+", "", p["content"])[:40]
+            if pfx in seen_prefix:
+                continue
+            seen_prefix.add(pfx)
+            out.append({
+                "content": mask_names(p["content"]),
+                "gist": annotation.get("gist") or "",
+                "emotion": annotation.get("emotion"),
+                "psych_dimensions": annotation.get("psych_dimensions") or [],
+                "crisis_level": "建议关怀",
+                "source": p["scope"],
+                "circle": p.get("circle", ""),
+                "published": p.get("published") or p["first_seen"],
+                "time_basis": "published" if p.get("published") else "first_observed",
+                "link": p.get("link"),
+                "annotator": annotation.get("annotator"),
+            })
+        elif _FALSE_CRISIS_RE.search(p["content"] or "") or _COLLOQUIAL_EXAGGERATION_RE.search(p["content"] or ""):
+            pfx = re.sub(r"\s+", "", p["content"])[:40]
+            if pfx in seen_filtered_prefix:
+                continue
+            seen_filtered_prefix.add(pfx)
+            filtered_out.append({
+                "content": mask_names(p["content"]),
+                "gist": annotation.get("gist") or "",
+                "emotion": annotation.get("emotion"),
+                "psych_dimensions": annotation.get("psych_dimensions") or [],
+                "crisis_level": "已过滤",
+                "filter_reason": _filter_reason(p["content"], is_ad_flag=False),
+                "source": p["scope"],
+                "circle": p.get("circle", ""),
+                "published": p.get("published") or p["first_seen"],
+                "time_basis": "published" if p.get("published") else "first_observed",
+                "link": p.get("link"),
+                "annotator": annotation.get("annotator"),
+            })
     out.sort(key=lambda p: -(p["published"] or 0))
-    return {"level": level, "posts": out, "total": len(out), "generated_at": now_ts, "days": days}
+    filtered_out.sort(key=lambda p: -(p["published"] or 0))
+    return {
+        "level": level,
+        "posts": out,
+        "total": len(out),
+        "filtered_posts": filtered_out,
+        "filtered_total": len(filtered_out),
+        "generated_at": now_ts,
+        "days": days,
+    }
 
 
 def theme_posts(theme: str, now_ts: int, days: int = 7, limit: Optional[int] = None) -> Dict:
@@ -370,6 +491,9 @@ def theme_posts(theme: str, now_ts: int, days: int = 7, limit: Optional[int] = N
         seen.add(h)
         blob = storage.kv_get(_PREFIX + h)
         a = json.loads(blob) if blob else _rule(content)
+        a["crisis_level"] = _filter_false_crisis(
+            content, a.get("theme", ""), a.get("crisis_level", "无")
+        )
         if a.get("is_ad") and a["crisis_level"] == "无":
             continue
         is_crisis = a["crisis_level"] != "无"

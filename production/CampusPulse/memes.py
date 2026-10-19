@@ -477,3 +477,272 @@ def web_recall(ugc_docs: List[Tuple[str, str]], now_ts: int, use_llm: bool) -> L
             "score": (len(hits) + 1) * 3,
         })
     return out
+
+
+# ------------------------------------------------------------------ 全网多平台（B站/抖音/微博/百度/知乎/贴吧）青年梗文化目录
+NETWORK_MEME_BASE = [
+    {
+        "term": "已老实，求放过",
+        "type": "网络流行语",
+        "form": "句式模板",
+        "function": "自嘲解压",
+        "platforms": ["B站", "抖音", "微博", "百度"],
+        "keywords": ["已老实", "求放过", "老实了"],
+        "meaning": "源自网络消费与期末周调侃，年轻人在面对高难度课程、繁重实验、高物价或师长追问时，用夸张的“认怂滑跪”姿态化解压力。",
+        "usage": "常用于期末复习破防、实验数据跑不通、熬夜赶DDL后的评论区自嘲（如“高数已老实，求放过”）。",
+        "psych_dimensions": ["学业压力", "情绪调节"],
+        "activity_hint": "可结合期末季开展“卸下防御·真实表达”减压工作坊，引导学生区分幽默自嘲与习得性无助。",
+        "examples": ["做完三天物理化学实验后：已老实，求放过", "月底看了一眼校园卡账单，大学生已老实"],
+    },
+    {
+        "term": "脆皮大学生",
+        "type": "网络流行语",
+        "form": "角色扮演/人设",
+        "function": "情绪共鸣",
+        "platforms": ["抖音", "B站", "微博", "百度"],
+        "keywords": ["脆皮", "脆皮大学生", "体测", "生病", "医院"],
+        "meaning": "走红于抖音与B站的青年群体自画像，形容当代大学生虽然年纪轻，但因熬夜、久坐、缺乏运动而频频出现各种哭笑不得的身体小状况。",
+        "usage": "体测800米/1000米跑完、换季感冒、熬夜赶作业后自称“脆皮大学生今日战损”。",
+        "psych_dimensions": ["身体健康", "情绪调节"],
+        "activity_hint": "适合联合体育学院或校医院开展“告别脆皮·微运动打卡”或睡眠健康朋辈互助营。",
+        "examples": ["伸个懒腰差点闪了腰，确诊为脆皮大学生", "体测完在操场躺平：脆皮但难杀"],
+    },
+    {
+        "term": "班味 / 课味太重",
+        "type": "网络流行语",
+        "form": "谐音/造词",
+        "function": "自嘲解压",
+        "platforms": ["微博", "抖音", "B站", "百度"],
+        "keywords": ["班味", "课味", "早八", "实习", "秋招"],
+        "meaning": "由“上班后的疲惫气质（班味）”延伸到高校场景，形容连续早八、满课、实验室打卡或秋招实习后眼神流露出的疲惫感。",
+        "usage": "周一连续四节专业课或去企业实习通勤时自嘲“身上有一股浓浓的早八课味/班味”，周末出游则称“去班味”。",
+        "psych_dimensions": ["学业压力", "就业焦虑", "情绪调节"],
+        "activity_hint": "可设计“20分钟公园效应·校园去课味漫步”心育活动，帮助学生在自然与微社交中恢复心理能量。",
+        "examples": ["连上四天早八，连呼吸都带着股课味", "去奉贤海边吹吹风，洗掉身上的班味"],
+    },
+    {
+        "term": "偷感很重",
+        "type": "网络流行语",
+        "form": "角色扮演/人设",
+        "function": "身份表达",
+        "platforms": ["抖音", "B站", "微博"],
+        "keywords": ["偷感", "社恐", "一个人"],
+        "meaning": "形容由于内向、社恐或害怕被注视，在做正常事情（如独自去食堂吃饭、去图书馆占座、拍照打卡）时表现得小心翼翼、像在做贼一样。",
+        "usage": "新生或社恐同学独自参加社团招新、一个人在食堂拍照发朋友圈时调侃自己“偷感好重”。",
+        "psych_dimensions": ["人际关系", "自我认同"],
+        "activity_hint": "切中大学生社交焦虑（聚光灯效应），可开展“脱掉隐形斗篷·社恐友好型破冰沙龙”。",
+        "examples": ["一个人去食堂吃火锅，偷感重得像在搞地下工作", "在校园里想拍张照，有人路过立刻假装看手机"],
+    },
+    {
+        "term": "草台班子理论",
+        "type": "网络流行语",
+        "form": "句式模板",
+        "function": "情绪共鸣",
+        "platforms": ["B站", "微博", "知乎", "百度"],
+        "keywords": ["草台班子", "大创", "组队", "汇报", "答辩"],
+        "meaning": "全网广泛共鸣的祛魅流行语（“世界就是一个巨大的草台班子”），帮助青年人放下完美主义焦虑，接受万事万物都在边摸索边推进。",
+        "usage": "大学生在准备大创答辩、社团办活动、考研复试或面试紧张时，用这句话互相宽慰、消解对权威的过度敬畏。",
+        "psych_dimensions": ["自我认同", "学业压力", "就业焦虑"],
+        "activity_hint": "非常契合“克服冒充者综合征与完美主义焦虑”主题班会，鼓励学生先行动、在试错中成长。",
+        "examples": ["别怕答辩出错，记住世界是个巨大的草台班子，大胆上台讲！", "第一次办社团晚会手忙脚乱，但大家开心就够了"],
+    },
+    {
+        "term": "浓人 vs 淡人",
+        "type": "网络流行语",
+        "form": "角色扮演/人设",
+        "function": "社交认同",
+        "platforms": ["微博", "B站", "抖音", "百度"],
+        "keywords": ["淡人", "浓人", "情绪稳定", "随缘"],
+        "meaning": "继 i人/e人 之后在微博与B站兴起的人格温度标签：“淡人”情绪起伏小、对待得失云淡风轻；“浓人”情感充沛、对生活充满热烈表达。",
+        "usage": "宿舍室友相处、找学习搭子或自我介绍时用来描述处事风格（如“淡人室友遇上浓人室友”）。",
+        "psych_dimensions": ["自我认同", "人际关系", "情绪调节"],
+        "activity_hint": "可用于宿舍人际关系团辅，引导学生理解不同情绪表达风格（非冷漠也非矫情），增进室友包容。",
+        "examples": ["查期末成绩时：浓人已经在尖叫，淡人默默关掉教务网去吃饭", "找个淡人考研搭子，情绪稳定互不内耗"],
+    },
+    {
+        "term": "卡点变装 / 踮脚转场",
+        "type": "短视频玩法",
+        "form": "短视频转场",
+        "function": "身份表达",
+        "platforms": ["抖音", "B站"],
+        "keywords": ["转场", "变装", "卡点", "短视频", "vlog"],
+        "meaning": "抖音与B站高校圈高赞短视频玩法，通过节拍卡点与动作衔接（如踮脚、遮镜、甩头），从日常素颜/工科实验服一秒切换到盛装或青春高光时刻。",
+        "usage": "军训结束、穿着白大褂做完化学实验、毕业季学位服打卡时，拍摄反差感转场视频展现多元自我。",
+        "psych_dimensions": ["自我认同", "情绪调节"],
+        "activity_hint": "可发起“实验服下的AB面·发现多元自我”校园短视频征集活动，增强专业认同感与生活热情。",
+        "examples": ["前1秒还在实验室刷烧杯，卡点一转场变身音乐节乐手", "从早八卫衣到社团汉服的丝滑转场"],
+    },
+    {
+        "term": "精神状态遥遥领先",
+        "type": "网络流行语",
+        "form": "发疯/抽象文学",
+        "function": "自嘲解压",
+        "platforms": ["B站", "抖音", "百度", "贴吧"],
+        "keywords": ["精神状态", "遥遥领先", "发疯", "抽象"],
+        "meaning": "融合科技热词与“发疯文学”的幽默反讽，指在面对学业或求职高压时，用无厘头、脑洞大开的乐观/抽象表达代替内耗。",
+        "usage": "备考周、写毕业论文或改方案时，在朋友圈或B站弹幕里用夸张搞笑的图片/段子宣告“今日精神状态美丽”。",
+        "psych_dimensions": ["情绪调节", "学业压力"],
+        "activity_hint": "可引导讨论“幽默宣泄与积极心理防御机制”，设立校园创意涂鸦墙或情绪树洞。",
+        "examples": ["论文改到第八版，我的精神状态已经遥遥领先于人类了", "当代大学生主打一个不内耗"],
+    },
+    {
+        "term": "古希腊掌管XX的神",
+        "type": "句式模板",
+        "form": "句式模板",
+        "function": "幽默娱乐",
+        "platforms": ["抖音", "B站", "微博"],
+        "keywords": ["掌管", "的神", "学霸", "食堂"],
+        "meaning": "源自抖音与B站的高频夸赞/调侃句式模板，将某人在某个细分领域的特长或趣味习惯封为“古希腊掌管XX的神”。",
+        "usage": "夸赞身边擅长做笔记的同学是“掌管期末重点的神”，或调侃食堂阿姨、抢课手速快的室友。",
+        "psych_dimensions": ["自我认同", "人际关系"],
+        "activity_hint": "可用于新生破冰或班会“夸夸群/闪光点互评”环节，让每位同学被看见自己的微特长。",
+        "examples": ["室友三秒抢到体育选修课，简直是古希腊掌管选课的神", "华理红烧肉窗口：古希腊掌管碳水快乐的神"],
+    },
+    {
+        "term": "搭子文化（饭搭子/考研搭子）",
+        "type": "网络流行语",
+        "form": "谐音/造词",
+        "function": "社交认同",
+        "platforms": ["B站", "抖音", "微博", "贴吧"],
+        "keywords": ["搭子", "饭搭子", "考研搭子", "图书馆"],
+        "meaning": "轻量化、精准垂直的新型青年社交模式：不需要全方位的深度捆绑，而是在吃饭、泡图书馆、考研、运动等特定场景下互相陪伴支持。",
+        "usage": "校园圈与贴吧高频出现“找图书馆自习搭子”“约羽毛球搭子”“食堂饭搭子”，降低孤立感同时保留个人边界。",
+        "psych_dimensions": ["人际关系", "学业压力"],
+        "activity_hint": "心理中心可借势搭建“心育微社群·21天习惯养成搭子匹配”活动，将原子化个体连接为互助同伴。",
+        "examples": ["求一位奉贤校区图书馆考研搭子，互相监督不玩手机", "有没有一起去吃食堂新品的饭搭子"],
+    },
+    {
+        "term": "水灵灵地XX",
+        "type": "句式模板",
+        "form": "句式模板",
+        "function": "幽默娱乐",
+        "platforms": ["抖音", "微博", "B站", "百度"],
+        "keywords": ["水灵灵"],
+        "meaning": "源自网络热门语录的副词活用句式（“就这么水灵灵地…”），用生动鲜活的语气描述某件出人意料或略带尴尬的小事发生的过程。",
+        "usage": "用于化解日常小尴尬，如“上课回答问题就这么水灵灵地叫错了老师名字”“闹钟没响水灵灵地睡过了早八”。",
+        "psych_dimensions": ["情绪调节", "人际关系"],
+        "activity_hint": "体现青年话语用轻盈幽默消解日常挫败的能力，可在校园新媒体推文中自然融入该句式拉近距离。",
+        "examples": ["本来想在学长面前装高冷，结果就这么水灵灵地平地摔了一跤", "以为今天周五，水灵灵地把周四晚课忘了"],
+    },
+    {
+        "term": "赛博电子布洛芬",
+        "type": "网络流行语",
+        "form": "谐音/造词",
+        "function": "情绪共鸣",
+        "platforms": ["B站", "抖音", "微博"],
+        "keywords": ["电子布洛芬", "治愈", "哈基米", "解压"],
+        "meaning": "大学生将B站/抖音上能迅速抚平焦虑、带来治愈感的内容（如萌宠哈基米视频、搞笑番剧、解压手工、校园美景）比作“电子止痛药”。",
+        "usage": "在经历考试压力、秋招受挫或情绪低落时，通过观看治愈系视频进行短暂的自我情绪安抚。",
+        "psych_dimensions": ["情绪调节", "学业压力"],
+        "activity_hint": "可策划“我的治愈书单/影单/校园角落共享”心育征集，引导学生建立健康的日常情绪工具箱。",
+        "examples": ["看半小时校园小猫视频，简直是期末周的电子布洛芬", "每次焦虑的时候就来看这段鬼畜，我的快乐源泉"],
+    },
+]
+
+
+def network_meme_catalog(now_ts: int = None) -> List[Dict]:
+    """聚合全网平台（B站、抖音、微博、百度、知乎、贴吧）与实测语料的青年梗文化列表。"""
+    import time as _time
+    from urllib.parse import quote as _quote
+    from . import storage
+
+    now_ts = now_ts or int(_time.time())
+    all_sources = [
+        "bilibili-popular", "bilibili-hot-search", "douyin", "weibo",
+        "baidu", "zhihu", "tieba", "toutiao", "thepaper",
+        "huyou-national", "huyou-school", "tieba-school",
+    ]
+    rows = storage.recent_items(all_sources, now_ts - 7 * 86400)
+    docs = build_docs(rows)
+    recalled = web_recall(docs, now_ts, use_llm=False)
+
+    out = []
+    seen_terms = set()
+    for base in NETWORK_MEME_BASE:
+        term = base["term"]
+        seen_terms.add(term)
+        kws = base["keywords"]
+        matched_rows = []
+        school_hits = 0
+        for r in rows:
+            ex = r.get("extra") or {}
+            txt = (r.get("title") or "") + " " + (ex.get("content") or "") + " " + (ex.get("desc") or "")
+            if any(k in txt for k in kws):
+                matched_rows.append(r)
+                if r.get("source") in ("huyou-school", "tieba-school"):
+                    school_hits += 1
+        links = []
+        seen_urls = set()
+        for r in matched_rows:
+            ex = r.get("extra") or {}
+            u = ex.get("link") or r.get("url")
+            if u and u not in seen_urls:
+                seen_urls.add(u)
+                src_label = {
+                    "bilibili-popular": "B站热门", "bilibili-hot-search": "B站热搜",
+                    "douyin": "抖音", "weibo": "微博", "baidu": "百度", "zhihu": "知乎",
+                    "tieba": "贴吧", "huyou-school": "华理狐友", "tieba-school": "华理贴吧",
+                }.get(r.get("source"), "平台来源")
+                links.append({"title": f"{src_label} · {(r.get('title') or ex.get('content') or term)[:36]}", "url": u})
+            if len(links) >= 3:
+                break
+        q = _quote(term.split("（")[0].split("/")[0].strip())
+        platform_search = {
+            "B站": f"https://search.bilibili.com/all?keyword={q}",
+            "抖音": f"https://www.douyin.com/search/{q}",
+            "微博": f"https://s.weibo.com/weibo?q={q}",
+            "百度": f"https://www.baidu.com/s?wd={q}",
+            "知乎": f"https://www.zhihu.com/search?type=content&q={q}",
+            "贴吧": f"https://tieba.baidu.com/f/search/res?qw={q}",
+        }
+        for pf in base["platforms"]:
+            if len(links) < 4 and pf in platform_search:
+                links.append({"title": f"在 {pf} 查看「{term}」原视频与热议 ↗", "url": platform_search[pf]})
+
+        out.append({
+            "term": term,
+            "label": term,
+            "type": base["type"],
+            "form": base["form"],
+            "function": base["function"],
+            "platforms": base["platforms"],
+            "meaning": base["meaning"],
+            "usage": base["usage"],
+            "psych_dimensions": base["psych_dimensions"],
+            "activity_hint": base["activity_hint"],
+            "examples": base["examples"],
+            "school_hits": school_hits,
+            "network_hits": len(matched_rows),
+            "links": links,
+        })
+
+    for w in recalled:
+        name = w.get("label") or ""
+        if not name or name in seen_terms:
+            continue
+        seen_terms.add(name)
+        lens_info = w.get("lens") or {}
+        q = _quote(name)
+        links = list(w.get("web_links") or [])
+        if not links:
+            links = [{"title": f"在 B站 查看「{name}」 ↗", "url": f"https://search.bilibili.com/all?keyword={q}"}]
+        out.append({
+            "term": name,
+            "label": name,
+            "type": lens_info.get("type") or "网络流行语",
+            "form": lens_info.get("form") or "句式模板",
+            "function": lens_info.get("function") or "情绪共鸣",
+            "platforms": ["B站", "抖音", "微博"],
+            "meaning": lens_info.get("meaning") or "近期在青年社交平台快速扩散的网络流行表达。",
+            "usage": lens_info.get("student_usage") or "常用于大学生日常社交互动与评论区共鸣。",
+            "psych_dimensions": ["情绪调节", "人际关系"],
+            "activity_hint": "可结合青年近期关注热点作为主题班会或新媒体互动切入点。",
+            "examples": w.get("examples") or [],
+            "school_hits": w.get("df") or 0,
+            "network_hits": max(1, w.get("df") or 1),
+            "links": links,
+        })
+    return out
+
+
+

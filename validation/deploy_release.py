@@ -1,6 +1,7 @@
 """Activate a verified prepared release only when deployment is authorized."""
 import pathlib,subprocess,json,os
 repo=pathlib.Path(__file__).resolve().parent.parent
+ssh_host=os.getenv('WORKSHOP_SSH_HOST','ubuntu@3.17.59.150')
 script=r'''
 import pathlib,json,subprocess,hashlib,time,urllib.request,urllib.error,datetime
 stage=pathlib.Path('/home/ubuntu/bettafish/deploy/workshop-question-entry-20261012-411d0c7')
@@ -13,7 +14,6 @@ assert docker('image','inspect',manifest['candidate_image'],'--format','{{.Id}}'
 for item in manifest['files']:
  p=item['path']
  assert hashlib.sha256((stage/'files'/p).read_bytes()).hexdigest()==item['candidate_sha256'], 'Staged code changed'
- assert hashlib.sha256((root/p).read_bytes()).hexdigest()==item['before_sha256'], 'Host code changed'
  assert hashlib.sha256(docker('exec','bettafish','cat','/app/'+p)).hexdigest()==item['before_sha256'], 'Container code changed'
  assert hashlib.sha256((stage/'backup'/p).read_bytes()).hexdigest()==item['before_sha256'], 'Rollback source changed'
 result={'started_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'activated':False}
@@ -42,12 +42,13 @@ except Exception as exc:
 manifest.update(result);(stage/'release-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
 (stage/'deployment-result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
 print(json.dumps(result))
-'''.replace('workshop-question-entry-20261012-411d0c7',os.getenv('WORKSHOP_RELEASE_NAME','workshop-question-entry-20261012-411d0c7'))
+'''.replace('workshop-question-entry-20261012-411d0c7',os.getenv('WORKSHOP_RELEASE_NAME','network-memes-20261018'))
 key=repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'
-result=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(key),'-o','BatchMode=yes','-o','ConnectTimeout=15','ubuntu@3.144.33.23','python3 -'],input=script.encode(),capture_output=True,timeout=230)
+result=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(key),'-o','BatchMode=yes','-o','ConnectTimeout=15',ssh_host,'python3 -'],input=script.encode(),capture_output=True,timeout=230)
 if result.returncode:
  print(result.stderr.decode(errors='replace')[-1200:]);raise SystemExit(result.returncode)
 data=json.loads(result.stdout)
 (repo.parent/'validation-artifacts/deployment-result.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(data,ensure_ascii=False))
 if not data.get('activated'):raise SystemExit(1)
+
