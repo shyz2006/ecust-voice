@@ -1,0 +1,20 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/campus-copy-polish-20261012",
+  "base_image": "bettafish:base-campus-copy-polish-20261012",
+  "base_image_id": "sha256:910543c65dd4609c2b5b0d28fc42d0caade6c46fb9f996d6690d854be8919788",
+  "candidate_image": "bettafish:candidate-campus-copy-polish-20261012",
+  "candidate_image_id": "sha256:9358ee6364b979b871682caadddd3b54bce0e104b01325e0af0473d00d634f47",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "before_sha256": "544e298257c97552ccd298a31654a6934f2b1877695aeda006a6b9adf6ae5da9",
+      "candidate_sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "before_sha256": "544e298257c97552ccd298a31654a6934f2b1877695aeda006a6b9adf6ae5da9",
+      "candidate_sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf"
+    }
+  ],
+  "activated": true
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "path": "templates/index.html",
+    "sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf"
+  },
+  {
+    "path": "CampusPulse/templates/pulse.html",
+    "sha256": "c1897f1601d38415004fb7904a2870c3a600dea2efd4bb220a3c437ec49a3edf"
+  },
+  {
+    "path": "CampusPulse/campus.py",
+    "sha256": "c699f1ba8c4d531f66fd91b74c81c8c634249b75212b79a18b1d873a9e09b814"
+  },
+  {
+    "path": "CampusPulse/blueprint.py",
+    "sha256": "1b93a649f0dcb9b1c67ff0bac8e1dae208d354a566652bc33fba8e0424ceb49b"
+  }
+]

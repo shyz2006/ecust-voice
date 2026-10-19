@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "fixture_checks": [
+    {
+      "source": "huyou-school",
+      "has_extra_link": false,
+      "has_row_url": true,
+      "passed": true
+    },
+    {
+      "source": "tieba-school",
+      "has_extra_link": true,
+      "has_row_url": false,
+      "passed": true
+    },
+    {
+      "source": "huyou-school",
+      "has_extra_link": true,
+      "has_row_url": true,
+      "passed": true
+    },
+    {
+      "source": "huyou-school",
+      "has_extra_link": false,
+      "has_row_url": false,
+      "passed": true
+    }
+  ],
+  "candidate_stored_data": {
+    "考试考证": {
+      "huyou-school": {
+        "posts": 69,
+        "linked": 69
+      },
+      "tieba-school": {
+        "posts": 4,
+        "linked": 4
+      }
+    },
+    "校园设施与管理": {
+      "huyou-school": {
+        "posts": 152,
+        "linked": 152
+      },
+      "tieba-school": {
+        "posts": 21,
+        "linked": 21
+      }
+    }
+  }
+}

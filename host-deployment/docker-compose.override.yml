@@ -1,0 +1,6 @@
+services:
+  bettafish:
+    environment:
+      PULSE_AUTO_REPORTS: "1"
+      PULSE_COLLECT_INTERVAL_MIN: "30"
+      TZ: Asia/Shanghai

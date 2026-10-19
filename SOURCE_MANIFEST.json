@@ -1,0 +1,2637 @@
+[
+  {
+    "path": ".dockerignore",
+    "bytes": 103,
+    "sha256": "f8b1a92d420526370df5cd099f6285fbf2a81f74688c928c1c7bda38461e598f"
+  },
+  {
+    "path": ".gitattributes",
+    "bytes": 77,
+    "sha256": "0cdf4b397c29ea207f49078f3e1ce26ae8b08edf4ecb894a797dbb29a7b083d6"
+  },
+  {
+    "path": ".github/FUNDING.yml",
+    "bytes": 949,
+    "sha256": "151c1684dfa585603b4995e59a8fa4bd9885fbc7e105f648c1d564e9a3de10ff"
+  },
+  {
+    "path": ".github/workflows/docker_ci.yml",
+    "bytes": 1611,
+    "sha256": "a56067ac93af5f46867aed40b345f80615b93aa69d899e1fc0bb976cbfc26cb3"
+  },
+  {
+    "path": ".gitignore",
+    "bytes": 4472,
+    "sha256": "63a9df13a551f0fa804f872aa79fa2c19888aca70081c749d4e16a54f8bd0155"
+  },
+  {
+    "path": "app.py",
+    "bytes": 62725,
+    "sha256": "7e07bbe1a78762d4d79952d8ff5c1398d3555ea39126d680eedd71e7ddc0e71b"
+  },
+  {
+    "path": "CampusPulse/__init__.py",
+    "bytes": 671,
+    "sha256": "c53a5d4fd948cf39fe3ba7a66fd3f2f9f943b147fed3503accb22f224d4e6b70"
+  },
+  {
+    "path": "CampusPulse/activity_metrics.py",
+    "bytes": 4559,
+    "sha256": "9a0c16524ea802d741524461b1f84eeac65c588e33fc35f6fcea4deb32e7eea1"
+  },
+  {
+    "path": "CampusPulse/activity_plans/0.md",
+    "bytes": 332,
+    "sha256": "0f0d5d2a417469a608c0f10d545e2aecb87e10eb3a862d1045b9689bbaf3233e"
+  },
+  {
+    "path": "CampusPulse/activity_plans/1.md",
+    "bytes": 322,
+    "sha256": "9011c2f56c1885034148f609a04af22da9fc353784fd73e69d5e5bf1c84e9244"
+  },
+  {
+    "path": "CampusPulse/activity_plans/2.md",
+    "bytes": 337,
+    "sha256": "cee3a3ea53fac010b50aafe51f48b31a3ca6de1145ba24fd4e3b8b08d14d588d"
+  },
+  {
+    "path": "CampusPulse/agents/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "CampusPulse/agents/analysis_options.py",
+    "bytes": 3957,
+    "sha256": "ff0927628bfa887dd7e7d644f9ad5565f1f6b831aa324b1309c42252e1dfc041"
+  },
+  {
+    "path": "CampusPulse/agents/orchestrator.py",
+    "bytes": 15071,
+    "sha256": "a2951b4eb9073c311a21639065beaab6e643b16c2a5ccc6bec4b53bc302d45e1"
+  },
+  {
+    "path": "CampusPulse/agents/router.py",
+    "bytes": 3982,
+    "sha256": "34b884b55cac2fe64626cf90632441c9089c6fde7bf3ec56349d3992252259ba"
+  },
+  {
+    "path": "CampusPulse/agents/schema.py",
+    "bytes": 5303,
+    "sha256": "2ee9fbcf1fd91c4a1e5c9fac28de8921be7d743787110005db1d30b9d54a4897"
+  },
+  {
+    "path": "CampusPulse/agents/sources_quality.py",
+    "bytes": 2248,
+    "sha256": "6bd55b09acdca0cc2a25412f13c308b5674c0d3427132a34340619f3dcf9a55b"
+  },
+  {
+    "path": "CampusPulse/agents/verifier.py",
+    "bytes": 13068,
+    "sha256": "46da857e220e3957bd5c6fda6c6b71167acf104aafeb07b5cf2b3798bcfd96c8"
+  },
+  {
+    "path": "CampusPulse/agents/workers.py",
+    "bytes": 16147,
+    "sha256": "a276cd67e594228c3aa0b60adda9e609649c0580c534ab8c0816d23bf3b3bf3a"
+  },
+  {
+    "path": "CampusPulse/agents/workflows.py",
+    "bytes": 3833,
+    "sha256": "0e770978ea25750d19806c3cb5667943ca4d2caf2724ad1f9a9ebee57f17d16a"
+  },
+  {
+    "path": "CampusPulse/ARCHITECTURE.md",
+    "bytes": 11554,
+    "sha256": "2736177ca14d27e4928a3f1c97dc7dd425c43e2cdd6df0d3b02d7d78c11ad397"
+  },
+  {
+    "path": "CampusPulse/auto_reports.py",
+    "bytes": 9952,
+    "sha256": "9ecdd0537c5e8e27517a17adc254f01798312d798363516c5447a8dc4878d2c8"
+  },
+  {
+    "path": "CampusPulse/blueprint.py",
+    "bytes": 24173,
+    "sha256": "c71f4d103d358416f6946e8aaf4e3c98591b888af729bc8734c442129cb4f0ce"
+  },
+  {
+    "path": "CampusPulse/burst.py",
+    "bytes": 6969,
+    "sha256": "7710bdb06dd998fbae6ea4a17120c07aa691f6e1a6701eb57dfedf10daf0c0dd"
+  },
+  {
+    "path": "CampusPulse/campus.py",
+    "bytes": 19627,
+    "sha256": "2011b57029b9b8376e1a4d03d5076f6d548715432aa4afb3ced91c3c187de0a3"
+  },
+  {
+    "path": "CampusPulse/collectors.py",
+    "bytes": 2669,
+    "sha256": "3e0a6a809c952ee47c291533aaefd2299e2069fadb30b7babe77b84619af0300"
+  },
+  {
+    "path": "CampusPulse/config.py",
+    "bytes": 5006,
+    "sha256": "ea234ba6d5a4536e4d8ea8ac200a69d8005b7747e7c72c6a7539a449e3329eb7"
+  },
+  {
+    "path": "CampusPulse/costs.py",
+    "bytes": 3053,
+    "sha256": "d31ce4401eeeb211688919c9d324f2166a6d6054aaf40cbadabceb61db9db68f"
+  },
+  {
+    "path": "CampusPulse/forecasting.py",
+    "bytes": 4819,
+    "sha256": "f68e70f1efd46d8377a19c295d3005e9d8c7aecd9bdd736eea71b588f1648b96"
+  },
+  {
+    "path": "CampusPulse/issues.py",
+    "bytes": 24871,
+    "sha256": "ca257ba31e480246c4aab8928246d21af3db72462ef629c0ef99a808e3869088"
+  },
+  {
+    "path": "CampusPulse/lens.py",
+    "bytes": 16008,
+    "sha256": "48cdf3b66aa971deb9eabd52ed20a7f46b10f80ddb756a709444ea2199948383"
+  },
+  {
+    "path": "CampusPulse/llm.py",
+    "bytes": 8452,
+    "sha256": "650cf0bd5f88f407a4c760589fe68dd9a81a63ff467ff97c2a0eb2131325213a"
+  },
+  {
+    "path": "CampusPulse/memes.py",
+    "bytes": 24636,
+    "sha256": "48343d84cca6a55ff7094b44ff3500c315c07b33d52e7e7c35368584af74ad5a"
+  },
+  {
+    "path": "CampusPulse/metrics.py",
+    "bytes": 1265,
+    "sha256": "a195c2e95e7609e6ee6000722015ea72a6ca08fd87fc63abb690bc09dff8c23b"
+  },
+  {
+    "path": "CampusPulse/model_connection.py",
+    "bytes": 5462,
+    "sha256": "eda49bbddfe90c5cab51c766d57c505ace0b86b781f9a06f1fe9cecb9b0f18a1"
+  },
+  {
+    "path": "CampusPulse/observatory.py",
+    "bytes": 19468,
+    "sha256": "eb10ad6b35be1a833d779dc1cfa3272b0d8a6ba268e1df03770909069e7a450d"
+  },
+  {
+    "path": "CampusPulse/pipeline.py",
+    "bytes": 15818,
+    "sha256": "add057238cd4aeca9707e4800424a6665d9e7a9342a315a9ed7805e10399962b"
+  },
+  {
+    "path": "CampusPulse/post_identity.py",
+    "bytes": 2188,
+    "sha256": "8bb947540ac2a29009be76f0515e5c0a68ce0fef1af595f69279b4885ddec979"
+  },
+  {
+    "path": "CampusPulse/search.py",
+    "bytes": 3584,
+    "sha256": "fe9e3120bd7b1fb7ca856773c2ac2a0f673df4810dc45686610df7497b973450"
+  },
+  {
+    "path": "CampusPulse/sources/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "CampusPulse/sources/bilibili.py",
+    "bytes": 4666,
+    "sha256": "4baed6a661583dfbac9c92243c3e6cd98d65a09f896d24d56656513128ccba65"
+  },
+  {
+    "path": "CampusPulse/sources/huyou.py",
+    "bytes": 8692,
+    "sha256": "5c1c4ba5187ea1b82ee74c0a1b7f1f574bdb6e3354f902656056d24533ed4dfd"
+  },
+  {
+    "path": "CampusPulse/sources/tieba.py",
+    "bytes": 2927,
+    "sha256": "c0a9bfa183262498d4485f3786e1621410d47b9e05c4c15c89913718c33c1245"
+  },
+  {
+    "path": "CampusPulse/storage.py",
+    "bytes": 27688,
+    "sha256": "77a7082864065bd8c46f8c477c011217c0e7055d9a79b2b9932f478fc477f4b7"
+  },
+  {
+    "path": "CampusPulse/telemetry.py",
+    "bytes": 11264,
+    "sha256": "2fa36d12a36bd55c4c6f2d74213c5220c0917906333913f96127c9cadf3df637"
+  },
+  {
+    "path": "CampusPulse/templates/poll.html",
+    "bytes": 4910,
+    "sha256": "905c43e954c942a0868c0dff96b12f7401af3e86e8e7e7a282de24a10f82c926"
+  },
+  {
+    "path": "CampusPulse/templates/pulse.html",
+    "bytes": 420310,
+    "sha256": "6259707c9682ff470c7ce7dcd32672f6850772dec5a5f0063e3ee1170f57805d"
+  },
+  {
+    "path": "CampusPulse/tests/test_campus_pulse.py",
+    "bytes": 25668,
+    "sha256": "74b93a3e457fe61f2b310b47130be52276496e0108b531f116ca69a82d9b7f62"
+  },
+  {
+    "path": "CampusPulse/topics.py",
+    "bytes": 5338,
+    "sha256": "a7c98cd3db79f2150ba2e433f5834f96011c41d27cfe3089e1dd164dc70961f6"
+  },
+  {
+    "path": "CampusPulse/transitions.py",
+    "bytes": 6944,
+    "sha256": "70b6aa128506c1cc2fad6fd91adfc0795f2275d809678df523ff6d3b1bc5fee1"
+  },
+  {
+    "path": "CampusPulse/video_features.py",
+    "bytes": 8524,
+    "sha256": "8a5ec6daa28f0a15b206caeecba8133ae2a0119353f1eddbb085183a8044348b"
+  },
+  {
+    "path": "CODE_OF_CONDUCT.md",
+    "bytes": 5202,
+    "sha256": "88504558eb3470566208af69870487d373e6687575e8c9b9863f517f16309d81"
+  },
+  {
+    "path": "config.py",
+    "bytes": 8990,
+    "sha256": "a4cdad6b04608fb54376fff21d45a06e2bef3ff0346e75250b6bdd4145fbd651"
+  },
+  {
+    "path": "CONTRIBUTING-EN.md",
+    "bytes": 1460,
+    "sha256": "935c416cd86778fe91314f81c4c7501887097c19f23da894eb1858dd54a98d82"
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "bytes": 1222,
+    "sha256": "18e42299da3150745145a2f6760f1bb4426eaa2a75d3dcf56f7f248c68774061"
+  },
+  {
+    "path": "docker-compose.yml",
+    "bytes": 1135,
+    "sha256": "0b810fbe5d55f789e7d9e5e8bfdaf868711fba1e23e4656ae31371737394041d"
+  },
+  {
+    "path": "Dockerfile",
+    "bytes": 2264,
+    "sha256": "a9ffbc645de0d146e5b2eba7dcea17097b8c9254f9ff4acb5a73a6e4ac5ff26d"
+  },
+  {
+    "path": "export_pdf.py",
+    "bytes": 2205,
+    "sha256": "a9e34a4debdc98b4e8b93a5085ecce783e79038c802684c2256fb482e6be9954"
+  },
+  {
+    "path": "ForumEngine/__init__.py",
+    "bytes": 152,
+    "sha256": "79007bf3155cde0402d713a1944367a066f18a949b91c9b744d947b5916b03d0"
+  },
+  {
+    "path": "ForumEngine/llm_host.py",
+    "bytes": 12214,
+    "sha256": "f00ad777f18b61b319a9a2bfecd1b3af54d31257218e297311fcdae091ba3ed2"
+  },
+  {
+    "path": "ForumEngine/monitor.py",
+    "bytes": 38417,
+    "sha256": "aff82ce6199977ad44cf8ec12deaea00c66216d36fc7069f29a8504431f5ad9e"
+  },
+  {
+    "path": "ForumEngine/task_store.py",
+    "bytes": 12100,
+    "sha256": "342297106eab5078f3ce60ef7936b2fd6edb146679a94034c053d0424445fe7c"
+  },
+  {
+    "path": "InsightEngine/__init__.py",
+    "bytes": 298,
+    "sha256": "4408cfa5f61ab5c55a00ca139646ae33ab0b23514276f65983790dc137bd2e48"
+  },
+  {
+    "path": "InsightEngine/agent.py",
+    "bytes": 40586,
+    "sha256": "ef5420776edba12a493281687c95caeb22470d4bb927aac9d4c7c768a8caec0f"
+  },
+  {
+    "path": "InsightEngine/llms/__init__.py",
+    "bytes": 141,
+    "sha256": "10d0271e9a17c5d3fe1e7c60d322bff1a9830c730f2cf0e84bbd6ad731b3e916"
+  },
+  {
+    "path": "InsightEngine/llms/base.py",
+    "bytes": 7242,
+    "sha256": "94f4cf4098c46c4f9b34365d20d46ccb12fb93b7c20b90ea0b489c4bea20953b"
+  },
+  {
+    "path": "InsightEngine/nodes/__init__.py",
+    "bytes": 517,
+    "sha256": "70a5473919e183a76b587551be184b038f6c90ed64410816876fea8ad5327c7d"
+  },
+  {
+    "path": "InsightEngine/nodes/base_node.py",
+    "bytes": 2230,
+    "sha256": "ea6b34bd85a29cd4d2b7668884fe906c2941044a8aff9d36250c30eb3005ca53"
+  },
+  {
+    "path": "InsightEngine/nodes/formatting_node.py",
+    "bytes": 5606,
+    "sha256": "56826c1e09513605c00627a46558a477d14c2b3d6f9bf75edab18e5cdde274fb"
+  },
+  {
+    "path": "InsightEngine/nodes/report_structure_node.py",
+    "bytes": 7382,
+    "sha256": "0893a54a5b44de6421472babfb4f456651b7024223a15a9b6a4d07ba21a66365"
+  },
+  {
+    "path": "InsightEngine/nodes/search_node.py",
+    "bytes": 10424,
+    "sha256": "51a1448240fae38b5ff0b434b63f3fbb2ea599cd1f5cc4e1e0ba54774733f716"
+  },
+  {
+    "path": "InsightEngine/nodes/summary_node.py",
+    "bytes": 15268,
+    "sha256": "47e830fac1f2488f426dcafe2b4b17ed1bc82d8af0b13940486fc295dfc2e65b"
+  },
+  {
+    "path": "InsightEngine/prompts/__init__.py",
+    "bytes": 968,
+    "sha256": "8f933d43f89aa5e1074dc5905374f6bae7c1651316b38af2ef0a9f005157b5b8"
+  },
+  {
+    "path": "InsightEngine/prompts/prompts.py",
+    "bytes": 27028,
+    "sha256": "efc6e420d60f2e1a404381e31110d8bdfb661ebcf40bf31ec3563997eac8771b"
+  },
+  {
+    "path": "InsightEngine/state/__init__.py",
+    "bytes": 183,
+    "sha256": "191f760ca3fc3802118fea3c4c5f5efda70aaf89c87c16a99fe7a6288fb4ff01"
+  },
+  {
+    "path": "InsightEngine/state/state.py",
+    "bytes": 9455,
+    "sha256": "db28e5e314a6c5e411d8c987e3d6e73db19f6f49f9251368298c72f7530d1b6f"
+  },
+  {
+    "path": "InsightEngine/tools/__init__.py",
+    "bytes": 825,
+    "sha256": "96d9769006b40cdb6ebcf3707b49a044a337a8a356f40b52874e0e7b43ae10df"
+  },
+  {
+    "path": "InsightEngine/tools/keyword_optimizer.py",
+    "bytes": 12626,
+    "sha256": "ec7572f1a5a656b45fda7c3edca698167d85dfb19235461d769cabff947d5e08"
+  },
+  {
+    "path": "InsightEngine/tools/search.py",
+    "bytes": 30261,
+    "sha256": "2111e43c50c0990a4cda4429b02c2f61e51e0492c3ecb650674dbc337d4d2cf3"
+  },
+  {
+    "path": "InsightEngine/tools/sentiment_analyzer.py",
+    "bytes": 24173,
+    "sha256": "c132110ab5e98ab0c65e2f1ad7a40dbf406a3482212c07d013284b1d536c640f"
+  },
+  {
+    "path": "InsightEngine/utils/__init__.py",
+    "bytes": 504,
+    "sha256": "998d3fb3b61de9f531329fda6f7c4922854eb4a4993f51c593695acfb99fdcf3"
+  },
+  {
+    "path": "InsightEngine/utils/config.py",
+    "bytes": 2636,
+    "sha256": "45c1efc1d4d88c8e903b32028988a3b4af764be4ad3928dd1fe7e8a5f4965d63"
+  },
+  {
+    "path": "InsightEngine/utils/db.py",
+    "bytes": 4247,
+    "sha256": "53570928ee3fd12e3b46b734b06755423e821285e927f8070b71c04c7f3c0550"
+  },
+  {
+    "path": "InsightEngine/utils/text_processing.py",
+    "bytes": 8229,
+    "sha256": "5b4480cb0323236bbdd81cf2cd2351d3f0a903735dcd45e22d9ad19fa9b54211"
+  },
+  {
+    "path": "LICENSE",
+    "bytes": 33120,
+    "sha256": "44686cfd8b09cd489ecbd2f740e0a31d7006584b90e7446dd29661f06f0213ec"
+  },
+  {
+    "path": "MediaEngine/__init__.py",
+    "bytes": 318,
+    "sha256": "e4664cccdec59db900e2ff7eede84bbeeea8198e21bdd6a1310e029e02396155"
+  },
+  {
+    "path": "MediaEngine/agent.py",
+    "bytes": 20145,
+    "sha256": "d32dd170aafb5972cf7a426b4980bba04422fcad2bb67ca97e910aab36422660"
+  },
+  {
+    "path": "MediaEngine/llms/__init__.py",
+    "bytes": 95,
+    "sha256": "5ac807b555d39270449d1e8daf0c0da8eeb93ab2e7ff089160d00b9b9da05d59"
+  },
+  {
+    "path": "MediaEngine/llms/base.py",
+    "bytes": 7019,
+    "sha256": "68fd784511e7ba75f1c7ced2071af32ebb520fbe9819b14307abffe499518c72"
+  },
+  {
+    "path": "MediaEngine/nodes/__init__.py",
+    "bytes": 517,
+    "sha256": "70a5473919e183a76b587551be184b038f6c90ed64410816876fea8ad5327c7d"
+  },
+  {
+    "path": "MediaEngine/nodes/base_node.py",
+    "bytes": 2138,
+    "sha256": "77c4a8a61fae7b055c2bd8c9bb057de3f00a433057bc2e7d5f317e908ac8c1b9"
+  },
+  {
+    "path": "MediaEngine/nodes/formatting_node.py",
+    "bytes": 5624,
+    "sha256": "137ee4b0cbbc8b227da53e71be8c8a25af0d6d17f2ba5760d44952786cd9b3fb"
+  },
+  {
+    "path": "MediaEngine/nodes/report_structure_node.py",
+    "bytes": 7346,
+    "sha256": "a1df916e4093ce17b7fb38560ab7f8ac048db44132b579168c4b43b64f214c48"
+  },
+  {
+    "path": "MediaEngine/nodes/search_node.py",
+    "bytes": 10360,
+    "sha256": "457fa860211dad83170ae4f99d86e0517905bec243f7a71e5e94c36392b1e6dd"
+  },
+  {
+    "path": "MediaEngine/nodes/summary_node.py",
+    "bytes": 15382,
+    "sha256": "173c5e74b504758e6e38246299651563d85ca0539b9603f4bf9fe79465fa6e5a"
+  },
+  {
+    "path": "MediaEngine/prompts/__init__.py",
+    "bytes": 968,
+    "sha256": "8f933d43f89aa5e1074dc5905374f6bae7c1651316b38af2ef0a9f005157b5b8"
+  },
+  {
+    "path": "MediaEngine/prompts/prompts.py",
+    "bytes": 15478,
+    "sha256": "82caa2ab590b9fd8a4a160393cc7f1b52ad93b9802fc7bffc3271376a620c7ac"
+  },
+  {
+    "path": "MediaEngine/state/__init__.py",
+    "bytes": 183,
+    "sha256": "191f760ca3fc3802118fea3c4c5f5efda70aaf89c87c16a99fe7a6288fb4ff01"
+  },
+  {
+    "path": "MediaEngine/state/state.py",
+    "bytes": 11013,
+    "sha256": "d1b566369fe8abcf091c6b90639c00d5212d6ddf53661a38f9e9cd16b876106e"
+  },
+  {
+    "path": "MediaEngine/tools/__init__.py",
+    "bytes": 477,
+    "sha256": "d283428ee48becb9b0c2368cab35585d4a1357da7321198d8ea8c7e1ee2b1579"
+  },
+  {
+    "path": "MediaEngine/tools/search.py",
+    "bytes": 27291,
+    "sha256": "1eba6a99e2c3fe04281b124f63c5428ae8e3dae82611d1713b0c3d9f4db72b0a"
+  },
+  {
+    "path": "MediaEngine/utils/__init__.py",
+    "bytes": 574,
+    "sha256": "2ef7faad93da2de63cd41206e1bc33f8bdc871958a90d720e822d5fa12e84b31"
+  },
+  {
+    "path": "MediaEngine/utils/config.py",
+    "bytes": 6924,
+    "sha256": "7c22a5b5afe86ac5ddffb2a103d22ad2a8a87cf0729cf9dbaf02e9377f9b3a56"
+  },
+  {
+    "path": "MediaEngine/utils/text_processing.py",
+    "bytes": 8229,
+    "sha256": "5b4480cb0323236bbdd81cf2cd2351d3f0a903735dcd45e22d9ad19fa9b54211"
+  },
+  {
+    "path": "MindSpider/BroadTopicExtraction/database_manager.py",
+    "bytes": 12926,
+    "sha256": "17bba6ac069f309ff4852b675bc7b8c3b991f1166e075af57a5468f5967c7592"
+  },
+  {
+    "path": "MindSpider/BroadTopicExtraction/get_today_news.py",
+    "bytes": 10801,
+    "sha256": "f52c4a219d8b4fd73bfb29f3a1af1697af55314f1c2e9c0d680e255c2c57d29d"
+  },
+  {
+    "path": "MindSpider/BroadTopicExtraction/main.py",
+    "bytes": 12433,
+    "sha256": "cedc591dbc0287ea32075cf97c798429eb061875735f6f26ddfd75b436b529d2"
+  },
+  {
+    "path": "MindSpider/BroadTopicExtraction/topic_extractor.py",
+    "bytes": 10818,
+    "sha256": "872a7ea253691a953e38f6013c4498ab1d3fc3ae27fcbf3c43a495feff18902f"
+  },
+  {
+    "path": "MindSpider/config.py",
+    "bytes": 1708,
+    "sha256": "f7833764c06074216ccb57098471dc5e19ff435406a90f2b56538f022706f433"
+  },
+  {
+    "path": "MindSpider/config.py.example",
+    "bytes": 1708,
+    "sha256": "f7833764c06074216ccb57098471dc5e19ff435406a90f2b56538f022706f433"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/keyword_manager.py",
+    "bytes": 12506,
+    "sha256": "76108f9d8cbbe6800cf8c40f2f0ad2d57ee7ccc0e016310cd5894f079bcb8055"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/main.py",
+    "bytes": 10866,
+    "sha256": "460f0b5093b71b5efdd170d668f5e522c16d14fe6cd3889ee6dc15e2573c373a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.gitattributes",
+    "bytes": 93,
+    "sha256": "01736911783890d939e983479f88118d1325c08cecea1eb8bfdc8228ee1bcc6f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.github/ISSUE_TEMPLATE/bug_report.md",
+    "bytes": 1106,
+    "sha256": "f28b688b8b458d06c8384ef9ac2006b5b5f5a14a635f4f7f144ae48356fb65ec"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.github/ISSUE_TEMPLATE/quesiton.md",
+    "bytes": 1204,
+    "sha256": "36a47c57ea284781bc1a0155f193d0e15c8cffcf73d3ce111f0bb06722eca42c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.github/workflows/deploy.yml",
+    "bytes": 1964,
+    "sha256": "42f67a64f1ecfaf9b7842745ba2202f9838fee52b8029bb50c38b945c0cb3263"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.gitignore",
+    "bytes": 3259,
+    "sha256": "0314046b83be9e9ee0e2df967af24623a9285b792581748c79f912821466b5e5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/.python-version",
+    "bytes": 5,
+    "sha256": "49a506dd32096b010d75205acf3430c9ae6c40351888129499e5a5e487126c93"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/base/__init__.py",
+    "bytes": 577,
+    "sha256": "92b10ef92e06b662e5d2bdf8974a707eb7116f0571330d0ecf7da022b752f584"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/base/base_crawler.py",
+    "bytes": 3287,
+    "sha256": "0aee339606b678e5067cd3543f5b2496734485fc7be38e5245390d5c95c4d601"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cache/__init__.py",
+    "bytes": 577,
+    "sha256": "92b10ef92e06b662e5d2bdf8974a707eb7116f0571330d0ecf7da022b752f584"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cache/abs_cache.py",
+    "bytes": 1685,
+    "sha256": "475e415c2300a14efeedbe70f3a0650d94747f5c4a92fcb862eda254697d44dd"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cache/cache_factory.py",
+    "bytes": 1362,
+    "sha256": "741c63e1cba7c047797f3883d72bcd5f402b5ff668782fa162eee960117c9c44"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cache/local_cache.py",
+    "bytes": 3792,
+    "sha256": "3f54582d6a0702b82ca8512c176a3c04ac23a4b3b823c38b1a8df19896b7b186"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cache/redis_cache.py",
+    "bytes": 2669,
+    "sha256": "82549a7c99aa0352047428edc0957d0b97e32a693f2b57ba826d02ffac121ab6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cmd_arg/__init__.py",
+    "bytes": 596,
+    "sha256": "3193cd5345c292954ca3cca360014d54f55fbb898c56bb5b006a577624e90f9e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/cmd_arg/arg.py",
+    "bytes": 8068,
+    "sha256": "80e1c659845423aae607c9bfb8f675d33377015885aa37bbe52e596501c73aa8"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/__init__.py",
+    "bytes": 628,
+    "sha256": "075cfda03d1456376954da4de2b2011d00c51ba41a1cf689433f5e09b4a1c005"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/base_config.py",
+    "bytes": 4741,
+    "sha256": "697f06a0649a3a487aaef0f73664e93f90dd587bb953509664b546f8cd69bd4c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/bilibili_config.py",
+    "bytes": 1974,
+    "sha256": "3e672b82adc65ee8be7db8dcd4718a521ca2db8c711c85bd5bb889f1b164dc63"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/db_config.py",
+    "bytes": 2080,
+    "sha256": "879a5d4fdae9756e42980a06ee27f1bb92121d3f264256eb3a93722420b42dc2"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/dy_config.py",
+    "bytes": 1860,
+    "sha256": "a90dc05828c83639e4e0d034712a699b8f8700d822f12e51bb73b6b830464bf8"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/ks_config.py",
+    "bytes": 1353,
+    "sha256": "8de05f5bbb45b73bcb9583a2edba0061b16076042590d1ad380519ae51ba246a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/tieba_config.py",
+    "bytes": 883,
+    "sha256": "df3e44461d1f2a0bd373e6f16e089ee61ece137bbed3c7a703f6c7185137b343"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/weibo_config.py",
+    "bytes": 898,
+    "sha256": "1548ba22d1404637c297f153f74b385252d326e8ac2127774767ba055e73ca47"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/xhs_config.py",
+    "bytes": 1552,
+    "sha256": "aca6770e23c8c4724dec6eeb5c36bf830b93783a5c04aec4a2d1763fe7539289"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/config/zhihu_config.py",
+    "bytes": 969,
+    "sha256": "28b32367ff85354d9887a0c53073ac2c2d20d65085a7f07fcc586c282a00a167"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/constant/__init__.py",
+    "bytes": 601,
+    "sha256": "00381f14aec4fffc2888fd96c8bede8c5ce1fc255e7816698b408d696b604712"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/constant/baidu_tieba.py",
+    "bytes": 639,
+    "sha256": "2170d03779f45b3ac66fd2688659e2047f448f096b043459cc7286eb7aba3412"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/constant/zhihu.py",
+    "bytes": 759,
+    "sha256": "4473b98c4e48b5c5a26d5a954fbefe14ba5ec47bea0fc03084de385cb4fe7725"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/database/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/database/db.py",
+    "bytes": 1101,
+    "sha256": "54772f107c083f0d0e33e06e8e8f560d719ab033da7285bbda0ce993abe2618d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/database/db_session.py",
+    "bytes": 3614,
+    "sha256": "cb7d5b6cf2887f82e21e649848b46370f98bd8791e18c3e365174ac1d7e2f0ec"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/database/models.py",
+    "bytes": 14572,
+    "sha256": "d1613d96ed092b4499357c516052e685eeaf9e704a6867b54f1e74166ee36f69"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/.vitepress/config.mjs",
+    "bytes": 3187,
+    "sha256": "c4f6274b8a1a0ef9543b3a67b087e42935b6a7e20131d78a1d92c84f40d23b91"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/.vitepress/theme/custom.css",
+    "bytes": 225,
+    "sha256": "1e94b538970e26adc14c9382b202ff34797b564d0e8008c198fa014271f2539f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/.vitepress/theme/DynamicAds.vue",
+    "bytes": 1826,
+    "sha256": "c22ee7cd9ca8db5b92ba05d6cd042bd6f4fa92a9e43e2790fd1ddd87d565b062"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/.vitepress/theme/index.js",
+    "bytes": 225,
+    "sha256": "621f287c0bb51121ac1d3357e9451acdccc5d871432765230a9fb117792f6511"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/.vitepress/theme/MyLayout.vue",
+    "bytes": 291,
+    "sha256": "c29971ba44563a076f1e00560e6b8110a5795f1167e1c561fcf8540bf026ecc4"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/CDP模式使用指南.md",
+    "bytes": 6159,
+    "sha256": "6c18b935d445aadaa9adab6d048474cfaaa657b048c8cbb0356768e51da8f050"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/hit_stopwords.txt",
+    "bytes": 5276,
+    "sha256": "3c2431de9e31c61e8663695ed9c6e6addfe1f4763b18e03e9257ae25cea98e3f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/index.md",
+    "bytes": 3162,
+    "sha256": "f267093d31257e806a357e9d3dd2d412286eb6b82172ced5bf2738313ed03d6d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/mediacrawlerpro订阅.md",
+    "bytes": 2417,
+    "sha256": "0458b4bb838841dc9a950c4fe250ce146393a081ce0085b7077ba8c59632055d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/11群二维码.JPG",
+    "bytes": 175288,
+    "sha256": "2465bba4836c98e6a063ebe2d1f67e6f39c29399303fb5ca15dd37ec9e0ca568"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/12群二维码.JPG",
+    "bytes": 173902,
+    "sha256": "38c4215c76c1024cbec67140f4a139a419d84f07737673cd59b0a6a5aa9aeeec"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/13群二维码.JPG",
+    "bytes": 172459,
+    "sha256": "ac4713b5b154ad358425685b47d137d967cd19df120b8a723bd1849ca2613d44"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/14群二维码.jpeg",
+    "bytes": 164547,
+    "sha256": "213b0e7f6d57c0e0c94322b1bd4e84ea0d279ce3b52346383e8fc77cf04daa04"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/auto_test.png",
+    "bytes": 226157,
+    "sha256": "0fb380845f06312154ffa05074080d7ba6af28792b889f06f3cc7f4cd163d502"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img.png",
+    "bytes": 260254,
+    "sha256": "df2efeb9c9569312e6f580f6a6a21e7838d82863915f9bf87792bc97ed7a9297"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_1.png",
+    "bytes": 204636,
+    "sha256": "b08459c6d626ee3a64648003e367dbe6644b75558bb0c3c57bf4117ec5c962c3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_2.png",
+    "bytes": 73941,
+    "sha256": "38e62416f0543db5aab8aa7bcf7a574705037d1cd847759ec16fd3f5def185f6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_3.png",
+    "bytes": 142986,
+    "sha256": "67f170f3cdc847b2275880ddb7ecb36e5f93d87c918ae3cfa55f8a5fe050b409"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_4.png",
+    "bytes": 140409,
+    "sha256": "c794c4243d545b829cef08be0cc6138dcdc5079775eda1ff27f28ddbde16f0dc"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_5.png",
+    "bytes": 47695,
+    "sha256": "a8ce0c91f27f6d2cb8da5333ded5f9e65f2006afb801150f0b14a4b0563bc5e0"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_6.png",
+    "bytes": 747388,
+    "sha256": "fe03b565df95fc71f81753d67be0f55b79958c288340aeb3140d3fb6f343e4ef"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_7.png",
+    "bytes": 66479,
+    "sha256": "85b598d8acb23f28258f8eb77e3b442a208c51670257f33a07b65eedce96d748"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/img_8.jpg",
+    "bytes": 65934,
+    "sha256": "71076e753b5a3b1bd816d0c03bc4c20f2967e1c2898a0ef80a822e42077b496f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/IP_提取图.png",
+    "bytes": 193862,
+    "sha256": "da1ef14249da8ffadafa3463c4dd7d226f8c39e04d4ab8fba49f78c2fe815954"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/nstbrowser.jpg",
+    "bytes": 594051,
+    "sha256": "fa69d201168aaa620a36d21eaa9d8f0abdef95e6ad1833ba734c40ff76cbff70"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/relakkes_weichat.jpg",
+    "bytes": 236072,
+    "sha256": "70ba456b7f058a90e52fd1fb49ae11d98f45fce572ca17a4be89b7c881a7dd1e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/tikhub_banner.png",
+    "bytes": 768516,
+    "sha256": "85a034b15ef462c74af009a1568dd10f96ef51545498cc3230b65ac3dcf71bb7"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/tikhub_banner_zh.png",
+    "bytes": 776279,
+    "sha256": "d596536800ad6897b43f2acf372e2f9acca0518e1d6cc75d70bbc425af3b5bab"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/wd_http_img.png",
+    "bytes": 377480,
+    "sha256": "35b8e3cb67e03cb3fc61e76be891990f23228996363f37d813b217e7bb7ffa6f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/wd_http_img_1.png",
+    "bytes": 353031,
+    "sha256": "46458b89f3ef65736a22994c14c4b90b8daddc0cfbf4bd7937abd18478dd52af"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/wd_http_img_2.png",
+    "bytes": 301762,
+    "sha256": "f63f6e17c6d4a7ac52a307d78042e553adf5a71391fbbb5e8b64a7e6b8608de5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/wd_http_img_4.png",
+    "bytes": 339078,
+    "sha256": "406bdd79c9202e8efa536b0ce56ba29840d3df04a625e4eecbe7dfa7f9d8f948"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/wechat_pay.jpeg",
+    "bytes": 120685,
+    "sha256": "b352ffaefbe7a96607837ce0d6b5acf87dbefa232856774626e5d77ec8ce790d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/xingqiu.jpg",
+    "bytes": 246403,
+    "sha256": "ce85ddd6bd422437099791e3e57e7709e9685a0408eec1fce289ee4cfbe7e2d3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/zfb_pay.png",
+    "bytes": 495587,
+    "sha256": "f38c5954791aceb3ffd67297a06db62101598e9f0da8a6236e9974f9a436f86a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/代理IP 流程图.drawio.png",
+    "bytes": 98233,
+    "sha256": "3eb9e9aa90fc8e5026035bef505eb7a9be80a9a42758470bc19b1d7a39eeecf7"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/修改代理密钥.png",
+    "bytes": 267312,
+    "sha256": "e6b309e835539564f47d10e537c2efdf48f9a5c061ec8c39f2717d1a8d8c68ee"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/static/images/星球qrcode.jpg",
+    "bytes": 234499,
+    "sha256": "35d183314d2fa030e3d70422f314564da999bf7c9e49ff1f980add4576bd321b"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/代理使用.md",
+    "bytes": 443,
+    "sha256": "d60bcc79b1c4b2ec0c0d2a7a05a93225401fbbe460dbef87085126a97f094fa2"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/作者介绍.md",
+    "bytes": 1115,
+    "sha256": "7bb7ec5d59f4b455c6bfd7ba824be123fb4d74d69c44ff4292a3df83a2814e15"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/原生环境管理文档.md",
+    "bytes": 1705,
+    "sha256": "d267e3038ab0257d024ac88301268764d847ae406b692b8ac92a89189a88b69d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/常见问题.md",
+    "bytes": 2502,
+    "sha256": "23102e06c17760c0d75d013a6007b9ee0ad23d388f00fc1355bf6a53fe8245c9"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/开发者咨询.md",
+    "bytes": 472,
+    "sha256": "587127feb3c7712b58698de435c830a57a2aed43a666d591e3c1346b66db5ce5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/微信交流群.md",
+    "bytes": 490,
+    "sha256": "2815027bea3eef0bfeb686f84329a94ab79ae96da19ec06e141730c3624d0219"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/快代理使用文档.md",
+    "bytes": 1380,
+    "sha256": "cfdf2cb8372d4fcc807f9fbecd05dc79e03f253b4eb54db3c800c0ea1bd574a3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/手机号登录说明.md",
+    "bytes": 1290,
+    "sha256": "93e7de6c464f013494b9dc93c0c8d9bd39590b409e55cac59a70139081776161"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/捐赠名单.md",
+    "bytes": 2662,
+    "sha256": "5d065eaee28caa9f94de2f65f43acdfaee05fa40f8a3c3fa54b336d47669d790"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/知识付费介绍.md",
+    "bytes": 1214,
+    "sha256": "9d2c955ec1aab0c8ccd4a3af1a0e94fa979a28187358b895da6eb8cd06744f8e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/知识星球介绍.md",
+    "bytes": 1804,
+    "sha256": "13993fea6ca3f68590cc06e6754a840093247e4660001ea70ec9381086dc17c4"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/词云图使用配置.md",
+    "bytes": 1840,
+    "sha256": "2af5ce7d9dcfc9312263045a049b2fc1476b1324d9c7d032624bd00d369c2e62"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/豌豆HTTP使用文档.md",
+    "bytes": 1129,
+    "sha256": "89b027648beabb3da47769de31df4488a3a771a286901b9c116bfcf04ad869e9"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/docs/项目代码结构.md",
+    "bytes": 3540,
+    "sha256": "ba772435280ee1723d1f2313cbcc8d507bf9714e896fbf8730461ff2c6f31f97"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/libs/douyin.js",
+    "bytes": 15388,
+    "sha256": "ff5cb3133e2717523ffb3f96679e3f5d23bd31a999411ea604cff9a51da9e26e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/libs/stealth.min.js",
+    "bytes": 180462,
+    "sha256": "02ae012addcdb30b0ed1a512406feb487699b1b217566e87a8086b54dfcc1d4d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/libs/zhihu.js",
+    "bytes": 6529,
+    "sha256": "9753572dc21148975600ca8083e92245e69130cd11414a3e3089013b3aaee3f1"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/LICENSE",
+    "bytes": 4775,
+    "sha256": "aeff21de8609bec9d6e939bbbba7c2914ae0a6e7c9470ea7945c03f7d17a2a33"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/main.py",
+    "bytes": 3106,
+    "sha256": "3c6a7915f28340bd9abddbaad609995b0b6ac8a194471839a14edb49a220bcb1"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/__init__.py",
+    "bytes": 577,
+    "sha256": "92b10ef92e06b662e5d2bdf8974a707eb7116f0571330d0ecf7da022b752f584"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/__init__.py",
+    "bytes": 695,
+    "sha256": "c2f3ee0b3d31d408b3b363867a71e4a6d836310345737aff934048ea934f542c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/client.py",
+    "bytes": 20742,
+    "sha256": "d9bd4da995844dcf69cc2c233ba6e68df7a5b74b1a4fda59008a09c5e902c281"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/core.py",
+    "bytes": 34493,
+    "sha256": "48500f7ed93df37301c4ef42460722eee74c911fa4d38492289820fe6800c528"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/exception.py",
+    "bytes": 870,
+    "sha256": "1c9179fc7581c9f117374d8e64fdbaf0c17fc55912d10977352943569811708c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/field.py",
+    "bytes": 1082,
+    "sha256": "9cb097896f4580cec291f48cd92d5eba587646d9276fc11fd50d16ae3bb27372"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/help.py",
+    "bytes": 5091,
+    "sha256": "37a5030918f84e1688ce691549486a9919421cd635328eb3970ab4abee33ddec"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/bilibili/login.py",
+    "bytes": 4872,
+    "sha256": "dc94beca30f9b0e7f4735430de6bbcdd824f264245f42ac4d5e8a03dd8dc4c99"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/__init__.py",
+    "bytes": 609,
+    "sha256": "1fffed5fb77b510192c5b5386e7cb5550ad27f2d237404ae2f0ad8aa180094dd"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/client.py",
+    "bytes": 14930,
+    "sha256": "0d7062180841856b6dc0cead1a30cb1e289f12c24e20fe2f002d3375728aaa89"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/core.py",
+    "bytes": 20761,
+    "sha256": "ea31ce2ac3fccc8193b195858e3e5d00c51a45afb74458ee890eb08fc4a31333"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/exception.py",
+    "bytes": 771,
+    "sha256": "e80f60987ba3d8410d61b8b434856c8deb0a1772c06358031c0c20be450007d3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/field.py",
+    "bytes": 1146,
+    "sha256": "419987d0df4c97954abfbae1c500505a9a09ae700e53851958f4146f4484b5b6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/help.py",
+    "bytes": 6575,
+    "sha256": "bc65a0901ddbd2671e3d7a51bc46add146dc45cd7c5f40c4cd85be96185610b4"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/douyin/login.py",
+    "bytes": 12919,
+    "sha256": "451f0c5682f7434dab1a865cd326ba70f5f9d5c3c976b16e14ea6b996e1014b1"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/__init__.py",
+    "bytes": 634,
+    "sha256": "44c96d52f6047ea40fc73b6fe1d71df0d1d59c461f362b03af5f2b8016cb30a5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/client.py",
+    "bytes": 11388,
+    "sha256": "7e14c06a1a1aca713ee5b8a1f0e16f272852cd98d4cd558f0cae502344e0ff6d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/core.py",
+    "bytes": 18517,
+    "sha256": "b320bca0d7871b9ea8646a7e9021d41e5f65ed471b0a07d3e05f562ab5a12208"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/exception.py",
+    "bytes": 771,
+    "sha256": "e80f60987ba3d8410d61b8b434856c8deb0a1772c06358031c0c20be450007d3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/field.py",
+    "bytes": 600,
+    "sha256": "3d08703a3c4a1228d9e4e820a3633796738ae909488ba15faa5f9bef82f5b9f5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/comment_list.graphql",
+    "bytes": 715,
+    "sha256": "b22987ed422efe7f796e4e809ecc2cfaaaebd80e9c12fe1dab0eb74ace177a82"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/search_query.graphql",
+    "bytes": 1618,
+    "sha256": "6f1ff2585c158f778c33445191747eace5e1fc384801aac533796a17dbe32199"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/video_detail.graphql",
+    "bytes": 1479,
+    "sha256": "3c579fe73ebac83c0a367a8f26bccb59c686768ba64986b4936f20c59bdcc53f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/vision_profile.graphql",
+    "bytes": 440,
+    "sha256": "6521d5d31601be6265ade19f40ae84cab9e30a30ec17d556ebe39745da80ba35"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/vision_profile_photo_list.graphql",
+    "bytes": 1550,
+    "sha256": "afd1db157dd24a8f44479bd690036fbf059c8c0c168e138b59438131b3d2f176"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/vision_profile_user_list.graphql",
+    "bytes": 290,
+    "sha256": "ccaff7026909cad500b2a133204d86dc3f3270519341c3a9bce013fa06fd8d04"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql/vision_sub_comment_list.graphql",
+    "bytes": 469,
+    "sha256": "3946bf788a792d8c475ec6130e990aba9f5060179f11746ba7e18b8c097d341c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/graphql.py",
+    "bytes": 1471,
+    "sha256": "7b89ca1af97ead73a593424ac1f1392bcce7a99b90906b722ffe0b7031c039b6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/help.py",
+    "bytes": 3558,
+    "sha256": "c68c18c9962b48a87c3229abf93226a2ff47a32a4d289614b4208c09de329c35"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/kuaishou/login.py",
+    "bytes": 4671,
+    "sha256": "b05bb9cb62a0817b04fb590ad377ed908cd2fb1a8fe682cdee68e45dcc894d34"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/__init__.py",
+    "bytes": 631,
+    "sha256": "08ec002fb0a62cc708b4542c70ae8e93fb693c4e904dbce457b5fbd9c2dc0662"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/client.py",
+    "bytes": 26247,
+    "sha256": "65e3ace496c1fa4485d28a743472816de814c37f4fbb2d0f11341bd5abc3239e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/core.py",
+    "bytes": 27071,
+    "sha256": "18b0b2c728461e16ef48f5c9893c8d0c5e5b63671d3fd8f73a5376378d585ddc"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/field.py",
+    "bytes": 925,
+    "sha256": "32883a2eda5853e7535e6d93ec82d3147e04265a9a89bab25d75bbea5277e3b5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/help.py",
+    "bytes": 19145,
+    "sha256": "cb75cb8f2b065809089aa1972f996ee8c9093cba702b4cda3da05dab0c4ce2fa"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/login.py",
+    "bytes": 5260,
+    "sha256": "e569316bb4761916221e75b16c63abdcc403689e5d862da36b3e8f7dc4dd2cce"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/test_data/note_comments.html",
+    "bytes": 621419,
+    "sha256": "2f391f3bf2b7f941c99bb25545055170440a3d139020ce1e4d64776f1da16b2c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/test_data/note_detail.html",
+    "bytes": 577541,
+    "sha256": "613fc328cfd98457225555ac0c5158a00de44ed41f7345236769d34126a0882c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/test_data/note_sub_comments.html",
+    "bytes": 19999,
+    "sha256": "695791e17bf2700bb66f292f1de662fab26dce7fec340812c035f05cd5690935"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/test_data/search_keyword_notes.html",
+    "bytes": 10925,
+    "sha256": "2e02d5503a2273ec9e178cfd5ad499d17593ed38e179a0a42a1c2fad7c430e69"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/tieba/test_data/tieba_note_list.html",
+    "bytes": 411300,
+    "sha256": "20eef554b198cb10b64d19c3001503daac50bceb9b359ddfcc1a26173f9112f2"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/__init__.py",
+    "bytes": 769,
+    "sha256": "8f768164dce610ca01427343975c26b855b4a510121e464b3e9c19e0118964c6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/client.py",
+    "bytes": 14720,
+    "sha256": "63b07d722bc40f73eb189340e6375e8e9691989c4f1816adf716e760bc81ef85"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/core.py",
+    "bytes": 17435,
+    "sha256": "4fec7c303093547309f6af158970c4f19888ee45e8d92eabcfc04c950214714c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/exception.py",
+    "bytes": 870,
+    "sha256": "1c9179fc7581c9f117374d8e64fdbaf0c17fc55912d10977352943569811708c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/field.py",
+    "bytes": 854,
+    "sha256": "9d0d74fd6fc4575285de852c198849f5e89e026056a95fab0dd08fc4e2530f0e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/help.py",
+    "bytes": 1334,
+    "sha256": "73f5919b4e1129ba22e4c3d9b12fd93c537905b2057799c8e5933cc58feadf4d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/weibo/login.py",
+    "bytes": 5121,
+    "sha256": "aa559d790fdeb7c90c539d2a197f6aee5d81326d3c29d79b59fbf7feadf6197e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/__init__.py",
+    "bytes": 635,
+    "sha256": "0850ba55f292bb329de3b00e6a26feb2cd76e7e0268a33c81b5a150f5069fe4e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/client.py",
+    "bytes": 22362,
+    "sha256": "8e614510492469564efdbfe674379aaa52cb18beb6f9fbc8234d80003eaae59d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/core.py",
+    "bytes": 22912,
+    "sha256": "ab0e313df6135069eac76da9a470aa2429daaf44026c2a0604376b2f744c6000"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/exception.py",
+    "bytes": 771,
+    "sha256": "e80f60987ba3d8410d61b8b434856c8deb0a1772c06358031c0c20be450007d3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/extractor.py",
+    "bytes": 1985,
+    "sha256": "60a60d9ce9aec6400dc4c51597fce027210590100bef440ae03321ca5837e08e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/field.py",
+    "bytes": 1940,
+    "sha256": "f15286892e416b45af4552a4ce05b2c9ce04e3cfe20692c8a5cf187fac9dbf30"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/help.py",
+    "bytes": 11603,
+    "sha256": "0aee72df500d8b9e9368253f3aba7c4dd81afe6f8825a5d0a24577e22d529eb1"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/login.py",
+    "bytes": 9560,
+    "sha256": "1354523f95995153612d624e2b5b14a5fcc4c23d9c82dd6c494cf7e32b2381f4"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/xhs/secsign.py",
+    "bytes": 2154,
+    "sha256": "e66f50854ec53e0d1db0cd3db8ebbd4d40ef8415513a8312a977dd9fe841a9af"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/__init__.py",
+    "bytes": 631,
+    "sha256": "d23dbcee08cbe7105a5255d660b9cbc6206ac9a45490df9cf62e456e40772013"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/client.py",
+    "bytes": 19168,
+    "sha256": "4d55cb6f2146b73c02d5bb8e31595a8264bd42863bd1ea291ed4b999f104bf56"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/core.py",
+    "bytes": 19940,
+    "sha256": "1235f67b59a12038541081c9ec24a305221300159bcb5e462357904958d89ed7"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/exception.py",
+    "bytes": 827,
+    "sha256": "1915f2880e7a90b63f2815f3ae7cc59a23d46774ef42a8a1923b9ce805573466"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/field.py",
+    "bytes": 1481,
+    "sha256": "649f87877c76ee595131ae1dee8d359443109b970dc498fbfd9ab22cb8d90af3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/help.py",
+    "bytes": 16078,
+    "sha256": "4040e2733052398c17ef6e033386fca8f969d88cc4ae3b3f4c5ad43fc65e5062"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/media_platform/zhihu/login.py",
+    "bytes": 4618,
+    "sha256": "f126170c48525ac2457446657ad520fad68bede4fd0305640ecac25ac2b754bc"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/mypy.ini",
+    "bytes": 143,
+    "sha256": "5e67b5f9e7d3d78d1502a5b89e7fb2e50d00ae7471502aafeb860c508cf284fd"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/package-lock.json",
+    "bytes": 90238,
+    "sha256": "1b4f6c1fbdaf92311cffa99f2045e947ff8299e0a1bd6af5875c34c47ca1564a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/package.json",
+    "bytes": 202,
+    "sha256": "faa1df346689d22bd93dc002b215faf9e811f56df0ece81274f812d869ab7fd7"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/__init__.py",
+    "bytes": 719,
+    "sha256": "f000cdf91efc8afae3fd97819ad25fe13ad6c2ec29181a34f87534eae1e6fbe4"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/base_proxy.py",
+    "bytes": 2609,
+    "sha256": "0d49b9e9a38a70bc0fdee475cfb43658384c1b105f71aa8467cc23d99c045cba"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/providers/__init__.py",
+    "bytes": 823,
+    "sha256": "60294ef97fd9d770daa54e8063bbdb07e0f6323d46f540b73ad5e4685c1335c8"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/providers/jishu_http_proxy.py",
+    "bytes": 4333,
+    "sha256": "11adf2fb35d105f264b62402d1bade8cbff14a7c9319cf51cc2925e2344f2c64"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/providers/kuaidl_proxy.py",
+    "bytes": 5056,
+    "sha256": "437c4de99ab3953187fa19937acd27137464ef4188bb7053fa320a83d7d24d20"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/providers/wandou_http_proxy.py",
+    "bytes": 4198,
+    "sha256": "edeb42e8adadb97dd240812e3b192965a6190e1d486af194b899148b030dc0ba"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/proxy_ip_pool.py",
+    "bytes": 4300,
+    "sha256": "3e875ed7a64dd2e6cee65bf973edce241e27924f1dc526178db03a27f3cfd8ba"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/proxy/types.py",
+    "bytes": 1272,
+    "sha256": "05bd09607fce32112726c4f312a7d4434a3b027ec37b8a100309d02948c6d0c3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/pyproject.toml",
+    "bytes": 989,
+    "sha256": "c01a4be314b197e41c5611d7f1f3cad4de861fe5fb15da1644fc93e154f59743"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/README.md",
+    "bytes": 16077,
+    "sha256": "24a603af4302e76dc398e65b424186c693af4a4649ab13ed339e706c97f0f84a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/README_en.md",
+    "bytes": 16489,
+    "sha256": "ebdebece95d55252d44dcde4ee3630659a0b263c6f2b4d282268a341287c3fda"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/README_es.md",
+    "bytes": 18727,
+    "sha256": "76578365ecf95fdb489e4e8418e34163b0def08134daa4a24718b7e152dd1332"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/recv_sms.py",
+    "bytes": 2493,
+    "sha256": "f037bc9c1fd12bba5765c9eabcd5eef09353371a12ca592b864c84631294e93f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/requirements.txt",
+    "bytes": 436,
+    "sha256": "dc8f54f415ab3919893e6a96e075eb40e3b7fdf5972eb625c9baafd656c00b98"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/schema/tables.sql",
+    "bytes": 34644,
+    "sha256": "eca519798ca507e63d4d1b796b702f005a17b583f0347fe91b74c27f050804b0"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/__init__.py",
+    "bytes": 675,
+    "sha256": "19a0a45533d290e59e0de3dcaed51ff107a8884e3343a927ea28625184adabe9"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/bilibili/__init__.py",
+    "bytes": 10389,
+    "sha256": "9b695ada92f9b909e5f9e408ae38a1a80b94324fcd27dcd3f0749a9bf177a326"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/bilibili/_store_impl.py",
+    "bytes": 10026,
+    "sha256": "81aea233f4a5c068fe23eaf9c0761b7ee12d9b06ae112cf9b99f4fdca4dc55d5"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/bilibili/bilibilli_store_media.py",
+    "bytes": 2295,
+    "sha256": "7d8b09a36b6220963eb954f8be4819e541225a91f6cdf7fac9592463801f981b"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/douyin/__init__.py",
+    "bytes": 9675,
+    "sha256": "24e67caac62fe63854b2973089d7704580a5156df5aa2600dbe32151818054f3"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/douyin/_store_impl.py",
+    "bytes": 5948,
+    "sha256": "246e0d1e3f220e16c13af42ed98078fed303a520d97d4ef84b0e44a6b2969780"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/douyin/douyin_store_media.py",
+    "bytes": 3690,
+    "sha256": "ef7b0bad04a39337052ab978b376da6f4100b0f31ac03e6d8de56ef0a04efd09"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/kuaishou/__init__.py",
+    "bytes": 4638,
+    "sha256": "1726b1283637eaf07d600d20181ae5fa93b2b538ad2b4a50cb666e3bd4d43d04"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/kuaishou/_store_impl.py",
+    "bytes": 5153,
+    "sha256": "a9f78193ed07bc4e377f03775ddd17335f83920bc3ec7fd67270862e90f128cc"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/tieba/__init__.py",
+    "bytes": 3378,
+    "sha256": "7574cb8121fdbe21484959b1de7bf64e8fca6b322ebb84304aac8b7691bf7275"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/tieba/_store_impl.py",
+    "bytes": 6063,
+    "sha256": "65419c9a4134012905602ab95b1c0001e9dd8aeb58eba9de75ca3581c75efa59"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/weibo/__init__.py",
+    "bytes": 6398,
+    "sha256": "dde6567680dfa7c946cb3a13c116fb3ecd3a33b180f6dca4c38a939d94a491aa"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/weibo/_store_impl.py",
+    "bytes": 6877,
+    "sha256": "c065b11a0c23c00311baddb275d763569bf5ef9e265b92231569cc2661022e94"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/weibo/weibo_store_media.py",
+    "bytes": 2267,
+    "sha256": "9f2710b41d7f28defe42ec508a3492a8549008eaf2dcd40650e09a7ebc6c62e6"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/xhs/__init__.py",
+    "bytes": 8827,
+    "sha256": "862fd06a04e6bff5bea5034b42bca1aaf21c195f813e2670de5dec7db5b5855c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/xhs/_store_impl.py",
+    "bytes": 10369,
+    "sha256": "8b71893ddb95ee3d23127f5039ea29769e995d8de0e82d6f84b516f2cf7ada1d"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/xhs/xhs_store_media.py",
+    "bytes": 3836,
+    "sha256": "3247e882e0d1b9d1563b90b892a50020a11e87d7145412a7277be28f1e17cd39"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/zhihu/__init__.py",
+    "bytes": 3550,
+    "sha256": "5996038fcd63f7a52bf6619340923996b67a3e80b34da2bde91627fa2c97b3f0"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/store/zhihu/_store_impl.py",
+    "bytes": 6140,
+    "sha256": "b0fe0bca2194c20fe2c3c7cdf7d748dbdd70a794c77349478f290c9b7bd052ac"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/__init__.py",
+    "bytes": 601,
+    "sha256": "00381f14aec4fffc2888fd96c8bede8c5ce1fc255e7816698b408d696b604712"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/test_db_sync.py",
+    "bytes": 8940,
+    "sha256": "bc35daade5f38553754f2149c4d1f794c4d533a84aa8cad4fb80a63572b28a6a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/test_expiring_local_cache.py",
+    "bytes": 1588,
+    "sha256": "c933d3fadd43274364dc15bfbae47f7e2207d1457b5acef6a1425c798727387c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/test_proxy_ip_pool.py",
+    "bytes": 1193,
+    "sha256": "2ea84c021034f783a2cf85128d1fdcfcfa5c65c9d80d891da5b4b225fb78bee9"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/test_redis_cache.py",
+    "bytes": 1625,
+    "sha256": "4275371ca40512477c4c503813001ee4daa4c6a85df02ed62abad5eec2eecc60"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/test/test_utils.py",
+    "bytes": 893,
+    "sha256": "f84667dd8040301aef3c9f722edd60221434f16f44b64078a27d655fe61ac227"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/__init__.py",
+    "bytes": 577,
+    "sha256": "92b10ef92e06b662e5d2bdf8974a707eb7116f0571330d0ecf7da022b752f584"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/async_file_writer.py",
+    "bytes": 5062,
+    "sha256": "8687674dbe97b55afd433a2832b587af32fc8fb11f7d712c7bbbd40404e7177f"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/browser_launcher.py",
+    "bytes": 11360,
+    "sha256": "19f7f1facb07bb427d4deda283f12922563f024c8c431fb1989730bb68968c1e"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/cdp_browser.py",
+    "bytes": 13152,
+    "sha256": "c2d58de205a279951be457870bb702bdbd7dc33d0b8aaf5781c7d79854480f9a"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/crawler_util.py",
+    "bytes": 9780,
+    "sha256": "14f7b08f26496dad4feffc40eff941768499a7818aa981ef05d13607ef13e0eb"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/easing.py",
+    "bytes": 2113,
+    "sha256": "250bc9e54778b79ddb7d444a9e530f019c1e031ee05efea86be68eaf4972c217"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/slider_util.py",
+    "bytes": 6213,
+    "sha256": "df1c3bd4f2233dc6da736e9b74fd8571a1bc3ba069cc69c221544c7172123a77"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/time_util.py",
+    "bytes": 3415,
+    "sha256": "73b7620948dd371164d02c015c4e6693ad4a6a0e3fce6994a92fe3b06362b99c"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/utils.py",
+    "bytes": 1432,
+    "sha256": "772e51ac1138a1ddb7f09328dd3909328fcc982e7b7cc12ed601460619df1bef"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/tools/words.py",
+    "bytes": 3210,
+    "sha256": "02723bf90764fbebdc51517d8728273347b1c7cd2a9b583999285f331b759206"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/uv.lock",
+    "bytes": 194872,
+    "sha256": "1f5068c2884c3fa064410f5fa4fed9929b1a784aa3607b3a8527dca885f80082"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/MediaCrawler/var.py",
+    "bytes": 1080,
+    "sha256": "1d1c22276d62528dec67023c17d1b9ecf4a9e09027ffa8300732839dde709918"
+  },
+  {
+    "path": "MindSpider/DeepSentimentCrawling/platform_crawler.py",
+    "bytes": 20347,
+    "sha256": "461d3927434b4d0f353c10d79aca04e688d12c357d82d6ff1a394ce2ec88349a"
+  },
+  {
+    "path": "MindSpider/img/example.png",
+    "bytes": 809092,
+    "sha256": "db6941eb3282bec8624ef157aaacb36c51a9b3e2ff1206d5516a5523b440858c"
+  },
+  {
+    "path": "MindSpider/LICENSE",
+    "bytes": 5840,
+    "sha256": "8545b2b1747d5879ca95811772af4b7452adaafbf05d3fc6f18240e8e9f50040"
+  },
+  {
+    "path": "MindSpider/main.py",
+    "bytes": 17250,
+    "sha256": "13e949643c694be6520db6d4ad357b1872c42a1b8fc7fcf9e33d3f96a17eb2e0"
+  },
+  {
+    "path": "MindSpider/README.md",
+    "bytes": 15751,
+    "sha256": "43e276d9f6c99e52e9a951809f6b8a337c5d2c67c943d00a53a338ae1cf48064"
+  },
+  {
+    "path": "MindSpider/requirements.txt",
+    "bytes": 1119,
+    "sha256": "ac3a06956880ad56a7a1c67a1c8a4af67304a3b345aac27d892af6a1f172e3e4"
+  },
+  {
+    "path": "MindSpider/schema/__init__.py",
+    "bytes": 113,
+    "sha256": "b933dfdc0c7b64413456231066513d70113ad34b96644888cd3825e7b3ee3777"
+  },
+  {
+    "path": "MindSpider/schema/db_manager.py",
+    "bytes": 12423,
+    "sha256": "63c9107c0de8a929092b10fcf601aba98043041cac3565b4736ac2916749b3c1"
+  },
+  {
+    "path": "MindSpider/schema/init_database.py",
+    "bytes": 4643,
+    "sha256": "73d39eac0ae2c1131478767348aa2952631ed21088782a60ec89d95894868ba4"
+  },
+  {
+    "path": "MindSpider/schema/mindspider_tables.sql",
+    "bytes": 9856,
+    "sha256": "3155ac36e4abc7b825f21f5a3b64354daa591fa7b326324f21cf2e5b0686738a"
+  },
+  {
+    "path": "MindSpider/schema/models_bigdata.py",
+    "bytes": 31853,
+    "sha256": "0f750b8acd1234c830141984977a207c4ee868aa07f388bbca22b190b8274a69"
+  },
+  {
+    "path": "MindSpider/schema/models_sa.py",
+    "bytes": 5960,
+    "sha256": "fd32e29e38349994d78efdce4b7c0aad07571700c9b989eb4240778433a17861"
+  },
+  {
+    "path": "QueryEngine/__init__.py",
+    "bytes": 276,
+    "sha256": "da6998582454f5f7c6a8403c868f6b8487148eb0a30caeaeb6c2825c973489d7"
+  },
+  {
+    "path": "QueryEngine/agent.py",
+    "bytes": 20452,
+    "sha256": "d40ee7ad8ac2eeeb069be3ebc8077ea27bb8a4a5fb3c9c53bb737de5ac83c0a1"
+  },
+  {
+    "path": "QueryEngine/llms/__init__.py",
+    "bytes": 95,
+    "sha256": "108ca2925389c837f39ac55ae3975dd50294539e7df4d4663ff9f0851fcbd504"
+  },
+  {
+    "path": "QueryEngine/llms/base.py",
+    "bytes": 6959,
+    "sha256": "08ded2b1b870eff5d529f591076d357046de014bbdb18b565aa28cb104d28e77"
+  },
+  {
+    "path": "QueryEngine/nodes/__init__.py",
+    "bytes": 517,
+    "sha256": "70a5473919e183a76b587551be184b038f6c90ed64410816876fea8ad5327c7d"
+  },
+  {
+    "path": "QueryEngine/nodes/base_node.py",
+    "bytes": 2138,
+    "sha256": "69de59c8af05f0acc65812ab878dfc40d6e08cf2c74ccd6431a757aac82a33ab"
+  },
+  {
+    "path": "QueryEngine/nodes/formatting_node.py",
+    "bytes": 5624,
+    "sha256": "68430abb9ab9880ad999e755a8e0cea3ac6ed9213a5b3c4d478b142f9051247f"
+  },
+  {
+    "path": "QueryEngine/nodes/report_structure_node.py",
+    "bytes": 7346,
+    "sha256": "a1df916e4093ce17b7fb38560ab7f8ac048db44132b579168c4b43b64f214c48"
+  },
+  {
+    "path": "QueryEngine/nodes/search_node.py",
+    "bytes": 10360,
+    "sha256": "457fa860211dad83170ae4f99d86e0517905bec243f7a71e5e94c36392b1e6dd"
+  },
+  {
+    "path": "QueryEngine/nodes/summary_node.py",
+    "bytes": 15382,
+    "sha256": "c930bbb7d242dc8d8f0b8d46b3f23db2b5051f5ec1d3733fc40177398aac9f75"
+  },
+  {
+    "path": "QueryEngine/prompts/__init__.py",
+    "bytes": 968,
+    "sha256": "8f933d43f89aa5e1074dc5905374f6bae7c1651316b38af2ef0a9f005157b5b8"
+  },
+  {
+    "path": "QueryEngine/prompts/prompts.py",
+    "bytes": 15252,
+    "sha256": "a5c65cd5197d935dae2083c2e1e1d1f683f88931f79c707306f8bbca761834f6"
+  },
+  {
+    "path": "QueryEngine/state/__init__.py",
+    "bytes": 183,
+    "sha256": "191f760ca3fc3802118fea3c4c5f5efda70aaf89c87c16a99fe7a6288fb4ff01"
+  },
+  {
+    "path": "QueryEngine/state/state.py",
+    "bytes": 9455,
+    "sha256": "db28e5e314a6c5e411d8c987e3d6e73db19f6f49f9251368298c72f7530d1b6f"
+  },
+  {
+    "path": "QueryEngine/tools/__init__.py",
+    "bytes": 404,
+    "sha256": "dfc7e8c75c15f3239034dbf1e68ea9c2923aa1e882f3565be4513db0fbdee64d"
+  },
+  {
+    "path": "QueryEngine/tools/bocha_adapter.py",
+    "bytes": 2810,
+    "sha256": "35ce462a9771cb0479c94e0bf49d46343091c39f221fe9d561b59bf76068f11e"
+  },
+  {
+    "path": "QueryEngine/tools/search.py",
+    "bytes": 10662,
+    "sha256": "957027132cdf4a9b763bf043547c2fc4072e53936efc1847bd7918a89d32537b"
+  },
+  {
+    "path": "QueryEngine/utils/__init__.py",
+    "bytes": 550,
+    "sha256": "39ec65771e073d5882f3233b581be44c92b8b73173f346cad494da107df23d9b"
+  },
+  {
+    "path": "QueryEngine/utils/config.py",
+    "bytes": 4093,
+    "sha256": "5e0da3a252a89925cacac82b05855c121b8bc76bdc943df848b3a93ef7debf82"
+  },
+  {
+    "path": "QueryEngine/utils/text_processing.py",
+    "bytes": 8229,
+    "sha256": "5b4480cb0323236bbdd81cf2cd2351d3f0a903735dcd45e22d9ad19fa9b54211"
+  },
+  {
+    "path": "README-EN.md",
+    "bytes": 43549,
+    "sha256": "5108de0f5223c436e9a21f1a7e6424c05c7fcbb883589f6aa3c85a3d16672efc"
+  },
+  {
+    "path": "README.md",
+    "bytes": 39207,
+    "sha256": "46d8b8f8abafccf1024ad57657f4910193963a0aeb23bc115439c885c5411b41"
+  },
+  {
+    "path": "regenerate_latest_html.py",
+    "bytes": 11223,
+    "sha256": "8c263ba933653e530d0e1c60faa36817853f3939bc1cf73ca0d7cb6482276638"
+  },
+  {
+    "path": "regenerate_latest_md.py",
+    "bytes": 10804,
+    "sha256": "717ff6cbd768443a316fdf2f554a8fa1cbd519deb8b622441df6399aaa16a301"
+  },
+  {
+    "path": "regenerate_latest_pdf.py",
+    "bytes": 6125,
+    "sha256": "5f1533170d1aedca160c0fa20f7aa91b5d5433af7345afad252d14ff9e06179e"
+  },
+  {
+    "path": "report_engine_only.py",
+    "bytes": 20660,
+    "sha256": "d79ad44fd2d9bbc884f4b46c14ae958dbac98a22de33022d68440a307c481a6f"
+  },
+  {
+    "path": "ReportEngine/__init__.py",
+    "bytes": 321,
+    "sha256": "65448b2bd13ddf38646c638fe3634cdd500af4f5a3d2705c42b80cd0c7a46fdd"
+  },
+  {
+    "path": "ReportEngine/agent.py",
+    "bytes": 69899,
+    "sha256": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba"
+  },
+  {
+    "path": "ReportEngine/core/__init__.py",
+    "bytes": 456,
+    "sha256": "23e592fad1928dd257aa4789ebc5747870df00a073b08e97c81dd4edd38cc180"
+  },
+  {
+    "path": "ReportEngine/core/chapter_storage.py",
+    "bytes": 9962,
+    "sha256": "7b88dd2149c80cbdea3a89848e1b620ab26b0ac128c1b0867069413dd91b9a86"
+  },
+  {
+    "path": "ReportEngine/core/stitcher.py",
+    "bytes": 4388,
+    "sha256": "faa01331236b89fd01f413ae31262ca70a8e7c53c99c5a2442358b4b8a5b861a"
+  },
+  {
+    "path": "ReportEngine/core/template_parser.py",
+    "bytes": 8518,
+    "sha256": "1f1e3eea88d1b6f89dea1f16fa11f2d2c2718c8255d541c001eea0866052d5b6"
+  },
+  {
+    "path": "ReportEngine/flask_interface.py",
+    "bytes": 54753,
+    "sha256": "57452149aae23d7bcdfdf54d103a878cfdec79f53b75e26fda400a483f79de1c"
+  },
+  {
+    "path": "ReportEngine/graphrag/__init__.py",
+    "bytes": 1014,
+    "sha256": "d46a9aabde759d7318659dc7d0d562cbec8952ae8da92e9da7fd7f3129af204c"
+  },
+  {
+    "path": "ReportEngine/graphrag/forum_parser.py",
+    "bytes": 4881,
+    "sha256": "b90e41b3f5465a604643059273d2a46cab04cbe9e3caf66f6ef45fd4ad44bef2"
+  },
+  {
+    "path": "ReportEngine/graphrag/graph_builder.py",
+    "bytes": 7047,
+    "sha256": "03fb56b5cf4abadc628afadcedbe86c2757785c2089c8aaaf248fbcc4fb25342"
+  },
+  {
+    "path": "ReportEngine/graphrag/graph_storage.py",
+    "bytes": 16632,
+    "sha256": "cac233d77f9a63e60655b65e06821553a16484761604760bac72165d5baebcf4"
+  },
+  {
+    "path": "ReportEngine/graphrag/prompts.py",
+    "bytes": 6844,
+    "sha256": "a459483d79f3e1a1ebabe91e9cc6424c63a82dd7cae98d6c8c39a1e618d6819e"
+  },
+  {
+    "path": "ReportEngine/graphrag/query_engine.py",
+    "bytes": 9371,
+    "sha256": "61a3e1de9149e000bb6796c328b1f48203f2dad536babfef200706c47b29a303"
+  },
+  {
+    "path": "ReportEngine/graphrag/state_parser.py",
+    "bytes": 5215,
+    "sha256": "9f933d3099f8689d0dd49f254bbf91aa73cbe2b8cc3ca90772954368032aacc9"
+  },
+  {
+    "path": "ReportEngine/ir/__init__.py",
+    "bytes": 640,
+    "sha256": "225ded5d06e15f7803874a37094a2d0964ab7bf9fa3a7f05213fdc8b280b80df"
+  },
+  {
+    "path": "ReportEngine/ir/schema.py",
+    "bytes": 15802,
+    "sha256": "5f7b7eb65db5029bb2e7d0bc128e981092c47228ba54c8dd2ddde5abc270bfd0"
+  },
+  {
+    "path": "ReportEngine/ir/validator.py",
+    "bytes": 14820,
+    "sha256": "1355c90b4473278623d08fd7e17797cbdda917cd0461b9c6a651edc4871c1e11"
+  },
+  {
+    "path": "ReportEngine/llms/__init__.py",
+    "bytes": 151,
+    "sha256": "91794917b54fbcb8ef56dcf2ce2f3a8f9283450ba5f3d637ec00c02c5de957db"
+  },
+  {
+    "path": "ReportEngine/llms/base.py",
+    "bytes": 7528,
+    "sha256": "433dd5e3e8ff28678195f64cc5ab092a53a0588bd294b4f913923a6321c8c022"
+  },
+  {
+    "path": "ReportEngine/nodes/__init__.py",
+    "bytes": 844,
+    "sha256": "d9bb7d5d6e2ec8167f01599d3d3b2c00d62930236cd7db52d2e751cbe3c5d9ec"
+  },
+  {
+    "path": "ReportEngine/nodes/base_node.py",
+    "bytes": 2837,
+    "sha256": "aee6f1246032ae5f2ed8cd68b018c6d2677aeb52bb26f7f5ae7e2c45549bf87b"
+  },
+  {
+    "path": "ReportEngine/nodes/chapter_generation_node.py",
+    "bytes": 82091,
+    "sha256": "14d45a9b0c9c01f7c72477ee9a9c7d15a4b0f6ebec4496ae312b12b8a61d8db4"
+  },
+  {
+    "path": "ReportEngine/nodes/document_layout_node.py",
+    "bytes": 7752,
+    "sha256": "28c92a24e3236419cc43f7727dbb5717998fcec69042f9bc0a1da308c9c164a6"
+  },
+  {
+    "path": "ReportEngine/nodes/graphrag_query_node.py",
+    "bytes": 15574,
+    "sha256": "8d2982e8da7a3b450ab57be65e41fe318c8b064a72c8290ca04fdfd99246faa9"
+  },
+  {
+    "path": "ReportEngine/nodes/template_selection_node.py",
+    "bytes": 11052,
+    "sha256": "ed5569d01923bd01f36da287adbdc2431d6d9d35ea753158082f881df5a9b05b"
+  },
+  {
+    "path": "ReportEngine/nodes/word_budget_node.py",
+    "bytes": 4657,
+    "sha256": "1dd1cde2e6ae5de43d6623283c4da83b239b47448baaab3db5a9271a6667e4b5"
+  },
+  {
+    "path": "ReportEngine/prompts/__init__.py",
+    "bytes": 1258,
+    "sha256": "4c15842e434f272d3947ebc61ad3317673bbf2e0189321218053abad315a45a9"
+  },
+  {
+    "path": "ReportEngine/prompts/prompts.py",
+    "bytes": 36403,
+    "sha256": "e87600c7ebde13b80676f0583ac96c0241f4fee14bbc4384677a62f6a78837e8"
+  },
+  {
+    "path": "ReportEngine/renderers/__init__.py",
+    "bytes": 662,
+    "sha256": "e0e978890707e10d855ded86eb624fb3cdf02d2322dc49eb0b21a3de05f0e440"
+  },
+  {
+    "path": "ReportEngine/renderers/assets/fonts/LICENSE.txt",
+    "bytes": 4463,
+    "sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903"
+  },
+  {
+    "path": "ReportEngine/renderers/assets/fonts/SourceHanSerifSC-Medium-Subset.otf",
+    "bytes": 3919132,
+    "sha256": "b6846577c1b2de9a90045aa4834e9dc9f020acd05cfde2b3754b6775c498c530"
+  },
+  {
+    "path": "ReportEngine/renderers/assets/fonts/SourceHanSerifSC-Medium.otf",
+    "bytes": 24805580,
+    "sha256": "1d4dc4b757c07034e2412d6edf48f54f94ec7172d4deb3b90a3e4fc9dcb94f5d"
+  },
+  {
+    "path": "ReportEngine/renderers/assets/fonts/subset_chars.txt",
+    "bytes": 20563,
+    "sha256": "80393cf802ee4ba393125958298b7fffd0e62e27e5bb7cc95683bd5583b6721a"
+  },
+  {
+    "path": "ReportEngine/renderers/chart_to_svg.py",
+    "bytes": 44819,
+    "sha256": "7a4a7695028a3ff8aa171cdc3fd38554ca92a6dfd2f123ee682c53be50faf8ee"
+  },
+  {
+    "path": "ReportEngine/renderers/html_renderer.py",
+    "bytes": 363658,
+    "sha256": "7bb5a7514075bda9443c708b687840d59adcc49dd8eee88aa003b754b615db1b"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/chart.js",
+    "bytes": 208522,
+    "sha256": "48444a82d4edcb5bec0f1965faacdde18d9c17db3063d042abada2f705c9f54a"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/chartjs-chart-sankey.js",
+    "bytes": 10555,
+    "sha256": "569f25a0ae1023ea090c9a3420b1e89f45f31a9b453ce8d44393d4863af10d6b"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/html2canvas.min.js",
+    "bytes": 198689,
+    "sha256": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/jspdf.umd.min.js",
+    "bytes": 364463,
+    "sha256": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/mathjax.js",
+    "bytes": 1173007,
+    "sha256": "300480069078b5892d2363a2b65e2dfbbf30fe5c80f83edbfecf4610fd093862"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/README.md",
+    "bytes": 1907,
+    "sha256": "1ee0a546e0c4dd7eb151fa9dd7de501a8695a08a03c36baf65ba31f0d4c81235"
+  },
+  {
+    "path": "ReportEngine/renderers/libs/wordcloud2.min.js",
+    "bytes": 11070,
+    "sha256": "c9834cac6ef98af444db8d6961025acdda78ef83afa0fe8273234f6ad7efe712"
+  },
+  {
+    "path": "ReportEngine/renderers/markdown_renderer.py",
+    "bytes": 40118,
+    "sha256": "b82f3f5394b95f992a45112b9f3ba6b9e1c2461f943296ae802d91bebeeb2766"
+  },
+  {
+    "path": "ReportEngine/renderers/math_to_svg.py",
+    "bytes": 8379,
+    "sha256": "6155e21f9860c25fa6e21f01372861e053a6c6f31886ecae3b403d3ce71523c8"
+  },
+  {
+    "path": "ReportEngine/renderers/pdf_layout_optimizer.py",
+    "bytes": 46108,
+    "sha256": "63c5fef0b7df506df29545a894a32b7b0caf714ac0e0843142d4639c5e7e4211"
+  },
+  {
+    "path": "ReportEngine/renderers/pdf_renderer.py",
+    "bytes": 57053,
+    "sha256": "0a24a11353b2cc10f39cea9eb81f01ac0b90363c2359e56a11a45d6f425be976"
+  },
+  {
+    "path": "ReportEngine/report_template/企业品牌声誉分析报告模板.md",
+    "bytes": 906,
+    "sha256": "830dfd564f653238658b46054ef029e064304e4b8c70b58d3c155d5d86f5d2dc"
+  },
+  {
+    "path": "ReportEngine/report_template/市场竞争格局舆情分析报告模板.md",
+    "bytes": 862,
+    "sha256": "73850476cba08ba387efbb6bbc7bfa2464b20d0e8cbf9871b97396d54ba8737c"
+  },
+  {
+    "path": "ReportEngine/report_template/日常或定期舆情监测报告模板.md",
+    "bytes": 660,
+    "sha256": "608082057f1b5c6a3c5f1cb99930c0c25b5f67b6817fa81b8ae3ed4eb21a2836"
+  },
+  {
+    "path": "ReportEngine/report_template/特定政策或行业动态舆情分析报告模板.md",
+    "bytes": 857,
+    "sha256": "6f65d3ea6e67e25c11e3f813a0cf3352ab24df7f4b91cb8b27f3c560acbd52d1"
+  },
+  {
+    "path": "ReportEngine/report_template/社会公共热点事件分析报告模板.md",
+    "bytes": 765,
+    "sha256": "7e3ebc2f5c4c92f6a0ee8f536fde248891190ec773b0f443019caa327a4c4c40"
+  },
+  {
+    "path": "ReportEngine/report_template/突发事件与危机公关舆情报告模板.md",
+    "bytes": 761,
+    "sha256": "64512f3c91e660f3123b8fe127f193a3b0f8556812bcfff5c83192a3cae17a35"
+  },
+  {
+    "path": "ReportEngine/report_template/高校思政引领与心理育人研究报告模板.md",
+    "bytes": 1377,
+    "sha256": "6af91eb61059a0bdccc774dfd52fa3d191720dce8df78326666068b586c700bd"
+  },
+  {
+    "path": "ReportEngine/scripts/export_to_pdf.py",
+    "bytes": 2168,
+    "sha256": "4116d3ae5064ed5c8d70b27a56ee70c89c49e048d7bcc90496000a61bfc5efc9"
+  },
+  {
+    "path": "ReportEngine/scripts/generate_all_blocks_demo.py",
+    "bytes": 30894,
+    "sha256": "e19e9d0324165880f43f40936d439e92008ffc632fc4a4ee243e78b1cdfe2bb8"
+  },
+  {
+    "path": "ReportEngine/scripts/validate_ir.py",
+    "bytes": 20061,
+    "sha256": "6a28a1c245407f15257480c7be0c482d8d68ed375bfae2d1c625c42b47eb199b"
+  },
+  {
+    "path": "ReportEngine/state/__init__.py",
+    "bytes": 205,
+    "sha256": "ac8d663bd1d4e9583037a85bc3d2c5ae5461f07c5a9c5a158b20cd167525f2f3"
+  },
+  {
+    "path": "ReportEngine/state/state.py",
+    "bytes": 5204,
+    "sha256": "8a350729066ac3a2cd649d31edce68429ff6d24db473ba2e1d79e85b2766699d"
+  },
+  {
+    "path": "ReportEngine/utils/__init__.py",
+    "bytes": 744,
+    "sha256": "64ee2566700def7875106e31a88ab2f457565b14cd521f365e15da9eb9a02e66"
+  },
+  {
+    "path": "ReportEngine/utils/chart_repair_api.py",
+    "bytes": 18453,
+    "sha256": "80a0cc75462a859f564914195bdb09dd839d2bcbfe2466ae8ad34f8b836d228d"
+  },
+  {
+    "path": "ReportEngine/utils/chart_review_service.py",
+    "bytes": 22617,
+    "sha256": "97fc2aa3614a429ec5df0d0e18174c67cdf3d3558fa7c4ca15e7be8cb600b45d"
+  },
+  {
+    "path": "ReportEngine/utils/chart_validator.py",
+    "bytes": 27870,
+    "sha256": "2f22fc28ddffbf69e4605132183927692641b410a6efc9b3917c297f037b132d"
+  },
+  {
+    "path": "ReportEngine/utils/config.py",
+    "bytes": 5139,
+    "sha256": "a7799055e2e45029cc5fe2bb9cbe851eea1ed5daaa077e903729c48f1fa18155"
+  },
+  {
+    "path": "ReportEngine/utils/dependency_check.py",
+    "bytes": 12389,
+    "sha256": "c8b65fc258427e50eefda10c3c49756f1567364c9a23dd97ad1d3626baaf4e6c"
+  },
+  {
+    "path": "ReportEngine/utils/json_parser.py",
+    "bytes": 25244,
+    "sha256": "cc1298b96bedcec6e6eeb8beaec640e020503f249abed8fd760c47fa18cf9587"
+  },
+  {
+    "path": "ReportEngine/utils/table_validator.py",
+    "bytes": 17566,
+    "sha256": "7924f1ebb9f08d98af14779f33407814099330d8bd5f90ad075a17aa20400815"
+  },
+  {
+    "path": "ReportEngine/utils/test_chart_validator.py",
+    "bytes": 13560,
+    "sha256": "a7f92536e527d50979d01ae79edb1681d398071103417ea2f93a6070ee9601eb"
+  },
+  {
+    "path": "ReportEngine/utils/test_json_parser.py",
+    "bytes": 9182,
+    "sha256": "a379f2316d24811d5a462f3933ef3002a0c7676f8857900465a8a6897c5d5146"
+  },
+  {
+    "path": "requirements.txt",
+    "bytes": 1702,
+    "sha256": "de830c2bd1c1da75c2aef2e73a7a46e3ce539b1ad5bfe9f1da7a75717f320c12"
+  },
+  {
+    "path": "SentimentAnalysisModel/BertTopicDetection_Finetuned/predict.py",
+    "bytes": 6692,
+    "sha256": "b53de224ca632422bfb597842dc9002f6be64df6a6e1f99d2c267fcb46eba1ca"
+  },
+  {
+    "path": "SentimentAnalysisModel/BertTopicDetection_Finetuned/README.md",
+    "bytes": 5728,
+    "sha256": "1cd9b7f6679e814d5f694474928120a1a797aad14b50be205bc0f0b777c0a6c2"
+  },
+  {
+    "path": "SentimentAnalysisModel/BertTopicDetection_Finetuned/train.py",
+    "bytes": 21182,
+    "sha256": "5ef3f85d2c03925f7e780020456ac705a2db7754067cb8895b42002d58c2788f"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboMultilingualSentiment/predict.py",
+    "bytes": 6968,
+    "sha256": "3d49f6f261287494591dad74015f55e8762ab5c1e01aae41e6080a0295ab8c9b"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboMultilingualSentiment/README.md",
+    "bytes": 3024,
+    "sha256": "aeb5b971ee731f44ccd1d6eea43d2cb2da2cbb0c4b51ed2e7f3dc76e26bbb616"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/BertChinese-Lora/predict.py",
+    "bytes": 3062,
+    "sha256": "57999c861a2337d2fb265b1fe0f12b51a4555643e0b76a83cab6387a2c2fd176"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/BertChinese-Lora/predict_pipeline.py",
+    "bytes": 3726,
+    "sha256": "aa7ed30012697c573d21e19f9b8bc79d2003b3b02748ec273549e53e53c385cc"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/BertChinese-Lora/README.md",
+    "bytes": 1986,
+    "sha256": "537f7f102435ea66e2331850260138faacf2b887e87f0bd44b5a9d778adfade4"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/adapter.py",
+    "bytes": 1301,
+    "sha256": "014d77307630e19c99132d108ffc545850ae0fc310a9f11b74171b345ac5d5ab"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/example/Adapter.py",
+    "bytes": 714,
+    "sha256": "7a28314c059a8a3c89e6af5f4f6eaa7fc76a00bdab28d32fada82deb37d1e13e"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/example/gpt2_adapter.py",
+    "bytes": 1282,
+    "sha256": "3aa3b7a814c015844d4c8ea196cadda6827b37153d135ab5529c5fdc7b2eea07"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/example/README.md",
+    "bytes": 518,
+    "sha256": "b563bbe8739d87ca5a31f947ba0d08cab2d24d755460fcb60028f7205f52ca76"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/example/Roberta_adapter.py",
+    "bytes": 1154,
+    "sha256": "39992dd5d7811973c724a340acad30418eec60fc0e276f3ae2937865476d177f"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/gpt2_adapter.py",
+    "bytes": 2027,
+    "sha256": "85148c92a731ac5cceca3701dc88340039b1289308d5e204447ebb02e67d3959"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/predict.py",
+    "bytes": 2210,
+    "sha256": "6d4b7b015203e0b0bb42e2ed17aade8e9760bdc199424fc6031a324671569720"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/README.md",
+    "bytes": 3477,
+    "sha256": "d89ff2f3bdf94f9f6acf1cde0861719ada8a0dcc6ae8b5a8778abd2efc998c31"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-AdapterTuning/train.py",
+    "bytes": 10487,
+    "sha256": "65accc535140ca450f87ef8f10419eb522251c6ca3510df369e06908c250b79c"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-Lora/predict.py",
+    "bytes": 3459,
+    "sha256": "960977f1cc20ec198789068b8e11657af07ad8b461600823799999ad40531280"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-Lora/README.md",
+    "bytes": 4768,
+    "sha256": "776b48a39ecf893db1a903f93e6652cfc6f4a71bc38a9b5c1b2587da8bc0a100"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-Lora/requirements.txt",
+    "bytes": 161,
+    "sha256": "e831f0fc02c852ceae7e3ecbe17555419b05bfe08bc77503c210eaf267398007"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_Finetuned/GPT2-Lora/train.py",
+    "bytes": 9137,
+    "sha256": "a0143a9fe4499f105b8b8ee49c81434a6cd449a0e1b224646fc98205c03ff2a3"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/base_model.py",
+    "bytes": 4007,
+    "sha256": "4772417b1be0f5354b040510601340538dcfaafca679ef1547a662a8d911cb8b"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/bayes_train.py",
+    "bytes": 4809,
+    "sha256": "d1d1f36c9902dd9fd1a1d7063b2b40706bcfead54b9f1e352f8474b3ce0a359c"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/bert_train.py",
+    "bytes": 15582,
+    "sha256": "9db3ace6016b02d048c0acf471526398d14fa08cb541f7e82c291d555a58647b"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/stopwords.txt",
+    "bytes": 120,
+    "sha256": "ab1ab3334772a3975ad56384ff16a3a4f18745d932fc648885f1bf083a4879ea"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/test.txt",
+    "bytes": 116509,
+    "sha256": "6f8142db96e71c2d6cb65c685f454940ad89c5781a61ccd981d33163f77b8070"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/人工智能.txt",
+    "bytes": 30054,
+    "sha256": "156f276aac4059293655b3242f80ebb3372970eb9648f3e77aaa08f050b26711"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/同济大学.txt",
+    "bytes": 19493,
+    "sha256": "bc7238b4fc36314baf73f2272dc4759240d14ee8ad19df904ae718378622674e"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/周杰伦.txt",
+    "bytes": 15504,
+    "sha256": "42c212de9675ed1d7284ecfffcaf2f665776b4e293f7b19efae081e450d2f884"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/好莱坞.txt",
+    "bytes": 24516,
+    "sha256": "bfcc995ce58f04a2a2de31bb0f87bef030c6cdeb98d12b59c87f1eb6f48e73b8"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/毕业.txt",
+    "bytes": 23645,
+    "sha256": "0e0f97821f0165c3041e5a223c01fe0d0ddd50f7c160055a7d1e1403b47d5eb4"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/topics/特朗普.txt",
+    "bytes": 27652,
+    "sha256": "99080b8264388a102662793484d6507c8dfd1894853e084fea38f0f879800ba2"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/data/weibo2018/train.txt",
+    "bytes": 2362969,
+    "sha256": "297697f372132ac3836762b12f3528b112f5e9cf87a590514ff8771fa0d0149e"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/lstm_train.py",
+    "bytes": 12583,
+    "sha256": "56856c100d47b58e0c975cca286185d16671b115c2c63677ad52a0d9ff006f16"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/predict.py",
+    "bytes": 11715,
+    "sha256": "ab2141a0009167e51aea169dc2b7da2b5c32131e5f9c851d88fb06bb592a11f6"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/README.md",
+    "bytes": 2845,
+    "sha256": "ffcb738fbb1f3668902eff1a080f0100de6fa4924e8e4d87e2bb269307507bfd"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/requirements.txt",
+    "bytes": 137,
+    "sha256": "84476f4584d3f8f1f540de078bd0461d1bc6b6f2e7b6042a449755f9a494751f"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/svm_train.py",
+    "bytes": 5423,
+    "sha256": "d305a917e289a2eed2cff66b9727af53f45d7728e71781a0ffa6ef128796a16e"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/utils.py",
+    "bytes": 4338,
+    "sha256": "d755a86a32bfe1f28e92b82f7241a6057518fa9a2184166c295c60804bb04d97"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_MachineLearning/xgboost_train.py",
+    "bytes": 7716,
+    "sha256": "2dd5608d26dfe030c2d7ccf11126c995ea00249e4065ee2b0132b8ea31b75611"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/base_model.py",
+    "bytes": 6413,
+    "sha256": "524806f6328f1762cc5f8221b8dd257b0178eefa1fe2d678dde2377a41404026"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/models_config.py",
+    "bytes": 1425,
+    "sha256": "f5a8e8668556dd5291ad9f370edffa3f1962fd87c1daadc98d5550fbd664f152"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/predict_universal.py",
+    "bytes": 15039,
+    "sha256": "8445a0b090f7cce6eec952f69b4ad7ef5b37f4bf4e935f88b08a9ee1165eb7d4"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/qwen3_embedding_universal.py",
+    "bytes": 16250,
+    "sha256": "5e92645a84b30047f8ef21d94def92d0c1de292580498dbee8da8af7091398ce"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/qwen3_lora_universal.py",
+    "bytes": 18161,
+    "sha256": "f7e4086f078bc7ed08b7c4e5a4e850e952662505dfe4ac4754ecfc46a74fe092"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/readme.md",
+    "bytes": 5440,
+    "sha256": "e2a5de92f8f6055c853fe5295cc1b1acf0247cd74bf2b944c7f0198b7b6bd185"
+  },
+  {
+    "path": "SentimentAnalysisModel/WeiboSentiment_SmallQwen/requirements.txt",
+    "bytes": 192,
+    "sha256": "758b67adb09818212586cb82104dd1922e8ca66666cbf739625905bd1eec067c"
+  },
+  {
+    "path": "SingleEngineApp/insight_engine_streamlit_app.py",
+    "bytes": 13065,
+    "sha256": "2bf5975acf9a7564562dbe2f97286bf55d812610bda4bf100d4d6d77c87c6b86"
+  },
+  {
+    "path": "SingleEngineApp/media_engine_streamlit_app.py",
+    "bytes": 15449,
+    "sha256": "af73cb90aeb02c103d853d714e06ef9614fdafc122dce9f5380511f6e8da54d6"
+  },
+  {
+    "path": "SingleEngineApp/query_engine_streamlit_app.py",
+    "bytes": 13093,
+    "sha256": "dcc80f2dcda9905fc794a4d6a4c20380b6448dedfe17fdfd21a9437fe83b395d"
+  },
+  {
+    "path": "SingleEngineApp/research_worker.py",
+    "bytes": 12461,
+    "sha256": "48076eeae5020ac3405bdd0ae010050d946ba1015f33a18a13f9797389f3107e"
+  },
+  {
+    "path": "static/css/bettafish.css",
+    "bytes": 22418,
+    "sha256": "156ba66dfd50a1d6c73710be84bbf94c8376190184ae0267247dc4a399e35e3b"
+  },
+  {
+    "path": "static/image/banner.svg",
+    "bytes": 2798752,
+    "sha256": "1fc6a411f5234c1be66d9639596b4bd96135ceeceafbc2a550a5acc196957324"
+  },
+  {
+    "path": "static/image/banner_compressed.png",
+    "bytes": 61894,
+    "sha256": "f3844a23b0f5799c5f4adc4fcaa063f46bbf8184f4f9d866114177075911092b"
+  },
+  {
+    "path": "static/image/banner_thordata.png",
+    "bytes": 45117,
+    "sha256": "682df9fa982265f3c19e049b5108a7b1224a5cdf884f181cc30ebe51609f2cbd"
+  },
+  {
+    "path": "static/image/framework.png",
+    "bytes": 451309,
+    "sha256": "0ecf5fd715c3e023205372705b3e5c6c4f9fab18ce21b70a3fff92de120cd3fe"
+  },
+  {
+    "path": "static/image/logo_aihubmix.png",
+    "bytes": 33358,
+    "sha256": "769c472d92c4f4f3fe557e95cbd50ebd8673444650f01f6c20cb22a61fd938ab"
+  },
+  {
+    "path": "static/image/logo_anspire.png",
+    "bytes": 107164,
+    "sha256": "7f4ab274cc451a5050970f8b71fdbe5eba74f4a98e8fe0e868b912da3aec5f0a"
+  },
+  {
+    "path": "static/image/logo_compressed.png",
+    "bytes": 114227,
+    "sha256": "d529b7d5b50f3acb8bae6911f29f712444514d8036bfdd82de178b4ea46b5857"
+  },
+  {
+    "path": "static/image/logo_mindspider.png",
+    "bytes": 93180,
+    "sha256": "d342abf686ea1a442fef1a6a0281a48a98729004fb1dc9ff0f1a40f52c8e9488"
+  },
+  {
+    "path": "static/image/logo_Qweb3.jpg",
+    "bytes": 264815,
+    "sha256": "b0853b255be8ebeff980b2f6d50bdd2cc20bbb800f81516308346a9512e5d371"
+  },
+  {
+    "path": "static/image/logo_thordata.png",
+    "bytes": 23333,
+    "sha256": "b46d5a0e5bf533012161bee68f1e89c19ca8d223111a3ec4a648968fbe3dfea0"
+  },
+  {
+    "path": "static/image/MiroFish_logo_compressed.jpeg",
+    "bytes": 180620,
+    "sha256": "f2289e76f26f6258e93d08ba10d1cb3ce72dd8663edc7e0efbe0a29ae2128333"
+  },
+  {
+    "path": "static/image/QQ_Light_Horizenal.png",
+    "bytes": 1176620,
+    "sha256": "2b5aae49ec40b3ffc31a4dad1df3edece4bffc9e93facaf22d89f2fccf8202e3"
+  },
+  {
+    "path": "static/image/system_schematic.png",
+    "bytes": 99969,
+    "sha256": "78971a5a6884285f41d5492552adf14ebf95b5d90bbd079158c9af029a56d572"
+  },
+  {
+    "path": "static/image/打赏作者.jpg",
+    "bytes": 125389,
+    "sha256": "8eaa6a8313af5edf8e4c699969f260b8fd3bbe3d3febe056b76e1188d7ad9dff"
+  },
+  {
+    "path": "static/img/ecust-lawn.jpg",
+    "bytes": 330892,
+    "sha256": "c4211c4e8b9318e5e51d8ae66f1462fd0082b217c8d44f89e2dfcd304622742b"
+  },
+  {
+    "path": "static/js/app-ui.js",
+    "bytes": 7805,
+    "sha256": "5e24fb13e2b8fa528c32e0db44d2c35cbc1905d171b55c74ab5a4542ae6ddb42"
+  },
+  {
+    "path": "static/Partial README for PDF Exporting/README-EN.md",
+    "bytes": 2808,
+    "sha256": "b65fbf93de9d43dc27d793191c1a1b274d381249e054e549b12a0407fdcf467d"
+  },
+  {
+    "path": "static/Partial README for PDF Exporting/README.md",
+    "bytes": 3073,
+    "sha256": "f7e60bc8db77ef539c6d7bded08d845a6a103ae516ff64e6329bbe93c6f2090d"
+  },
+  {
+    "path": "static/Switch/index.html",
+    "bytes": 701,
+    "sha256": "4af226c47f98ada4af23beb307167febf2b76ad0dbe32e5ebff9de7b188a5b11"
+  },
+  {
+    "path": "static/Switch/js/script.js",
+    "bytes": 14753,
+    "sha256": "52ffa77e25911f29ef94917b5e7f4aff41d9ef6847ca69cba413dff9fa0cddf0"
+  },
+  {
+    "path": "static/Switch/LICENSE",
+    "bytes": 743,
+    "sha256": "e243579753d7a406839f89a0332b5fa132b5cbf0beb35a17a9922592b754c3ac"
+  },
+  {
+    "path": "static/task_isolation.js",
+    "bytes": 10594,
+    "sha256": "5e39c8755ed040cfb4da84dff5e588909f7a2255851242dee873e5850cce592c"
+  },
+  {
+    "path": "static/task_sidebar.js",
+    "bytes": 32965,
+    "sha256": "78b1c12b337c7ecb1846b79798109dbe32d00fdc3bdfe1d7c2022e3ff1cff3cc"
+  },
+  {
+    "path": "static/v2_report_example/final_report_养老服务发展趋势.html",
+    "bytes": 2098155,
+    "sha256": "8ab2e9a3a4416ec47c4f6122d8179b5ef0fe2957cad9a8d5ee3e986e5430d79a"
+  },
+  {
+    "path": "static/v2_report_example/final_report_养老服务发展趋势.pdf",
+    "bytes": 982287,
+    "sha256": "714cce6bcc1f4f30586966a550a1c686605a54ba14fee4e8c9c23c2c9e4b16c9"
+  },
+  {
+    "path": "static/v2_report_example/report_all_blocks_demo/report_html_all_blocks_demo.html",
+    "bytes": 2233221,
+    "sha256": "b28757ea48f72392e9fd44fbc946a889aa55e2a47218e1b439c823d8e28b6d00"
+  },
+  {
+    "path": "static/v2_report_example/report_all_blocks_demo/report_md_all_blocks_demo.md",
+    "bytes": 5728,
+    "sha256": "6e75083be0fd3b5e31c91cb8dd579e5f66a64188c4e2ed4db13c8f57ae9425b0"
+  },
+  {
+    "path": "static/v2_report_example/report_all_blocks_demo/report_pdf_all_blocks_demo.pdf",
+    "bytes": 649942,
+    "sha256": "3348b411789d84eb8f8eed748dbf7489d35b3bf685fe51179e0931a7147afd3a"
+  },
+  {
+    "path": "templates/graph_viewer.html",
+    "bytes": 41976,
+    "sha256": "b4f766f74e1e22b9308035b0e63ec59c624dc389fa6189dff376c4802faffa39"
+  },
+  {
+    "path": "templates/index.html",
+    "bytes": 420310,
+    "sha256": "6259707c9682ff470c7ce7dcd32672f6850772dec5a5f0063e3ee1170f57805d"
+  },
+  {
+    "path": "templates/login.html",
+    "bytes": 11697,
+    "sha256": "2703a1f64b8b9f9583e3f9cf9b29e01df39f91b6bf58dad7a3b56a261796c137"
+  },
+  {
+    "path": "tests/__init__.py",
+    "bytes": 22,
+    "sha256": "8defd8c861c090dad2ae1e7103fc628ec589e78a333a4eaab9496e945f9adba8"
+  },
+  {
+    "path": "tests/forum_log_test_data.py",
+    "bytes": 25489,
+    "sha256": "2b5beeb3ef61a6af494ebb2e7b0991cf955f388d7cd3d39c58329a0154629fd9"
+  },
+  {
+    "path": "tests/README.md",
+    "bytes": 2346,
+    "sha256": "50097b34fe9b81e5bab08cdc32473265fb0ee5d9afd957c715eeecb4a4e785b5"
+  },
+  {
+    "path": "tests/run_tests.py",
+    "bytes": 1351,
+    "sha256": "e7c97bde8ebec3efcbdc351db8a58bf8da8a2d552f9c1494cd1b42e6c0e9568b"
+  },
+  {
+    "path": "tests/test_monitor.py",
+    "bytes": 16506,
+    "sha256": "d0b9e984aa0fd06cd1c1a008aa35f3f82f630d7eea11c999814f6a7a2f44835f"
+  },
+  {
+    "path": "tests/test_report_engine_sanitization.py",
+    "bytes": 6056,
+    "sha256": "af9208dec094b29c082bfcce1a3c1f90ae5e3cd587cebbabc1dcf44141500611"
+  },
+  {
+    "path": "utils/campus_index.py",
+    "bytes": 13938,
+    "sha256": "bb4a2bd9952b978c3e10eb56d091dfeb82fdb90cf7ff13ec42de3b86ff91b352"
+  },
+  {
+    "path": "utils/campus_sources.py",
+    "bytes": 8442,
+    "sha256": "e84506f3d5971351051307923d0f9ce022500758d0d08883556bdde7a7a3a023"
+  },
+  {
+    "path": "utils/forum_reader.py",
+    "bytes": 2630,
+    "sha256": "428eddb5e37a5bfd2f27867d8cb34441602bceffce6c71eae55b838f6b72ff8c"
+  },
+  {
+    "path": "utils/github_issues.py",
+    "bytes": 2240,
+    "sha256": "73353d4de47d1702c6d86c7ae5f7bf8bcfb0311ac37b12976b6520d28f6d6879"
+  },
+  {
+    "path": "utils/knowledge_logger.py",
+    "bytes": 3350,
+    "sha256": "f8f9926c5fb8de58a4763c06fac72ee7984efaa0ea0d68a75636f85a72ee7439"
+  },
+  {
+    "path": "utils/llm_failover.py",
+    "bytes": 15341,
+    "sha256": "17bb7c177d411c764c62c5a1471420269a91b54fd36df889add831515e3548c3"
+  },
+  {
+    "path": "utils/llm_usage.py",
+    "bytes": 3967,
+    "sha256": "b3d3dbbeb74cb7d30034dbdcc36413755819010e4c116a5c220475ea694be46c"
+  },
+  {
+    "path": "utils/research_runner.py",
+    "bytes": 14559,
+    "sha256": "b87b3711267a349b4cbfa0a6bcec1e7795b7811562e4dc962d1dd7aa657bc11a"
+  },
+  {
+    "path": "utils/retry_helper.py",
+    "bytes": 10449,
+    "sha256": "eb646f6ef4eb21f62b4c1f7370c8ce559a99e6660e0102d26412157471a864b4"
+  },
+  {
+    "path": "utils/search_gateway.py",
+    "bytes": 11892,
+    "sha256": "c1881d17f8d7805351b1e468ea10e89ef0a1d6f9ce4219612233d86959358176"
+  },
+  {
+    "path": "utils/task_runtime.py",
+    "bytes": 18331,
+    "sha256": "b0b02274e05b6b7da1ac972f27653b2dfb58b67e14da3b1bbed9ceb63f1cdd6c"
+  }
+]

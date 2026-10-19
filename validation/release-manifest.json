@@ -1,0 +1,25 @@
+{
+  "stage": "/home/ubuntu/bettafish/deploy/workshop-question-entry-20261012-411d0c7",
+  "base_image": "bettafish:workshop-base-20261012-411d0c7",
+  "base_image_id": "sha256:f9104222bf04803a7fefdbca496b4e9d40c465c46fa52b22f6560962dce5e417",
+  "candidate_image": "bettafish:workshop-candidate-20261012-411d0c7",
+  "candidate_image_id": "sha256:03caf672c8ebfbf7d35fac02eb1d1a15d6730b79520f172dd1c6f7d3d4d3b6b8",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "before_sha256": "6259707c9682ff470c7ce7dcd32672f6850772dec5a5f0063e3ee1170f57805d",
+      "candidate_sha256": "c040e1d391545a32f45e48c998d3b771e155cda6439952f56aa60320df543d61"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "before_sha256": "6259707c9682ff470c7ce7dcd32672f6850772dec5a5f0063e3ee1170f57805d",
+      "candidate_sha256": "c040e1d391545a32f45e48c998d3b771e155cda6439952f56aa60320df543d61"
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "before_sha256": "c71f4d103d358416f6946e8aaf4e3c98591b888af729bc8734c442129cb4f0ce",
+      "candidate_sha256": "1b93a649f0dcb9b1c67ff0bac8e1dae208d354a566652bc33fba8e0424ceb49b"
+    }
+  ],
+  "activated": true
+}

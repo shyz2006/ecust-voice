@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "unauthenticated_status": 401,
+  "no_store": true,
+  "checks": [
+    {
+      "width": 1440,
+      "level": "高危",
+      "posts": 1,
+      "links": 1
+    },
+    {
+      "width": 1440,
+      "level": "关注",
+      "posts": 43,
+      "links": 43
+    },
+    {
+      "width": 390,
+      "level": "高危",
+      "posts": 1,
+      "links": 1
+    },
+    {
+      "width": 390,
+      "level": "关注",
+      "posts": 43,
+      "links": 43
+    }
+  ],
+  "expanded_keyboard": true,
+  "script_errors": [],
+  "production_writes": false
+}
