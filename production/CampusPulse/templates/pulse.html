@@ -2854,9 +2854,493 @@ body.workspace-v2.campus-shell {
 #lifetimeNumbers .cover-metric{white-space:nowrap}
 
 </style>
+<style id="pulse-theme-style">
+/* ==========================================================================
+   「脉动」主题层 · Campus Pulse 2026-10-19（第二版：纸墨 + 一点橙）
+   - 纯增量：只在 body.theme-pulse 下生效；切回「经典」即移除该类，原样式完整保留
+   - 不用渐变、不用发光：实色墨黑主按钮、贴纸式描边、单一暖橙强调色
+   - 新组件（心情天气、话题贴纸、华理书虫、趋势速览、⌘K、底部导航）由 #pulse-theme-script 注入
+   - 选择器前缀 body.theme-pulse.theme-pulse，用于压过既有 .workspace-v2 / .campus-cover-active 层
+   ========================================================================== */
+body.theme-pulse.theme-pulse {
+  --pt-bg: #f5f4f0;
+  --pt-ink: #171717;
+  --pt-ink-2: #3f3f46;
+  --pt-ink-3: #71717a;
+  --pt-line: #e7e5e0;
+  --pt-line-strong: #d4d2cb;
+  --pt-card: #ffffff;
+  --pt-orange: #f08a24;
+  --pt-orange-soft: #fff1e3;
+  --pt-blue: #2b5cd6;
+  --pt-green: #16a34a;
+  --pt-red: #e5484d;
+  --pt-radius: 18px;
+  --pt-shadow: 0 1px 2px rgba(23, 23, 23, .05);
+  --pt-shadow-hover: 0 1px 2px rgba(23, 23, 23, .05), 0 10px 24px -14px rgba(23, 23, 23, .22);
+  --pt-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  /* 映射回既有 token，让 JS 动态生成的内容自动换色 */
+  --paper: var(--pt-bg); --paper-2: #efede7; --paper-3: #e7e5df;
+  --card: #fff; --surface: #fff; --surface-2: #faf9f6; --surface-3: #efede7;
+  --ink: var(--pt-ink); --ink-2: var(--pt-ink-2); --ink-3: var(--pt-ink-3); --ink-4: var(--pt-ink-3);
+  --text: var(--pt-ink); --text-2: var(--pt-ink-2); --text-3: var(--pt-ink-3); --text-muted: var(--pt-ink-3);
+  --text-primary: var(--pt-ink); --text-secondary: var(--pt-ink-2); --text-faint: var(--pt-ink-3);
+  --accent: var(--pt-ink); --accent-hover: #000; --accent-soft: #f1efe9; --accent-line: #d4d2cb;
+  --emerald: var(--pt-ink); --emerald-light: var(--pt-ink); --emerald-soft: #f1efe9;
+  --ecust-blue: var(--pt-blue); --ecust-blue-light: var(--pt-blue); --ecust-cyan: var(--pt-blue); --ecust-soft: #eef2fc; --ecust-navy: var(--pt-ink);
+  --line: var(--pt-line); --line-strong: var(--pt-line-strong); --border: var(--pt-line); --border-focus: var(--pt-line-strong);
+  --border-glass: var(--pt-line); --border-glass-bright: var(--pt-line-strong);
+  --success: var(--pt-green); --success-soft: #e8f6ec;
+  --warning: #c26a0a; --warning-soft: var(--pt-orange-soft);
+  --danger: var(--pt-red); --danger-soft: #fdecec;
+  --purple: #6d5bd0; --purple-soft: #efedfb;
+  --radius-sm: 10px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --focus-ring: 0 0 0 3px rgba(22, 163, 74, .22);
+  --shadow-sm: var(--pt-shadow); --shadow-md: var(--pt-shadow);
+  --serif: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", SimSun, serif;
+
+  background: var(--pt-bg) !important;
+  color: var(--pt-ink) !important;
+  caret-color: var(--pt-ink);
+  scrollbar-color: #cfccc4 transparent;
+}
+html:has(body.theme-pulse) { background: #f5f4f0 !important; }
+body.theme-pulse.theme-pulse ::selection { background: #ffe1c2; color: #171717; }
+body.theme-pulse.theme-pulse :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--pt-green); outline-offset: 3px; box-shadow: none;
+}
+
+/* ---------- 顶栏 ---------- */
+body.theme-pulse.theme-pulse header.portal-header {
+  top: 0; inset: auto; width: 100%; height: auto; display: block; position: sticky; z-index: 120;
+  background: rgba(245, 244, 240, .94) !important;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 0 !important; box-shadow: 0 1px 0 var(--pt-line) !important;
+}
+body.theme-pulse.theme-pulse main.portal-body { position: relative; z-index: 1; }
+body.theme-pulse.theme-pulse .header-top {
+  position: relative !important; inset: auto !important; left: 0 !important;
+  max-width: 1280px; height: 64px !important; min-height: 64px; margin: 0 auto; padding: 0 28px !important;
+  background: transparent !important; border: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  display: flex; align-items: center; gap: 18px; flex-wrap: nowrap;
+}
+body.theme-pulse.theme-pulse .brand-section { gap: 14px; flex: 0 1 auto; }
+body.theme-pulse.theme-pulse :is(.cover-header-brand, .brand-badge, .brand-info) { display: none !important; }
+.pt-brand { display: none; }
+body.theme-pulse .pt-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: inherit; }
+.pt-brand-mark {
+  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px;
+  background: #171717; color: #fff; font: 800 14px/1 var(--serif);
+  transition: transform .35s var(--pt-spring, ease);
+}
+.pt-brand:hover .pt-brand-mark { transform: rotate(-8deg) scale(1.06); }
+.pt-brand-copy { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.pt-brand-copy strong { font: 700 15px/1.3 var(--sans); color: #171717; white-space: nowrap; }
+.pt-brand-copy span { font: 12px/1.3 var(--sans); color: #71717a; white-space: nowrap; }
+
+.pt-ecg { display: none; }
+body.theme-pulse .pt-ecg {
+  display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 14px 0 8px; margin-left: 4px;
+  border-radius: 12px; background: #fff; border: 1px solid var(--pt-line); cursor: help; flex-shrink: 0;
+}
+.pt-ecg svg { width: 104px; height: 28px; display: block; overflow: visible; }
+.pt-ecg-path {
+  fill: none; stroke: #f08a24; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 46 200; animation: ptEcgRun var(--pt-beat, 1.1s) linear infinite;
+}
+.pt-ecg-base { fill: none; stroke: #e7e5e0; stroke-width: 1.4; }
+@keyframes ptEcgRun { from { stroke-dashoffset: 246; } to { stroke-dashoffset: 0; } }
+.pt-ecg-read { display: flex; flex-direction: column; line-height: 1.15; }
+.pt-ecg-read b { font: 800 16px/1.1 var(--sans); font-variant-numeric: tabular-nums; color: #171717; }
+.pt-ecg-read small { font: 11px/1.2 var(--sans); color: #71717a; white-space: nowrap; }
+
+body.theme-pulse.theme-pulse .header-right { margin-left: auto; gap: 8px !important; flex-wrap: nowrap; }
+body.theme-pulse.theme-pulse .header-btn {
+  height: 36px; padding: 0 14px; border-radius: 10px !important; font-size: 13px; font-weight: 600;
+  color: #171717 !important; background: #fff !important; border: 1px solid var(--pt-line-strong) !important; box-shadow: none !important;
+  transition: transform .2s var(--pt-spring), background .15s, border-color .15s;
+}
+body.theme-pulse.theme-pulse .header-btn:hover { border-color: #171717 !important; }
+body.theme-pulse.theme-pulse .header-btn.primary { color: #fff !important; background: #171717 !important; border-color: #171717 !important; }
+body.theme-pulse.theme-pulse .header-btn.primary:hover { background: #000 !important; }
+body.theme-pulse.theme-pulse .header-btn.danger { color: var(--pt-red) !important; }
+body.theme-pulse.theme-pulse .header-btn.user-chip { border-color: transparent !important; background: transparent !important; }
+.pt-kbd-btn, .pt-theme-btn { display: none; }
+body.theme-pulse .pt-kbd-btn, body .pt-theme-btn { display: inline-flex; align-items: center; gap: 6px; }
+.pt-kbd-btn kbd { font: 600 11px/1 var(--sans); padding: 3px 6px; border-radius: 6px; background: #f1efe9; border: 1px solid #e7e5e0; color: #3f3f46; }
+.pt-theme-btn .pt-theme-dot { width: 10px; height: 10px; border-radius: 50%; background: #f08a24; border: 1.5px solid #171717; }
+
+/* 全局按压手感：按下压扁、松开回弹 */
+body.theme-pulse.theme-pulse :is(.header-btn, .btn, .chip-btn, .cover-primary, .studio-launch-btn, .tmpl-chip, .pt-care-btn, .nav-tab-btn):active {
+  transform: translateY(1px) scale(.96); transition-duration: .08s;
+}
+
+/* ---------- 导航：白色胶囊 + 墨黑滑块 ---------- */
+body.theme-pulse.theme-pulse .nav-scroll-container {
+  position: relative !important; inset: auto !important; top: auto !important; left: auto !important;
+  display: flex !important; flex-direction: row !important; align-items: center; justify-content: flex-start;
+  width: max-content !important; max-width: calc(100% - 32px); height: auto !important; min-height: 0;
+  margin: 0 auto 12px !important; padding: 4px !important; gap: 2px !important;
+  background: #fff !important; border: 1px solid var(--pt-line) !important; border-radius: 14px !important;
+  box-shadow: var(--pt-shadow) !important; overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  -webkit-mask-image: none !important; mask-image: none !important;
+}
+body.theme-pulse.theme-pulse .nav-scroll-container::-webkit-scrollbar { display: none; }
+body.theme-pulse.theme-pulse :is(.workspace-brand, .workspace-nav-label, .workspace-nav-footer, .cover-nav-date, .nav-indicator) { display: none !important; }
+body.theme-pulse.theme-pulse .nav-tab-btn {
+  position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 7px;
+  width: auto !important; height: 36px !important; min-width: 0; margin: 0 !important; padding: 0 15px !important;
+  border: 0 !important; border-radius: 10px !important; background: transparent !important; box-shadow: none !important;
+  color: #3f3f46 !important; font: 600 14px/1 var(--sans) !important; white-space: nowrap; flex-shrink: 0;
+  transition: color .2s, transform .2s var(--pt-spring);
+}
+body.theme-pulse.theme-pulse .nav-tab-btn .workspace-nav-sub { display: none !important; }
+body.theme-pulse.theme-pulse .nav-tab-btn .workspace-nav-title { color: inherit !important; font: inherit; }
+body.theme-pulse.theme-pulse .nav-tab-btn:hover { color: #171717 !important; }
+body.theme-pulse.theme-pulse .nav-tab-btn.active { color: #fff !important; border: 0 !important; }
+body.theme-pulse.theme-pulse .nav-tab-btn .live-indicator { display: none; }
+.pt-ico { display: none; }
+body.theme-pulse .pt-ico { display: inline-block; width: 16px; height: 16px; flex-shrink: 0; transition: transform .35s var(--pt-spring, ease); }
+body.theme-pulse .nav-tab-btn:hover .pt-ico { transform: translateY(-2px) rotate(-8deg); }
+.pt-ico svg { width: 16px; height: 16px; display: block; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.pt-glider { display: none; }
+body.theme-pulse .pt-glider {
+  display: block; position: absolute; z-index: 0; top: 4px; left: 0; height: 36px; width: 0; border-radius: 10px;
+  background: #171717; transition: transform .5s var(--pt-spring), width .5s var(--pt-spring); pointer-events: none;
+}
+body.theme-pulse.theme-pulse:not(.pt-glider-on) .nav-tab-btn.active { background: #171717 !important; }
+
+/* ---------- 主体与卡片 ---------- */
+body.theme-pulse.theme-pulse main.portal-body {
+  width: min(1280px, 100%) !important; max-width: none !important; margin: 0 auto !important;
+  padding: 16px 28px 72px !important;
+}
+body.theme-pulse.theme-pulse .hero {
+  display: grid !important; grid-template-columns: 1fr auto; align-items: center; gap: 12px 24px;
+  margin: 4px 0 16px !important; padding: 18px 22px !important; border-radius: var(--pt-radius) !important;
+  background: #fff !important; border: 1px solid var(--pt-line) !important; box-shadow: var(--pt-shadow) !important;
+}
+body.theme-pulse.theme-pulse.campus-cover-active .hero { display: none !important; }
+body.theme-pulse.theme-pulse .hero-title { font: 800 26px/1.25 var(--sans) !important; letter-spacing: -.02em; color: #171717 !important; }
+body.theme-pulse.theme-pulse .hero-eyebrow, body.theme-pulse.theme-pulse .hero-tag { color: #71717a !important; }
+
+body.theme-pulse.theme-pulse :is(.stat-section, .metrics-editorial, .studio-box, .reader-workspace, .red-editorial,
+  .observatory-lead, .outlook-overview, .info-panel, .cover-feature, .cover-topics, .cover-voice, .campus-evidence,
+  .cover-archive, .cover-platform-status, .auto-section, .cost-settings, .issue-full-tools, details.method-note, .cover-reader-scope, .observation-numbers) {
+  background: #fff !important; border: 1px solid var(--pt-line) !important; border-radius: var(--pt-radius) !important;
+  box-shadow: var(--pt-shadow) !important;
+}
+body.theme-pulse.theme-pulse :is(.stat-section, .metrics-editorial, .studio-box, .red-editorial, .observatory-lead,
+  .outlook-overview, .info-panel, .cover-topics, .cover-voice, .auto-section, .cover-reader-scope) {
+  padding: 22px 24px !important; margin-bottom: 16px !important;
+}
+body.theme-pulse.theme-pulse :is(.cost-settings, .issue-full-tools, details.method-note, .cover-archive, .cover-platform-status, .campus-evidence) {
+  padding: 12px 20px !important; margin-bottom: 10px !important;
+}
+body.theme-pulse.theme-pulse :is(.stat-section, .studio-box, .pt-trend-dash) :is(.stat-section, details.method-note, .info-panel, .observation-numbers) {
+  box-shadow: none !important; background: #faf9f6 !important; border-color: var(--pt-line) !important;
+}
+body.theme-pulse.theme-pulse .observation-numbers { padding: 6px 8px !important; margin-bottom: 16px !important; overflow: hidden; }
+body.theme-pulse.theme-pulse .reader-workspace { overflow: hidden; padding: 0 !important; margin-bottom: 16px !important; }
+body.theme-pulse.theme-pulse .cover-feature { padding: 20px !important; gap: 32px !important; margin-bottom: 16px; }
+body.theme-pulse.theme-pulse .cover-photo img { border-radius: 12px; height: 300px; }
+body.theme-pulse.theme-pulse .cover-feature-copy h1 { font: 800 42px/1.18 var(--sans) !important; letter-spacing: -.03em; color: #171717 !important; }
+body.theme-pulse.theme-pulse .cover-metric { color: #171717 !important; text-decoration-color: #f08a24 !important; }
+body.theme-pulse.theme-pulse summary { cursor: pointer; font-weight: 600; color: #3f3f46; }
+body.theme-pulse.theme-pulse :is(h2, h3) { color: #171717; }
+body.theme-pulse.theme-pulse .section-kicker { color: #c26a0a !important; letter-spacing: .12em; font-weight: 700; }
+body.theme-pulse.theme-pulse a { text-decoration-color: rgba(23, 23, 23, .3); }
+
+/* 按钮 */
+body.theme-pulse.theme-pulse :is(.btn, .cover-primary, .studio-launch-btn) {
+  border-radius: 10px !important; font-weight: 600; transition: transform .2s var(--pt-spring), background .15s, border-color .15s;
+}
+body.theme-pulse.theme-pulse :is(.btn.primary, .cover-primary, .studio-launch-btn) {
+  color: #fff !important; background: #171717 !important; border: 1px solid #171717 !important; box-shadow: none !important;
+}
+body.theme-pulse.theme-pulse :is(.btn.primary, .cover-primary, .studio-launch-btn):hover { background: #000 !important; }
+body.theme-pulse.theme-pulse .btn:not(.primary) { background: #fff !important; border: 1px solid var(--pt-line-strong) !important; color: #171717 !important; }
+body.theme-pulse.theme-pulse .btn:not(.primary):hover { border-color: #171717 !important; }
+body.theme-pulse.theme-pulse .chips-bar { gap: 8px !important; padding: 2px 0 14px !important; border: 0 !important; background: none !important; }
+body.theme-pulse.theme-pulse .chip-btn {
+  height: 34px; padding: 0 14px !important; border-radius: 999px !important; border: 1px solid var(--pt-line-strong) !important;
+  background: #fff !important; color: #3f3f46 !important; font-weight: 600; box-shadow: none !important;
+  transition: transform .2s var(--pt-spring), border-color .15s, background .15s;
+}
+body.theme-pulse.theme-pulse .chip-btn:hover { border-color: #171717 !important; color: #171717 !important; transform: translateY(-1px); }
+body.theme-pulse.theme-pulse .chip-btn.active { color: #fff !important; background: #171717 !important; border-color: #171717 !important; }
+
+/* 阅读器 */
+body.theme-pulse.theme-pulse .reader-index { background: #faf9f6 !important; border-right: 1px solid var(--pt-line) !important; }
+body.theme-pulse.theme-pulse .reader-select { border-radius: 10px !important; margin: 2px 6px; transition: background .15s; }
+body.theme-pulse.theme-pulse .is-selected > .reader-select {
+  background: #fff !important; border-left-color: transparent !important; box-shadow: inset 3px 0 0 #f08a24, 0 1px 2px rgba(23, 23, 23, .06) !important;
+}
+body.theme-pulse.theme-pulse .stat-table tr.is-selected { background: var(--pt-orange-soft); }
+body.theme-pulse.theme-pulse .reader-detail { background: transparent !important; }
+
+/* 育人工坊输入区：像视频里的输入框，聚焦时绿色描边，超长时红色 */
+body.theme-pulse.theme-pulse .research-composer, body.theme-pulse.theme-pulse .studio-input-group {
+  position: relative; border-radius: 16px !important; border: 2px solid var(--pt-line-strong) !important; background: #fff !important; box-shadow: none !important;
+  transition: border-color .2s, box-shadow .2s;
+}
+body.theme-pulse.theme-pulse .research-composer:focus-within { border-color: var(--pt-green) !important; box-shadow: 0 0 0 4px rgba(22, 163, 74, .12) !important; }
+body.theme-pulse.theme-pulse .research-composer.pt-over { border-color: var(--pt-red) !important; box-shadow: 0 0 0 4px rgba(229, 72, 77, .12) !important; }
+body.theme-pulse.theme-pulse .studio-box .research-composer { margin-top: 132px; }
+body.theme-pulse.theme-pulse .tmpl-chip { border-radius: 999px !important; background: #fff !important; border: 1px dashed var(--pt-line-strong) !important; transition: transform .2s var(--pt-spring); }
+body.theme-pulse.theme-pulse .tmpl-chip:hover { border-style: solid !important; border-color: #171717 !important; color: #171717 !important; transform: translateY(-2px) rotate(-1deg); }
+
+/* 数据账本 */
+body.theme-pulse.theme-pulse .viz-card { border-radius: 14px !important; border: 1px solid var(--pt-line) !important; background: #fff !important; box-shadow: none !important; transition: transform .25s var(--pt-spring), box-shadow .25s; }
+body.theme-pulse.theme-pulse .viz-card:hover { transform: translateY(-2px); box-shadow: var(--pt-shadow-hover) !important; }
+body.theme-pulse.theme-pulse .kpi-card { border-radius: 14px !important; background: #fff !important; border: 1px solid var(--pt-line) !important; }
+body.theme-pulse.theme-pulse .account-metric--tokens { background: #171717 !important; color: #fff !important; border-radius: 14px; }
+body.theme-pulse.theme-pulse .account-metric--tokens * { color: #fff !important; -webkit-text-fill-color: #fff; }
+
+/* 弹窗 */
+body.theme-pulse.theme-pulse :is(.modal-content, .modal-box, .modal-dialog, .modal-panel) { border-radius: 20px !important; box-shadow: 0 30px 80px -30px rgba(23, 23, 23, .45) !important; }
+
+/* 进场动效：JS 就绪后才隐藏，JS 失败时内容不受影响 */
+body.theme-pulse.pt-reveal-ready .pt-reveal { opacity: 0; transform: translateY(12px); }
+body.theme-pulse.pt-reveal-ready .pt-reveal.pt-in { opacity: 1; transform: none; transition: opacity .5s ease-out, transform .6s var(--pt-spring); }
+
+/* ==========================================================================
+   新组件 ①：校园心情天气台（仅「华理心声」首页）
+   ========================================================================== */
+.pt-deck { display: none; }
+body.theme-pulse.campus-cover-active .pt-deck { display: grid; }
+.pt-deck { grid-template-columns: 1.1fr 1.6fr 1fr; gap: 14px; margin: 4px 0 16px; }
+.pt-tile {
+  position: relative; overflow: hidden; min-height: 176px; padding: 18px 20px; border-radius: 18px;
+  background: #fff; border: 1px solid #e7e5e0; box-shadow: 0 1px 2px rgba(23, 23, 23, .05);
+}
+.pt-tile-k { font: 600 13px/1.2 var(--sans); color: #71717a; }
+.pt-tile-note { margin: 10px 0 0; font: 12.5px/1.6 var(--sans); color: #71717a; }
+
+.pt-weather { background: var(--pt-sky, #eaf3ff); border-color: transparent; }
+.pt-weather-main { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+.pt-weather-main b { display: block; font: 800 32px/1.1 var(--sans); letter-spacing: -.02em; color: #171717; }
+.pt-weather-main span { display: block; font: 600 14px/1.4 var(--sans); color: #3f3f46; }
+.pt-wx { position: relative; width: 76px; height: 64px; flex-shrink: 0; cursor: pointer; }
+.pt-wx-sun { position: absolute; left: 8px; top: 2px; width: 40px; height: 40px; border-radius: 50%; background: #ffcf3f; border: 2px solid #171717; }
+.pt-wx-sun::before { content: ""; position: absolute; inset: -13px; border-radius: 50%; background: repeating-conic-gradient(#171717 0 5deg, transparent 5deg 45deg); -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%, #000 76%, transparent 77%); mask: radial-gradient(circle, transparent 60%, #000 61%, #000 76%, transparent 77%); animation: ptSpin 16s linear infinite; }
+.pt-wx:hover .pt-wx-sun::before { animation-duration: 2s; }
+.pt-wx-cloud { position: absolute; width: 48px; height: 20px; border-radius: 20px; background: #fff; border: 2px solid #171717; animation: ptFloat 5s ease-in-out infinite alternate; }
+.pt-wx-cloud.c1 { left: 24px; top: 32px; }
+.pt-wx-cloud.c2 { left: 0; top: 40px; transform: scale(.75); animation-delay: -2.5s; }
+.pt-wx-cloud.grey { background: #d9dce3; }
+.pt-wx-rain { position: absolute; left: 30px; top: 54px; width: 40px; height: 16px; }
+.pt-wx-rain i { position: absolute; top: 0; width: 2px; height: 8px; border-radius: 2px; background: #2b5cd6; animation: ptRain .9s linear infinite; }
+.pt-wx-rain i:nth-child(1) { left: 4px; } .pt-wx-rain i:nth-child(2) { left: 16px; animation-delay: -.3s; } .pt-wx-rain i:nth-child(3) { left: 28px; animation-delay: -.6s; }
+@keyframes ptSpin { to { transform: rotate(360deg); } }
+@keyframes ptFloat { from { translate: 0 0; } to { translate: 6px -2px; } }
+@keyframes ptRain { from { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(12px); opacity: 0; } }
+.pt-mood-bar { display: flex; height: 8px; margin-top: 14px; border-radius: 99px; overflow: hidden; background: rgba(23, 23, 23, .08); }
+.pt-mood-bar i { display: block; height: 100%; }
+
+/* 话题贴纸 */
+.pt-bubbles { position: relative; height: 140px; margin-top: 6px; }
+.pt-bubble {
+  position: absolute; display: grid; place-items: center; text-align: center; padding: 4px; cursor: pointer;
+  color: #171717; font: 700 12px/1.2 var(--sans); background: var(--pt-b, #ffe1c2);
+  border: 2px solid #171717; border-radius: 50%; box-shadow: 2px 3px 0 #171717;
+  transform: translate(-50%, -50%) rotate(var(--pt-rot, 0deg));
+  transition: box-shadow .15s, transform .15s;
+}
+.pt-bubble[hidden] { display: none; }
+.pt-bubble:hover { animation: ptJelly .6s ease; }
+.pt-bubble:active { box-shadow: 0 0 0 #171717; transform: translate(calc(-50% + 2px), calc(-50% + 3px)) rotate(var(--pt-rot, 0deg)); animation: none; }
+.pt-bubble small { display: block; font: 600 10px/1.2 var(--sans); color: #3f3f46; }
+@keyframes ptJelly {
+  0% { transform: translate(-50%, -50%) scale(1, 1) rotate(var(--pt-rot, 0deg)); }
+  30% { transform: translate(-50%, -50%) scale(1.14, .88) rotate(var(--pt-rot, 0deg)); }
+  50% { transform: translate(-50%, -50%) scale(.92, 1.1) rotate(var(--pt-rot, 0deg)); }
+  70% { transform: translate(-50%, -50%) scale(1.04, .97) rotate(var(--pt-rot, 0deg)); }
+  100% { transform: translate(-50%, -50%) scale(1, 1) rotate(var(--pt-rot, 0deg)); }
+}
+
+/* 关怀线索 */
+.pt-care b.pt-care-num { display: block; margin-top: 8px; font: 800 44px/1 var(--sans); font-variant-numeric: tabular-nums; color: #171717; }
+.pt-care-btn {
+  margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 10px; cursor: pointer;
+  border: 1px solid #171717; background: #fff; color: #171717; font: 700 13px/1 var(--sans);
+  transition: transform .2s var(--pt-spring), background .15s, color .15s;
+}
+.pt-care-btn:hover { background: #171717; color: #fff; }
+.pt-heart { position: absolute; right: 18px; top: 16px; width: 30px; height: 30px; color: #e5484d; animation: ptHeart var(--pt-beat, 1.1s) ease-in-out infinite; }
+.pt-heart svg { width: 30px; height: 30px; }
+@keyframes ptHeart { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(.96); } 45% { transform: scale(1.1); } }
+
+/* ==========================================================================
+   新组件 ②：华理小腊肠（育人工坊输入框上的腊肠狗，逐帧动画跟随输入字数）
+   帧的选择与插值由 JS 完成，这里负责定位、载入淡入、满字数摇晃与提交时的蹦跳
+   ========================================================================== */
+.pt-dog, .pt-dog-say { display: none; }
+body.theme-pulse .pt-dog {
+  display: block; position: absolute; right: 18px; bottom: calc(100% - 6px); pointer-events: none; z-index: 2;
+  opacity: 0; transform-origin: 50% 100%; transition: opacity .35s ease;
+}
+body.theme-pulse .pt-dog.ready { opacity: 1; }
+.pt-dog canvas { display: block; height: 132px; width: auto; }
+body.theme-pulse .pt-dog.over { animation: ptDogShake .5s ease-in-out infinite; }
+body.theme-pulse .pt-dog.busy { animation: ptDogHop .6s cubic-bezier(.34, 1.56, .64, 1) 3; }
+@keyframes ptDogShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-2.5deg); } 75% { transform: rotate(2.5deg); } }
+@keyframes ptDogHop { 0%, 100% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(0) scale(1.03, .94); } 60% { transform: translateY(-14px) scale(.98, 1.04); } }
+body.theme-pulse .pt-dog-say {
+  display: block; position: absolute; left: 18px; bottom: calc(100% + 14px); max-width: calc(100% - 470px); min-width: 180px; margin: 0;
+  font: 700 13px/1.4 var(--sans); color: var(--pt-say, #71717a);
+  transition: opacity .18s ease, transform .28s cubic-bezier(.22, 1, .36, 1), color .3s ease;
+}
+body.theme-pulse .pt-dog-say.swap { opacity: 0; transform: translateY(5px); transition-duration: .14s; }
+body.theme-pulse .pt-dog-say span { display: block; }
+body.theme-pulse .pt-dog-say em { font-style: normal; font-weight: 500; color: #a1a1aa; font-variant-numeric: tabular-nums; }
+body.theme-pulse .pt-dog-say .pt-say-sub { font: 500 12px/1.4 var(--sans); color: #a1a1aa; }
+
+/* ==========================================================================
+   新组件 ③：校内趋势 · 趋势速览（打开模块第一屏就是图）
+   ========================================================================== */
+.pt-trend-dash { display: none; }
+body.theme-pulse .pt-trend-dash { display: block; margin-bottom: 16px; }
+.pt-td-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 12px; }
+.pt-td-head h2 { margin: 0; font: 800 20px/1.3 var(--sans); color: #171717; }
+.pt-td-head p { margin: 0; font: 12.5px/1.5 var(--sans); color: #71717a; }
+.pt-td-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 14px; }
+.pt-td-card { background: #fff; border: 1px solid #e7e5e0; border-radius: 18px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(23, 23, 23, .05); min-width: 0; }
+.pt-td-card h3 { margin: 0 0 2px; font: 700 15px/1.4 var(--sans); color: #171717; }
+.pt-td-card > p { margin: 0 0 12px; font: 12px/1.5 var(--sans); color: #71717a; }
+.pt-td-wide { grid-column: 1 / -1; }
+.pt-td-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font: 12px/1.4 var(--sans); color: #3f3f46; }
+.pt-td-legend i, .pt-td-rank i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1px solid #171717; }
+.pt-td-legend i { margin-right: 5px; vertical-align: -1px; }
+.pt-td-cols { width: 100%; height: auto; aspect-ratio: 640 / 210; display: block; overflow: visible; }
+.pt-td-cols text { font: 11px var(--sans); fill: #71717a; }
+.pt-td-cols text.v { font-weight: 700; fill: #171717; }
+.pt-td-cols .col { transform-box: fill-box; transform-origin: 50% 100%; animation: ptGrow .7s var(--pt-spring, ease) both; }
+.pt-td-cols g.day { cursor: pointer; }
+.pt-td-cols g.day:hover .day-hit { fill: rgba(23, 23, 23, .05); }
+.pt-td-cols g.day:hover .col { filter: brightness(1.06); }
+@keyframes ptGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.pt-td-share { display: flex; height: 26px; border-radius: 8px; overflow: hidden; border: 1.5px solid #171717; }
+.pt-td-share button { all: unset; height: 100%; cursor: pointer; min-width: 3px; box-shadow: inset -1.5px 0 0 #171717; transition: filter .15s; }
+.pt-td-share button:last-child { box-shadow: none; }
+.pt-td-share button:hover { filter: brightness(1.06) saturate(1.2); }
+.pt-td-rank { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 1px; }
+.pt-td-rank li button {
+  all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  padding: 6px 8px; border-radius: 8px; cursor: pointer; font: 13px/1.3 var(--sans); color: #171717;
+}
+.pt-td-rank li button:hover { background: #f5f4f0; }
+.pt-td-rank span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-td-rank b { font-variant-numeric: tabular-nums; font-weight: 700; }
+.pt-td-rank small { color: #71717a; font-size: 12px; margin-left: 4px; font-weight: 500; }
+.pt-td-sparks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pt-spark {
+  all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; padding: 12px 14px; cursor: pointer;
+  border: 1px solid #e7e5e0; border-radius: 14px; background: #faf9f6; transition: transform .25s var(--pt-spring), border-color .15s, background .15s;
+}
+.pt-spark:hover { transform: translateY(-2px); border-color: #171717; background: #fff; }
+.pt-spark strong { font: 700 14px/1.3 var(--sans); color: #171717; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-spark .pt-sp-n { font: 800 18px/1.1 var(--sans); color: #171717; text-align: right; font-variant-numeric: tabular-nums; }
+.pt-spark .pt-sp-sub { font: 12px/1.4 var(--sans); color: #71717a; }
+.pt-spark .pt-sp-delta { font: 700 12px/1.4 var(--sans); text-align: right; white-space: nowrap; }
+.pt-spark .up { color: #c2410c; } .pt-spark .down { color: #2b5cd6; } .pt-spark .flat { color: #71717a; }
+.pt-spark svg { grid-column: 1 / -1; width: 100%; height: 34px; margin-top: 6px; overflow: visible; }
+body.theme-pulse.theme-pulse #ptTdCloud > .stat-section { margin: 14px 0 0 !important; background: #fff !important; box-shadow: 0 1px 2px rgba(23, 23, 23, .05) !important; }
+.pt-td-empty { padding: 26px; text-align: center; color: #71717a; font-size: 13px; }
+
+/* ==========================================================================
+   新组件 ④：⌘K 指令面板
+   ========================================================================== */
+.pt-cmdk { position: fixed; inset: 0; z-index: 3000; display: none; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; background: rgba(23, 23, 23, .28); }
+.pt-cmdk.open { display: flex; animation: ptFade .15s ease-out; }
+@keyframes ptFade { from { opacity: 0; } to { opacity: 1; } }
+.pt-cmdk-box { width: min(600px, 100%); overflow: hidden; border-radius: 18px; background: #fff; border: 1.5px solid #171717; box-shadow: 4px 6px 0 #171717; animation: ptDrop .3s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes ptDrop { from { transform: translateY(-10px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+.pt-cmdk-in { display: flex; align-items: center; gap: 12px; padding: 15px 18px; border-bottom: 1px solid #e7e5e0; }
+.pt-cmdk-in svg { width: 20px; height: 20px; stroke: #171717; fill: none; stroke-width: 2; flex-shrink: 0; }
+.pt-cmdk-in input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 500 17px/1.4 var(--sans, sans-serif); color: #171717; }
+.pt-cmdk-in kbd { font: 600 11px/1 var(--sans, sans-serif); padding: 4px 7px; border-radius: 6px; background: #f1efe9; color: #71717a; }
+.pt-cmdk-list { max-height: min(56vh, 440px); overflow-y: auto; padding: 8px; margin: 0; list-style: none; }
+.pt-cmdk-group { padding: 10px 12px 6px; font: 600 12px/1 var(--sans, sans-serif); color: #a1a1aa; }
+.pt-cmdk-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: #171717; font: 500 14px/1.4 var(--sans, sans-serif); }
+.pt-cmdk-item .pt-ci { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: #f1efe9; color: #171717; flex-shrink: 0; }
+.pt-cmdk-item .pt-ci svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.pt-cmdk-item small { margin-left: auto; color: #a1a1aa; font-size: 12px; white-space: nowrap; }
+.pt-cmdk-item[aria-selected="true"] { background: #f5f4f0; }
+.pt-cmdk-item[aria-selected="true"] .pt-ci { background: #171717; color: #fff; }
+.pt-cmdk-empty { padding: 22px; text-align: center; color: #a1a1aa; font-size: 14px; }
+.pt-cmdk-foot { display: flex; gap: 16px; padding: 10px 18px; border-top: 1px solid #e7e5e0; font: 12px/1.4 var(--sans, sans-serif); color: #a1a1aa; }
+
+/* ==========================================================================
+   响应式：手机端改为底部 App 式导航坞
+   ========================================================================== */
+@media (max-width: 1100px) {
+  body.theme-pulse .pt-ecg small { display: none; }
+  body.theme-pulse .pt-brand-copy span { display: none; }
+  body.theme-pulse.theme-pulse .pt-deck { grid-template-columns: 1fr 1fr; }
+  body.theme-pulse.theme-pulse .pt-deck .pt-topics { grid-column: 1 / -1; grid-row: 2; }
+  .pt-td-sparks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  body.theme-pulse .pt-ecg { display: none; }
+  body.theme-pulse.theme-pulse .header-btn:not(.primary):not(.pt-theme-btn):not(.danger) { display: none; }
+  body.theme-pulse .pt-kbd-btn { display: none; }
+  .pt-td-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  /* backdrop-filter 会让 header 成为 fixed 子元素的包含块，底部导航坞会被“吸”到顶栏里 */
+  body.theme-pulse.theme-pulse header.portal-header { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: #f5f4f0 !important; }
+  body.theme-pulse.theme-pulse .header-top { height: 58px !important; min-height: 58px; padding: 0 14px !important; gap: 10px; }
+  body.theme-pulse.theme-pulse .header-btn { height: 34px; padding: 0 10px; font-size: 12px; }
+  body.theme-pulse.theme-pulse .header-btn.danger { display: none; }
+  body.theme-pulse .pt-brand-mark { width: 34px; height: 34px; border-radius: 10px; font-size: 13px; }
+  body.theme-pulse.theme-pulse .nav-scroll-container {
+    position: fixed !important; inset: auto 10px calc(10px + env(safe-area-inset-bottom)) 10px !important; top: auto !important;
+    width: auto !important; max-width: none; margin: 0 !important; padding: 5px !important; justify-content: space-between;
+    border-radius: 20px !important; border: 1.5px solid #171717 !important; box-shadow: 3px 4px 0 #171717 !important; z-index: 900; overflow: hidden;
+  }
+  body.theme-pulse.theme-pulse .nav-tab-btn {
+    flex: 1 1 0; flex-direction: column; justify-content: center; gap: 4px; height: 52px !important; min-width: 0; padding: 0 2px !important;
+    border-radius: 15px !important; font: 600 10.5px/1 var(--sans) !important; letter-spacing: -.02em;
+  }
+  body.theme-pulse .pt-glider { top: 5px; height: 52px; border-radius: 15px; }
+  body.theme-pulse .pt-ico, body.theme-pulse .pt-ico svg { width: 19px; height: 19px; }
+  body.theme-pulse.theme-pulse main.portal-body { padding: 12px 12px 110px !important; }
+  body.theme-pulse.theme-pulse .pt-deck { grid-template-columns: 1fr; gap: 12px; }
+  body.theme-pulse.theme-pulse .pt-deck .pt-topics { grid-column: auto; grid-row: auto; }
+  body.theme-pulse.theme-pulse .hero { grid-template-columns: 1fr; padding: 16px !important; }
+  body.theme-pulse.theme-pulse .hero-title { font-size: 22px !important; }
+  body.theme-pulse.theme-pulse .cover-feature { grid-template-columns: 1fr !important; padding: 14px !important; gap: 16px !important; }
+  body.theme-pulse.theme-pulse .cover-photo img { height: 200px; }
+  body.theme-pulse.theme-pulse .cover-feature-copy h1 { font-size: 30px !important; }
+  body.theme-pulse.theme-pulse :is(.stat-section, .metrics-editorial, .studio-box, .red-editorial, .observatory-lead,
+    .outlook-overview, .info-panel, .cover-topics, .cover-voice, .auto-section, .cover-reader-scope) { padding: 16px !important; }
+  body.theme-pulse .pt-dog { right: 6px; }
+  .pt-dog canvas { height: auto; width: min(300px, 80vw); }
+  body.theme-pulse .pt-dog-say { left: 12px; max-width: calc(100% - 24px); min-width: 0; bottom: calc(100% + 104px); }
+  body.theme-pulse.theme-pulse .studio-box .research-composer { margin-top: 160px; }
+  .pt-td-card { padding: 14px; }
+  .pt-td-sparks { grid-template-columns: 1fr; }
+  .pt-td-cols { aspect-ratio: 640 / 300; }
+  .pt-cmdk { padding-top: 8vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-ecg-path, .pt-bubble, .pt-heart, .pt-wx-sun::before, .pt-wx-cloud, .pt-wx-rain i, .pt-td-cols .col { animation: none !important; }
+  body.theme-pulse .pt-glider { transition: none; }
+  body.theme-pulse.pt-reveal-ready .pt-reveal { opacity: 1; transform: none; }
+}
+@media print {
+  .pt-ecg, .pt-deck, .pt-cmdk, .pt-glider, .pt-kbd-btn, .pt-theme-btn, .pt-dog, .pt-dog-say { display: none !important; }
+}
+</style>
 </head>
 
 <body class="workspace-v2 observatory-v3">
+<script id="pulse-theme-boot">try{if(localStorage.getItem('ecust-pulse-theme')!=='classic')document.body.classList.add('theme-pulse')}catch(e){document.body.classList.add('theme-pulse')}</script>
 
 <!-- ==========================================================================
      全局吸顶大学导航
@@ -6951,6 +7435,639 @@ renderCampusOutlook=function(){issueOutlookBase();const content=$('campusOutlook
   const fold=document.createElement('details');fold.className='issue-forecast-fold';fold.innerHTML='<summary>查看各分类的新增帖预测与适用条件</summary>';content.before(fold);fold.append(content);
 }};
 
+</script>
+<script id="pulse-theme-script">
+/* 「脉动」主题交互层：纯增量，只读 APP 状态并调用既有函数（switchTab / viewCampusPosts / viewCrisisPosts / forwardToStudio …）。 */
+(function () {
+  'use strict';
+  var KEY = 'ecust-pulse-theme';
+  var body = document.body;
+  var $id = function (id) { return document.getElementById(id); };
+  var escHtml = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isPulse = function () { return body.classList.contains('theme-pulse'); };
+  // APP 是顶层 const，不挂在 window 上，只能按名字读取
+  var getApp = function () { try { return typeof APP !== 'undefined' ? APP : null; } catch (e) { return null; } };
+
+  /* ---------------- 图标 ---------------- */
+  var ICONS = {
+    campus: '<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+    trends: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    radar: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/>',
+    memes: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1.8 2 5.2 2 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/>',
+    studio: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/>',
+    monitor: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    collect: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+    config: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+    ask: '<path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+    archive: '<path d="M3 7h18v13H3z"/><path d="M3 7l2-4h14l2 4M9 12h6"/>',
+    heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+    theme: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/>'
+  };
+  var svg = function (name) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || '') + '</svg>'; };
+  var TAB_NAMES = { campus: '华理心声', trends: '校内趋势', radar: '青年热点', memes: '梗文化', studio: '育人工坊', monitor: '数据账本' };
+
+  /* ---------------- 主题切换 ---------------- */
+  function setTheme(name) {
+    var on = name !== 'classic';
+    body.classList.toggle('theme-pulse', on);
+    try { localStorage.setItem(KEY, on ? 'pulse' : 'classic'); } catch (e) {}
+    var btn = document.querySelector('.pt-theme-btn');
+    if (btn) { btn.querySelector('span:last-child').textContent = on ? '经典' : '脉动'; btn.title = on ? '切回原「经典」版式' : '切换到「脉动」新版式'; }
+    requestAnimationFrame(moveGlider);
+    if (typeof recolor === 'function') { if (on) scheduleRecolor(); else unrecolor(); }
+    if (typeof placeObsNumbers === 'function') placeObsNumbers();
+    if (typeof placeCloud === 'function') placeCloud();
+  }
+
+  /* ---------------- 顶栏：品牌 + 脉搏心电线 + 按钮 ---------------- */
+  var brandSection = document.querySelector('.brand-section');
+  if (brandSection && !document.querySelector('.pt-brand')) {
+    var brand = document.createElement('a');
+    brand.className = 'pt-brand'; brand.href = '#'; brand.setAttribute('aria-label', '回到华理心声首页');
+    brand.innerHTML = '<span class="pt-brand-mark">华理</span><span class="pt-brand-copy"><strong>华理 · 校园脉动</strong><span>心声感知 · 思政育人 · 心理关怀</span></span>';
+    brand.addEventListener('click', function (e) { e.preventDefault(); if (typeof switchTab === 'function') switchTab('campus'); window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
+    brandSection.prepend(brand);
+
+    var ecg = document.createElement('div');
+    ecg.className = 'pt-ecg'; ecg.id = 'ptEcg';
+    ecg.title = '校园脉搏：心电线节奏随近 24 小时校内新帖数变化，仅作可视化映射，不代表任何心理评估。';
+    ecg.innerHTML = '<svg viewBox="0 0 116 30" aria-hidden="true"><defs><linearGradient id="ptEcgGrad" x1="0" x2="1"><stop offset="0" stop-color="#7a5cff"/><stop offset=".6" stop-color="#ff6b4a"/><stop offset="1" stop-color="#f2a93b"/></linearGradient></defs>' +
+      '<path class="pt-ecg-base" d="M0 17H116"/>' +
+      '<path class="pt-ecg-path" pathLength="246" d="M0 17H22l4-5 4 5h6l3 4 5-19 5 25 4-10h8l4-4 4 4h17l3-3 3 3h20"/></svg>' +
+      '<span class="pt-ecg-read"><b id="ptEcgNum">—</b><small>近 24h 校内新帖</small></span>';
+    brandSection.append(ecg);
+  }
+  var headerRight = document.querySelector('.header-right');
+  if (headerRight && !document.querySelector('.pt-theme-btn')) {
+    var kbd = document.createElement('button');
+    kbd.type = 'button'; kbd.className = 'header-btn pt-kbd-btn'; kbd.title = '快速跳转与提问（⌘K / Ctrl+K）';
+    kbd.innerHTML = '<span>快速跳转</span><kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K') + '</kbd>';
+    kbd.addEventListener('click', function () { openCmdk(); });
+    var themeBtn = document.createElement('button');
+    themeBtn.type = 'button'; themeBtn.className = 'header-btn pt-theme-btn';
+    themeBtn.innerHTML = '<span class="pt-theme-dot" aria-hidden="true"></span><span>经典</span>';
+    themeBtn.addEventListener('click', function () { setTheme(isPulse() ? 'classic' : 'pulse'); });
+    headerRight.prepend(kbd, themeBtn);
+  }
+
+  /* ---------------- 导航：图标 + 渐变滑块 ---------------- */
+  var nav = document.querySelector('.nav-scroll-container');
+  var glider = null;
+  function moveGlider() {
+    if (!nav || !glider) return;
+    var active = nav.querySelector('.nav-tab-btn.active');
+    if (!active || !isPulse()) { body.classList.remove('pt-glider-on'); glider.style.width = '0px'; return; }
+    // 首次定位（或从隐藏恢复）不做过渡，直接到位；之后切换模块才滑动
+    var instant = !body.classList.contains('pt-glider-on');
+    if (instant) glider.style.transition = 'none';
+    glider.style.width = active.offsetWidth + 'px';
+    glider.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+    glider.style.top = active.offsetTop + 'px';
+    body.classList.add('pt-glider-on');
+    if (instant) { void glider.offsetWidth; glider.style.transition = ''; }
+  }
+  if (nav) {
+    nav.querySelectorAll('.nav-tab-btn').forEach(function (btn) {
+      var key = (btn.id || '').replace('tab-', '');
+      if (ICONS[key] && !btn.querySelector('.pt-ico')) {
+        var ico = document.createElement('span'); ico.className = 'pt-ico'; ico.innerHTML = svg(key); btn.prepend(ico);
+      }
+    });
+    glider = document.createElement('span'); glider.className = 'pt-glider'; glider.setAttribute('aria-hidden', 'true');
+    nav.prepend(glider);
+    new MutationObserver(function () { requestAnimationFrame(moveGlider); onTabChange(); })
+      .observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', function () { requestAnimationFrame(moveGlider); });
+    // 首页封面与其他模块的导航布局不同，body 类名或导航尺寸变化后都要重新量
+    new MutationObserver(function () { requestAnimationFrame(moveGlider); }).observe(body, { attributes: true, attributeFilter: ['class'] });
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(function () { requestAnimationFrame(moveGlider); });
+      ro.observe(nav);
+      nav.querySelectorAll('.nav-tab-btn').forEach(function (b) { ro.observe(b); });
+    }
+    window.addEventListener('load', moveGlider);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveGlider);
+    setTimeout(moveGlider, 60);
+  }
+
+  /* ---------------- 校园心情天气台 ---------------- */
+  var main = document.querySelector('main.portal-body');
+  var deck = document.createElement('section');
+  deck.className = 'pt-deck'; deck.id = 'ptMoodDeck'; deck.setAttribute('aria-label', '校园心情天气台');
+  var anchor = $id('campusPulse');
+  if (main) { if (anchor && anchor.parentNode === main) main.insertBefore(deck, anchor); else main.prepend(deck); }
+
+  var WEATHER = [
+    { max: .08, name: '晴朗', mood: '整体情绪平稳', sky: '#e3efff', art: '<span class="pt-wx-sun"></span>' },
+    { max: .16, name: '晴间多云', mood: '偶有吐槽，总体向好', sky: '#e8eefb', art: '<span class="pt-wx-sun"></span><span class="pt-wx-cloud c1"></span>' },
+    { max: .28, name: '多云', mood: '消极表达有所增多', sky: '#eceef3', art: '<span class="pt-wx-cloud c2"></span><span class="pt-wx-cloud c1"></span>' },
+    { max: 1.01, name: '小雨', mood: '消极表达偏多，宜多留意', sky: '#e4e6ec', art: '<span class="pt-wx-cloud grey c1"></span><span class="pt-wx-rain"><i></i><i></i><i></i></span>' }
+  ];
+  var BUBBLE_COLORS = ['#ffd9b0', '#cfe0ff', '#c9efd3', '#ffd0d2', '#fff0a8', '#e6e2d8'];
+  var BUBBLE_ROT = [-4, 3, -2, 5, -5, 2];
+  var lastVoice = null;
+
+  function renderDeck() {
+    var app = getApp(); var voice = app && app.campusData && app.campusData.voice;
+    if (!voice || voice === lastVoice) return;
+    lastVoice = voice;
+    var themes = (voice.themes || []).filter(function (t) { return t && t.theme; });
+    var total = 0, neg = 0, day = 0;
+    themes.forEach(function (t) { var n = +t.posts || 0; total += n; neg += n * (+t.negative_ratio || 0); day += +t.posts_24h || 0; });
+    var ratio = total ? neg / total : 0;
+    var w = WEATHER.find(function (x) { return ratio < x.max; }) || WEATHER[0];
+    var crisis = voice.crisis || {};
+    var care = (+crisis['高危'] || 0) + (+crisis['关注'] || 0);
+
+    // 心电线节奏：近 24h 新帖越多，跳得越快（0 帖 ≈ 60bpm，封顶 ≈ 140bpm）
+    var bpm = Math.min(140, 60 + day * 2.5);
+    body.style.setProperty('--pt-beat', (60 / bpm).toFixed(2) + 's');
+    var num = $id('ptEcgNum'); if (num) num.textContent = day;
+
+    var picked = themes.filter(function (t) { return t.theme !== '其他'; });
+    if (picked.length < 2) picked = themes.slice();
+    picked = picked.sort(function (a, b) { return (b.posts || 0) - (a.posts || 0); }).slice(0, 6);
+    var maxPosts = Math.max.apply(null, picked.map(function (t) { return t.posts || 1; }).concat([1]));
+    var bubbles = picked.map(function (t, i) {
+      var size = Math.round(50 + 42 * Math.sqrt((t.posts || 0) / maxPosts));
+      return '<button type="button" class="pt-bubble" data-theme="' + escHtml(t.theme) + '" data-size="' + size + '" style="width:' + size + 'px;height:' + size + 'px;--pt-b:' + BUBBLE_COLORS[i] + ';--pt-rot:' + BUBBLE_ROT[i] + 'deg"' +
+        ' title="' + escHtml(t.theme) + '：近 ' + (voice.days || 7) + ' 天 ' + (t.posts || 0) + ' 帖，近 24h ' + (t.posts_24h || 0) + ' 帖。点击读原帖">' +
+        '<span>' + escHtml(t.theme.length > 5 ? t.theme.slice(0, 4) + '…' : t.theme) + '<small>' + (t.posts || 0) + ' 帖</small></span></button>';
+    }).join('');
+
+    var negPct = Math.round(ratio * 100);
+    deck.innerHTML =
+      '<article class="pt-tile pt-weather" style="--pt-sky:' + w.sky + '">' +
+        '<div class="pt-tile-k">今日校园心情天气</div>' +
+        '<div class="pt-weather-main"><div class="pt-wx" aria-hidden="true">' + w.art + '</div><div><b>' + w.name + '</b><span>' + w.mood + '</span></div></div>' +
+        '<div class="pt-mood-bar" role="img" aria-label="消极表达占比 ' + negPct + '%"><i style="width:' + Math.max(2, negPct) + '%;background:#e5484d"></i></div>' +
+        '<p class="pt-tile-note">近 ' + (voice.days || 7) + ' 天 ' + total + ' 帖中消极表达约 ' + negPct + '%。按帖子情绪极性粗略换算，仅作氛围参考。</p>' +
+      '</article>' +
+      '<article class="pt-tile pt-topics">' +
+        '<div class="pt-tile-k">学生在聊什么</div>' +
+        (bubbles ? '<div class="pt-bubbles">' + bubbles + '</div>' : '<p class="pt-tile-note">暂无议题样本，点击右上角“立即采集”。</p>') +
+        '<p class="pt-tile-note" style="margin-top:4px">越大＝近 ' + (voice.days || 7) + ' 天帖子越多 · 点一下直接读原帖</p>' +
+      '</article>' +
+      '<article class="pt-tile pt-care">' +
+        '<span class="pt-heart" aria-hidden="true">' + svg('heart').replace('<path', '<path fill="currentColor" stroke="none"') + '</span>' +
+        '<div class="pt-tile-k">心育关怀线索</div>' +
+        '<b class="pt-care-num">' + care + '</b>' +
+        '<p class="pt-tile-note" style="margin-top:6px">' + (care ? '条建议关怀 · 已剔除玩梗、反串与日常夸张表达' : '条建议关怀 · 这周大家都还好，玩梗与夸张表达已剔除') + '</p>' +
+        '<button type="button" class="pt-care-btn" data-care>核验原帖 →</button>' +
+      '</article>';
+
+    packWidth = 0; packBubbles();
+    deck.querySelectorAll('.pt-bubble').forEach(function (b) {
+      b.addEventListener('click', function () { if (typeof viewCampusPosts === 'function') viewCampusPosts(b.dataset.theme); });
+    });
+    var careBtn = deck.querySelector('[data-care]');
+    if (careBtn) careBtn.addEventListener('click', function (e) { if (typeof viewCrisisPosts === 'function') viewCrisisPosts('关注', e); });
+  }
+
+  /* 气泡打包：最大的居中，其余沿阿基米德螺线找第一个不重叠且不出界的位置 */
+  function packBubbles() {
+    var box = deck.querySelector('.pt-bubbles');
+    if (!box) return;
+    var W = box.clientWidth, H = box.clientHeight;
+    if (!W) return;
+    packWidth = W;
+    var els = Array.prototype.slice.call(box.querySelectorAll('.pt-bubble'));
+    var base = els.map(function (b) { return (+b.dataset.size) / 2; });
+    // 先按面积把总量压到容器的 ~48%，放不下再整体缩 10% 重排
+    var area = base.reduce(function (s, r) { return s + Math.PI * r * r; }, 0);
+    var k = Math.min(1, Math.sqrt(0.48 * W * H / (area || 1)));
+    for (var attempt = 0; attempt < 8; attempt++, k *= 0.9) {
+      var placed = [], ok = true;
+      for (var i = 0; i < base.length && ok; i++) {
+        var r = Math.max(22, base[i] * k), hit = null;
+        for (var t = 0; t < 90 && !hit; t += 0.1) {
+          var x = W / 2 + 5 * t * Math.cos(t) * 1.8, y = H / 2 + 5 * t * Math.sin(t) * 0.6;
+          if (x - r < 2 || x + r > W - 2 || y - r < 1 || y + r > H - 1) continue;
+          if (placed.every(function (p) { return Math.hypot(p.x - x, p.y - y) >= p.r + r + 4; })) hit = { x: x, y: y, r: r };
+        }
+        if (hit) placed.push(hit); else ok = false;
+      }
+      if (ok || attempt === 7) {
+        els.forEach(function (b, j) {
+          var p = placed[j];
+          b.hidden = !p;
+          if (!p) return;
+          b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
+          b.style.width = b.style.height = Math.round(p.r * 2) + 'px';
+          b.style.fontSize = p.r < 32 ? '11px' : '';
+        });
+        return;
+      }
+    }
+  }
+  // 甲板在非首页时 display:none，宽度为 0；尺寸一变（含重新显示）就重新打包
+  var packWidth = 0;
+  if ('ResizeObserver' in window) new ResizeObserver(function () {
+    var box = deck.querySelector('.pt-bubbles');
+    var w = box ? box.clientWidth : 0;
+    if (w && w !== packWidth) { packWidth = w; packBubbles(); }
+  }).observe(deck);
+  setInterval(renderDeck, 1500);
+  renderDeck();
+
+  /* ---------------- ⌘K 指令面板 ---------------- */
+  var cmdk = document.createElement('div');
+  cmdk.className = 'pt-cmdk'; cmdk.setAttribute('role', 'dialog'); cmdk.setAttribute('aria-modal', 'true'); cmdk.setAttribute('aria-label', '快速跳转与提问');
+  cmdk.innerHTML = '<div class="pt-cmdk-box"><label class="pt-cmdk-in"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>' +
+    '<input type="text" placeholder="跳转模块，或直接输入一个校园话题交给育人工坊…" aria-label="搜索指令" autocomplete="off"><kbd>Esc</kbd></label>' +
+    '<ul class="pt-cmdk-list" role="listbox"></ul>' +
+    '<div class="pt-cmdk-foot"><span>↑↓ 选择</span><span>↵ 执行</span><span>Esc 关闭</span></div></div>';
+  body.append(cmdk);
+  var cmdInput = cmdk.querySelector('input');
+  var cmdList = cmdk.querySelector('.pt-cmdk-list');
+  var cmdIndex = 0, cmdItems = [], lastFocus = null;
+
+  function baseCommands() {
+    var list = Object.keys(TAB_NAMES).map(function (k) {
+      return { group: '模块', icon: k, label: '前往 ' + TAB_NAMES[k], hint: '模块', kw: k + TAB_NAMES[k], run: function () { switchTab(k); window.scrollTo({ top: 0 }); } };
+    });
+    list.push(
+      { group: '操作', icon: 'collect', label: '立即采集全网热点与华理社区', hint: '同步', kw: 'collect 采集 刷新 同步', run: function () { if (typeof triggerCollect === 'function') triggerCollect(); } },
+      { group: '操作', icon: 'heart', label: '查看心育建议关怀线索', hint: '核验', kw: 'care crisis 关怀 危机 心理', run: function () { if (typeof viewCrisisPosts === 'function') viewCrisisPosts('关注'); } },
+      { group: '操作', icon: 'archive', label: '查看研报归档', hint: '工坊', kw: 'report archive 研报 归档', run: function () { if (typeof heroGoReports === 'function') heroGoReports(); } },
+      { group: '操作', icon: 'config', label: '配置大模型与搜索工具', hint: '设置', kw: 'config settings 配置 模型 api', run: function () { if (typeof openConfigModal === 'function') openConfigModal(); } },
+      { group: '外观', icon: 'theme', label: isPulse() ? '切回「经典」版式' : '切换到「脉动」版式', hint: '主题', kw: 'theme 主题 经典 脉动 外观', run: function () { setTheme(isPulse() ? 'classic' : 'pulse'); } }
+    );
+    return list;
+  }
+  function renderCmdk() {
+    var q = cmdInput.value.trim().toLowerCase();
+    cmdItems = baseCommands().filter(function (c) { return !q || (c.label + c.kw).toLowerCase().indexOf(q) > -1; });
+    if (q) {
+      var text = cmdInput.value.trim();
+      cmdItems.unshift({ group: '提问', icon: 'ask', label: '交给育人工坊研究：「' + text + '」', hint: '自动路由', run: function () { if (typeof forwardToStudio === 'function') forwardToStudio(text); } });
+    }
+    if (cmdIndex >= cmdItems.length) cmdIndex = Math.max(0, cmdItems.length - 1);
+    var html = '', group = '';
+    cmdItems.forEach(function (c, i) {
+      if (c.group !== group) { group = c.group; html += '<li class="pt-cmdk-group" role="presentation">' + escHtml(group) + '</li>'; }
+      html += '<li class="pt-cmdk-item" role="option" id="ptCmd' + i + '" data-i="' + i + '" aria-selected="' + (i === cmdIndex) + '"><span class="pt-ci">' + svg(c.icon) + '</span><span>' + escHtml(c.label) + '</span><small>' + escHtml(c.hint) + '</small></li>';
+    });
+    cmdList.innerHTML = html || '<li class="pt-cmdk-empty">没有匹配的指令</li>';
+    cmdInput.setAttribute('aria-activedescendant', cmdItems.length ? 'ptCmd' + cmdIndex : '');
+    var sel = cmdList.querySelector('[aria-selected="true"]'); if (sel) sel.scrollIntoView({ block: 'nearest' });
+  }
+  function openCmdk() {
+    lastFocus = document.activeElement; cmdIndex = 0; cmdInput.value = '';
+    cmdk.classList.add('open'); renderCmdk(); setTimeout(function () { cmdInput.focus(); }, 0);
+  }
+  function closeCmdk() { cmdk.classList.remove('open'); if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); }
+  function runCmd(i) { var c = cmdItems[i]; if (!c) return; closeCmdk(); setTimeout(c.run, 0); }
+  cmdInput.addEventListener('input', function () { cmdIndex = 0; renderCmdk(); });
+  cmdInput.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); cmdIndex = (cmdIndex + 1) % Math.max(1, cmdItems.length); renderCmdk(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); cmdIndex = (cmdIndex - 1 + cmdItems.length) % Math.max(1, cmdItems.length); renderCmdk(); }
+    else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); runCmd(cmdIndex); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeCmdk(); }
+  });
+  cmdList.addEventListener('mousemove', function (e) { var li = e.target.closest('.pt-cmdk-item'); if (li && +li.dataset.i !== cmdIndex) { cmdIndex = +li.dataset.i; renderCmdk(); } });
+  cmdList.addEventListener('click', function (e) { var li = e.target.closest('.pt-cmdk-item'); if (li) runCmd(+li.dataset.i); });
+  cmdk.addEventListener('click', function (e) { if (e.target === cmdk) closeCmdk(); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault(); cmdk.classList.contains('open') ? closeCmdk() : openCmdk();
+    }
+  });
+
+
+  /* ---------------- 图表换色：把既有图表里写死的墨绿色系映射到「脉动」色板，可随时还原 ---------------- */
+  var COLOR_MAP = {};
+  [['#171717', '#1e5644 #235746 #234c40 #1b4d3e #2a5c4c #28594e #1d352d #25483e #153c31 #20322b #202f29'],
+   ['#2b5cd6', '#2f7a62 #2d6a4f #457b9d #577590 #3b6e8c'],
+   ['#16a34a', '#2d7a53 #6b8f71'],
+   ['#0f9fb5', '#527b8f #7999ac #5c7a6e #4a6b5d'],
+   ['#eab308', '#8e9b58 #6e7940'],
+   ['#a1a1aa', '#8f9e95 #64756c #bbc8bc'],
+   ['#f1efe9', '#eaefe9 #e9ede7 #e6ede3 #e1e7dd'],
+   ['#f08a24', '#b88449 #c88a4b'],
+   ['#e5484d', '#c0604b #b85d4b #b5654d'],
+   ['#7c6fd6', '#8d6b94'],
+   ['#a16207', '#a37b56 #9c6b3b #7d5a3c'],
+   ['#ffffff', '#f5f4ee #fbfaf5']
+  ].forEach(function (row) { row[1].split(' ').forEach(function (h) { COLOR_MAP[h] = row[0]; }); });
+  var HEX_RE = /#[0-9a-fA-F]{6}\b/g;
+  var swap = function (v) { return v.replace(HEX_RE, function (h) { return COLOR_MAP[h.toLowerCase()] || h; }); };
+  var RECOLOR_ATTRS = ['fill', 'stroke', 'stop-color', 'style'];
+  function recolor(root) {
+    if (!isPulse() || !root) return;
+    root.querySelectorAll('svg [fill], svg [stroke], svg [stop-color], svg [style], [style*="background"], [style*="color"]').forEach(function (el) {
+      RECOLOR_ATTRS.forEach(function (a) {
+        var v = el.getAttribute(a);
+        if (!v || v.indexOf('#') < 0) return;
+        var nv = swap(v);
+        if (nv === v) return;
+        if (!el.hasAttribute('data-pt-o-' + a)) el.setAttribute('data-pt-o-' + a, v);
+        el.setAttribute(a, nv);
+      });
+    });
+  }
+  function unrecolor() {
+    RECOLOR_ATTRS.forEach(function (a) {
+      document.querySelectorAll('[data-pt-o-' + a + ']').forEach(function (el) {
+        el.setAttribute(a, el.getAttribute('data-pt-o-' + a)); el.removeAttribute('data-pt-o-' + a);
+      });
+    });
+  }
+  var recolorTimer = 0;
+  function scheduleRecolor() { clearTimeout(recolorTimer); recolorTimer = setTimeout(function () { recolor(main); recolor($id('postModal')); }, 60); }
+
+  /* ---------------- 进场动效 ---------------- */
+  var CARD_SEL = '.stat-section,.metrics-editorial,.studio-box,.red-editorial,.observatory-lead,.outlook-overview,.info-panel,.cover-feature,.cover-topics,.cover-voice,.pt-tile,.viz-card,.cover-reader-scope';
+
+  var io = ('IntersectionObserver' in window && !reduceMotion) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('pt-in'); io.unobserve(en.target); } });
+  }, { rootMargin: '0px 0px -6% 0px' }) : null;
+  var seen = new WeakSet();
+  function scanReveal() {
+    if (!io || !main) return;
+    main.querySelectorAll('.tab-pane.active :is(' + CARD_SEL + ')').forEach(function (el) {
+      if (seen.has(el)) return; seen.add(el);
+      // 只给首屏以下的区块加进场动画，避免数据刷新时首屏闪烁
+      if (el.getBoundingClientRect().top < window.innerHeight) return;
+      el.classList.add('pt-reveal'); io.observe(el);
+    });
+  }
+  if (io) body.classList.add('pt-reveal-ready');
+  var scanTimer = 0;
+  if (main) new MutationObserver(function () { clearTimeout(scanTimer); scanTimer = setTimeout(scanReveal, 120); scheduleRecolor(); }).observe(main, { childList: true, subtree: true });
+
+  var lastTab = null;
+  function onTabChange() {
+    var app = getApp(); var tab = app && app.currentTab;
+    placeCloud();
+    if (tab === lastTab) return; lastTab = tab;
+    setTimeout(scanReveal, 80);
+  }
+
+  /* ---------------- 华理小腊肠：育人工坊输入框上的腊肠狗（逐帧动画跟随输入） ----------------
+     /static/img/pulse-dachshund.webp 是一张 6×10 的雪碧图，按时间顺序存了 60 帧：
+     短狗不爽（0–4）→ 惊讶并逐渐拉长（5–39）→ 得意（≈49）→ 吐舌头（59）。
+     输入字数映射到目标帧；当前帧用弹簧缓动去追，并在相邻两帧之间按小数部分交叉淡化，
+     所以快速打字或一次删光时，狗都是连续地伸长、缩回。 */
+  var composer = document.querySelector('#pane-studio .research-composer');
+  var studioInput = $id('studioQueryInput');
+  var studioPane = $id('pane-studio');
+  if (composer && studioInput) {
+    var MAX = +studioInput.getAttribute('maxlength') || 200;
+    var SPRITE = { src: '/static/img/pulse-dachshund.webp', cols: 6, count: 60, fw: 474, fh: 157 };
+    // 字数 → 帧号的分段线性锚点（和下面的文案分档对应）
+    var ANCHORS = [[0, 0], [3, 4], [4, 5], [40, 39], [55, 49], [70, 59]];
+    var TONGUE = [53, 59];               // 吐舌头阶段：停住时在这几帧之间缓慢往复，保持“活着”
+
+    var dog = document.createElement('div');
+    dog.className = 'pt-dog'; dog.setAttribute('aria-hidden', 'true');
+    var canvas = document.createElement('canvas');
+    canvas.width = SPRITE.fw; canvas.height = SPRITE.fh;
+    dog.append(canvas);
+    var say = document.createElement('p');
+    say.className = 'pt-dog-say'; say.setAttribute('aria-live', 'polite');
+    say.innerHTML = '<span class="pt-say-main"></span><span class="pt-say-sub"></span>';
+    composer.append(dog, say);
+    var ctx = canvas.getContext('2d');
+    var sheet = new Image(), ready = false;
+    sheet.onload = function () { ready = true; dog.classList.add('ready'); draw(true); };
+    sheet.src = SPRITE.src;
+
+    var MOODS = {
+      sleepy:  { say: '问题写长一点，我才能变长', sub: '我是华理小腊肠 · 写得越具体，我越长', color: '#71717a' },
+      listen:  { say: '我在听，说吧', sub: '一句话就行：谁、在哪、遇到了什么', color: '#3f3f46' },
+      curious: { say: '就这？再具体一点', sub: '比如哪个年级、什么场景、学生原话', color: '#c26a0a' },
+      ok:      { say: '嗯，越来越长了', sub: '补一句你最想知道的结论', color: '#a16207' },
+      good:    { say: '可以，有点东西', sub: '再写几个字，我就满意了', color: '#a16207' },
+      great:   { say: '这个题够长，开整！', sub: '⌘ / Ctrl + Enter 直接开始研究', color: '#15803d' },
+      dizzy:   { say: '写满 ' + MAX + ' 字啦，我抻不动了', sub: '删掉一些背景描述，留下核心问题', color: '#e5484d' },
+      busy:    { say: '收到！正在派出智能体…', sub: '研究过程会显示在下方', color: '#15803d' }
+    };
+    var S = { pos: 0, v: 0, target: 0, len: 0, mood: 'sleepy', busyUntil: 0, sayKey: '', drawn: -1, t: 0 };
+
+    function frameFor(len) {
+      for (var i = 1; i < ANCHORS.length; i++) {
+        var a = ANCHORS[i - 1], b = ANCHORS[i];
+        if (len <= b[0]) return a[1] + (b[1] - a[1]) * (len - a[0]) / (b[0] - a[0]);
+      }
+      return ANCHORS[ANCHORS.length - 1][1];
+    }
+    function computeMood() {
+      var len = Array.from(studioInput.value.trim()).length;
+      var focused = document.activeElement === studioInput;
+      S.len = len;
+      S.mood = Date.now() < S.busyUntil ? 'busy' : len >= MAX ? 'dizzy' : len >= 70 ? 'great' : len >= 40 ? 'good'
+        : len >= 12 ? 'ok' : len > 0 ? 'curious' : focused ? 'listen' : 'sleepy';
+      S.target = frameFor(len);
+      dog.classList.toggle('over', S.mood === 'dizzy');
+      dog.classList.toggle('busy', S.mood === 'busy');
+      composer.classList.toggle('pt-over', S.mood === 'dizzy');
+      var key = S.mood + ':' + len;
+      if (key !== S.sayKey) {
+        var moodChanged = S.sayKey.split(':')[0] !== S.mood;
+        S.sayKey = key;
+        var m = MOODS[S.mood];
+        var apply = function () {
+          say.style.setProperty('--pt-say', m.color);
+          say.firstChild.innerHTML = escHtml(m.say) + (len ? ' <em>' + len + ' / ' + MAX + '</em>' : '');
+          say.lastChild.textContent = m.sub;
+          say.classList.remove('swap');
+        };
+        if (moodChanged && !reduceMotion) { say.classList.add('swap'); clearTimeout(say._t); say._t = setTimeout(apply, 150); }
+        else apply();
+      }
+    }
+    function blit(i, alpha) {
+      var sx = (i % SPRITE.cols) * SPRITE.fw, sy = Math.floor(i / SPRITE.cols) * SPRITE.fh;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(sheet, sx, sy, SPRITE.fw, SPRITE.fh, 0, 0, SPRITE.fw, SPRITE.fh);
+    }
+    function draw(force) {
+      if (!ready) return;
+      var p = Math.max(0, Math.min(SPRITE.count - 1, S.pos));
+      var key = Math.round(p * 20);              // 1/20 帧精度以内不重绘
+      if (!force && key === S.drawn) return;
+      S.drawn = key;
+      var i = Math.floor(p), f = p - i;
+      ctx.clearRect(0, 0, SPRITE.fw, SPRITE.fh);
+      blit(i, 1);
+      if (f > 0.02 && i + 1 < SPRITE.count) blit(i + 1, f);   // 相邻帧交叉淡化，补出帧与帧之间的过渡
+      ctx.globalAlpha = 1;
+    }
+
+    var lastTs = 0;
+    function frame(ts) {
+      requestAnimationFrame(frame);
+      if (!isPulse() || !studioPane || !studioPane.classList.contains('active')) { lastTs = 0; return; }
+      var dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016; lastTs = ts;
+      S.t += dt;
+      var target = S.target;
+      // 吐舌头阶段停住后，在最后几帧之间慢慢往复，像在喘气摇舌头
+      if (!reduceMotion && target >= TONGUE[1] - 0.01 && Math.abs(S.pos - target) < 1.5) {
+        target = TONGUE[0] + (TONGUE[1] - TONGUE[0]) * (0.5 + 0.5 * Math.cos(S.t * 2.2));
+      }
+      if (reduceMotion) { S.pos = target; S.v = 0; }
+      else {
+        var k = 70, c = 2 * 0.86 * Math.sqrt(k);   // 接近临界阻尼：跟得快，几乎不过冲
+        S.v += (k * (target - S.pos) - c * S.v) * dt;
+        S.pos += S.v * dt;
+      }
+      draw(false);
+    }
+
+    studioInput.addEventListener('input', computeMood);
+    studioInput.addEventListener('focus', computeMood);
+    studioInput.addEventListener('blur', computeMood);
+    var launch = $id('btnLaunchStudio');
+    if (launch) launch.addEventListener('click', function () {
+      if (!studioInput.value.trim()) return;
+      S.busyUntil = Date.now() + 6000; computeMood(); setTimeout(computeMood, 6100);
+    });
+    // 模板按钮、⌘K、跳转研究会直接改 value 不触发 input，轮询兜底
+    var lastVal = studioInput.value;
+    setInterval(function () { if (studioInput.value !== lastVal) { lastVal = studioInput.value; computeMood(); } }, 400);
+    computeMood();
+    S.pos = S.target;
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------------- 校内趋势 · 趋势速览：点开模块第一屏就是图 ---------------- */
+  var CAT_META = [['academic', '学业', '#2b5cd6'], ['life', '生活', '#f08a24'], ['social', '社交', '#16a34a'], ['other', '其他', '#d4d2cb']];
+  var trendsPane = $id('pane-trends');
+  var dash = null, obsHome = null, lastObs = null;
+  if (trendsPane) {
+    dash = document.createElement('section');
+    dash.className = 'pt-trend-dash'; dash.id = 'ptTrendDash'; dash.setAttribute('aria-label', '校内趋势速览');
+    dash.innerHTML = '<div class="pt-td-head"><h2>趋势速览</h2><p id="ptTdScope">正在读取近十日校内讨论…</p></div><div id="ptTdNumbers"></div><div class="pt-td-grid" id="ptTdGrid"></div><div id="ptTdCloud"></div>';
+    trendsPane.prepend(dash);
+  }
+  // 「趋势速览」借用原有的数字条 #obsNumbers；切回经典时放回原位
+  function placeObsNumbers() {
+    var nums = $id('obsNumbers'); if (!nums || !dash) return;
+    if (!obsHome) { obsHome = document.createComment('pt-obs-home'); nums.parentNode.insertBefore(obsHome, nums); }
+    if (isPulse()) $id('ptTdNumbers').append(nums);
+    else if (obsHome.parentNode) obsHome.parentNode.insertBefore(nums, obsHome);
+  }
+  placeObsNumbers();
+
+  // 十日热点词云：只有一份（#monitorCloudSection，绑定了原有的渲染与点击逻辑）。
+  // 脉动版式下固定放在「校内趋势」的趋势速览下方，数据账本不再重复出现；切回经典时放回原处
+  var cloudHome = null;
+  function placeCloud() {
+    var sec = $id('monitorCloudSection'), slot = $id('ptTdCloud');
+    if (!sec || !slot) return;
+    if (!cloudHome) { cloudHome = document.createComment('pt-cloud-home'); sec.parentNode.insertBefore(cloudHome, sec); }
+    var wantTrends = isPulse();
+    if (wantTrends) { if (sec.parentNode !== slot) slot.append(sec); }
+    else if (cloudHome.parentNode && sec.parentNode === slot) cloudHome.parentNode.insertBefore(sec, cloudHome);
+  }
+  placeCloud();
+
+  function bjDate(ts) { return new Date(ts * 1000).toLocaleDateString('zh-CN', { timeZone: 'Asia/Shanghai', month: 'numeric', day: 'numeric' }); }
+  function openObserved(params, title) { if (typeof viewObservedPosts === 'function') viewObservedPosts(params, title); }
+
+  function renderTrendDash() {
+    if (!dash) return;
+    var obs; try { obs = typeof OBS !== 'undefined' ? OBS : null; } catch (e) { obs = null; }
+    var d = obs && obs.data;
+    if (!d || d === lastObs) return;
+    lastObs = d;
+    var grid = $id('ptTdGrid');
+    var themes = (d.themes || []).filter(function (t) { return t && t.theme && t.activity && Array.isArray(t.activity.timeline); });
+    if (!themes.length) { grid.innerHTML = '<div class="pt-td-card pt-td-wide pt-td-empty">还没有可画图的校内帖子，点右上角「立即采集」。</div>'; return; }
+    var days = themes[0].activity.timeline.map(function (w) { return w.ts; });
+    var DAY = 86400, start = d.window_start || days[0], end = d.generated_at || (days[days.length - 1] + DAY);
+    $id('ptTdScope').textContent = bjDate(start) + '—' + bjDate(end) + ' · ' + (d.total || 0) + ' 篇独立帖 · 按发帖时间归入 24 小时窗口 · 统计范围为已采集公开帖子';
+
+    // A. 十日发帖量（按议题大类堆叠）
+    var stacks = days.map(function () { return { academic: 0, life: 0, social: 0, other: 0, total: 0 }; });
+    themes.forEach(function (t) {
+      var cat = CAT_META.some(function (c) { return c[0] === t.category; }) ? t.category : 'other';
+      t.activity.timeline.forEach(function (w, i) { var n = +w.posts || 0; if (stacks[i]) { stacks[i][cat] += n; stacks[i].total += n; } });
+    });
+    var maxDay = Math.max.apply(null, stacks.map(function (s) { return s.total; }).concat([1]));
+    var niceMax = Math.max(4, Math.ceil(maxDay / 4) * 4);
+    var VW = 640, VH = window.innerWidth <= 760 ? 300 : 210, L = 26, B = 26, T = 18, plotH = VH - B - T, step = (VW - L) / days.length, bw = Math.min(34, step * 0.56);
+    var cols = ['<svg class="pt-td-cols" viewBox="0 0 ' + VW + ' ' + VH + '" style="aspect-ratio:' + VW + ' / ' + VH + '" role="img" aria-label="近十日每日校内发帖量">'];
+    for (var g = 0; g <= 4; g++) {
+      var gy = T + plotH - plotH * g / 4;
+      cols.push('<line x1="' + L + '" x2="' + VW + '" y1="' + gy + '" y2="' + gy + '" stroke="' + (g ? '#efede7' : '#171717') + '" stroke-width="' + (g ? 1 : 1.5) + '"/>');
+      if (g) cols.push('<text x="' + (L - 6) + '" y="' + (gy + 4) + '" text-anchor="end">' + (niceMax * g / 4) + '</text>');
+    }
+    stacks.forEach(function (s, i) {
+      var cx = L + step * i + step / 2, y = T + plotH, last = i === stacks.length - 1;
+      var tip = bjDate(days[i]) + '：' + s.total + ' 篇（' + CAT_META.map(function (c) { return c[1] + ' ' + s[c[0]]; }).join('、') + '）· 点击查看原帖';
+      cols.push('<g class="day" data-i="' + i + '" tabindex="0" role="button" aria-label="' + escHtml(tip) + '"><title>' + escHtml(tip) + '</title>');
+      cols.push('<rect class="day-hit" x="' + (cx - step / 2) + '" y="' + T + '" width="' + step + '" height="' + plotH + '" rx="8" fill="transparent"/>');
+      var segs = '';
+      CAT_META.forEach(function (c) {
+        var v = s[c[0]]; if (!v) return;
+        var h = plotH * v / niceMax; y -= h;
+        segs += '<rect x="' + (cx - bw / 2) + '" y="' + y.toFixed(1) + '" width="' + bw + '" height="' + h.toFixed(1) + '" fill="' + c[2] + '" stroke="#171717" stroke-width="1.5"/>';
+      });
+      cols.push('<g class="col" style="animation-delay:' + (i * 0.05).toFixed(2) + 's">' + segs + '</g>');
+      if (s.total) cols.push('<text class="v" x="' + cx + '" y="' + (y - 6) + '" text-anchor="middle">' + s.total + '</text>');
+      cols.push('<text x="' + cx + '" y="' + (VH - 6) + '" text-anchor="middle"' + (last ? ' style="font-weight:700;fill:#171717"' : '') + '>' + (last ? '近24h' : bjDate(days[i])) + '</text></g>');
+    });
+    cols.push('</svg>');
+    var legend = '<div class="pt-td-legend">' + CAT_META.map(function (c) { return '<span><i style="background:' + c[2] + '"></i>' + c[1] + '类议题</span>'; }).join('') + '</div>';
+
+    // B. 议题构成
+    var ranked = themes.slice().sort(function (a, b) { return (b.posts || 0) - (a.posts || 0); });
+    var total = ranked.reduce(function (s, t) { return s + (t.posts || 0); }, 0) || 1;
+    var colorOf = {};
+    // 议题颜色跟随所属大类，和上面的柱状图对得上
+    var catColor = {}; CAT_META.forEach(function (c) { catColor[c[0]] = c[2]; });
+    ranked.forEach(function (t) { colorOf[t.theme] = catColor[t.category] || '#d4d2cb'; });
+    var share = '<div class="pt-td-share" role="img" aria-label="十日议题构成">' + ranked.map(function (t) {
+      var pct = (t.posts || 0) / total * 100;
+      return pct ? '<button type="button" data-theme="' + escHtml(t.theme) + '" style="width:' + pct.toFixed(2) + '%;background:' + colorOf[t.theme] + '" title="' + escHtml(t.theme) + ' ' + t.posts + ' 篇（' + pct.toFixed(1) + '%）"></button>' : '';
+    }).join('') + '</div>';
+    var rank = '<ul class="pt-td-rank">' + ranked.slice(0, 7).map(function (t) {
+      return '<li><button type="button" data-theme="' + escHtml(t.theme) + '"><i style="background:' + colorOf[t.theme] + '"></i><span>' + escHtml(t.theme) + '</span><b>' + (t.posts || 0) + '<small>' + Math.round((t.posts || 0) / total * 100) + '%</small></b></button></li>';
+    }).join('') + '</ul>';
+
+    // C. 每个议题十日走势
+    var sparks = ranked.filter(function (t) { return t.theme !== '其他'; }).slice(0, 9).map(function (t) {
+      var vals = t.activity.timeline.map(function (w) { return +w.posts || 0; });
+      var mx = Math.max.apply(null, vals.concat([1])), n = vals.length;
+      var pts = vals.map(function (v, i) { return [(i / (n - 1) * 100).toFixed(1), (30 - v / mx * 26).toFixed(1)]; });
+      var line = pts.map(function (p) { return p.join(','); }).join(' ');
+      var lastV = vals[n - 1], prevV = vals[n - 2] || 0, diff = lastV - prevV;
+      var cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat', txt = diff > 0 ? '↑ ' + diff : diff < 0 ? '↓ ' + (-diff) : '持平';
+      var c = colorOf[t.theme];
+      return '<button type="button" class="pt-spark" data-theme="' + escHtml(t.theme) + '" title="' + escHtml(t.theme) + '：十日每日发帖 ' + vals.join(' / ') + '">' +
+        '<strong>' + escHtml(t.theme) + '</strong><span class="pt-sp-n">' + (t.posts || 0) + '</span>' +
+        '<span class="pt-sp-sub">近24h ' + lastV + ' 篇</span><span class="pt-sp-delta ' + cls + '">' + txt + '<span style="color:#a1a1aa;font-weight:500"> 较前日</span></span>' +
+        '<svg viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true"><polygon points="0,32 ' + line + ' 100,32" fill="' + c + '" opacity=".16"/>' +
+        '<polyline points="' + line + '" fill="none" stroke="' + c + '" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>' + '</svg></button>';
+    }).join('');
+
+    grid.innerHTML =
+      '<article class="pt-td-card"><h3>每天有多少新帖</h3><p>近十日校内帖子按议题大类堆叠 · 点任意一天看当天原帖</p>' + cols.join('') + legend + '</article>' +
+      '<article class="pt-td-card"><h3>大家主要在聊什么</h3><p>十日内各议题帖子占比 · 点色块或名称看原帖</p>' + share + rank + '</article>' +
+      '<article class="pt-td-card pt-td-wide"><h3>每个议题的十日走势</h3><p>折线为每日新帖数，右上角是十日总数，箭头对比前一日</p><div class="pt-td-sparks">' + (sparks || '<div class="pt-td-empty">暂无可比较的议题</div>') + '</div></article>';
+
+    grid.querySelectorAll('g.day').forEach(function (gEl) {
+      var i = +gEl.dataset.i;
+      var go = function () { openObserved({ from: days[i], until: days[i] + DAY }, bjDate(days[i]) + ' · 当日发帖'); };
+      gEl.addEventListener('click', go);
+      gEl.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+    grid.querySelectorAll('[data-theme]').forEach(function (b) {
+      b.addEventListener('click', function () { openObserved({ theme: b.dataset.theme, from: start, until: end }, b.dataset.theme + ' · 近十日'); });
+    });
+    scheduleRecolor();
+  }
+  setInterval(renderTrendDash, 1500);
+  renderTrendDash();
+
+  /* ---------------- 初始化 ---------------- */
+  setTheme(isPulse() ? 'pulse' : 'classic');
+  scanReveal();
+  scheduleRecolor();
+})();
 </script>
 </body>
 </html>
