@@ -9,6 +9,7 @@ COPY templates/login.html templates/login.html
 COPY static/css/bettafish.css static/css/bettafish.css
 COPY static/js/app-ui.js static/js/app-ui.js
 COPY static/img/ecust-lawn.jpg static/img/ecust-lawn.jpg
+COPY static/img/pulse-dachshund.webp static/img/pulse-dachshund.webp
 COPY static/task_sidebar.js static/task_sidebar.js
 COPY static/task_isolation.js static/task_isolation.js
 COPY ForumEngine/task_store.py ForumEngine/task_store.py
