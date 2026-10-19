@@ -120,5 +120,8 @@ const server=http.createServer((req,res)=>{
   fs.writeFileSync(path.join(out,'ui-results.json'),JSON.stringify({passed:true,requests:submitted.length,scriptErrors:errors,mode:'mock API; no real model result'},null,2));
   console.log('PASS: visible entry, routing, validation, all thinking modes, 429, errors, expired jobs, unknown states, degraded/missing results, report viewing, source chooser, mobile; no script errors.');
   console.log(JSON.stringify(await require('./copy_polish_checks.cjs')(page,out)));
+  const crisisReview=await require('./crisis_review_checks.cjs')(page);
+  fs.writeFileSync(path.join(__dirname,'crisis-review-ui-results.json'),JSON.stringify(crisisReview,null,2)+'\n');
+  console.log(JSON.stringify(crisisReview));
   await browser.close();server.close();
 })().catch(e=>{console.error(e);server.close();process.exit(1)});

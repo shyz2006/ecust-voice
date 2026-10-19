@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "widths": [
+    1440,
+    390
+  ],
+  "levels": [
+    "高危",
+    "关注"
+  ],
+  "collapsedAndExpanded": true,
+  "keyboard": true,
+  "sourceLink": true,
+  "zeroAndFailureStates": true,
+  "ordinaryPostModalRestored": true
+}

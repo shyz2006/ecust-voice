@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "invalid input rejected",
+    "invalid input rejected",
+    "invalid input rejected",
+    "invalid input rejected",
+    "invalid input rejected",
+    "workflow and options: quick",
+    "workflow and options: standard",
+    "workflow and options: deep",
+    "degraded model remains failure",
+    "capacity rejected with 429",
+    "expired job 404"
+  ],
+  "database": "isolated",
+  "model": "mock"
+}

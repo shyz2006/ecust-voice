@@ -41,7 +41,9 @@ def pulse_redirect():
 
 @pulse_bp.route("/")
 def pulse_page():
-    return send_from_directory(_TEMPLATE_DIR, "pulse.html")
+    resp = send_from_directory(_TEMPLATE_DIR, "pulse.html", max_age=0)
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    return resp
 
 
 @pulse_bp.route("/api/status")
@@ -58,8 +60,10 @@ def api_topics():
 
 @pulse_bp.route("/api/meme-trends")
 def api_meme_trends():
-    """梗 / 短视频玩法候选（含扩散时间线与视频剪辑风格统计）。"""
-    return jsonify({"success": True, **storage.latest_topics("meme")})
+    """梗 / 短视频玩法候选（聚合 B站、抖音、微博、百度、知乎等全网平台及校内共鸣）。"""
+    from . import memes
+    items = memes.network_meme_catalog()
+    return jsonify({"success": True, "topics": items, "items": items})
 
 
 @pulse_bp.route("/api/campus")
@@ -77,6 +81,26 @@ def api_campus_posts():
     if not theme:
         return jsonify({"success": False, "message": "缺少主题"}), 400
     return jsonify({"success": True, **campus.theme_posts(theme, int(time.time()))})
+
+
+@pulse_bp.route("/api/campus/crisis-posts")
+def api_campus_crisis_posts():
+    if session.get("authenticated") is not True:
+        response = jsonify({"success": False, "message": "请登录后查看关注帖子"})
+        response.headers["Cache-Control"] = "no-store"
+        return response, 401
+    level = str(request.args.get("level", "")).strip()
+    if level not in ("高危", "关注", "all", "ads"):
+        return jsonify({"success": False, "message": "请选择有效的查看类别"}), 400
+    from . import campus
+
+    blob = storage.kv_get("campus_voice")
+    voice = json.loads(blob) if blob else {}
+    now = int(time.time())
+    snapshot = min(int(voice.get("generated_at") or now), now)
+    response = jsonify({"success": True, **campus.crisis_posts(level, snapshot)})
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @pulse_bp.route("/api/plans/<int:plan_id>/export")
