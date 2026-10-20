@@ -494,6 +494,8 @@ class ReportAgent:
             sections = self._slice_template(template_result.get('template_content', ''))
             if not sections:
                 raise ValueError("模板无法解析出章节，请检查模板内容。")
+            if (getattr(self, '_task_report_meta', {}) or {}).get('report_style') == 'concise' and len(sections) != 4:
+                raise ValueError('简明事件报告模板必须恰好包含四章。')
             emit('stage', {'stage': 'template_sliced', 'section_count': len(sections)})
 
             template_text = template_result.get('template_content', '')

@@ -88,6 +88,10 @@ with mock.patch.object(config,'settings',fake),mock.patch.object(flask_interface
  assert client.get('/pulse/api/revision/research/'+task).status_code==404
 checks+=['research authentication and ownership','invalid input and date filters','original three-engine runner called','concise template metadata','idempotent retries']
 from ReportEngine.prompts.prompts import set_report_style,styled_prompt
+from ReportEngine.core import parse_template_sections
+sections=parse_template_sections(pathlib.Path('ReportEngine/report_template/'+research.TEMPLATE+'.md').read_text(encoding='utf-8'))
+assert len(sections)==4 and all(s.chapter_id=='S'+str(i) for i,s in enumerate(sections,1))
+checks+=['real report template parses to exactly four chapters']
 set_report_style('concise');assert '不少于3万字' not in styled_prompt('CHAPTER_JSON')
 assert '总字数约20000字' not in styled_prompt('WORD_BUDGET')
 assert '例如主题团体辅导' not in styled_prompt('CHAPTER_JSON')

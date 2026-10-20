@@ -56,9 +56,17 @@ const server=http.createServer((req,res)=>{
   await page.locator('[data-tab=hot]').click();await page.locator('#hotPlatforms [data-platform="B站"]').click();assert((await page.locator('#hotFeed').textContent()).includes('B站热点阅读测试'));
   await page.locator('[data-tab=memes]').click();assert.equal(await page.locator('#memePlatforms button').count(),4);assert((await page.locator('#memeFeed').textContent()).includes('流行表达释义验证'));
   await page.locator('[data-tab=ledger]').click();assert.equal(await page.locator('#ledgerDonuts .donut-card').count(),3);
+  const firstRing=page.locator('#ledgerDonuts .donut-card').first().locator('svg'),ringBox=await firstRing.boundingBox();
+  for(const [index,previous] of [[0,0],[1,30]]){
+   const angle=2*Math.PI*(previous+(30+index)/2)/426;
+   await page.mouse.click(ringBox.x+ringBox.width*(64+46*Math.sin(angle))/128,ringBox.y+ringBox.height*(64-46*Math.cos(angle))/128);
+   await page.locator('#detailBody .trend-chart').waitFor();
+   assert((await page.locator('#detailTitle').textContent()).startsWith(names[index]),'Donut mouse segment should match category');
+   await page.keyboard.press('Escape');
+  }
   await page.locator('#ledgerDonuts .donut-card').first().locator('circle[role=button]').first().focus();await page.keyboard.press('Enter');await page.locator('#detailBody .trend-chart').waitFor();await page.keyboard.press('Escape');
   await page.screenshot({path:path.join(out,'ledger-'+width+'.png'),fullPage:true});
-  results.push({width,sixModules:true,twelveCategories:true,noHorizontalOverflow:true,modalScroll:true,nativeHelpAboveModal:true,donutKeyboard:true});
+  results.push({width,sixModules:true,twelveCategories:true,noHorizontalOverflow:true,modalScroll:true,nativeHelpAboveModal:true,donutKeyboard:true,donutMouseSegments:true});
  }
  await page.locator('[data-tab=research]').click();assert.equal(await page.locator('#researchForm select').count(),0);
  await page.locator('#researchQuery').fill('校园信息公开的事件影响有哪些？');await page.locator('#researchSubmit').click();await page.getByText('报告已生成',{exact:true}).waitFor();

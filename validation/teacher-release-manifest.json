@@ -4,7 +4,7 @@
   "base_image_id": "sha256:c1ef551b83332f0ab9cfd4d0d8c5fabe6f69451b471957f02570890c47a67bb4",
   "base_image": "bettafish:base-teacher-feedback-20261020",
   "candidate_image": "bettafish:candidate-teacher-feedback-20261020",
-  "candidate_image_id": "sha256:9282617c867f08f09c8e9d03c53905e3586f7effd1d9703117b7d7e60ab8c1e5",
+  "candidate_image_id": "sha256:0fe9f7b8a5a1e7a966e5b4346c4939fcddc31e7db94242289b07b37c71b17d21",
   "files": [
     {
       "path": "templates/index.html",
@@ -50,7 +50,7 @@
     },
     {
       "path": "CampusPulse/revision.py",
-      "candidate_sha256": "8d0422bec1cc7269916bca5070265e7ebb9b9cdbb7b889c4835b4f144da88fc7",
+      "candidate_sha256": "4fac574fc3ccb11b3823521ed945f8852bf9f2619a3748d5b569fc601258ed13",
       "expected_before": null,
       "before_sha256": null,
       "host_existed": false
@@ -78,7 +78,7 @@
     },
     {
       "path": "ReportEngine/agent.py",
-      "candidate_sha256": "b8382a97b38814df3961c1ef46e4966967ea64c8939eb440480a6d5f24287323",
+      "candidate_sha256": "44a392b2624798946825c7374494fbfdf64a33f619584413b3c2e556c0de31d0",
       "expected_before": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
       "before_sha256": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
       "host_existed": true
@@ -92,7 +92,7 @@
     },
     {
       "path": "ReportEngine/report_template/校园与青年事件分析报告模板.md",
-      "candidate_sha256": "19c24a58ecfcaf6dfae9beff2e2cab2c488d9f85435961c7210112099db8b614",
+      "candidate_sha256": "1cb4df72c6717ba5c1f31df0326f85a12bd7cafa3ecb0b59ca9b913a0c192e66",
       "expected_before": null,
       "before_sha256": null,
       "host_existed": false
