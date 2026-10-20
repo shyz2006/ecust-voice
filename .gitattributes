@@ -2,3 +2,4 @@ validation/teacher-*.json text eol=lf
 validation/campus-v3-*.json text eol=lf
 
 validation/campus-v4-*.json text eol=lf
+validation/campus-v5-*.json text eol=lf

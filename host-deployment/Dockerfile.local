@@ -67,3 +67,5 @@ COPY static/css/campus-play.css static/css/campus-play.css
 COPY static/js/campus-play.js static/js/campus-play.js
 
 COPY utils/topic_guard.py utils/topic_guard.py
+
+COPY static/js/campus-weekly.js static/js/campus-weekly.js

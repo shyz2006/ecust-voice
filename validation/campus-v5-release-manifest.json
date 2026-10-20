@@ -1,0 +1,60 @@
+{
+  "name": "campus-weekly-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/campus-weekly-20261020",
+  "base_image_id": "sha256:3c1171b9b5b09fac31144c338d9da7ebc15a19df4f8473806983b1f92a601063",
+  "base_image": "bettafish:base-campus-weekly-20261020",
+  "candidate_image": "bettafish:candidate-campus-weekly-20261020",
+  "candidate_image_id": "sha256:2ca5a8de91d5b73e5f6f9cc9b80af9b45198ca8d96d29d0ea2bd35a75d292261",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "3f02ac6ba318b28dd6d4f3e3e0db39e12fdee2e43f948a7e7d0e70b192adc126",
+      "expected_before": "f8cf323e625bac1b1eac8f247f7963a341a12f23cdd5e8b6e6517eaa0b80d157",
+      "before_sha256": "f8cf323e625bac1b1eac8f247f7963a341a12f23cdd5e8b6e6517eaa0b80d157",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "3f02ac6ba318b28dd6d4f3e3e0db39e12fdee2e43f948a7e7d0e70b192adc126",
+      "expected_before": "f8cf323e625bac1b1eac8f247f7963a341a12f23cdd5e8b6e6517eaa0b80d157",
+      "before_sha256": "f8cf323e625bac1b1eac8f247f7963a341a12f23cdd5e8b6e6517eaa0b80d157",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "2f4a9733c1eb0f6975b303aab2990def4811afd9992a2a273ed01c68be81e941",
+      "expected_before": "53de2d0d5e1c9ea91705c9adeb5c0bec00852c3d1c53e2d05807ab55270cf89a",
+      "before_sha256": "53de2d0d5e1c9ea91705c9adeb5c0bec00852c3d1c53e2d05807ab55270cf89a",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-weekly.js",
+      "candidate_sha256": "aa313f56f831801d875b47b785f98b855e98cdc86e6f4dfc877dc2b4d386763c",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "ffc5ae60c91845fa6347e0c9923ab4ba61db645721033eeedee6867ac22db6b2",
+      "expected_before": "a67bf6aebce482f7b169c1b950298a4944ee7a3769071e0b3c857059f059df87",
+      "before_sha256": "a67bf6aebce482f7b169c1b950298a4944ee7a3769071e0b3c857059f059df87",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "58a9ab16b79b4d3d3165d949a5964ac7f32e65efaf151a2ad60e3ab720360370",
+      "expected_before": "2ffed6da5de806c9720e7c6d210f005fd454baf7ec021b69bbe3b300f3ece3bd",
+      "before_sha256": "2ffed6da5de806c9720e7c6d210f005fd454baf7ec021b69bbe3b300f3ece3bd",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "823cccc6905781f67250007d3a5c35dd3c6349541dd403deae6ff1a2c492ddce",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "activated": true
+}

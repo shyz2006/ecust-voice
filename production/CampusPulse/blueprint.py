@@ -552,6 +552,8 @@ def init_campus_pulse(app, url_prefix: str = "/pulse") -> None:
         pass
     app.register_blueprint(pulse_bp, url_prefix=url_prefix)
     pipeline.start_scheduler()
+    from . import weekly
+    weekly.start_scheduler()
     # Earlier automatic reports use the retired taxonomy and activity-oriented
     # summary prompts. New reports are explicitly submitted to the original runner.
     def warm_revision():
@@ -754,3 +756,50 @@ def api_issue_export(issue_id):
     response = Response(issues.markdown(item),mimetype='text/markdown')
     response.headers['Content-Disposition'] = 'attachment; filename="campus-issue-'+issue_id+'.md"'
     return response
+
+
+@pulse_bp.route('/api/revision/weekly',methods=['GET','POST'])
+@pulse_bp.route('/api/revision/weekly/config',methods=['GET','POST'])
+@pulse_bp.route('/api/revision/weekly/test-email',methods=['POST'])
+@pulse_bp.route('/api/revision/weekly/<report_id>',methods=['GET'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/report',methods=['GET'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/send',methods=['POST'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/retry',methods=['POST'])
+def revision_weekly(report_id=None):
+    from . import weekly
+    from urllib.parse import urlsplit
+    if session.get('authenticated') is not True or not _username():return jsonify(success=False,message='请登录后查看校园周报'),401
+    if request.method=='POST':
+        origin=request.headers.get('Origin')
+        if origin and urlsplit(origin).netloc!=request.host:return jsonify(success=False,message='请求来源有误'),403
+        if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
+    try:
+        body=request.get_json(silent=True) or {}
+        if request.path.endswith('/config'):
+            return jsonify(success=True,config=weekly.save_config(body) if request.method=='POST' else weekly.config())
+        if request.path.endswith('/test-email'):
+            address=str(body.get('recipient') or '').strip()
+            if not weekly.email_address(address):raise ValueError('请填写测试收件邮箱')
+            value=weekly.config(True)
+            if not value['api_key'] or not value['sender'] or not value['sender_verified']:raise ValueError('请先保存密钥和已验证的发件邮箱')
+            if not weekly.lease('test-email',60):raise ValueError('测试邮件已提交，请稍后再试')
+            email_id=weekly.resend({'from':value['sender'],'to':[address],'subject':'华理校园周报 · 邮箱测试','html':'<p>校园周报邮件配置测试成功。</p>'},'campus-weekly/test/'+uuid.uuid4().hex,value['api_key'])
+            return jsonify(success=True,email_id=email_id,message='已提交测试邮件，请查收')
+        if report_id:
+            row=weekly.get(report_id)
+            if request.path.endswith('/report'):return Response(weekly.report_html(row),mimetype='text/html')
+            if request.path.endswith('/send'):
+                if row['status']!='ready':raise ValueError('请等周报正文生成完成')
+                weekly.delivery_ready(weekly.config(True))
+                threading.Thread(target=weekly.send_report,args=(report_id,True),daemon=True).start()
+                return jsonify(success=True,message='邮件已进入发送队列')
+            if request.path.endswith('/retry'):
+                if row['status'] not in ('failed','generating'):raise ValueError('本期周报已完成')
+                with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='generating',error=NULL WHERE id=?",(report_id,))
+                threading.Thread(target=weekly.generate,args=(report_id,),daemon=True).start()
+                return jsonify(success=True,id=report_id)
+            return jsonify(success=True,item=row)
+        if request.method=='POST':return jsonify(success=True,id=weekly.start())
+        return jsonify(success=True,items=weekly.recent(),config=weekly.config())
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    except Exception:return jsonify(success=False,message='周报服务暂未完成，请稍后重试'),503
