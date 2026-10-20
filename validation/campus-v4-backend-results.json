@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "campus-specific vocabulary and intent",
+    "English word boundaries and unsupported text remain unassigned",
+    "all forty hot cards have focus",
+    "annotation cache prefix recovered; no LLM requests",
+    "ten unique aggregated memes",
+    "cross-platform examples merged; search pages excluded",
+    "three newest linked posts per topic",
+    "fourteen Beijing calendar dates including today",
+    "missing dates distinct from zero and old usage excluded"
+  ],
+  "production_writes": false
+}

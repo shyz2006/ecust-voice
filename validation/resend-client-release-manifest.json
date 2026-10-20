@@ -1,0 +1,18 @@
+{
+  "name": "resend-client-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/resend-client-20261020",
+  "base_image_id": "sha256:2ca5a8de91d5b73e5f6f9cc9b80af9b45198ca8d96d29d0ea2bd35a75d292261",
+  "base_image": "bettafish:base-resend-client-20261020",
+  "candidate_image": "bettafish:candidate-resend-client-20261020",
+  "candidate_image_id": "sha256:f6fe9beb3cf4effeee77c93420da795c3364177077f77dd8e761d3c6549adb33",
+  "files": [
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "87d1da8039a7c5a5f040d5c41c487f0e842b45f8422edb991a5b5aa19039707f",
+      "expected_before": "823cccc6905781f67250007d3a5c35dd3c6349541dd403deae6ff1a2c492ddce",
+      "before_sha256": "823cccc6905781f67250007d3a5c35dd3c6349541dd403deae6ff1a2c492ddce",
+      "host_existed": true
+    }
+  ],
+  "activated": true
+}

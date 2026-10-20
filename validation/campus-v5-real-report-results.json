@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "report_id": "preview_4f7a9fa35cac464a",
+  "current_posts": 1251,
+  "previous_posts": 1168,
+  "observed_days": 7,
+  "previous_observed_days": 7,
+  "observations": 5,
+  "evidence_records": 108,
+  "model": "minimax/minimax-m3.1-flash:free",
+  "automatic_delivery_enabled": false,
+  "emails_sent": 0,
+  "verification_scope": "real model generation, source ID membership, numerical tables and manual content sampling; not sentence-level factual proof",
+  "editorial_review_required": true
+}

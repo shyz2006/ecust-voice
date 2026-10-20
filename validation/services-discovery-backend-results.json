@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    "automatic mail disabled by default; complete configuration required",
+    "API key masked and blank preserves it; email validation",
+    "fourteen-day deduplication with matching twelve-category rules",
+    "balanced current/prior evidence and actual sampling coverage",
+    "evidence IDs checked; incomplete coverage removes comparisons",
+    "unsupported psychological diagnosis and statistical percentages rejected",
+    "generation persisted with model and sources; safe HTML preview",
+    "delivery retries preserve payload/idempotency; submitted mail never resent",
+    "failed generation retries before delivery, capped at three attempts",
+    "Friday 13:30 generation, 14:00 delivery window and no stale catch-up",
+    "weekly APIs authenticated; secrets omitted; cross-origin mutations rejected",
+    "custom weekday/time, prior-day generation, next-week rollover, old-slot cancellation and validation",
+    "new expression discovered end to end with mocked model/search, no fixed vocabulary or card padding",
+    "duplicate URL/title and search pages excluded from independent uses",
+    "invented evidence IDs/quotes and weak evidence cannot promote; candidates remain visible",
+    "provider failure produces safe diagnostic and preserves prior results",
+    "meme verification selects Bocha web-search with summaries and explicit application client header"
+  ],
+  "model_calls": "mocked",
+  "emails_sent": 0,
+  "production_writes": false
+}

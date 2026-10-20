@@ -1,0 +1,11 @@
+{
+  "method": "Forced read-model rebuild after database initialization and token-cache warm-up",
+  "database": "temporary copy of production SQLite",
+  "cpu_limit": 1,
+  "memory_limit_mb": 800,
+  "posts": 1733,
+  "forced_rebuild_seconds": 5.521,
+  "initial_index_creation_included": false,
+  "production_writes": false,
+  "note": "Single measurement during concurrent research and production work; initial index creation and cold tokenization take longer."
+}

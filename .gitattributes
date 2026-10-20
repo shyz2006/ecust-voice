@@ -1,0 +1,16 @@
+validation/teacher-*.json text eol=lf
+validation/campus-v3-*.json text eol=lf
+
+validation/campus-v4-*.json text eol=lf
+validation/campus-v5-*.json text eol=lf
+validation/resend-client-*.json text eol=lf
+
+validation/services-discovery-*.json text eol=lf
+
+validation/meme-cleanup-*.json text eol=lf
+
+validation/meme-cards-*.json text eol=lf
+
+validation/source-links-*.json text eol=lf
+
+validation/handoff-*.json text eol=lf

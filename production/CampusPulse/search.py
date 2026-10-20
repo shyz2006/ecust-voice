@@ -40,10 +40,12 @@ def _parse_web_search(payload: Dict) -> List[Dict]:
     return ((data.get("webPages") or {}).get("value")) or []
 
 
-def web_search(query: str, count: int = 8, freshness: str = "oneMonth") -> List[Dict]:
+def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain: bool = False) -> List[Dict]:
     if not settings.search_ready:
         raise SearchUnavailable("未配置 BOCHA_WEB_SEARCH_API_KEY")
     url = settings.bocha_base_url
+    if plain and url.rstrip("/").endswith("/ai-search"):
+        url = url.rstrip("/")[:-len("ai-search")] + "web-search"
     body = {"query": query, "freshness": freshness, "count": count, "answer": False, "stream": False}
     if "web-search" in url:
         body = {"query": query, "freshness": freshness, "count": count, "summary": True}
@@ -59,10 +61,15 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth") -> List[
         try:
             resp = requests.post(
                 url,
-                headers={"Authorization": f"Bearer {settings.bocha_api_key}", "Content-Type": "application/json"},
+                headers={"Authorization": f"Bearer {settings.bocha_api_key}", "Content-Type": "application/json", "User-Agent": "ECUST-CampusPulse/1.0"},
                 json=body,
                 timeout=40,
             )
+            if resp.status_code in (402,403,429):
+                try:detail=json.dumps(resp.json(),ensure_ascii=False).lower()
+                except ValueError:detail=''
+                if any(word in detail for word in ('quota','balance','余额','配额')):
+                    raise SearchUnavailable('博查额度不足，请在博查后台检查可用额度')
             resp.raise_for_status()
             payload = resp.json()
         except Exception as exc:

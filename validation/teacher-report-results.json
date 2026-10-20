@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "real_three_engine_workflow": true,
+  "chapters": 4,
+  "pdf_pages": 4,
+  "page_text_characters": [
+    908,
+    955,
+    978,
+    880
+  ],
+  "source_links": 16,
+  "rendered_with": "final candidate code, Chinese fonts, no clipping",
+  "research_materials_reused": true,
+  "verification_scope": "workflow, retrieved-link membership, percentages and PDF layout; not sentence-level factual verification",
+  "editorial_review_required": true
+}

@@ -1,0 +1,32 @@
+{
+  "name": "meme-cleanup-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/meme-cleanup-20261020",
+  "base_image_id": "sha256:0ca340da284268d525578621bab4645586c352b4ad5f4d9dd2124c08c30cd50b",
+  "base_image": "bettafish:base-meme-cleanup-20261020",
+  "candidate_image": "bettafish:candidate-meme-cleanup-20261020",
+  "candidate_image_id": "sha256:35a1d985a1f5986d271d161a060c95449bf35801ee8cc228b8cc9a882478149e",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "expected_before": "c4ca08bb3c73832544b6eda32e2a6e0d66ddc1425ad90541ff3ea218d585fd70",
+      "before_sha256": "db5fe13fa4c1a79216484659c0c7502df75ad40acdc766e9ce1a0027edbd0d24",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "expected_before": "c4ca08bb3c73832544b6eda32e2a6e0d66ddc1425ad90541ff3ea218d585fd70",
+      "before_sha256": "db5fe13fa4c1a79216484659c0c7502df75ad40acdc766e9ce1a0027edbd0d24",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "a5fa5a86e675336ae364fb6584b3e8ce458a36849adf24873f570fd499ceffe2",
+      "expected_before": "efadd3f168393c413bc34f2302adac124a1a9280340baae2a9b5026bc873ebca",
+      "before_sha256": "d76a35ab90aaf36d17e0100fe7cf97d99837118b055270220fb01adc62b49076",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

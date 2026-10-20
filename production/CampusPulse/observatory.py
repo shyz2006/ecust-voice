@@ -77,7 +77,8 @@ def coverage(rows, now, days=10):
     return out
 
 
-def prepare(rows, annotations, now, classify, sanitize, days=10):
+def prepare(rows, annotations, now, classify, sanitize, days=10, tokenize=None):
+    tokenize=tokenize or tokens
     grouped = defaultdict(list)
     from .post_identity import resolved_values
     current=[row for row in rows if row['source'] in SOURCES and now-days*DAY <= row['batch_ts'] <= now]
@@ -121,7 +122,7 @@ def prepare(rows, annotations, now, classify, sanitize, days=10):
                       'last_observed': row['batch_ts'], 'comments': int(numeric(ex['comments'])) if ex.get('comments') is not None else None,
                       'exposure': int(numeric(ex['exposure'])) if row['source']=='huyou-school' and ex.get('exposure') is not None else None, 'observations': observations,
                       'raw_heat': raw_heat(row['source'], ex.get('exposure'), ex.get('comments')),
-                      'terms': tokens(text), 'red_terms': [w for w in RED_TERMS if w in text]})
+                      'terms': tokenize(text), 'red_terms': [w for w in RED_TERMS if w in text]})
     for s in SOURCES:
         group = [p for p in posts if p['source'] == s]
         ranks = sorted(p['raw_heat'] for p in group)

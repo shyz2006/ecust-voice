@@ -1,0 +1,18 @@
+{
+  "name": "teacher-entrypoint-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/teacher-entrypoint-20261020",
+  "base_image_id": "sha256:7483618ad152e7d5f80be9107f8962f04b3a6ac027343d1d0acc34e368ab6954",
+  "base_image": "bettafish:base-teacher-entrypoint-20261020",
+  "candidate_image": "bettafish:candidate-teacher-entrypoint-20261020",
+  "candidate_image_id": "sha256:3917114383f8f59b2e5b7dee93d138a196caa0f18955fb712d5c671b8c17620e",
+  "files": [
+    {
+      "path": "app.py",
+      "candidate_sha256": "a1afeee1f3fbbca45859d3321fa592c61db214b01a4a83a55d10745616c7225b",
+      "expected_before": "7e07bbe1a78762d4d79952d8ff5c1398d3555ea39126d680eedd71e7ddc0e71b",
+      "before_sha256": "7e07bbe1a78762d4d79952d8ff5c1398d3555ea39126d680eedd71e7ddc0e71b",
+      "host_existed": true
+    }
+  ],
+  "activated": true
+}

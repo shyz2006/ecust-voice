@@ -1,0 +1,109 @@
+{
+  "name": "teacher-feedback-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/teacher-feedback-20261020",
+  "base_image_id": "sha256:c1ef551b83332f0ab9cfd4d0d8c5fabe6f69451b471957f02570890c47a67bb4",
+  "base_image": "bettafish:base-teacher-feedback-20261020",
+  "candidate_image": "bettafish:candidate-teacher-feedback-20261020",
+  "candidate_image_id": "sha256:7483618ad152e7d5f80be9107f8962f04b3a6ac027343d1d0acc34e368ab6954",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "expected_before": "26dccb0983f8a9a7e8a51967768a0ba35b38f5553917f33c55b3b8bb857df7ba",
+      "before_sha256": "26dccb0983f8a9a7e8a51967768a0ba35b38f5553917f33c55b3b8bb857df7ba",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "expected_before": "26dccb0983f8a9a7e8a51967768a0ba35b38f5553917f33c55b3b8bb857df7ba",
+      "before_sha256": "26dccb0983f8a9a7e8a51967768a0ba35b38f5553917f33c55b3b8bb857df7ba",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-review.css",
+      "candidate_sha256": "51e39e53d7d74afa633b78ca0bfd345088eb96479609d62a676e56162dd07b21",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "ba65a57ff1d1cf8a2e25d3cfcde9bd1a8e18b7afe2f75acb871b198fa8c6525a",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "844ca73db85a8c83631fa2acc8b6e46baed55121ec754c5f52dbe52b7c30034f",
+      "expected_before": "849bd119d6609c536a7076dea040d0bfa87f559ca268539c9c87405726b25f9c",
+      "before_sha256": "849bd119d6609c536a7076dea040d0bfa87f559ca268539c9c87405726b25f9c",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/taxonomy.py",
+      "candidate_sha256": "91cb1d54a227765811a5842815b11da4f520a138a3622a216061735caee8fbbe",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "candidate_sha256": "4fac574fc3ccb11b3823521ed945f8852bf9f2619a3748d5b569fc601258ed13",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "bf09909d5fcdcbf4fdbcb0f00d7af296597bcc8f2198a0680fd2ec21fc910332",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/storage.py",
+      "candidate_sha256": "394a245ee39ba341ea9456d31759e470ec9ec157649f250cbfe7f664bb3ae0ae",
+      "expected_before": "77a7082864065bd8c46f8c477c011217c0e7055d9a79b2b9932f478fc477f4b7",
+      "before_sha256": "77a7082864065bd8c46f8c477c011217c0e7055d9a79b2b9932f478fc477f4b7",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/observatory.py",
+      "candidate_sha256": "1ef92ab640cbd33770d0b2b2ed3f05d26f323af907ea6cadc4eb7d49d6509659",
+      "expected_before": "eb10ad6b35be1a833d779dc1cfa3272b0d8a6ba268e1df03770909069e7a450d",
+      "before_sha256": "eb10ad6b35be1a833d779dc1cfa3272b0d8a6ba268e1df03770909069e7a450d",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "e394d6b130801260a4e33a82910f3e82fb43dae29f4a7d893c646f6419073394",
+      "expected_before": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
+      "before_sha256": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/evidence.py",
+      "candidate_sha256": "5e49f459c5c694e48ee7dd52f0092724be677facdeb90e90a883098d77bcf834",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "ReportEngine/prompts/prompts.py",
+      "candidate_sha256": "1e5f79333ead88506d55b9001f0490df7a106a201c8560a917a2c1ffe63eb748",
+      "expected_before": "e87600c7ebde13b80676f0583ac96c0241f4fee14bbc4384677a62f6a78837e8",
+      "before_sha256": "e87600c7ebde13b80676f0583ac96c0241f4fee14bbc4384677a62f6a78837e8",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/report_template/校园与青年事件分析报告模板.md",
+      "candidate_sha256": "1cb4df72c6717ba5c1f31df0326f85a12bd7cafa3ecb0b59ca9b913a0c192e66",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "activated": true
+}

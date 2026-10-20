@@ -1,0 +1,107 @@
+{
+  "root": "/home/ubuntu/bettafish",
+  "app": {
+    "image": "sha256:f054f44db123574509bb98bbed4c77afe6ab0aa0c85ffe82d38360612e65da73",
+    "status": "running",
+    "network_mode": "bettafish_default",
+    "restart": "unless-stopped",
+    "mounts": [
+      {
+        "source": "/home/ubuntu/bettafish/.env",
+        "target": "/app/.env",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/data",
+        "target": "/app/data",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/final_reports",
+        "target": "/app/final_reports",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/insight_engine_streamlit_reports",
+        "target": "/app/insight_engine_streamlit_reports",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/logs",
+        "target": "/app/logs",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/media_engine_streamlit_reports",
+        "target": "/app/media_engine_streamlit_reports",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/query_engine_streamlit_reports",
+        "target": "/app/query_engine_streamlit_reports",
+        "type": "bind"
+      },
+      {
+        "source": "/home/ubuntu/bettafish/runtime",
+        "target": "/app/runtime",
+        "type": "bind"
+      }
+    ]
+  },
+  "database": {
+    "image": "sha256:dfbbb0ad8cab91d41e99123664e37a9b25d0413426d4fb3154e4d668e5d35246",
+    "status": "running",
+    "network_mode": "bettafish_default",
+    "restart": "unless-stopped",
+    "mounts": [
+      {
+        "source": "/home/ubuntu/bettafish/db_data",
+        "target": "/var/lib/postgresql/data",
+        "type": "bind"
+      }
+    ]
+  },
+  "services": {
+    "nginx": "active",
+    "docker": "active"
+  },
+  "settings": {
+    "pulse_db_path": "/app/data/campus_pulse.db",
+    "collect_interval_min": 30,
+    "bocha_key_configured": true,
+    "report_model": "minimax/minimax-m3.1-flash:free",
+    "weekly": {
+      "enabled": true,
+      "weekday": 2,
+      "send_time": "22:00",
+      "lead_minutes": 30,
+      "sender_verified": true,
+      "key_configured": true,
+      "recipient_count": 1,
+      "schedule_text": "每周三 22:00发送，当天21:30截稿生成 · 北京时间",
+      "scheduler_running": true,
+      "scheduler_error": false
+    }
+  },
+  "deployment_files": {
+    "docker-compose.yml": true,
+    "docker-compose.override.yml": true,
+    "Dockerfile.local": true,
+    ".env": true
+  },
+  "nginx_sites": [
+    "default",
+    "ecuster.2026515.xyz",
+    "smydashuaige.2026515.xyz"
+  ],
+  "snapshot_date": "2026-10-20",
+  "host_bindings": {
+    "application": "127.0.0.1:5000",
+    "streamlit": [
+      "127.0.0.1:8501",
+      "127.0.0.1:8502",
+      "127.0.0.1:8503"
+    ],
+    "postgresql": "127.0.0.1:5444 -> container 5432"
+  }
+}

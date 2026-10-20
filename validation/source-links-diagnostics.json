@@ -1,0 +1,14 @@
+{
+  "environment": "isolated local Chrome; user browser session not inspected",
+  "bilibili": {
+    "url": "https://www.bilibili.com/video/BV122nu6sEKG/",
+    "http": 412,
+    "page_result": "security policy refused the request"
+  },
+  "douyin": {
+    "url": "https://www.douyin.com/hot/2700388",
+    "http": 200,
+    "page_result": "requested video does not exist"
+  },
+  "application_navigation": "direct browser link; no server video proxy"
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "isolated_memory_limit_mb": 700,
+  "meme_requests_seconds": [
+    1.773,
+    0.522,
+    0.663
+  ],
+  "cards_per_platform": {
+    "B站": 10,
+    "抖音": 10,
+    "微博": 10,
+    "百度": 10
+  },
+  "observed_examples_per_platform": {
+    "B站": 6,
+    "抖音": 4,
+    "微博": 0,
+    "百度": 0
+  },
+  "requests": "GET only; isolated copy of production data"
+}

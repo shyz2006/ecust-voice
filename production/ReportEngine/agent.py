@@ -463,6 +463,12 @@ class ReportAgent:
         self.state.mark_processing()
 
         normalized_reports = self._normalize_reports(reports)
+        self.chapter_generation_node._MIN_BODY_CHARACTERS = type(self.chapter_generation_node)._MIN_BODY_CHARACTERS
+        if self._task_report_meta.get('report_style') == 'concise':
+            from .evidence import evidence_context
+            normalized_reports = {'query_engine': evidence_context(research_task_id), 'media_engine': '', 'insight_engine': ''}
+            forum_logs = ''  # Generated debate is analysis, not independently retrieved evidence.
+            self.chapter_generation_node._MIN_BODY_CHARACTERS = 450
 
         def emit(event_type: str, payload: Dict[str, Any]):
             """面向Report Engine流通道的事件分发器，保证错误不外泄。"""
@@ -494,6 +500,8 @@ class ReportAgent:
             sections = self._slice_template(template_result.get('template_content', ''))
             if not sections:
                 raise ValueError("模板无法解析出章节，请检查模板内容。")
+            if (getattr(self, '_task_report_meta', {}) or {}).get('report_style') == 'concise' and len(sections) != 4:
+                raise ValueError('简明事件报告模板必须恰好包含四章。')
             emit('stage', {'stage': 'template_sliced', 'section_count': len(sections)})
 
             template_text = template_result.get('template_content', '')
@@ -518,6 +526,8 @@ class ReportAgent:
                 'toc': layout_design.get('tocTitle')
             })
             emit('progress', {'progress': 15, 'message': '文档标题/目录设计完成'})
+            if self._task_report_meta.get('report_style') == 'concise':
+                layout_design['hero'] = {}
             # 使用刚生成的设计稿对全书进行篇幅规划，约束各章字数与重点
             word_plan = self._run_stage_with_retry(
                 "章节篇幅规划",
@@ -532,6 +542,21 @@ class ReportAgent:
                 expected_keys=["chapters", "totalWords", "globalGuidelines"],
                 postprocess=self._normalize_word_plan,
             )
+            if (getattr(self, '_task_report_meta', {}) or {}).get('report_style') == 'concise':
+                # Workshop v2 preserves original engines and constrains only the final report contract.
+                word_plan['totalWords'] = 2400
+                word_plan['globalGuidelines'] = [
+                    '全报告严格四章，每章500至650字；每章保留事实出处、日期与证据边界。',
+                    '心理和社会机制分析须结合事件证据。报告不包含活动策划、班会教案、人员物资或执行排期。',
+                    '少用装饰图表，主要结论用正文表达；导出版自然分页，完整保留正文与来源。',
+                ]
+                word_plan['chapters'] = [dict(entry, targetWords=600, min=450, max=700,minWords=450,maxWords=700)
+                                         for entry in word_plan.get('chapters', [])]
+                for entry in word_plan['chapters']:
+                    subs = entry.get('sections') or []
+                    for sub in subs:
+                        if isinstance(sub, dict):
+                            sub.update(targetWords=max(80,600//max(1,len(subs))), min=50, max=max(120,700//max(1,len(subs))))
             emit('stage', {
                 'stage': 'word_plan_ready',
                 'chapter_targets': len(word_plan.get('chapters', []))
@@ -644,6 +669,16 @@ class ReportAgent:
                             run_dir,
                             stream_callback=chunk_callback
                         )
+                        if self._task_report_meta.get('report_style') == 'concise':
+                            from .evidence import validate_sources
+                            try:
+                                validate_sources({'chapters': [chapter_payload]}, research_task_id)
+                                body = ''.join(str(run.get('text', '')) for block in chapter_payload.get('blocks', [])
+                                               for run in block.get('inlines', []))
+                                if len(body) > 900:
+                                    raise ValueError('简明报告每章正文最多900字，请压缩为500至650字，引用限1至3处')
+                            except ValueError as exc:
+                                raise ChapterValidationError(str(exc)) from exc
                         break
                     except (ChapterJsonParseError, ChapterContentError, ChapterValidationError) as structured_error:
                         if isinstance(structured_error, ChapterContentError):

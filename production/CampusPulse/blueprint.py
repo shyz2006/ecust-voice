@@ -11,7 +11,7 @@ import time
 import uuid
 from pathlib import Path
 
-from flask import Blueprint, jsonify, redirect, request, send_from_directory, session
+from flask import Blueprint, jsonify, redirect, request, send_from_directory, session, Response, send_file
 
 from . import pipeline, storage
 from .agents import analysis_options, router, workflows, workers
@@ -24,6 +24,20 @@ _jobs = {}
 _jobs_lock = threading.Lock()
 _MAX_JOBS = 50
 _MAX_CONCURRENT = 3
+
+
+@pulse_bp.before_request
+def retire_activity_generation():
+    if request.method=='POST' and (request.path.endswith('/api/analyze') or
+            ('/api/issues/' in request.path and request.path.endswith('/generate'))):
+        return jsonify(success=False,message='请在育人工坊提交事件研究主题'),410
+
+
+@pulse_bp.after_request
+def revision_cache_policy(response):
+    if '/api/revision/' in request.path:
+        response.headers['Cache-Control']='no-store'
+    return response
 
 
 def _username() -> str:
@@ -51,6 +65,126 @@ def api_status():
     from .config import refresh_runtime
     refresh_runtime()
     return jsonify({"success": True, **pipeline.status()})
+
+
+@pulse_bp.route('/api/revision/overview')
+def revision_overview():
+    from . import revision
+    data=revision.snapshot()
+    return jsonify(success=True,**{k:v for k,v in data.items() if k!='posts'})
+
+
+@pulse_bp.route('/api/revision/posts')
+def revision_posts():
+    from . import revision,taxonomy
+    data=revision.snapshot();posts=data['posts']
+    theme=request.args.get('theme','');emotion=request.args.get('emotion','')
+    if theme and theme not in taxonomy.THEMES:return jsonify(success=False,message='无效议题分类'),400
+    if emotion and emotion not in ('积极','中性','消极'):return jsonify(success=False,message='无效情绪类别'),400
+    if theme:posts=[p for p in posts if p['theme']==theme]
+    if emotion:posts=[p for p in posts if p['emotion']==emotion]
+    if request.args.get('red')=='1':posts=[p for p in posts if p['red']]
+    source=request.args.get('source','')
+    if source and source not in ('huyou-school','tieba-school'):return jsonify(success=False,message='无效来源'),400
+    if source:posts=[p for p in posts if p['source']==source]
+    word=request.args.get('word','').strip()[:30]
+    if word:posts=[p for p in posts if word in p['content']]
+    try:
+        since=int(request.args.get('from',data['window_start']));until=int(request.args.get('until',data['generated_at']+1))
+    except (ValueError,TypeError):return jsonify(success=False,message='无效时间窗口'),400
+    if since>=until:return jsonify(success=False,message='时间窗口顺序有误'),400
+    posts=[p for p in posts if since<=p['published']<until]
+    posts=sorted(posts,key=lambda p:-p['published'])
+    return jsonify(success=True,posts=posts,total=len(posts),generated_at=data['generated_at'])
+
+
+@pulse_bp.route('/api/revision/feed/<kind>')
+def revision_feed(kind):
+    from . import revision
+    if kind not in ('hot','memes'):return jsonify(success=False,message='无效栏目'),404
+    return jsonify(success=True,**revision.network_feed(kind))
+
+
+@pulse_bp.route('/api/revision/source-posts')
+def revision_source_posts():
+    from . import revision
+    source=request.args.get('source','')
+    if source not in set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS):
+        return jsonify(success=False,message='无效平台'),400
+    rows=storage.recent_items([source],int(time.time())-7*86400);seen={}
+    for r in rows:
+        url=(r.get('extra') or {}).get('link') or r.get('url')
+        key=url or r['title']
+        seen[key]={'source':source,'content':r['title'],'link':revision.source_link(url),'published':r['batch_ts'],'time_basis':'first_observed'}
+    posts=sorted(seen.values(),key=lambda p:-p['published'])
+    return jsonify(success=True,posts=posts,total=len(posts))
+
+
+@pulse_bp.route('/api/revision/ledger')
+def revision_ledger():
+    from . import telemetry,revision
+    data=telemetry.dashboard()
+    allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)
+    sources=[s for s in data.get('sources',[]) if s['source'] in allowed]
+    # Cost, vendor and legacy national-comparison values are excluded from this presentation API.
+    from datetime import datetime,timedelta,timezone
+    today=datetime.now(timezone(timedelta(hours=8))).date()
+    days=[today-timedelta(days=n) for n in range(13,-1,-1)]
+    start=int(datetime.combine(days[0],datetime.min.time(),tzinfo=timezone(timedelta(hours=8))).timestamp())
+    with storage.connect() as conn:
+        daily=[dict(r) for r in conn.execute("SELECT date(ts,'unixepoch','+8 hours') day, "
+               "SUM(CASE WHEN usage_known=1 THEN prompt_tokens+completion_tokens END) tokens, "
+               "SUM(CASE WHEN success=1 AND usage_known=0 THEN 1 ELSE 0 END) unknown_calls "
+               "FROM pulse_usage WHERE ts>=? AND ts<=? GROUP BY day ORDER BY day",(start,int(time.time())))]
+    by_day={r['day']:r for r in daily}
+    daily=[dict(by_day.get(day.isoformat(),{'day':day.isoformat(),'tokens':None,'unknown_calls':0}),has_records=day.isoformat() in by_day) for day in days]
+    return jsonify(success=True,generated_at=data['generated_at'],observed_since=data['observed_since'],
+                   unique_school_posts=data['unique_school_posts'],reports_completed=data['main_reports_completed'],
+                   unique_items=sum(s['unique'] for s in sources),sources=sources,
+                   recorded_tokens=data['recorded_tokens'],daily_usage=daily)
+
+
+@pulse_bp.route('/api/revision/research',methods=['GET','POST'])
+def revision_research():
+    from . import research
+    if session.get('authenticated') is not True or not _username():return jsonify(success=False,message='请登录后使用报告研究'),401
+    if request.method=='GET':return jsonify(success=True,items=research.history(_username()))
+    body=request.get_json(silent=True)
+    query=body.get('query') if isinstance(body,dict) else None
+    if not isinstance(query,str) or not 1<=len(query.strip())<=500:return jsonify(success=False,message='请输入1至500字的研究主题'),400
+    request_id=body.get('request_id','')
+    if not isinstance(request_id,str) or len(request_id)>80:return jsonify(success=False,message='请求编号格式有误'),400
+    try:return jsonify(success=True,**research.start(query.strip(),_username(),request_id))
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    except Exception:
+        return jsonify(success=False,message='研究服务启动失败，请检查模型与检索配置'),503
+
+
+@pulse_bp.route('/api/revision/research/<task_id>')
+def revision_research_status(task_id):
+    from . import research
+    try:allowed=research.authorize(task_id,_username()) if session.get('authenticated') is True else False
+    except ValueError:allowed=False
+    if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
+    return jsonify(success=True,**research.status(task_id))
+
+
+@pulse_bp.route('/api/revision/research/<task_id>/report')
+def revision_research_report(task_id):
+    from . import research
+    try:allowed=research.authorize(task_id,_username()) if session.get('authenticated') is True else False
+    except ValueError:allowed=False
+    if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
+    try:
+        if request.args.get('format')=='pdf':
+            response=send_file(research.pdf(task_id),mimetype='application/pdf',as_attachment=True,download_name='事件分析报告.pdf')
+        else:
+            response=Response(research.report_html(task_id),mimetype='text/html')
+            response.headers['Content-Security-Policy']="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'"
+        response.headers['Cache-Control']='no-store'
+        return response
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),409
+    except Exception:return jsonify(success=False,message='报告导出失败，请稍后重试'),503
 
 
 @pulse_bp.route("/api/topics")
@@ -418,8 +552,19 @@ def init_campus_pulse(app, url_prefix: str = "/pulse") -> None:
         pass
     app.register_blueprint(pulse_bp, url_prefix=url_prefix)
     pipeline.start_scheduler()
-    from . import auto_reports
-    auto_reports.start_scheduler()
+    from . import weekly
+    weekly.start_scheduler()
+    from . import dynamic_memes
+    dynamic_memes.start_scheduler()
+    # Earlier automatic reports use the retired taxonomy and activity-oriented
+    # summary prompts. New reports are explicitly submitted to the original runner.
+    def warm_revision():
+        try:
+            from .revision import snapshot
+            snapshot()
+        except Exception:
+            app.logger.exception('Campus revision warm-up failed')
+    threading.Thread(target=warm_revision,name='campus-revision-warmup',daemon=True).start()
 
 
 @pulse_bp.route('/api/observatory')
@@ -613,3 +758,62 @@ def api_issue_export(issue_id):
     response = Response(issues.markdown(item),mimetype='text/markdown')
     response.headers['Content-Disposition'] = 'attachment; filename="campus-issue-'+issue_id+'.md"'
     return response
+
+
+@pulse_bp.route('/api/revision/weekly',methods=['GET','POST'])
+@pulse_bp.route('/api/revision/weekly/config',methods=['GET','POST'])
+@pulse_bp.route('/api/revision/weekly/test-email',methods=['POST'])
+@pulse_bp.route('/api/revision/weekly/<report_id>',methods=['GET'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/report',methods=['GET'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/send',methods=['POST'])
+@pulse_bp.route('/api/revision/weekly/<report_id>/retry',methods=['POST'])
+def revision_weekly(report_id=None):
+    from . import weekly
+    from urllib.parse import urlsplit
+    if session.get('authenticated') is not True or not _username():return jsonify(success=False,message='请登录后查看校园周报'),401
+    if request.method=='POST':
+        origin=request.headers.get('Origin')
+        if origin and urlsplit(origin).netloc!=request.host:return jsonify(success=False,message='请求来源有误'),403
+        if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
+    try:
+        body=request.get_json(silent=True) or {}
+        if request.path.endswith('/config'):
+            return jsonify(success=True,config=weekly.save_config(body) if request.method=='POST' else weekly.config())
+        if request.path.endswith('/test-email'):
+            address=str(body.get('recipient') or '').strip()
+            if not weekly.email_address(address):raise ValueError('请填写测试收件邮箱')
+            value=weekly.config(True)
+            if not value['api_key'] or not value['sender'] or not value['sender_verified']:raise ValueError('请先保存密钥和已验证的发件邮箱')
+            if not weekly.lease('test-email',60):raise ValueError('测试邮件已提交，请稍后再试')
+            email_id=weekly.resend({'from':value['sender'],'to':[address],'subject':'华理校园周报 · 邮箱测试','html':'<p>校园周报邮件配置测试成功。</p>'},'campus-weekly/test/'+uuid.uuid4().hex,value['api_key'])
+            return jsonify(success=True,email_id=email_id,message='已提交测试邮件，请查收')
+        if report_id:
+            row=weekly.get(report_id)
+            if request.path.endswith('/report'):return Response(weekly.report_html(row),mimetype='text/html')
+            if request.path.endswith('/send'):
+                if row['status']!='ready':raise ValueError('请等周报正文生成完成')
+                weekly.delivery_ready(weekly.config(True))
+                threading.Thread(target=weekly.send_report,args=(report_id,True),daemon=True).start()
+                return jsonify(success=True,message='邮件已进入发送队列')
+            if request.path.endswith('/retry'):
+                if row['status'] not in ('failed','generating'):raise ValueError('本期周报已完成')
+                with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='generating',error=NULL WHERE id=?",(report_id,))
+                threading.Thread(target=weekly.generate,args=(report_id,),daemon=True).start()
+                return jsonify(success=True,id=report_id)
+            return jsonify(success=True,item=row)
+        if request.method=='POST':return jsonify(success=True,id=weekly.start())
+        return jsonify(success=True,items=weekly.recent(),config=weekly.config())
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    except Exception:return jsonify(success=False,message='周报服务暂未完成，请稍后重试'),503
+
+
+@pulse_bp.route('/api/revision/memes/refresh',methods=['POST'])
+def revision_meme_refresh():
+    from urllib.parse import urlsplit
+    from . import dynamic_memes
+    if not _username():return jsonify(success=False,message='请先登录'),401
+    origin=request.headers.get('Origin')
+    if request.headers.get('Sec-Fetch-Site')=='cross-site' or (origin and urlsplit(origin).netloc!=request.host):return jsonify(success=False,message='请求来源有误'),403
+    if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
+    started=dynamic_memes.start(manual=True)
+    return jsonify(success=True,started=started,**dynamic_memes.snapshot())

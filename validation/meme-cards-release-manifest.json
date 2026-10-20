@@ -1,0 +1,46 @@
+{
+  "name": "meme-cards-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/meme-cards-20261020",
+  "base_image_id": "sha256:35a1d985a1f5986d271d161a060c95449bf35801ee8cc228b8cc9a882478149e",
+  "base_image": "bettafish:base-meme-cards-20261020",
+  "candidate_image": "bettafish:candidate-meme-cards-20261020",
+  "candidate_image_id": "sha256:9ad6d88455fb6dee36bdef8183103792d577220ede7ae98de8a4bcb61f65a220",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "baa9bfa2d2f69d5d854f364709a97b0ffd1d3d374f6835adf8cea6b64718cb46",
+      "expected_before": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "before_sha256": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "baa9bfa2d2f69d5d854f364709a97b0ffd1d3d374f6835adf8cea6b64718cb46",
+      "expected_before": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "before_sha256": "ddf6dc4e0693bec6be7d7470cd259cbd979fc2ed6b08f1c3d2392ed6151b29ec",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "242e5032b9f0c2ef981ccd6c61172a7c4e9787e76e0a67d5e082d50127e437c9",
+      "expected_before": "a5fa5a86e675336ae364fb6584b3e8ce458a36849adf24873f570fd499ceffe2",
+      "before_sha256": "a5fa5a86e675336ae364fb6584b3e8ce458a36849adf24873f570fd499ceffe2",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "23647ffef654b8feafdf84609e4a3bd84a50d69ac3d45a4335b43b2c00919b4d",
+      "expected_before": "dc3b10458e42b3450790cc8952d6d3f24c0592d2be81001bc979821648fb973a",
+      "before_sha256": "69a832f9b823d6a014b8f11c7dda216ff884b7831ed66b4701bface984de4dc8",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/dynamic_memes.py",
+      "candidate_sha256": "518805e54dd1fae7ddb14b743e1ffa26dbebf509f2f3a6107d6d67ba30980266",
+      "expected_before": "be503978f148359ab0b757860f3ce06f51c2564e548594aa0e726d68155b599e",
+      "before_sha256": "be503978f148359ab0b757860f3ce06f51c2564e548594aa0e726d68155b599e",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

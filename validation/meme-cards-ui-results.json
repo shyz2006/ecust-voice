@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 1440,
+      "sixModules": true,
+      "twelveCategories": true,
+      "noHorizontalOverflow": true,
+      "modalScroll": true,
+      "nativeHelpAboveModal": true,
+      "donutKeyboard": true,
+      "donutMouseSegments": true
+    },
+    {
+      "width": 390,
+      "sixModules": true,
+      "twelveCategories": true,
+      "noHorizontalOverflow": true,
+      "modalScroll": true,
+      "nativeHelpAboveModal": true,
+      "donutKeyboard": true,
+      "donutMouseSegments": true
+    }
+  ],
+  "fixedTopThree": true,
+  "threeOriginalLinksEach": true,
+  "allHotCardsHaveFocus": true,
+  "dynamicMemeCardsWithoutFixedPadding": true,
+  "uniformCards": true,
+  "allCardsHaveIntroductions": true,
+  "allCardsHaveRealUseLinks": true,
+  "noFolding": true,
+  "threeServiceTabs": true,
+  "customSchedulePreview": true,
+  "scheduleSavePayload": true,
+  "separateServiceSaves": true,
+  "blankKeysPreserved": true,
+  "fourteenUsageDays": true,
+  "desktopSevenColumns": true,
+  "mobileTwoColumns": true,
+  "reducedMotionRespected": true,
+  "reportInputSimplified": true,
+  "originalWorkflowRequest": true,
+  "inputRetainedOnError": true,
+  "configurationAccessible": true,
+  "scriptErrors": [],
+  "fourHomeCards": true,
+  "uniformUsageColors": true,
+  "weeklySubview": true,
+  "weeklyConfigAccessible": true,
+  "api": "mock; no real model result"
+}

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "explicit_user_agent": true,
+  "accept_json": true,
+  "safe_error_categories": 5,
+  "emails_sent": 0
+}

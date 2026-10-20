@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "data": "actual model output from isolated production copy",
+  "verified": 0,
+  "candidates": 16,
+  "checks": [
+    {
+      "width": 1440,
+      "cards": 10,
+      "allIntroductions": true,
+      "allUseLinks": true,
+      "noFolding": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 390,
+      "cards": 10,
+      "allIntroductions": true,
+      "allUseLinks": true,
+      "noFolding": true,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "errors": []
+}
