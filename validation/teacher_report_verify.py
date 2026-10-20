@@ -8,9 +8,9 @@ remote=r'''
 import pathlib,subprocess,json,base64
 task=TASK
 stage=pathlib.Path('/home/ubuntu/bettafish/deploy/teacher-feedback-20261020/real-report-validation')
-find="""import pathlib,json
+find="""import pathlib,json,os
 task=TASK
-roots=list(pathlib.Path('/tmp').glob('teacher-validation-*/runtime/'+task))
+roots=[pathlib.Path(os.environ['VALIDATION_RUNTIME_DIR'])/task] if os.environ.get('VALIDATION_RUNTIME_DIR') else list(pathlib.Path('/tmp').glob('teacher-validation-*/runtime/'+task))
 assert len(roots)==1,'Expected one isolated task'
 ir=list((roots[0]/'outputs/report/ir').glob('*.json'))
 assert ir,'Real report is not ready'
@@ -21,12 +21,16 @@ assert r.returncode==0,r.stderr.decode(errors='replace')[-800:]
 paths=json.loads(r.stdout);target=stage/task/'outputs/report/ir';target.mkdir(parents=True,exist_ok=True)
 for source,dest in [(paths['ir'],target/'real.json'),(paths['root']+'/metadata.json',stage/task/'metadata.json')]:
  subprocess.run(['sudo','-n','docker','cp','bettafish-teacher-validation:'+source,str(dest)],check=True,capture_output=True)
+for engine in ['query','media','insight']:
+ dest=stage/task/'outputs'/engine;dest.mkdir(parents=True,exist_ok=True)
+ subprocess.run(['sudo','-n','docker','cp','bettafish-teacher-validation:'+paths['root']+'/outputs/'+engine+'/.',str(dest)],check=True,capture_output=True)
 code="""import json,base64,pathlib
 from CampusPulse import research
 task=TASK
 content=research.report_html(task)
-pdf=research.pdf(task)
-print(json.dumps({'pdf_base64':base64.b64encode(pdf.read_bytes()).decode(),'html_base64':base64.b64encode(content.encode()).decode(),'ir_base64':base64.b64encode((pathlib.Path('/validation')/task/'outputs/report/ir/real.json').read_bytes()).decode()}))
+try:pdf=research.pdf(task);error=None
+except ValueError as exc:pdf=None;error=str(exc)
+print(json.dumps({'error':error,'pdf_base64':base64.b64encode(pdf.read_bytes()).decode() if pdf else None,'html_base64':base64.b64encode(content.encode()).decode(),'ir_base64':base64.b64encode((pathlib.Path('/validation')/task/'outputs/report/ir/real.json').read_bytes()).decode()}))
 """.replace('TASK',repr(task))
 r=subprocess.run(['sudo','-n','docker','run','--rm','-i','--network','none','--memory','700m',
  '-v',str(stage)+':/validation','-e','BETTAFISH_RUNTIME_DIR=/validation',
@@ -38,7 +42,8 @@ r=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(repo.parent.parent/
 if r.returncode:print(r.stderr.decode(errors='replace')[-1600:]);raise SystemExit(r.returncode)
 data=json.loads(r.stdout)
 for key,suffix in [('pdf_base64','pdf'),('html_base64','html'),('ir_base64','json')]:
- (out/('real-research-report.'+suffix)).write_bytes(base64.b64decode(data[key]))
+ if data[key]:(out/('real-research-report.'+suffix)).write_bytes(base64.b64decode(data[key]))
+if data['error']:print(data['error']);raise SystemExit(1)
 from pypdf import PdfReader
 reader=PdfReader(out/'real-research-report.pdf');assert len(reader.pages)==4
 texts=[unicodedata.normalize('NFKC',p.extract_text()) for p in reader.pages]

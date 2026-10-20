@@ -100,10 +100,24 @@ directory=task_runtime.task_output_dir(task,'report')/'ir';directory.mkdir(paren
 paragraph='材料显示，校园信息公开讨论涉及信息时效与回应渠道。分析需核对原始发布时间和适用范围，结合不同群体的实际诉求理解表达差异。心理机制解释是基于证据的推断，后续应对照新材料继续观察。'
 doc={'metadata':{'title':'校园信息公开事件分析'},'chapters':[{'title':title,'blocks':[{'type':'paragraph','inlines':[{'text':paragraph*6,'marks':[]}]},{'type':'paragraph','inlines':[{'text':'公开资料来源','marks':[{'type':'link','href':'https://example.com/source'}]}]}]} for title in ['事件概述与事实核验','传播脉络与公众关注','心理与社会机制','影响研判与后续观察']]}
 (directory/'fixture.json').write_text(json.dumps(doc,ensure_ascii=False),encoding='utf-8')
+evidence_dir=task_runtime.task_output_dir(task,'query')
+(evidence_dir/'state_fixture.json').write_text(json.dumps({'paragraphs':[{'research':{'search_history':[{'url':'https://example.com/source','title':'公开资料来源','content':paragraph}]}}]}),encoding='utf-8')
 document=research.report_html(task);assert document.count('class="paper"')==4 and 'https://example.com/source' in document
 path=research.pdf(task);assert path.read_bytes().startswith(b'%PDF')
 pdf_bytes=path.read_bytes()
 checks+=['four full chapters and sources retained','server PDF export with Chinese font']
+doc['chapters'][0]['blocks'][1]['inlines'][0]['marks'][0]['href']='https://fabricated.example/source'
+(directory/'fixture.json').write_text(json.dumps(doc,ensure_ascii=False),encoding='utf-8')
+try:research.report_html(task)
+except ValueError:pass
+else:raise AssertionError('Unretrieved source must be rejected')
+doc['chapters'][0]['blocks'][1]['inlines'][0]['marks'][0]['href']='https://example.com/source'
+doc['chapters'][0]['blocks'][0]['inlines'][0]['text']='99.99%'+paragraph
+(directory/'fixture.json').write_text(json.dumps(doc,ensure_ascii=False),encoding='utf-8')
+try:research.report_html(task)
+except ValueError:pass
+else:raise AssertionError('Unsupported percentage must be rejected')
+checks+=['unretrieved citations rejected','unsupported statistical percentages rejected']
 doc['chapters'][0]['blocks'][0]['inlines'][0]['text']=paragraph*200
 (directory/'fixture.json').write_text(json.dumps(doc,ensure_ascii=False),encoding='utf-8')
 try:research.pdf(task)

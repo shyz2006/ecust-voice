@@ -682,7 +682,10 @@ def current_report_style():
 def styled_prompt(name):
     if current_report_style() == "concise":
         return (_BASE_PROMPTS[name].replace('总字数约20000字，可上下浮动5%', '总字数约2400字，可上下浮动10%') + "\n\n校园事件研究约束：报告仅包含事实核验、传播脉络、心理社会机制和影响研判四章。"
-                "每章500至650字，严格引用已提供的来源并区分事实与推断。"
+                "每章500至650字，最多700字，4至6个简明段落；仅使用heading和paragraph块，不生成表格、列表、图表或KPI。"
+                "原始检索证据目录优先于上游模型分析；无原始摘录支持的数字、日期与学校事件一律省略。"
+                '每章至少一处用inlines中的{"text":"来源","marks":[{"type":"link","href":"目录中的原始URL"}]}引用来源，逐字复制URL。'
+                "严格区分事实与推断，一条帖子不能支持学生总体比例或校园普遍结论。"
                 "心理学与社会学概念服务于具体事件解释。活动策划、思政活动、班会教案、团辅方案和执行排期均不输出。")
     if current_report_style() == "classic":
         return _BASE_PROMPTS[name]

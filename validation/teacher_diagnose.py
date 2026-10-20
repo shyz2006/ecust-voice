@@ -3,9 +3,9 @@ sys.stdout.reconfigure(encoding='utf-8')
 repo=pathlib.Path(__file__).resolve().parent.parent
 remote=r'''
 import subprocess,json
-code="""import pathlib,json
+code="""import pathlib,json,os
 roots=list(pathlib.Path('/tmp').glob('teacher-validation-*'))
-root=roots[-1]/'runtime'
+root=pathlib.Path(os.environ['VALIDATION_RUNTIME_DIR']) if os.environ.get('VALIDATION_RUNTIME_DIR') else roots[-1]/'runtime'
 for p in root.rglob('*.log'):
  print(str(p.relative_to(root)))
  lines=p.read_text(errors='replace').splitlines()

@@ -53,7 +53,7 @@ def status(task_id):
             report_html(task_id)
             result.update(status='completed',report_url=f'/pulse/api/revision/research/{task_id}/report')
         except (ValueError,OSError):
-            result.update(status='failed',error='报告正文未通过四章完整性检查，研究材料已保留。')
+            result.update(status='failed',error='报告未通过正文与原始来源检查，研究材料已保留。')
     elif any(v=='failed' or str(v).startswith('error') for v in result['engines'].values()):
         result.update(status='failed',error='部分研究引擎未完成，请检查模型与检索服务后重试。')
     elif report and report.status in ('error','cancelled'):
@@ -75,6 +75,13 @@ def _text_blocks(block):
         return [text for child in block for text in _text_blocks(child)]
     if not isinstance(block,dict):return []
     kind=block.get('type')
+    if kind=='table':
+        out=[]
+        for row in block.get('rows',[]):
+            cells=[_text_blocks(cell) for cell in row.get('cells',[])]
+            text=' ｜ '.join('；'.join(item[1] for item in cell) for cell in cells)
+            out.append(('p',text,[url for cell in cells for item in cell for url in item[2]]))
+        return out
     if kind=='paragraph':
         content=''.join(str(x.get('text','')) for x in block.get('inlines',[]))
         links=[]
@@ -102,6 +109,8 @@ def report_html(task_id):
     doc=json.loads(max(files,key=lambda p:p.stat().st_mtime).read_text(encoding='utf-8'))
     chapters=doc.get('chapters') or []
     if len(chapters)!=4:raise ValueError('报告章节数量待核查，请查看原始研究结果')
+    from ReportEngine.evidence import validate_sources
+    validate_sources(doc,task_id)
     title=html.escape(str((doc.get('metadata') or {}).get('title') or read_task_metadata(task_id).get('query') or '事件分析报告'))
     sections=[]
     for i,ch in enumerate(chapters,1):

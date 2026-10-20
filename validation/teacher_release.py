@@ -4,7 +4,7 @@ repo=pathlib.Path(__file__).resolve().parent.parent
 name='teacher-feedback-20261020'
 paths=['templates/index.html','CampusPulse/templates/pulse.html','static/css/campus-review.css','static/js/campus-review.js',
        'CampusPulse/blueprint.py','CampusPulse/taxonomy.py','CampusPulse/revision.py','CampusPulse/research.py','CampusPulse/storage.py','CampusPulse/observatory.py',
-       'ReportEngine/agent.py','ReportEngine/prompts/prompts.py','ReportEngine/report_template/校园与青年事件分析报告模板.md']
+       'ReportEngine/agent.py','ReportEngine/evidence.py','ReportEngine/prompts/prompts.py','ReportEngine/report_template/校园与青年事件分析报告模板.md']
 ssh=[r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'),'-o','BatchMode=yes','-o','ConnectTimeout=15','ubuntu@3.17.59.150','python3 -']
 mode=sys.argv[1] if len(sys.argv)>1 else 'prepare'
 if mode=='prepare':

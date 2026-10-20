@@ -33,6 +33,8 @@ else:
 if len(sys.argv)>2 and sys.argv[2]=='web':
  script=script.replace('bettafish-teacher-validation','bettafish-teacher-validation-web').replace('15001','15002')
  script=script.replace("'--memory','1800m'","'-e','VALIDATION_PORT=15002','--memory','700m'")
+if len(sys.argv)>2 and sys.argv[2]=='resume':
+ script=script.replace("'--memory','1800m'","'-e','VALIDATION_RUNTIME_DIR=/tmp/validation-runtime','-v',str(stage/'validation-runtime')+':/tmp/validation-runtime','--memory','1800m'")
 result=subprocess.run([r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'),'-o','BatchMode=yes','ubuntu@3.17.59.150','python3 -'],input=script.encode(),capture_output=True,timeout=150)
 print(result.stdout.decode(errors='replace'))
 if result.returncode:print(result.stderr.decode(errors='replace')[-1600:]);raise SystemExit(result.returncode)

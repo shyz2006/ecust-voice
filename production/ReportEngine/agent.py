@@ -463,6 +463,11 @@ class ReportAgent:
         self.state.mark_processing()
 
         normalized_reports = self._normalize_reports(reports)
+        self.chapter_generation_node._MIN_BODY_CHARACTERS = type(self.chapter_generation_node)._MIN_BODY_CHARACTERS
+        if self._task_report_meta.get('report_style') == 'concise':
+            from .evidence import evidence_context
+            normalized_reports['query_engine'] = evidence_context(research_task_id)+'\n\n查询引擎二次分析（需按上述原始证据核对）：\n'+normalized_reports['query_engine']
+            self.chapter_generation_node._MIN_BODY_CHARACTERS = 450
 
         def emit(event_type: str, payload: Dict[str, Any]):
             """面向Report Engine流通道的事件分发器，保证错误不外泄。"""
@@ -520,6 +525,8 @@ class ReportAgent:
                 'toc': layout_design.get('tocTitle')
             })
             emit('progress', {'progress': 15, 'message': '文档标题/目录设计完成'})
+            if self._task_report_meta.get('report_style') == 'concise':
+                layout_design['hero'] = {}
             # 使用刚生成的设计稿对全书进行篇幅规划，约束各章字数与重点
             word_plan = self._run_stage_with_retry(
                 "章节篇幅规划",
@@ -542,7 +549,7 @@ class ReportAgent:
                     '心理和社会机制分析须结合事件证据。报告不包含活动策划、班会教案、人员物资或执行排期。',
                     '少用装饰图表，主要结论用正文表达；四页导出版完整保留正文与来源。',
                 ]
-                word_plan['chapters'] = [dict(entry, targetWords=600, min=450, max=700)
+                word_plan['chapters'] = [dict(entry, targetWords=600, min=450, max=700,minWords=450,maxWords=700)
                                          for entry in word_plan.get('chapters', [])]
                 for entry in word_plan['chapters']:
                     subs = entry.get('sections') or []

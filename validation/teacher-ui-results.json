@@ -8,7 +8,8 @@
       "noHorizontalOverflow": true,
       "modalScroll": true,
       "nativeHelpAboveModal": true,
-      "donutKeyboard": true
+      "donutKeyboard": true,
+      "donutMouseSegments": true
     },
     {
       "width": 390,
@@ -17,7 +18,8 @@
       "noHorizontalOverflow": true,
       "modalScroll": true,
       "nativeHelpAboveModal": true,
-      "donutKeyboard": true
+      "donutKeyboard": true,
+      "donutMouseSegments": true
     }
   ],
   "reportInputSimplified": true,

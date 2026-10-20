@@ -25,6 +25,8 @@
     "concise mode skips educational activity stance",
     "four full chapters and sources retained",
     "server PDF export with Chinese font",
+    "unretrieved citations rejected",
+    "unsupported statistical percentages rejected",
     "report overflow rejected without clipping"
   ],
   "production_writes": false,

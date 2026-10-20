@@ -11,6 +11,7 @@ COPY static/css/bettafish.css static/css/bettafish.css
 COPY static/js/app-ui.js static/js/app-ui.js
 COPY static/css/campus-review.css static/css/campus-review.css
 COPY static/js/campus-review.js static/js/campus-review.js
+COPY ReportEngine/evidence.py ReportEngine/evidence.py
 COPY static/img/ecust-lawn.jpg static/img/ecust-lawn.jpg
 COPY static/img/pulse-dachshund.webp static/img/pulse-dachshund.webp
 COPY static/task_sidebar.js static/task_sidebar.js
