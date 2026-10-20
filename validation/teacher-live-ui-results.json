@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "data": "isolated copy of production data",
+  "checks": [
+    {
+      "width": 1440,
+      "sixModules": true,
+      "twelveCategories": true,
+      "originalLinks": 244,
+      "nestedHelpVisible": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 390,
+      "sixModules": true,
+      "twelveCategories": true,
+      "originalLinks": 244,
+      "nestedHelpVisible": true,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "errors": []
+}

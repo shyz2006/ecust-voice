@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 1440,
+      "sixModules": true,
+      "twelveCategories": true,
+      "noHorizontalOverflow": true,
+      "modalScroll": true,
+      "nativeHelpAboveModal": true,
+      "donutKeyboard": true
+    },
+    {
+      "width": 390,
+      "sixModules": true,
+      "twelveCategories": true,
+      "noHorizontalOverflow": true,
+      "modalScroll": true,
+      "nativeHelpAboveModal": true,
+      "donutKeyboard": true
+    }
+  ],
+  "reportInputSimplified": true,
+  "originalWorkflowRequest": true,
+  "inputRetainedOnError": true,
+  "configurationAccessible": true,
+  "scriptErrors": [],
+  "api": "mock; no real model result"
+}

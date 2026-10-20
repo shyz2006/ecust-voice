@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS snapshots (
     extra TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_snapshots_batch ON snapshots(batch_ts);
+CREATE INDEX IF NOT EXISTS idx_snapshots_source_batch ON snapshots(source,batch_ts);
 CREATE INDEX IF NOT EXISTS idx_snapshots_title ON snapshots(title);
 
 CREATE TABLE IF NOT EXISTS topics (

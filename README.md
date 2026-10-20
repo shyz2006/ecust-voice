@@ -2,9 +2,24 @@
 
 基于 BettaFish（微舆）定制的华东理工大学校园舆情与学生心理健康感知平台，线上地址 https://smydashuaige.2026515.xyz （需登录）。
 
-本仓库最初是 2026-10-12 从线上 `bettafish` 容器 `/app` 取回的代码快照，之后的功能修改都在此基础上建分支完成。当前分支 `feat/frontend-pulse-redesign` 在 `feat/crisis-post-review-20261012`（`204d730`）之上，新增前端「脉动」版式，并已于 2026-10-19 部署上线。
+本仓库最初是 2026-10-12 从线上 `bettafish` 容器 `/app` 取回的代码快照。2026-10-20 的教师反馈版本基于合并 PR #7 后的 `ed7ecf8`，分支为 `feat/teacher-feedback-20261020`。
 
-## 当前线上版本
+## 2026-10-20 教师反馈版本
+
+六个模块改用统一十二类议题和新的读取接口。首页、趋势、热点、梗文化及账本取消活动设计入口；育人工坊恢复 Query / Media / Insight → ReportEngine 的原研究流程，生成事实、传播、心理社会机制、影响观察四章报告，支持四页 A4 导出。
+
+- [35 项修改与统计口径](教师反馈修改说明_20261020.md)
+- 新前端：`production/static/css/campus-review.css`、`production/static/js/campus-review.js`；两个入口模板仍须保持字节一致。
+- 数据读取：`production/CampusPulse/revision.py`；分类与词典：`taxonomy.py`；原研究适配与导出：`research.py`。
+- 发布目录：`/home/ubuntu/bettafish/deploy/teacher-feedback-20261020`；验证、候选镜像与发布结果见 `validation/teacher-*.json`。
+- 回退：`sh /home/ubuntu/bettafish/deploy/teacher-feedback-20261020/rollback.sh`。回退恢复旧文件与基线镜像，不重启数据库。
+- 新镜像需要 Noto CJK 字体和 Playwright Chromium。旧活动生成入口返回 410，旧版自动摘要调度停止启动；历史资料和读取接口保留。
+
+发布验证脚本 `validation/teacher_release.py` 针对本次基线做逐文件校验；发布成功后不能再对同名发布重复执行准备步骤。后续修改应新建发布名并指定新的基线。验证服务仅监听回环地址，带测试登录的验证入口不属于生产应用。
+
+下面记录 2026-10-19 的上一版，供历史回退和排查参考；其中脉动切换、小腊肠、活动入口等前端设计已被教师反馈版替换。
+
+## 历史版本：2026-10-19
 
 | 项目 | 内容 |
 | :--- | :--- |
@@ -25,7 +40,7 @@
 
 `index.html`（`/` 页面）与 `pulse.html`（`/pulse/` 页面）必须保持完全一致。
 
-## 本分支改动：前端「脉动」版式
+## 历史改动：前端「脉动」版式
 
 新版式是叠加在原有样式之上的一层（模板末尾的 `#pulse-theme-style` 与 `#pulse-theme-script`），不改动任何元素 id 和原有业务 JS。顶栏「经典」按钮可随时切回原版式，选择保存在浏览器本地。
 

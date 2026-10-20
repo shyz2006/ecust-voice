@@ -532,6 +532,21 @@ class ReportAgent:
                 expected_keys=["chapters", "totalWords", "globalGuidelines"],
                 postprocess=self._normalize_word_plan,
             )
+            if (getattr(self, '_task_report_meta', {}) or {}).get('report_style') == 'concise':
+                # Workshop v2 preserves original engines and constrains only the final report contract.
+                word_plan['totalWords'] = 2400
+                word_plan['globalGuidelines'] = [
+                    '全报告严格四章，每章500至650字；每章保留事实出处、日期与证据边界。',
+                    '心理和社会机制分析须结合事件证据。报告不包含活动策划、班会教案、人员物资或执行排期。',
+                    '少用装饰图表，主要结论用正文表达；四页导出版完整保留正文与来源。',
+                ]
+                word_plan['chapters'] = [dict(entry, targetWords=600, min=450, max=700)
+                                         for entry in word_plan.get('chapters', [])]
+                for entry in word_plan['chapters']:
+                    subs = entry.get('sections') or []
+                    for sub in subs:
+                        if isinstance(sub, dict):
+                            sub.update(targetWords=max(80,600//max(1,len(subs))), min=50, max=max(120,700//max(1,len(subs))))
             emit('stage', {
                 'stage': 'word_plan_ready',
                 'chapter_targets': len(word_plan.get('chapters', []))

@@ -1,6 +1,7 @@
 FROM ghcr.io/666ghj/bettafish:latest
 
 WORKDIR /app
+RUN apt-get update -qq && apt-get install -y --no-install-recommends fonts-noto-cjk && rm -rf /var/lib/apt/lists/*
 
 # Keep the upstream image and layer only the local Bocha compatibility changes & task isolation.
 COPY app.py app.py
@@ -8,6 +9,8 @@ COPY templates/index.html templates/index.html
 COPY templates/login.html templates/login.html
 COPY static/css/bettafish.css static/css/bettafish.css
 COPY static/js/app-ui.js static/js/app-ui.js
+COPY static/css/campus-review.css static/css/campus-review.css
+COPY static/js/campus-review.js static/js/campus-review.js
 COPY static/img/ecust-lawn.jpg static/img/ecust-lawn.jpg
 COPY static/img/pulse-dachshund.webp static/img/pulse-dachshund.webp
 COPY static/task_sidebar.js static/task_sidebar.js
@@ -47,6 +50,7 @@ COPY ReportEngine/nodes/document_layout_node.py ReportEngine/nodes/document_layo
 COPY ReportEngine/nodes/word_budget_node.py ReportEngine/nodes/word_budget_node.py
 COPY ReportEngine/nodes/template_selection_node.py ReportEngine/nodes/template_selection_node.py
 COPY ReportEngine/report_template/高校思政引领与心理育人研究报告模板.md ReportEngine/report_template/高校思政引领与心理育人研究报告模板.md
+COPY ReportEngine/report_template/校园与青年事件分析报告模板.md ReportEngine/report_template/校园与青年事件分析报告模板.md
 COPY ReportEngine/llms/base.py ReportEngine/llms/base.py
 COPY ReportEngine/renderers/pdf_renderer.py ReportEngine/renderers/pdf_renderer.py
 COPY ReportEngine/renderers/math_to_svg.py ReportEngine/renderers/math_to_svg.py
