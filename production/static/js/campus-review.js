@@ -76,14 +76,28 @@ async function loadFeed(kind,force=false){
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);
- $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
+ $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
 }
+
+function sourceSearchUrl(platform,title){const prefix={'B站':'https://search.bilibili.com/all?keyword=','抖音':'https://www.douyin.com/search/','微博':'https://s.weibo.com/weibo?q=','百度':'https://www.baidu.com/s?wd='}[platform];return prefix?prefix+encodeURIComponent(title):null;}
+function memeUseLink(p){
+ const url=safeUrl(p.url);if(!url)return '';
+ const bvid=new URL(url).pathname.match(/^\/video\/(BV[0-9A-Za-z]{10})(?:\/|$)/)?.[1];
+ const search=sourceSearchUrl(p.platform,p.title);
+ const copy=bvid||p.title;
+ return '<div class="meme-use-row"><p><a class="meme-original" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc((p.platform?p.platform+' · ':'')+p.title)+' ↗</a></p><div class="meme-use-actions">'+(search?sourceLink(search,p.platform+'搜索 ↗'):'')+'<button type="button" data-copy-meme="'+esc(copy)+'" title="'+(bvid?'复制后可在B站网站或App搜索':'复制标题后可在原平台查找')+'">'+(bvid?'复制 BV 号':'复制标题')+'</button></div></div>';
+}
+document.addEventListener('click',async e=>{
+ const b=e.target.closest('[data-copy-meme]');if(!b)return;
+ try{await navigator.clipboard.writeText(b.dataset.copyMeme);notice('已复制，可到原平台粘贴搜索。');}
+ catch{showDialog('复制编号或标题');$('detailBody').innerHTML='<p>复制后可到原平台查找：</p><input class="copy-source-value" readonly value="'+esc(b.dataset.copyMeme)+'">';const input=$('detailBody').querySelector('input');input.focus();input.select();}
+});
 
 let memePoll;
 function renderMemes(d){
  clearTimeout(memePoll);
  const seen=new Set(),cards=[...(d.items||[]).map(x=>({...x,confirmed:true})),...(d.candidates||[]).map(x=>({...x,confirmed:false}))].filter(x=>{const key=x.term.replace(/\s+/g,'').toLowerCase();if(seen.has(key)||!x.links?.length)return false;seen.add(key);return true;}).slice(0,10);
- $('memeFeed').innerHTML=cards.map((x,i)=>`<article class="feed-card meme-card ${x.confirmed?'confirmed':'discovered'}"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.form||'网络表达')}</span><span class="meme-status" title="${esc(x.confirmed?'已根据用例与释义资料核对':x.reason||'等待释义资料核对')}">${x.confirmed?'释义已核对':'新发现 · 用法观察'}</span></div><h2>${esc(x.term)}</h2><div class="meme-intro"><h3>简介</h3><p>${esc(x.confirmed?x.meaning:x.observation)}</p></div><div class="meme-uses"><h3>看看大家怎么用</h3>${x.links.slice(0,2).map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')}</div><div class="meme-card-footer">${x.confirmed?sourceLink(x.reference_url,'释义参考 ↗'):'<span class="muted">释义资料待核对</span>'}<span class="muted">${num(x.observed_count)} 个独立用例</span></div></article>`).join('');
+ $('memeFeed').innerHTML=cards.map((x,i)=>`<article class="feed-card meme-card ${x.confirmed?'confirmed':'discovered'}"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.form||'网络表达')}</span><span class="meme-status" title="${esc(x.confirmed?'已根据用例与释义资料核对':x.reason||'等待释义资料核对')}">${x.confirmed?'释义已核对':'新发现 · 用法观察'}</span></div><h2>${esc(x.term)}</h2><div class="meme-intro"><h3>简介</h3><p>${esc(x.confirmed?x.meaning:x.observation)}</p></div><div class="meme-uses"><h3>看看大家怎么用</h3>${x.links.slice(0,2).map(memeUseLink).join('')}</div><div class="meme-card-footer">${x.confirmed?sourceLink(x.reference_url,'释义参考 ↗'):'<span class="muted">释义资料待核对</span>'}<span class="muted">${num(x.observed_count)} 个独立用例</span></div></article>`).join('');
  if(d.running)memePoll=setTimeout(()=>{if(state.tab==='memes')loadFeed('memes',true).catch(e=>notice(e.message));},5000);
 }
 
