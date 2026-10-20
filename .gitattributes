@@ -8,3 +8,5 @@ validation/resend-client-*.json text eol=lf
 validation/services-discovery-*.json text eol=lf
 
 validation/meme-cleanup-*.json text eol=lf
+
+validation/meme-cards-*.json text eol=lf

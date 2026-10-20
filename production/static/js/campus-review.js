@@ -71,20 +71,19 @@ async function loadCare(){
 }
 async function openCare(){const version=showDialog('心育关怀线索 · 原帖核查');try{const d=await api('/pulse/api/campus/crisis-posts?level=all');if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="data-note">'+num(d.total)+' 条建议关怀，供人工结合原帖核查。</p>'+renderPosts(d.posts)+(d.filtered_posts?.length?'<h3 class="post-group-title">已过滤的日常表达 · '+num(d.filtered_total)+' 条</h3>'+renderPosts(d.filtered_posts):'');}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 async function loadFeed(kind,force=false){
- if(!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
+ if(kind==='memes'||!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
  const d=state[kind],current=state.hotPlatform;
- if(kind==='memes')renderMemeStatus(d);
- $('hotPlatforms').innerHTML=kind==='hot'?d.platforms.map(p=>'<button data-feed="'+kind+'" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join(''):'';
- const items=(kind==='hot'?d.items.filter(x=>x.platform===current):d.items).slice(0,10);
- $(kind==='hot'?'hotFeed':'memeFeed').innerHTML=items.map((x,i)=>kind==='hot'?`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`:
- `<article class="feed-card meme-card"><div class="feed-meta"><span class="meme-status">${esc(x.evidence_status||'常用表达')}</span><span>${esc(x.form)}</span></div><h2>${esc(x.term)}</h2><p>${esc(x.meaning)}</p><h3>用在什么场景</h3><p>${esc(x.usage)}</p>${(x.examples||[]).slice(0,1).map(t=>'<div class="example">试着说：'+esc(t)+'</div>').join('')}<div class="meme-reference">${sourceLink(x.reference_url,'释义参考 · '+(x.reference_title||'查看资料'))}${x.reference_quote?'<blockquote>'+esc(x.reference_quote)+'</blockquote>':''}<small>核对于 '+date(x.verified_at)+' · '+num(x.observed_count)+' 个独立内容用例</small></div>${x.links.length?'<div class="observed-examples"><h3>近期采集用例</h3>'+x.links.map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')+'</div>':''}<div class="feed-links">${(x.search_links||[]).map(p=>sourceLink(p.url,p.platform+'搜索 ↗')).join('')}</div></article>`).join('')||(kind==='memes'?'':empty('这个平台的内容正在整理中。'));
+ if(kind==='memes'){renderMemes(d);return;}
+ $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
+ const items=d.items.filter(x=>x.platform===current).slice(0,10);
+ $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
 }
 
 let memePoll;
-function renderMemeStatus(d){
+function renderMemes(d){
  clearTimeout(memePoll);
- const pending=d.candidates||[];$('memeCandidates').querySelector('summary').textContent='发现候选 · '+pending.length+' 条';
- $('memeCandidateList').innerHTML=pending.map(x=>'<article class="feed-card candidate-card"><span class="meme-status">待核对</span><h3>'+esc(x.term)+'</h3><p>'+esc(x.reason)+'</p><small>'+num(x.observed_count)+' 个独立内容用例</small>'+(x.links||[]).slice(0,2).map(p=>'<p>'+sourceLink(p.url,p.title+' ↗')+'</p>').join('')+'</article>').join('')||empty('下一轮从新采集内容中继续发现。');
+ const seen=new Set(),cards=[...(d.items||[]).map(x=>({...x,confirmed:true})),...(d.candidates||[]).map(x=>({...x,confirmed:false}))].filter(x=>{const key=x.term.replace(/\s+/g,'').toLowerCase();if(seen.has(key)||!x.links?.length)return false;seen.add(key);return true;}).slice(0,10);
+ $('memeFeed').innerHTML=cards.map((x,i)=>`<article class="feed-card meme-card ${x.confirmed?'confirmed':'discovered'}"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.form||'网络表达')}</span><span class="meme-status" title="${esc(x.confirmed?'已根据用例与释义资料核对':x.reason||'等待释义资料核对')}">${x.confirmed?'释义已核对':'新发现 · 用法观察'}</span></div><h2>${esc(x.term)}</h2><div class="meme-intro"><h3>简介</h3><p>${esc(x.confirmed?x.meaning:x.observation)}</p></div><div class="meme-uses"><h3>看看大家怎么用</h3>${x.links.slice(0,2).map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')}</div><div class="meme-card-footer">${x.confirmed?sourceLink(x.reference_url,'释义参考 ↗'):'<span class="muted">释义资料待核对</span>'}<span class="muted">${num(x.observed_count)} 个独立用例</span></div></article>`).join('');
  if(d.running)memePoll=setTimeout(()=>{if(state.tab==='memes')loadFeed('memes',true).catch(e=>notice(e.message));},5000);
 }
 
