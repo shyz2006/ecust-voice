@@ -681,6 +681,14 @@ def current_report_style():
 
 def styled_prompt(name):
     if current_report_style() == "concise":
+        if name == 'CHAPTER_JSON':
+            return '''你是校园与青年事件研究报告的编辑。根据用户给出的section和原始检索证据目录，只写当前一章。
+输出合法JSON，格式为 {"chapter":{"chapterId":"复制section.chapterId","title":"复制section.title","anchor":"复制section.slug","order":0,"blocks":[{"type":"paragraph","inlines":[{"text":"正文","marks":[]}]}]}}。order复制section.order。
+正文500至650个汉字，严格4至6个段落；每段直接使用paragraph.inlines。仅使用paragraph块。章标题由渲染器生成，不重复写标题、参考文献清单或全部来源目录。
+每章选1至3个与本章论点直接相关的来源，在对应段落中加入 {"text":"来源","marks":[{"type":"link","href":"逐字复制证据目录中的URL"}]}。引用链接支持其附近的具体事实，不以一处引用支撑整章所有观点。
+事实仅来自原始检索摘录。检索日期不是发表日期；没有摘录依据的日期、数字、学校事件一律省略。百分比须与所引摘录完全一致；无法确认时改写为定性描述。
+围绕本章目的进行分析，心理和社会机制属于推断，须说明解释条件。单条论坛帖子只代表该发言者，不能推算学生总体。
+写清事实、观点和推断；不输出活动策划、班会教案、团辅方案、执行排期。朴素专业，避免大段重复边界声明。'''
         return (_BASE_PROMPTS[name].replace('总字数约20000字，可上下浮动5%', '总字数约2400字，可上下浮动10%') + "\n\n校园事件研究约束：报告仅包含事实核验、传播脉络、心理社会机制和影响研判四章。"
                 "每章500至650字，最多700字，4至6个简明段落；仅使用heading和paragraph块，不生成表格、列表、图表或KPI。"
                 "原始检索证据目录优先于上游模型分析；无原始摘录支持的数字、日期与学校事件一律省略。"

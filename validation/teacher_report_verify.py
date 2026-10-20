@@ -27,10 +27,10 @@ for engine in ['query','media','insight']:
 code="""import json,base64,pathlib
 from CampusPulse import research
 task=TASK
-content=research.report_html(task)
-try:pdf=research.pdf(task);error=None
+content=None
+try:content=research.report_html(task);pdf=research.pdf(task);error=None
 except ValueError as exc:pdf=None;error=str(exc)
-print(json.dumps({'error':error,'pdf_base64':base64.b64encode(pdf.read_bytes()).decode() if pdf else None,'html_base64':base64.b64encode(content.encode()).decode(),'ir_base64':base64.b64encode((pathlib.Path('/validation')/task/'outputs/report/ir/real.json').read_bytes()).decode()}))
+print(json.dumps({'error':error,'pdf_base64':base64.b64encode(pdf.read_bytes()).decode() if pdf else None,'html_base64':base64.b64encode(content.encode()).decode() if content else None,'ir_base64':base64.b64encode((pathlib.Path('/validation')/task/'outputs/report/ir/real.json').read_bytes()).decode()}))
 """.replace('TASK',repr(task))
 r=subprocess.run(['sudo','-n','docker','run','--rm','-i','--network','none','--memory','700m',
  '-v',str(stage)+':/validation','-e','BETTAFISH_RUNTIME_DIR=/validation',

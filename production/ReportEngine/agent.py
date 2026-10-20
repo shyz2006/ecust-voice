@@ -466,7 +466,8 @@ class ReportAgent:
         self.chapter_generation_node._MIN_BODY_CHARACTERS = type(self.chapter_generation_node)._MIN_BODY_CHARACTERS
         if self._task_report_meta.get('report_style') == 'concise':
             from .evidence import evidence_context
-            normalized_reports['query_engine'] = evidence_context(research_task_id)+'\n\n查询引擎二次分析（需按上述原始证据核对）：\n'+normalized_reports['query_engine']
+            normalized_reports = {'query_engine': evidence_context(research_task_id), 'media_engine': '', 'insight_engine': ''}
+            forum_logs = ''  # Generated debate is analysis, not independently retrieved evidence.
             self.chapter_generation_node._MIN_BODY_CHARACTERS = 450
 
         def emit(event_type: str, payload: Dict[str, Any]):
@@ -668,6 +669,16 @@ class ReportAgent:
                             run_dir,
                             stream_callback=chunk_callback
                         )
+                        if self._task_report_meta.get('report_style') == 'concise':
+                            from .evidence import validate_sources
+                            try:
+                                validate_sources({'chapters': [chapter_payload]}, research_task_id)
+                                body = ''.join(str(run.get('text', '')) for block in chapter_payload.get('blocks', [])
+                                               for run in block.get('inlines', []))
+                                if len(body) > 900:
+                                    raise ValueError('简明报告每章正文最多900字，请压缩为500至650字，引用限1至3处')
+                            except ValueError as exc:
+                                raise ChapterValidationError(str(exc)) from exc
                         break
                     except (ChapterJsonParseError, ChapterContentError, ChapterValidationError) as structured_error:
                         if isinstance(structured_error, ChapterContentError):

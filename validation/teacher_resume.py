@@ -4,9 +4,16 @@ repo=pathlib.Path(__file__).resolve().parent.parent
 out=repo.parent/'validation-artifacts/teacher';state=json.loads((out/'teacher-live-task.json').read_text(encoding='utf-8'));task=state['task_id']
 if len(sys.argv)>1 and sys.argv[1]=='generate':
  code=r'''
-import pathlib,json,urllib.request
+import pathlib,json,urllib.request,subprocess,datetime
 task=TASK
 root=pathlib.Path('/home/ubuntu/bettafish/deploy/teacher-feedback-20261020/validation-runtime')/task
+report=root/'outputs/report'
+if report.exists():
+ stage=root.parent.parent
+ backup=stage/'validation-evidence-backup'/('rejected-report-'+datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S'))
+ assert report.resolve().is_relative_to(stage.resolve()) and backup.resolve().is_relative_to(stage.resolve())
+ assert not backup.exists()
+ subprocess.run(['sudo','-n','mv','--',str(report),str(backup)],check=True)
 meta=json.loads((root/'metadata.json').read_text())
 request=urllib.request.Request('http://127.0.0.1:15001/api/report/generate',data=json.dumps({'research_task_id':task,'query':meta['query'],'regenerate':True}).encode(),headers={'Content-Type':'application/json'})
 data=json.load(urllib.request.urlopen(request,timeout=30));assert data['success']

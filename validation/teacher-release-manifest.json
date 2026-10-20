@@ -4,7 +4,7 @@
   "base_image_id": "sha256:c1ef551b83332f0ab9cfd4d0d8c5fabe6f69451b471957f02570890c47a67bb4",
   "base_image": "bettafish:base-teacher-feedback-20261020",
   "candidate_image": "bettafish:candidate-teacher-feedback-20261020",
-  "candidate_image_id": "sha256:bd1be6d8009f9c0bddff73a83afe40555bfdd44240e878c8edc3fd59081a1873",
+  "candidate_image_id": "sha256:7483618ad152e7d5f80be9107f8962f04b3a6ac027343d1d0acc34e368ab6954",
   "files": [
     {
       "path": "templates/index.html",
@@ -78,7 +78,7 @@
     },
     {
       "path": "ReportEngine/agent.py",
-      "candidate_sha256": "b72f0f712c7ea608e62e777deb0d2fd7dca039a6807f12cc8867dced8d3ca90d",
+      "candidate_sha256": "e394d6b130801260a4e33a82910f3e82fb43dae29f4a7d893c646f6419073394",
       "expected_before": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
       "before_sha256": "68a7bb447bb1c8f09700024ff50bc39f4f5accf2135ccbde907a336415946aba",
       "host_existed": true
@@ -92,7 +92,7 @@
     },
     {
       "path": "ReportEngine/prompts/prompts.py",
-      "candidate_sha256": "f8b21010c5ad3ca073c0b3e078e84f6cf686b7a3fe77bf9b270c54c42ded7fb2",
+      "candidate_sha256": "1e5f79333ead88506d55b9001f0490df7a106a201c8560a917a2c1ffe63eb748",
       "expected_before": "e87600c7ebde13b80676f0583ac96c0241f4fee14bbc4384677a62f6a78837e8",
       "before_sha256": "e87600c7ebde13b80676f0583ac96c0241f4fee14bbc4384677a62f6a78837e8",
       "host_existed": true
