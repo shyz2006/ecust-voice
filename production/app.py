@@ -990,6 +990,8 @@ atexit.register(cleanup_processes)
 def index():
     """主页：先加载task隔离bootstrap，再执行旧版页面脚本。"""
     html = render_template('index.html')
+    if '/static/js/campus-review.js?' in html:
+        return Response(html, mimetype='text/html')
     bootstrap = (
         '<script src="/static/task_isolation.js"></script>'
         '<script src="/static/task_sidebar.js" defer></script>'

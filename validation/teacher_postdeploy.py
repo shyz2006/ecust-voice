@@ -4,11 +4,16 @@ sys.stdout.reconfigure(encoding='utf-8')
 repo=pathlib.Path(__file__).resolve().parent.parent
 manifest=json.loads((repo/'validation/teacher-release-manifest.json').read_text(encoding='utf-8'))
 expected={x['path']:x['candidate_sha256'] for x in manifest['files']}
+entrypoint=repo/'validation/teacher-entrypoint-release-manifest.json'
+if entrypoint.exists():
+ expected.update({x['path']:x['candidate_sha256'] for x in json.loads(entrypoint.read_text(encoding='utf-8'))['files']})
 code=r'''
 import os,json,hashlib,time,urllib.request,urllib.error
+from pathlib import Path
 from flask import Flask
 from flask.sessions import SecureCookieSessionInterface
 expected=EXPECTED
+assert all(hashlib.sha256((Path('/app')/path).read_bytes()).hexdigest()==digest for path,digest in expected.items())
 app=Flask('readonly-release-check');app.secret_key=os.environ['WEB_SESSION_SECRET']
 cookie=SecureCookieSessionInterface().get_signing_serializer(app).dumps({'authenticated':True,'username':os.environ['WEB_AUTH_USERNAME']})
 base='https://smydashuaige.2026515.xyz';timings={}

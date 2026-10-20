@@ -12,7 +12,7 @@
 - 新前端：`production/static/css/campus-review.css`、`production/static/js/campus-review.js`；两个入口模板仍须保持字节一致。
 - 数据读取：`production/CampusPulse/revision.py`；分类与词典：`taxonomy.py`；原研究适配与导出：`research.py`。
 - 发布目录：`/home/ubuntu/bettafish/deploy/teacher-feedback-20261020`；验证、候选镜像与发布结果见 `validation/teacher-*.json`。
-- 回退：`sh /home/ubuntu/bettafish/deploy/teacher-feedback-20261020/rollback.sh`。回退恢复旧文件与基线镜像，不重启数据库。
+- 完整回退先运行 `teacher-entrypoint-20261020/rollback.sh`，再运行 `teacher-feedback-20261020/rollback.sh`，两者均位于 `/home/ubuntu/bettafish/deploy/`。回退恢复旧文件与基线镜像，不重启数据库。
 - 新镜像需要 Noto CJK 字体和 Playwright Chromium。旧活动生成入口返回 410，旧版自动摘要调度停止启动；历史资料和读取接口保留。
 
 发布验证脚本 `validation/teacher_release.py` 针对本次基线做逐文件校验；发布成功后不能再对同名发布重复执行准备步骤。后续修改应新建发布名并指定新的基线。验证服务仅监听回环地址，带测试登录的验证入口不属于生产应用。

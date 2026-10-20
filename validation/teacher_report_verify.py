@@ -50,7 +50,9 @@ texts=[unicodedata.normalize('NFKC',p.extract_text()) for p in reader.pages]
 (out/'real-research-report.txt').write_text('\n\n'.join(texts),encoding='utf-8')
 doc=json.loads((out/'real-research-report.json').read_text(encoding='utf-8'))
 summary={'passed':True,'real_three_engine_workflow':True,'chapters':len(doc['chapters']),'pdf_pages':4,'page_text_characters':[len(t) for t in texts],
-         'source_links':sum(len(p.get('/Annots',[])) for p in reader.pages),'rendered_with':'final candidate code, Chinese fonts, no clipping'}
+         'source_links':sum(len(p.get('/Annots',[])) for p in reader.pages),'rendered_with':'final candidate code, Chinese fonts, no clipping',
+         'verification_scope':'workflow, retrieved-link membership, percentages and PDF layout; not sentence-level factual verification',
+         'editorial_review_required':True}
 assert all(len(t)>150 for t in texts),'Each page must contain a substantive chapter'
 assert summary['source_links']>0,'The report must retain source links'
 lineage=json.loads((out/'teacher-live-task.json').read_text(encoding='utf-8'))
