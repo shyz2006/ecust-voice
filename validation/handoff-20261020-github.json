@@ -1,0 +1,11 @@
+{
+  "url": "https://github.com/shyz2006/ecust-voice/pull/8",
+  "state": "open",
+  "merged": false,
+  "draft": false,
+  "head_branch": "feat/teacher-feedback-20261020",
+  "head_sha": "e0bf958844e1b05a4a39394b3df918bb117bdbda",
+  "base_branch": "main",
+  "snapshot_date": "2026-10-20",
+  "stage": "application baseline before documentation-only commit; owner plans to merge PR #8"
+}
