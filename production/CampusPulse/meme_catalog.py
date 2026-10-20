@@ -37,19 +37,20 @@ def is_observed_url(url):
 
 def build(items):
     result=[]
-    for platform in ('B站','抖音','微博','百度'):
-        for base in CATALOG:
-            candidates=sorted((x for x in items if x['platform']==platform and x.get('url') and observed_match(base,x['title'])),key=lambda x:-x['ts'])
-            seen=set();links=[]
-            for item in candidates:
-                parsed=urlsplit(item['url'])
-                # Search entry points are discovery tools, not observed posts.
-                if not is_observed_url(item['url']) or item['url'] in seen:continue
-                seen.add(item['url']);links.append(item)
-                if len(links)==2:break
-            result.append({k:v for k,v in base.items() if k not in ('aliases','pattern')} | {
-                'platform':platform,'links':links,'examples':[base['example']],
-                'reference_url':base['reference'],'search_url':platform_search(platform,base['term']),
-                'evidence_status':'近期采集用例' if links else '常用表达',
-            })
+    for base in CATALOG:
+        candidates=sorted((x for x in items if x.get('url') and observed_match(base,x['title'])),key=lambda x:-x['ts'])
+        seen=set();links=[];platform_counts={}
+        for item in candidates:
+            if not is_observed_url(item['url']) or item['url'] in seen:continue
+            seen.add(item['url']);platform=item['platform']
+            if platform_counts.get(platform,0)>=2:continue
+            platform_counts[platform]=platform_counts.get(platform,0)+1
+            links.append(item)
+            if len(links)==6:break
+        result.append({k:v for k,v in base.items() if k not in ('aliases','pattern')} | {
+            'links':links,'examples':[base['example']],
+            'reference_url':base['reference'],
+            'search_links':[{'platform':p,'url':platform_search(p,base['term'])} for p in ('B站','抖音','微博','百度')],
+            'evidence_status':'近期采集用例' if links else '常用表达',
+        })
     return result

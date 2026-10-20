@@ -127,11 +127,17 @@ def revision_ledger():
     allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)
     sources=[s for s in data.get('sources',[]) if s['source'] in allowed]
     # Cost, vendor and legacy national-comparison values are excluded from this presentation API.
+    from datetime import datetime,timedelta,timezone
+    today=datetime.now(timezone(timedelta(hours=8))).date()
+    days=[today-timedelta(days=n) for n in range(13,-1,-1)]
+    start=int(datetime.combine(days[0],datetime.min.time(),tzinfo=timezone(timedelta(hours=8))).timestamp())
     with storage.connect() as conn:
         daily=[dict(r) for r in conn.execute("SELECT date(ts,'unixepoch','+8 hours') day, "
                "SUM(CASE WHEN usage_known=1 THEN prompt_tokens+completion_tokens END) tokens, "
                "SUM(CASE WHEN success=1 AND usage_known=0 THEN 1 ELSE 0 END) unknown_calls "
-               "FROM pulse_usage WHERE ts>=? GROUP BY day ORDER BY day",(int(time.time())-10*86400,))]
+               "FROM pulse_usage WHERE ts>=? AND ts<=? GROUP BY day ORDER BY day",(start,int(time.time())))]
+    by_day={r['day']:r for r in daily}
+    daily=[dict(by_day.get(day.isoformat(),{'day':day.isoformat(),'tokens':None,'unknown_calls':0}),has_records=day.isoformat() in by_day) for day in days]
     return jsonify(success=True,generated_at=data['generated_at'],observed_since=data['observed_since'],
                    unique_school_posts=data['unique_school_posts'],reports_completed=data['main_reports_completed'],
                    unique_items=sum(s['unique'] for s in sources),sources=sources,

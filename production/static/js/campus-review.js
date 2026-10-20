@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&
 const num=value=>value==null?'—':Number(value).toLocaleString('zh-CN'),date=ts=>ts?new Date(ts*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
 const shortDate=ts=>new Date(ts*1000).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric'});
 const DAY=86400,NAMES={'huyou-school':'狐友华理圈','tieba-school':'华理贴吧','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站热搜','bilibili-popular':'B站热门','toutiao':'头条','weibo':'微博','baidu':'百度'};
-const state={tab:'campus',overview:null,top:3,hot:null,memes:null,hotPlatform:'抖音',memePlatform:'B站',ledger:null,modalVersion:0,task:null,poll:null,overviewPromise:null};
+const state={tab:'campus',overview:null,hot:null,memes:null,hotPlatform:'抖音',ledger:null,modalVersion:0,task:null,poll:null,overviewPromise:null};
 let noticeTimer;
 function notice(message){$('notice').textContent=message;$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,6500);}
 async function api(url,options={}){
@@ -33,8 +33,8 @@ function renderCampus(){
  const count=Object.values(data.emotion||{}).reduce((s,v)=>s+v,0),negative=(data.emotion?.消极||0)/(count||1);
  const weather=!count?['○','等待样本','新采集的讨论将显示在这里。']:negative<.2?['☀','晴朗','多数表达平稳，关注同学的日常与收获。']:negative<.4?['☀','晴间多云','日常讨论中伴有一些困扰，值得倾听。']:['☁','多云','近期困扰表达较多，留意具体诉求。'];
  $('weather').innerHTML='<span class="weather-symbol" aria-hidden="true">'+weather[0]+'</span><div><div class="weather-title">校园心情 · '+weather[1]+'</div><p class="weather-caption">'+weather[2]+'</p></div><button class="text-button" style="margin-left:auto;font-size:11px;white-space:nowrap" data-method="emotion">计算口径 ↗</button>';
- const sorted=[...data.themes].sort((a,b)=>a.delta==null&&b.delta!=null?1:a.delta!=null&&b.delta==null?-1:a.delta!=null&&b.delta!=null?b.delta-a.delta||b.posts_24h-a.posts_24h:b.posts_24h-a.posts_24h).filter(t=>t.posts_24h>0).slice(0,state.top);
- $('campusTopics').innerHTML=sorted.map((t,i)=>'<article class="discussion"><span class="discussion-number">'+String(i+1).padStart(2,'0')+'</span><div><div class="discussion-head"><button data-theme="'+esc(t.theme)+'">'+esc(t.theme)+' ↗</button><span class="discussion-count">'+num(t.posts_24h)+' 篇新增帖 <span class="change">'+(t.delta==null?'':t.delta===0?'与前窗持平':(t.delta>0?'+':'')+num(t.delta)+' 较前窗')+'</span></span></div>'+(t.examples||[]).map(p=>'<button class="discussion-excerpt" data-theme="'+esc(t.theme)+'">'+esc(p.content.slice(0,95))+(p.content.length>95?'…':'')+'</button>').join('')+'</div></article>').join('')||empty('近24小时暂无新增讨论');
+ const sorted=[...data.themes].sort((a,b)=>a.delta==null&&b.delta!=null?1:a.delta!=null&&b.delta==null?-1:a.delta!=null&&b.delta!=null?b.delta-a.delta||b.posts_24h-a.posts_24h:b.posts_24h-a.posts_24h).filter(t=>t.posts_24h>0).slice(0,3);
+ $('campusTopics').innerHTML=sorted.map((t,i)=>'<article class="discussion"><span class="discussion-number">'+String(i+1).padStart(2,'0')+'</span><div><div class="discussion-head"><button data-theme="'+esc(t.theme)+'">'+esc(t.theme)+' ↗</button><span class="discussion-count">'+num(t.posts_24h)+' 篇新增帖 <span class="change">'+(t.delta==null?'':t.delta===0?'与前窗持平':(t.delta>0?'+':'')+num(t.delta)+' 较前窗')+'</span></span></div>'+(t.examples||[]).slice(0,3).map(p=>'<div class="discussion-excerpt">'+sourceLink(p.link,p.content.slice(0,95)+(p.content.length>95?'…':'')+' ↗')+'</div>').join('')+'</div></article>').join('')||empty('近24小时暂无新增讨论');
  $('campusCategories').innerHTML=data.themes.map(t=>'<button data-theme="'+esc(t.theme)+'"><span><i style="background:'+t.color+'"></i>'+esc(t.theme)+'</span><small>'+num(t.posts_7d)+' 篇 ↗</small></button>').join('');
 }
 function metric(label,value){return '<div class="metric"><span>'+esc(label)+'</span><strong>'+num(value)+'</strong></div>';}
@@ -72,11 +72,11 @@ async function loadCare(){
 async function openCare(){const version=showDialog('心育关怀线索 · 原帖核查');try{const d=await api('/pulse/api/campus/crisis-posts?level=all');if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="data-note">'+num(d.total)+' 条建议关怀，供人工结合原帖核查。</p>'+renderPosts(d.posts)+(d.filtered_posts?.length?'<h3 class="post-group-title">已过滤的日常表达 · '+num(d.filtered_total)+' 条</h3>'+renderPosts(d.filtered_posts):'');}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 async function loadFeed(kind,force=false){
  if(!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
- const d=state[kind],current=kind==='hot'?state.hotPlatform:state.memePlatform;
- $(kind==='hot'?'hotPlatforms':'memePlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="'+kind+'" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
- const items=d.items.filter(x=>x.platform===current).slice(0,10);
- $(kind==='hot'?'hotFeed':'memeFeed').innerHTML=items.map((x,i)=>kind==='hot'?`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p>${x.focus?'<h3>关注焦点</h3><p>'+esc(x.focus)+'</p>':''}<div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`:
- `<article class="feed-card meme-card"><div class="feed-meta"><span class="meme-status">${esc(x.evidence_status||'常用表达')}</span><span>${esc(x.form)}</span></div><h2>${esc(x.term)}</h2><p>${esc(x.meaning)}</p><h3>用在什么场景</h3><p>${esc(x.usage)}</p>${(x.examples||[]).slice(0,1).map(t=>'<div class="example">试着说：'+esc(t)+'</div>').join('')}<div class="meme-reference">${sourceLink(x.reference_url,'释义参考 · '+(x.reference_title||'查看资料'))}</div>${x.links.length?'<div class="observed-examples"><h3>近期采集用例</h3>'+x.links.map(p=>'<p>'+sourceLink(p.url,p.title+' ↗')+'</p>').join('')+'</div>':''}<div class="feed-links">${sourceLink(x.search_url,'到'+current+'搜索这个梗 ↗')}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
+ const d=state[kind],current=state.hotPlatform;
+ $('hotPlatforms').innerHTML=kind==='hot'?d.platforms.map(p=>'<button data-feed="'+kind+'" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join(''):'';
+ const items=(kind==='hot'?d.items.filter(x=>x.platform===current):d.items).slice(0,10);
+ $(kind==='hot'?'hotFeed':'memeFeed').innerHTML=items.map((x,i)=>kind==='hot'?`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`:
+ `<article class="feed-card meme-card"><div class="feed-meta"><span class="meme-status">${esc(x.evidence_status||'常用表达')}</span><span>${esc(x.form)}</span></div><h2>${esc(x.term)}</h2><p>${esc(x.meaning)}</p><h3>用在什么场景</h3><p>${esc(x.usage)}</p>${(x.examples||[]).slice(0,1).map(t=>'<div class="example">试着说：'+esc(t)+'</div>').join('')}<div class="meme-reference">${sourceLink(x.reference_url,'释义参考 · '+(x.reference_title||'查看资料'))}</div>${x.links.length?'<div class="observed-examples"><h3>近期采集用例</h3>'+x.links.map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')+'</div>':''}<div class="feed-links">${(x.search_links||[]).map(p=>sourceLink(p.url,p.platform+'搜索 ↗')).join('')}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
 }
 
 function donut(title,rows,total,action){
@@ -93,7 +93,7 @@ async function loadLedger(force=false){
  $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"');
  $('themeBars').innerHTML=bars(themeRows,r=>'data-theme-trend="'+esc(r.label)+'"');$('sourceBars').innerHTML=bars(sourceRows,r=>'data-source="'+r.key+'"');
  const total=l.daily_usage.reduce((n,x)=>n+(x.tokens||0),0),unknown=l.daily_usage.reduce((n,x)=>n+(x.unknown_calls||0),0);
- $('tokenChart').innerHTML='<div class="usage-summary"><div><span>这段时间已记录</span><strong>'+num(total)+' <small>Token</small></strong></div><p>'+l.daily_usage.length+' 个记录日'+(unknown?' · '+num(unknown)+' 次调用未返回用量':'')+'</p></div><div class="usage-days">'+l.daily_usage.map(x=>'<article class="usage-day"><time>'+esc(x.day)+'</time><strong>'+num(x.tokens)+'</strong><span>Token</span>'+(x.unknown_calls?'<small>'+num(x.unknown_calls)+' 次调用未提供用量</small>':'<small>当日已记录</small>')+'</article>').join('')+'</div>'+(l.daily_usage.length?'':'<p class="empty">开始研究后，这里会留下每天的用量记录。</p>');
+ $('tokenChart').innerHTML='<div class="usage-summary"><div><span>近14天已记录用量</span><strong>'+num(total)+' <small>Token</small></strong></div><p>'+l.daily_usage.length+' 天 · 含今天'+(unknown?' · '+num(unknown)+' 次调用未返回用量':'')+'</p></div><div class="usage-days">'+l.daily_usage.map(x=>'<article class="usage-day"><time>'+esc(x.day)+'</time><strong>'+(x.has_records===false?'—':num(x.tokens))+'</strong><span>Token</span>'+(x.unknown_calls?'<small>'+num(x.unknown_calls)+' 次调用未提供用量</small>':(x.has_records===false?'<small>当日暂无记录</small>':'<small>当日已记录</small>'))+'</article>').join('')+'</div>'+(l.daily_usage.length?'':'<p class="empty">开始研究后，这里会留下每天的用量记录。</p>');
 }
 async function openSource(source){if(['huyou-school','tieba-school'].includes(source))return openPosts({source},NAMES[source]+' · 原帖');const version=showDialog((NAMES[source]||source)+' · 采集记录');try{const d=await api('/pulse/api/revision/source-posts?'+qs({source}));if(version===state.modalVersion)$('detailBody').innerHTML='<p class="muted">近7天 '+num(d.total)+' 条独立记录</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 const METHODS={sample:['采集范围','校内讨论来自狐友华理圈与华理贴吧。首页显示近7天，趋势显示近10天。帖子按来源与帖子标识合并，同一帖多次采集合并计数；各平台分别计数。'],emotion:['文本表达倾向','使用固定词典 lexicon-1 统计积极与消极词出现次数，前三字内否定词反转。积极命中数高于消极记为积极，低于记为消极，相等记为中性；比例按帖子数计算。此项描述采集文本，词典与规则可复查。'],heat:['来源内互动分位','狐友互动原始量 = ln(1+累计曝光)+2ln(1+累计回复)，贴吧 = 2ln(1+累计回复)。在同来源样本中计算百分位，零互动记为0，同互动量同分。曝光单位为展示次数。'],trend:['新增帖与次日参考','每24小时按帖子发布时间统计独立新帖，缺少发布时间时采用首次采集时间。相邻两个完整日窗计算增量；缺测保留空值。次日参考取最近十日完整日窗的算术平均值并四舍五入为整数篇，至少3个完整日窗才提供。历史误差通过逐窗回看、只使用此前资料计算平均绝对误差。'],signal:['升温信号','排名权重 w=1/log₂(排名+1)。取同平台此前24小时各采集批次的权重序列，未上榜记为0；S=(当前权重−历史均值)/√(历史方差+0.05)。至少3次历史观测，按S降序排列，信号相同按采集记录的来源序位排序。该指标由排名记录计算。']};
@@ -117,14 +117,13 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('button,[role="button"]');if(!b)return;
  if(b.classList.contains('close-dialog')){b.closest('dialog').close();return;}
  if(b.dataset.tab)return activate(b.dataset.tab);
- if(b.dataset.size){state.top=Number(b.dataset.size);$('topSize').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderCampus();return;}
  if(b.dataset.theme)return openPosts({theme:b.dataset.theme,from:state.overview.generated_at-7*DAY},b.dataset.theme+' · 原帖');
  if(b.dataset.themeTrend)return openTrend(b.dataset.themeTrend);
  if(b.dataset.word)return openPosts({word:b.dataset.word},'关键词 · '+b.dataset.word);
  if(b.dataset.emotion)return openPosts({emotion:b.dataset.emotion,from:state.overview.generated_at-7*DAY},b.dataset.emotion+'表达 · 原帖');
  if(b.dataset.source)return openSource(b.dataset.source);
  if(b.dataset.method)return showMethod(b.dataset.method);
- if(b.dataset.feed){if(b.dataset.feed==='hot')state.hotPlatform=b.dataset.platform;else state.memePlatform=b.dataset.platform;return loadFeed(b.dataset.feed).catch(x=>notice(x.message));}
+ if(b.dataset.feed){if(b.dataset.feed==='hot')state.hotPlatform=b.dataset.platform;return loadFeed(b.dataset.feed).catch(x=>notice(x.message));}
  if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;return activate(b.dataset.retry);}
  if(b.dataset.report)return openReport(b.dataset.report);
  if(b.dataset.resume)return pollTask(b.dataset.resume);

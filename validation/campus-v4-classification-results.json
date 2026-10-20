@@ -1,0 +1,21 @@
+{
+  "sample_posts": 1762,
+  "before_other": 394,
+  "after_other": 111,
+  "after_other_percent": 6.3,
+  "after": {
+    "学业课程": 435,
+    "文体与实践": 231,
+    "宿舍生活": 65,
+    "身心与情绪": 52,
+    "食堂与生活服务": 191,
+    "交易与互助": 161,
+    "社交与同伴": 186,
+    "校园设施与管理": 226,
+    "其他校园讨论": 111,
+    "升学就业": 60,
+    "恋爱情感": 12,
+    "考试考证": 32
+  },
+  "method": "same stored sample; expanded campus vocabulary and intent rules; no quota assignment"
+}

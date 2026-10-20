@@ -39,6 +39,36 @@ for _theme,_extra in {
  '交易与互助':'出这本书 收概率论 书本 正装 出iphone',
 }.items():TOPIC_WORDS[_theme].extend(_extra.split())
 
+# Local names, shorthand and common requests observed in the residual campus sample.
+for _theme,_extra in {
+ '学业课程':'早八 晚课 自习 背书 学习通 工训 传热学 机创 制冷技术 机械设计 化工设计 芯片导论 tinkercad pycharm ai英语 贯通式 创新分 晨读 晨普 德育章 优秀学生 宝钢 成思危 比亚迪奖 省奖 英语go 代劳 点名 语数英 家教 口语练习',
+ '考试考证':'cmc 非数 考驾照 科二 科三',
+ '升学就业':'国际交流 交换生 交换项目 奥克兰 拒签 国际周 保到 研0 研零',
+ '校园设施与管理':'申飞 梦境班车 梦境版车 上车点 乘车点 下车 班车 南站 顺风车 拼车 电瓶车 校园优惠 单车 宠物猫 虐猫 校园猫 北门 南门 七教 e教 c教 教学楼 办公室 自习室 求实坊 座位 插座 预约 在读证明 学号 集体户口 学生证 假条 留校 校长事务 消防 水沟 水龙头 纸篓 厕所 门牌 通行牌 虹桥 退座 你座',
+ '食堂与生活服务':'吊龙 大咖 奥乐齐 盒马 山姆 水果店 华兴水果 果切 蒸菜 简餐 滨寿司 鸡蛋仔 梨汤 大闸蟹 鸡蛋 蛋糕 荔夏 早餐 早上吃 减肥餐 自助餐 风檐 洗鞋 修裁 裁缝 改裤脚 香水 充电宝',
+ '宿舍生活':'九号楼 五号楼 晒衣服 袜子 半夜讲话 说话吵 睡眠 寝具 甲醛',
+ '社交与同伴':'老乡群 酒友 群求拉 求拉 简餐群 日常分享 分享日常 说说废话 认识一下 联系我 社交 性取向 gay 处男 薄肌 颜狗 网暴 咒骂 仇人 挂他',
+ '恋爱情感':'想谈 想恋爱 找对象',
+ '身心与情绪':'恶心 味道 狐臭 腋窝 打喷嚏 呼吸道 牙科 洗牙 龋齿 口腔诊所 好命苦 受不了 很怕 害怕 好可怕 我输了 顺心 怀念 好想回到 好想带着',
+ '文体与实践':'星空 晚霞 风景 星空 摄影 小猫照 调酒 万圣节 欢乐谷 ins酒吧 galgame 燕云 胆小菇 第六人格 瓦罗兰特 打瓦 钓鱼 仰卧起坐 生化危机 妆娘 化妆 lo妆 mj 麻将 听歌 演奏 雷雨 进博会 学生会 双创协会 学术活动',
+ '交易与互助':'家jiao 加教 +jiao +教 ➕jiao 耳机仓 柳丁 丢的 落在 丢了 pz zp短信 代劳群 问卷求助 帮带 出jj 领鸡蛋 笔记本',
+}.items():TOPIC_WORDS[_theme].extend(_extra.split())
+
+for _theme,_extra in {
+ '学业课程':'课题组 进组 文献检索 思政 学术英语 国安教育 国家安全教育 高级英语 理论力学 结构化学 化工原理 机设 热工 大学英语 外院年级 综英 翻译大赛 母亲杯 mother cup 统计建模',
+ '升学就业':'外保 保外 保到 国外交流 清北 华五',
+ '校园设施与管理':'梦境 违规电器 校园网 限速 通海湖 海湾定点 年级大会',
+ '食堂与生活服务':'一米粥铺 水果摊 黑街 永民 玉米 健怪兽 西服 西装',
+ '宿舍生活':'楼都听得见 整栋楼 住宿登记 甲醛',
+ '社交与同伴':'扩列 外国人 群可以拉 群可以加 鬼蜜 互换照 交朋友',
+ '身心与情绪':'幽门螺旋杆菌 校医 晕车 薅头发 恼羞成怒 热死',
+ '文体与实践':'台球 棒球 匹克球 空手道 电音 唱歌 音乐 第五人格 弹唱 青志协 青协 学生组织 团学 主持团 风采大赛 lg新能源 nctwish aespa 韩娱 粉丝 拼台历 阿米棒 旮旯嘎么 机创大赛 跳绳 立定跳 sport test 体🚗 戴🚗',
+ '交易与互助':'显示器 人体工学椅 手机壳 盲盒 拼豆 立牌 u型轨道 奶蛙猫 小耿鬼 公仔 娃娃掉 带文件 出化工 便宜出 代见习',
+}.items():TOPIC_WORDS[_theme].extend(_extra.split())
+
+TOPIC_WORDS['社交与同伴'].extend(['make friends','chat in english'])
+TOPIC_WORDS={theme:list(dict.fromkeys(words)) for theme,words in TOPIC_WORDS.items()}
+
 INTENTS = {
  '交易与互助': re.compile(r'(?:^|[，。！？\s])(?:出|收|求购|shou)(?:一本|一套|一桶|[这那本张件个]|书|票|羽毛球|电动车|校园卡)|(?:\d+(?:\.\d+)?\s*(?:元|块|r|米).{0,8}(?:出|收|带走))|(?:求|借).{0,6}(?:电子版|答案|资料)|(?:丢|掉|落).{0,5}(?:耳机|帽子|钱包|证件|卡)|(?:耳机|帽子|校园卡).{0,6}(?:捡|丢|招领)|(?:有一个|有个).{0,4}(?:耳机|校园卡|钥匙)|有没有人拼'),
  '学业课程': re.compile(r'(?:学|上|听|这|这些).{0,3}课|(?:求|交|写|改).{0,4}报告|老师.{0,8}(?:时间|地点|讲|课)|(?:化学|物理|数学|金融|经济|会计|统计|计算机).{0,6}(?:学|课|题|原理|实验)'),
@@ -47,7 +77,10 @@ INTENTS = {
 
 def classify(content):
     text=(content or '').lower()
-    hits={theme:[w for w in words if w.lower() in text] for theme,words in TOPIC_WORDS.items()}
+    def match(word):
+        value=word.lower()
+        return bool(re.search(r'(?<![a-z0-9])'+re.escape(value)+r'(?![a-z0-9])',text)) if re.fullmatch(r'[a-z0-9 ]+',value) else value in text
+    hits={theme:[w for w in words if match(w)] for theme,words in TOPIC_WORDS.items()}
     scores={theme:sum(min(len(w),4) for w in words) for theme,words in hits.items()}
     for theme,pattern in INTENTS.items():
         if pattern.search(text):scores[theme]+=8;hits[theme].append('表达意图')
@@ -59,9 +92,19 @@ def classify(content):
     if re.search(r'体测|晨跑|校园跑|健康跑|肺活量|引体向上',text):scores['文体与实践']+=10
     if re.search(r'转租|租房|公寓|房租|合租',text):scores['宿舍生活']+=8
     if re.search(r'捡到|拾到|招领|丢失|遗失',text):scores['交易与互助']+=10
+    if re.search(r'(?:出|收|转|求购)(?:一[张个本台套]|.{0,8}(?:票|书|资料|小票|月卡|ipad|iphone|笔记|耳机|相纸|计算器))|^\d+\s*出|求代|[➕＋+加]\s*(?:jiao|教|🦶)',text):
+        scores['交易与互助']+=9;hits['交易与互助'].append('转让或互助表达')
+    if re.search(r'(?:有没有|哪里|学校|校区|附近).{0,12}(?:吃|买|卖|修|洗|剪|店|理发)|(?:楼|食堂).{0,5}(?:菜|饭|肉|餐)',text):
+        scores['食堂与生活服务']+=5;hits['食堂与生活服务'].append('生活服务询问')
+    if re.search(r'(?:有没有|求|找|有无|蹲).{0,10}(?:群|认识|一起|同伴)|(?:找|捞).{0,8}(?:男生|女生|同学)',text):
+        scores['社交与同伴']+=6;hits['社交与同伴'].append('寻找同伴或群聊')
+    if re.search(r'(?:通宵|上厕所|教学楼|下雨|放长假|校区.*(?:哪里|上车))',text):
+        scores['校园设施与管理']+=5;hits['校园设施与管理'].append('校内场所与出行')
+    if re.search(r'(?:今天|周末|晚上|明天).{0,8}(?:去ins|去欢乐谷|去看|玩|打瓦)|想.{0,5}(?:听歌|看星星)',text):
+        scores['文体与实践']+=6;hits['文体与实践'].append('休闲活动')
     best=max(scores,key=scores.get)
     return {'theme':best if scores[best] else '其他校园讨论','matched':hits[best] if scores[best] else [],
-            'score':scores[best],'version':'campus-topics-2'}
+            'score':scores[best],'version':'campus-topics-3'}
 
 def canonical(theme, content=''):
     if PRACTICE.search(content or ''):

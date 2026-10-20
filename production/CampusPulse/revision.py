@@ -83,7 +83,7 @@ def snapshot(force=False):
                 'delta':delta,'timeline':points,'reference':count_reference(points),
                 'emotion':dict(Counter(p['emotion'] for p in group)),
                 'by_source':dict(Counter(p['source'] for p in group)),
-                'examples':[{'content':p['content'],'link':p.get('link')} for p in sorted(group,key=lambda x:-x['published'])[:2]]})
+                'examples':[{'content':p['content'],'link':p.get('link')} for p in sorted((p for p in group if p.get('link')),key=lambda x:-x['published'])[:3]]})
         words=Counter(w for p in posts for w in set(p['terms']))
         seven=[p for p in posts if p['published']>=now-7*DAY]
         public=[{k:v for k,v in p.items() if k not in ('observations','terms','raw_heat')} for p in posts]
@@ -115,8 +115,8 @@ def _network_feed(kind):
         rows=storage.recent_unique_items(list(platforms),now-7*DAY)
         items=[{'title':r['title'],'platform':platforms[r['source']],'source':r['source'],'ts':r['batch_ts'],
                 'url':source_link((r.get('extra') or {}).get('link') or r.get('url'))} for r in rows]
-        return {'items':build(items),'platforms':['B站','抖音','微博','百度'],'generated_at':now,
-                'method':'每个平台展示10种常用表达；释义参考、近期采集用例和平台搜索分别标示，采集用例按明确词组与语境匹配。'}
+        return {'items':build(items),'platforms':[],'generated_at':now,
+                'method':'跨平台聚合10种常用表达，按表达去重；释义参考、近期采集用例和平台搜索分别标示，采集用例按明确词组与语境匹配。'}
     stamps=storage.latest_source_batches(list(platforms),now-7*DAY)
     since=max(now-7*DAY,min(stamps.values())-DAY) if stamps else now-7*DAY
     rows=storage.recent_items(list(platforms),since)
@@ -135,7 +135,7 @@ def _network_feed(kind):
     for cached in storage.kv_prefix('annot2:',limit=100000):
         try:
             annotation=json.loads(cached['value'])
-            if annotation.get('one_liner'):focus[cached['key']]=annotation['one_liner']
+            if annotation.get('one_liner'):focus[cached['key'].removeprefix('annot2:')]=annotation['one_liner']
         except (ValueError,TypeError):continue
     for topic in storage.latest_topics('public').get('topics',[]):
         explanation=topic.get('summary') or (topic.get('lens') or {}).get('focus') or (topic.get('lens') or {}).get('one_liner') or ''
@@ -160,5 +160,8 @@ def _network_feed(kind):
             if title in seen_titles[platform] or len(seen_titles[platform])>=10:continue
             seen_titles[platform].add(title);kept.append(item)
         items=kept
+        from .hot_focus import brief
+        for item in items:
+            item['focus'],item['focus_method']=brief(item['title'],item['focus'])
         return {'items':items,'platforms':['抖音','澎湃','B站','头条'],'generated_at':now,
                 'method':'S=(当前排名权重−此前24小时排名权重均值)/√(历史方差+0.05)，权重=1/log₂(排名+1)；至少3次历史观测。'}
