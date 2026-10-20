@@ -240,10 +240,23 @@ def report_html(row):
 
 def resend(payload,key,api_key):
     request=Request('https://api.resend.com/emails',data=json.dumps(payload,ensure_ascii=False).encode(),
-        headers={'Authorization':'Bearer '+api_key,'Content-Type':'application/json','Idempotency-Key':key},method='POST')
+        headers={'Authorization':'Bearer '+api_key,'Content-Type':'application/json','Accept':'application/json','User-Agent':'ECUST-CampusWeekly/1.0','Idempotency-Key':key},method='POST')
     try:
         with urlopen(request,timeout=25) as response:result=json.load(response)
-    except HTTPError as exc:raise ValueError('Resend 返回 HTTP '+str(exc.code)+'，请检查密钥、域名验证或账户额度') from None
+    except HTTPError as exc:
+        # Translate known errors only; provider bodies can contain addresses or credentials.
+        try:
+            error=json.loads(exc.read(8192));name=str(error.get('name') or '');message=str(error.get('message') or '').lower()
+        except (ValueError,AttributeError):name='';message=''
+        if name=='suspended_api_key':reason='邮件密钥已被停用，请到 Resend 后台核对账户状态'
+        elif name=='restricted_api_key' or 'not active' in message:reason='邮件密钥未启用或权限受限，请检查发送权限和域名限制'
+        elif name=='invalid_permission':reason='邮件密钥缺少发送权限，请检查 API Key 权限'
+        elif exc.code==401:reason='邮件密钥无效或已失效，请重新保存有效的 API Key'
+        elif 'verify' in message or 'verified' in message:reason='发件地址与 Resend 已验证域名不匹配，请检查发件邮箱'
+        elif 'quota' in name:reason='邮件发送额度已用完，请检查 Resend 账户用量'
+        elif exc.code==429:reason='邮件服务暂时限流，请稍后重试'
+        else:reason='邮件服务拒绝了请求，请在 Resend 的 Logs 中查看对应记录'
+        raise ValueError(reason+'（HTTP '+str(exc.code)+'）') from None
     except (URLError,TimeoutError):raise ValueError('邮件服务连接超时，系统将按原发送编号重试') from None
     if not result.get('id'):raise ValueError('邮件服务未返回发送编号')
     return result['id']
