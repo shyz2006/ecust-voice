@@ -554,6 +554,8 @@ def init_campus_pulse(app, url_prefix: str = "/pulse") -> None:
     pipeline.start_scheduler()
     from . import weekly
     weekly.start_scheduler()
+    from . import dynamic_memes
+    dynamic_memes.start_scheduler()
     # Earlier automatic reports use the retired taxonomy and activity-oriented
     # summary prompts. New reports are explicitly submitted to the original runner.
     def warm_revision():
@@ -803,3 +805,15 @@ def revision_weekly(report_id=None):
         return jsonify(success=True,items=weekly.recent(),config=weekly.config())
     except ValueError as exc:return jsonify(success=False,message=str(exc)),400
     except Exception:return jsonify(success=False,message='周报服务暂未完成，请稍后重试'),503
+
+
+@pulse_bp.route('/api/revision/memes/refresh',methods=['POST'])
+def revision_meme_refresh():
+    from urllib.parse import urlsplit
+    from . import dynamic_memes
+    if not _username():return jsonify(success=False,message='请先登录'),401
+    origin=request.headers.get('Origin')
+    if request.headers.get('Sec-Fetch-Site')=='cross-site' or (origin and urlsplit(origin).netloc!=request.host):return jsonify(success=False,message='请求来源有误'),403
+    if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
+    started=dynamic_memes.start(manual=True)
+    return jsonify(success=True,started=started,**dynamic_memes.snapshot())

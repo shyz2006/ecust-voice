@@ -73,11 +73,21 @@ async function openCare(){const version=showDialog('心育关怀线索 · 原帖
 async function loadFeed(kind,force=false){
  if(!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
  const d=state[kind],current=state.hotPlatform;
+ if(kind==='memes')renderMemeStatus(d);
  $('hotPlatforms').innerHTML=kind==='hot'?d.platforms.map(p=>'<button data-feed="'+kind+'" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join(''):'';
  const items=(kind==='hot'?d.items.filter(x=>x.platform===current):d.items).slice(0,10);
  $(kind==='hot'?'hotFeed':'memeFeed').innerHTML=items.map((x,i)=>kind==='hot'?`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}</div></article>`:
- `<article class="feed-card meme-card"><div class="feed-meta"><span class="meme-status">${esc(x.evidence_status||'常用表达')}</span><span>${esc(x.form)}</span></div><h2>${esc(x.term)}</h2><p>${esc(x.meaning)}</p><h3>用在什么场景</h3><p>${esc(x.usage)}</p>${(x.examples||[]).slice(0,1).map(t=>'<div class="example">试着说：'+esc(t)+'</div>').join('')}<div class="meme-reference">${sourceLink(x.reference_url,'释义参考 · '+(x.reference_title||'查看资料'))}</div>${x.links.length?'<div class="observed-examples"><h3>近期采集用例</h3>'+x.links.map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')+'</div>':''}<div class="feed-links">${(x.search_links||[]).map(p=>sourceLink(p.url,p.platform+'搜索 ↗')).join('')}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
+ `<article class="feed-card meme-card"><div class="feed-meta"><span class="meme-status">${esc(x.evidence_status||'常用表达')}</span><span>${esc(x.form)}</span></div><h2>${esc(x.term)}</h2><p>${esc(x.meaning)}</p><h3>用在什么场景</h3><p>${esc(x.usage)}</p>${(x.examples||[]).slice(0,1).map(t=>'<div class="example">试着说：'+esc(t)+'</div>').join('')}<div class="meme-reference">${sourceLink(x.reference_url,'释义参考 · '+(x.reference_title||'查看资料'))}${x.reference_quote?'<blockquote>'+esc(x.reference_quote)+'</blockquote>':''}<small>核对于 '+date(x.verified_at)+' · '+num(x.observed_count)+' 个独立内容用例</small></div>${x.links.length?'<div class="observed-examples"><h3>近期采集用例</h3>'+x.links.map(p=>'<p>'+sourceLink(p.url,(p.platform?p.platform+' · ':'')+p.title+' ↗')+'</p>').join('')+'</div>':''}<div class="feed-links">${(x.search_links||[]).map(p=>sourceLink(p.url,p.platform+'搜索 ↗')).join('')}</div></article>`).join('')||empty(kind==='memes'?'新表达正在发现和核对中，候选可在下方查看。':'这个平台的内容正在整理中。');
 }
+
+let memePoll;
+function renderMemeStatus(d){
+ clearTimeout(memePoll);$('memeStatus').textContent=(d.message||'等待首次发现与核对')+(d.generated_at?' · 最近核对 '+date(d.generated_at):'');$('discoverMemes').disabled=!!d.running;
+ const pending=d.candidates||[];$('memeCandidates').querySelector('summary').textContent='发现候选 · '+pending.length+' 条';
+ $('memeCandidateList').innerHTML=pending.map(x=>'<article class="feed-card candidate-card"><span class="meme-status">待核对</span><h3>'+esc(x.term)+'</h3><p>'+esc(x.reason)+'</p><small>'+num(x.observed_count)+' 个独立内容用例</small>'+(x.links||[]).slice(0,2).map(p=>'<p>'+sourceLink(p.url,p.title+' ↗')+'</p>').join('')+'</article>').join('')||empty('下一轮从新采集内容中继续发现。');
+ if(d.running)memePoll=setTimeout(()=>{if(state.tab==='memes')loadFeed('memes',true).catch(e=>notice(e.message));},5000);
+}
+$('discoverMemes').onclick=async()=>{const b=$('discoverMemes');b.disabled=true;try{const d=await api('/pulse/api/revision/memes/refresh',{method:'POST',body:'{}'});state.memes=d;await loadFeed('memes');if(!d.started&&!d.running)notice('刚刚检查过，稍后可再次发现新表达。');}catch(e){notice(e.message);b.disabled=false;}};
 
 function donut(title,rows,total,action){
  const radius=46,c=2*Math.PI*radius;let offset=0;const circles=rows.filter(r=>r.value>0).map(r=>{const length=c*r.value/(total||1),result='<circle cx="64" cy="64" r="46" fill="none" stroke="'+r.color+'" stroke-width="14" stroke-dasharray="'+length+' '+(c-length)+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 64 64)" role="button" tabindex="0" '+action(r)+' aria-label="'+esc(r.label)+' '+num(r.value)+'"><title>'+esc(r.label)+' '+num(r.value)+'</title></circle>';offset+=length;return result;});
@@ -111,8 +121,27 @@ async function pollTask(task){
 }
 $('researchForm').addEventListener('submit',async e=>{e.preventDefault();if($('researchSubmit').disabled)return;const query=$('researchQuery').value.trim();if(!query||Array.from(query).length>500){notice('请输入1至500字的研究主题');return;}if(state.lastSubmittedQuery!==query){state.requestId=crypto.randomUUID();state.lastSubmittedQuery=query;}$('researchSubmit').disabled=true;try{const d=await api('/pulse/api/revision/research',{method:'POST',body:JSON.stringify({query,request_id:state.requestId})});localStorage.setItem('ecust-active-research-v2',d.task_id);pollTask(d.task_id);}catch(error){notice(error.message);$('researchSubmit').disabled=false;}});
 $('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{await api('/pulse/api/collect',{method:'POST',body:'{}'});notice('采集任务已提交，完成后可刷新页面查看。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
-async function config(){try{const d=await api('/api/config'),c=d.config;const engines=[['QUERY','查询引擎'],['MEDIA','媒体引擎'],['INSIGHT','洞察引擎'],['REPORT','报告引擎'],['FORUM_HOST','讨论汇总']];$('configFields').innerHTML=engines.map(([id,label])=>{const prefix=id==='FORUM_HOST'?id:id+'_ENGINE';return '<section class="config-engine"><h3>'+label+'</h3>'+[['BASE_URL','接口地址'],['MODEL_NAME','模型名称'],['API_KEY','密钥']].map(([suffix,name])=>{const key=prefix+'_'+suffix;return '<label>'+name+'<input name="'+key+'" type="'+(suffix==='API_KEY'?'password':'text')+'" value="'+(suffix==='API_KEY'?'':esc(c[key]||''))+'" autocomplete="off" placeholder="'+(suffix==='API_KEY'?'留空沿用当前密钥':'')+'"></label>';}).join('')+'</section>';}).join('')+'<section class="config-engine"><h3>网页检索</h3><label>博查检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="留空沿用当前密钥"></label></section>';$('configFields').insertAdjacentHTML('afterbegin','<section class="weekly-config-shortcut"><div><h3>校园周报</h3><p>周五13:30截稿 · 14:00发送</p></div><button type="button" data-weekly-config>邮件与定时配置 ↗</button></section>');$('configDialog').showModal();}catch(e){notice(e.message);}}
-$('configButton').onclick=config;$('configForm').onsubmit=async e=>{e.preventDefault();const fields=Object.fromEntries(new FormData(e.target).entries()),updates=Object.fromEntries(Object.entries(fields).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));try{await api('/api/config',{method:'POST',body:JSON.stringify(updates)});$('configStatus').textContent='配置已保存';}catch(error){$('configStatus').textContent=error.message;}};
+let service='llm',serviceConfig=null,serviceDraft={};
+function stashService(){if(service!=='mail')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
+async function config(tab='llm'){
+ try{
+  stashService();service=tab;
+  document.querySelectorAll('[data-service]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.service===tab)));
+  $('configForm').hidden=tab==='mail';$('mailSettingsPane').hidden=tab!=='mail';$('configStatus').textContent='';
+  if(!$('configDialog').open)$('configDialog').showModal();
+  if(tab==='mail'){await window.CampusWeekly.fill();return;}
+  if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
+  const c={...serviceConfig,...serviceDraft};
+  $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型。密钥留空时沿用已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';
+  const engines=[['QUERY','查询模型','查找事件材料'],['MEDIA','媒体模型','分析媒体内容'],['INSIGHT','洞察模型','分析讨论材料'],['REPORT','报告模型','事件报告、校园周报与新梗发现'],['FORUM_HOST','讨论汇总模型','整合研究观点']];
+  $('configFields').innerHTML=tab==='search'?'<section class="config-engine"><h3>博查 Bocha</h3><label>检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="'+(serviceConfig.BOCHA_WEB_SEARCH_API_KEY?'已配置，留空沿用':'填写博查 API Key')+'"></label></section>':engines.map(([id,label,role],i)=>{const prefix=id==='FORUM_HOST'?id:id+'_ENGINE';return '<details class="config-engine" '+(i===3?'open':'')+'><summary><strong>'+label+'</strong><span>'+role+'</span></summary>'+[['BASE_URL','接口地址'],['MODEL_NAME','模型名称'],['API_KEY','密钥']].map(([suffix,name])=>{const key=prefix+'_'+suffix;return '<label>'+name+'<input name="'+key+'" type="'+(suffix==='API_KEY'?'password':'text')+'" value="'+esc(suffix==='API_KEY'?(serviceDraft[key]||''):(c[key]||''))+'" autocomplete="off" placeholder="'+(suffix==='API_KEY'?(serviceConfig[key]?'已配置，留空沿用':'填写 API Key'):'')+'"></label>';}).join('')+'</details>';}).join('');
+  if(tab==='search')$('configForm').elements.BOCHA_WEB_SEARCH_API_KEY.value=serviceDraft.BOCHA_WEB_SEARCH_API_KEY||'';
+ }catch(e){notice(e.message);}
+}
+window.CampusSettings={open:config};
+$('configButton').onclick=()=>config('llm');
+document.querySelectorAll('[data-service]').forEach(b=>b.onclick=()=>config(b.dataset.service));
+$('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromEntries(Object.entries(Object.fromEntries(new FormData(e.target).entries())).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));const b=e.target.querySelector('button.primary');b.disabled=true;try{const d=await api('/api/config',{method:'POST',body:JSON.stringify(updates)});serviceConfig=d.config;for(const key of Object.keys(updates))delete serviceDraft[key];e.target.querySelectorAll('input[type=password]').forEach(x=>x.value='');$('configStatus').textContent='当前服务配置已保存';}catch(error){$('configStatus').textContent=error.message;}finally{b.disabled=false;}};
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[role="button"]');if(!b)return;
  if(b.classList.contains('close-dialog')){b.closest('dialog').close();return;}

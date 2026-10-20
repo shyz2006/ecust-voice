@@ -1,0 +1,52 @@
+{
+  "status": "ready",
+  "seconds": 46,
+  "observations": 5764,
+  "verified": 0,
+  "candidates": 8,
+  "terms": [],
+  "candidate_reasons": [
+    {
+      "term": "不烧心",
+      "uses": 30,
+      "reason": "释义检索暂未完成，请检查博查配置或额度"
+    },
+    {
+      "term": "锐评",
+      "uses": 12,
+      "reason": "释义检索暂未完成，请检查博查配置或额度"
+    },
+    {
+      "term": "万字拆解",
+      "uses": 3,
+      "reason": "释义检索暂未完成，请检查博查配置或额度"
+    },
+    {
+      "term": "DeepSeek鲸鱼娘",
+      "uses": 1,
+      "reason": "等待更多独立内容使用该表达"
+    },
+    {
+      "term": "邪教大小姐Claude",
+      "uses": 1,
+      "reason": "等待更多独立内容使用该表达"
+    },
+    {
+      "term": "放我们一条生路",
+      "uses": 0,
+      "reason": "等待更多独立内容使用该表达"
+    },
+    {
+      "term": "薄肌“90后”",
+      "uses": 0,
+      "reason": "等待更多独立内容使用该表达"
+    },
+    {
+      "term": "泥嚎",
+      "uses": 0,
+      "reason": "等待更多独立内容使用该表达"
+    }
+  ],
+  "isolated_database": true,
+  "emails_sent": 0
+}

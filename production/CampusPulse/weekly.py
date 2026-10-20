@@ -1,4 +1,4 @@
-"""Evidence-linked campus digest, durable Friday scheduler and optional Resend delivery."""
+"""Evidence-linked campus digest, durable configurable scheduler and optional Resend delivery."""
 import hashlib,html,json,re,threading,time,uuid
 from collections import Counter,defaultdict
 from datetime import datetime,timedelta,timezone
@@ -14,7 +14,7 @@ SCHEMA='''CREATE TABLE IF NOT EXISTS pulse_weekly (
  id TEXT PRIMARY KEY,cutoff INTEGER NOT NULL,kind TEXT NOT NULL,created INTEGER NOT NULL,
  status TEXT NOT NULL,data TEXT,error TEXT,send_state TEXT NOT NULL DEFAULT 'pending',
  sent_at INTEGER,email_id TEXT,send_attempts INTEGER NOT NULL DEFAULT 0,next_retry INTEGER NOT NULL DEFAULT 0,
- generation_attempts INTEGER NOT NULL DEFAULT 0,generation_retry INTEGER NOT NULL DEFAULT 0,send_started INTEGER,mail_payload TEXT);
+ generation_attempts INTEGER NOT NULL DEFAULT 0,generation_retry INTEGER NOT NULL DEFAULT 0,send_at INTEGER,schedule_revision TEXT,send_started INTEGER,mail_payload TEXT);
  CREATE TABLE IF NOT EXISTS pulse_weekly_leases (key TEXT PRIMARY KEY,until_ts INTEGER NOT NULL);'''
 
 def initialize():
@@ -23,14 +23,16 @@ def initialize():
         columns={row[1] for row in conn.execute('PRAGMA table_info(pulse_weekly)')}
         for key in ('generation_attempts','generation_retry'):
             if key not in columns:conn.execute('ALTER TABLE pulse_weekly ADD COLUMN '+key+' INTEGER NOT NULL DEFAULT 0')
+        for key,kind in [('send_at','INTEGER'),('schedule_revision','TEXT')]:
+            if key not in columns:conn.execute('ALTER TABLE pulse_weekly ADD COLUMN '+key+' '+kind)
 
 def config(private=False):
     raw=storage.kv_get(CONFIG_KEY)
-    value={'enabled':False,'api_key':'','sender':'','recipients':[],'sender_verified':False}
+    value={'enabled':False,'api_key':'','sender':'','recipients':[],'sender_verified':False,'weekday':4,'send_time':'14:00','lead_minutes':30,'schedule_revision':''}
     if raw:value.update(json.loads(raw))
     if private:return value
     return {k:v for k,v in value.items() if k!='api_key'} | {'key_configured':bool(value['api_key']),
-        'schedule':'每周五13:30截稿生成，14:00发送 · 北京时间','next_send':int(next_friday().timestamp()),'scheduler_running':_started,'last_check':_last_tick,'scheduler_error':_scheduler_error}
+        'schedule':schedule_text(value),'next_send':int(next_dispatch(value).timestamp()),'scheduler_running':_started,'last_check':_last_tick,'scheduler_error':_scheduler_error}
 
 def email_address(value):
     if not isinstance(value,str) or any(c in value for c in '\r\n'):return False
@@ -61,18 +63,44 @@ def save_config(body):
         key=str(body['api_key']).strip()
         if not re.fullmatch(r're_[a-zA-Z0-9_-]{8,200}',key):raise ValueError('请填写有效的 Resend API Key')
         value['api_key']=key
+    old_schedule=(value['weekday'],value['send_time'],value['lead_minutes'])
+    for key,low,high in [('weekday',0,6),('lead_minutes',5,180)]:
+        if key in body:
+            if type(body[key]) is not int or not low<=body[key]<=high:raise ValueError('星期须为周一至周日，提前生成须为5至180分钟')
+            value[key]=body[key]
+    if 'send_time' in body:
+        if not isinstance(body['send_time'],str) or not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d',body['send_time']):raise ValueError('发送时间格式应为HH:MM')
+        value['send_time']=body['send_time']
+    changed=old_schedule!=(value['weekday'],value['send_time'],value['lead_minutes'])
+    if changed:value['schedule_revision']=uuid.uuid4().hex[:10]
     if value['enabled']:delivery_ready(value)
-    storage.kv_set(CONFIG_KEY,json.dumps(value).encode())
+    if changed:
+        initialize()
+    with storage.connect() as conn:
+        if changed:conn.execute("UPDATE pulse_weekly SET send_state='cancelled' WHERE kind='scheduled' AND sent_at IS NULL")
+        conn.execute('INSERT INTO kv(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value',(CONFIG_KEY,json.dumps(value).encode()))
     return config()
 
 def delivery_ready(value):
     if not value['api_key'] or not value['sender'] or not value['recipients'] or not value['sender_verified']:
         raise ValueError('请先填写 Resend 密钥、已验证的发件邮箱及收件邮箱')
 
-def next_friday(now=None):
+def next_dispatch(value,now=None):
     now=now or datetime.now(TZ)
-    target=(now+timedelta(days=(4-now.weekday())%7)).replace(hour=14,minute=0,second=0,microsecond=0)
+    hour,minute=map(int,value['send_time'].split(':'))
+    target=(now+timedelta(days=(value['weekday']-now.weekday())%7)).replace(hour=hour,minute=minute,second=0,microsecond=0)
     return target if target>now else target+timedelta(days=7)
+
+def next_friday(now=None):
+    return next_dispatch({'weekday':4,'send_time':'14:00'},now)
+
+def schedule_text(value):
+    send=next_dispatch(value);cutoff=send-timedelta(minutes=value['lead_minutes'])
+    day='一二三四五六日'[value['weekday']]
+    return '每周'+day+' '+value['send_time']+'发送，'+('前一天' if cutoff.date()!=send.date() else '当天')+cutoff.strftime('%H:%M')+'截稿生成 · 北京时间'
+
+def scheduled_id(send_at,value):
+    return 'weekly_'+send_at.strftime('%Y%m%d')+('_'+send_at.strftime('%H%M')+'_'+value['schedule_revision'] if value.get('schedule_revision') else '')
 
 def lease(key,seconds=900):
     now=int(time.time())
@@ -208,13 +236,15 @@ def generate(report_id):
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='failed',error=?,generation_retry=? WHERE id=?",(message[:200],int(time.time())+180,report_id))
     finally:release('generate:'+report_id)
 
-def start(cutoff=None,scheduled=False):
+def start(cutoff=None,scheduled=False,send_at=None):
     initialize();cutoff=int(cutoff or time.time())
     if cutoff>int(time.time())+5:raise ValueError('统计截止时间不能晚于当前时间')
-    report_id=('weekly_'+datetime.fromtimestamp(cutoff,TZ).strftime('%Y%m%d') if scheduled else 'preview_'+uuid.uuid4().hex[:16])
+    value=config(True)
+    send_at=send_at or datetime.fromtimestamp(cutoff,TZ)+timedelta(minutes=value['lead_minutes'])
+    report_id=scheduled_id(send_at,value) if scheduled else 'preview_'+uuid.uuid4().hex[:16]
     if not scheduled and not lease('manual-generation',180):raise ValueError('周报正在生成，请稍后查看记录')
     with storage.connect() as conn:
-        conn.execute('INSERT OR IGNORE INTO pulse_weekly(id,cutoff,kind,created,status) VALUES(?,?,?,?,?)',(report_id,cutoff,'scheduled' if scheduled else 'preview',int(time.time()),'generating'))
+        conn.execute('INSERT OR IGNORE INTO pulse_weekly(id,cutoff,kind,created,status,send_at,schedule_revision) VALUES(?,?,?,?,?,?,?)',(report_id,cutoff,'scheduled' if scheduled else 'preview',int(time.time()),'generating',int(send_at.timestamp()) if scheduled else None,value['schedule_revision'] if scheduled else None))
     threading.Thread(target=generate,args=(report_id,),daemon=True,name='campus-weekly-generate').start()
     return report_id
 
@@ -265,7 +295,7 @@ def send_report(report_id,manual=False):
     if not lease('send:'+report_id,120):return
     try:
         row=get(report_id);value=config(True)
-        if row['kind']=='scheduled' and not manual and not value['enabled']:return
+        if row['kind']=='scheduled' and not manual and (not value['enabled'] or (row.get('schedule_revision') or '')!=value['schedule_revision']):return
         delivery_ready(value)
         if row['sent_at'] or row['status']!='ready':return
         if row.get('send_started') and time.time()-row['send_started']>23*3600:raise ValueError('发送状态已超过安全重试窗口，请先在 Resend 后台核对，避免重复投递')
@@ -284,24 +314,25 @@ def send_report(report_id,manual=False):
     finally:release('send:'+report_id)
 
 def tick(now=None):
-    """One durable schedule slot per Friday; retry only that afternoon, never stale next-week mail."""
+    """One durable weekly slot, including generation across midnight."""
     now=now or datetime.now(TZ);value=config(True)
-    if not value['enabled'] or now.weekday()!=4:return
-    cutoff=now.replace(hour=13,minute=30,second=0,microsecond=0)
-    if not cutoff<=now<now.replace(hour=16,minute=0,second=0,microsecond=0):return
-    report_id='weekly_'+now.strftime('%Y%m%d')
+    if not value['enabled']:return
+    send_at=next_dispatch(value,now-timedelta(hours=2,seconds=1))
+    cutoff=send_at-timedelta(minutes=value['lead_minutes'])
+    if not cutoff<=now<send_at+timedelta(hours=2):return
+    report_id=scheduled_id(send_at,value)
     try:row=get(report_id)
     except ValueError:
-        if now.hour>=14:
-            with storage.connect() as conn:conn.execute("INSERT OR IGNORE INTO pulse_weekly(id,cutoff,kind,created,status,error) VALUES(?,?,?,?,?,?)",(report_id,int(cutoff.timestamp()),'scheduled',int(now.timestamp()),'failed','生成窗口内服务未运行，本期请补生成后发送'))
+        if now>=send_at:
+            with storage.connect() as conn:conn.execute("INSERT OR IGNORE INTO pulse_weekly(id,cutoff,kind,created,status,error,send_at,schedule_revision) VALUES(?,?,?,?,?,?,?,?)",(report_id,int(cutoff.timestamp()),'scheduled',int(now.timestamp()),'failed','生成窗口内服务未运行，本期请补生成后发送',int(send_at.timestamp()),value['schedule_revision']))
             return
-        start(int(cutoff.timestamp()),scheduled=True);return
-    if row['status']=='failed' and now.hour<14 and row['generation_attempts']<3 and int(now.timestamp())>=row['generation_retry']:
+        start(int(cutoff.timestamp()),scheduled=True,send_at=send_at);return
+    if row['status']=='failed' and now<send_at and row['generation_attempts']<3 and int(now.timestamp())>=row['generation_retry']:
         with storage.connect() as conn:claimed=conn.execute("UPDATE pulse_weekly SET status='generating' WHERE id=? AND status='failed'",(report_id,)).rowcount
         if claimed:threading.Thread(target=generate,args=(report_id,),daemon=True).start()
     if row['status']=='generating' and lease('recover:'+report_id,300):
         threading.Thread(target=generate,args=(report_id,),daemon=True).start()
-    if now.hour>=14 and row['status']=='ready' and not row['sent_at'] and row['send_attempts']<6 and int(now.timestamp())>=row['next_retry']:
+    if now>=send_at and row['status']=='ready' and not row['sent_at'] and row['send_attempts']<6 and int(now.timestamp())>=row['next_retry']:
         send_report(report_id)
 
 def start_scheduler():

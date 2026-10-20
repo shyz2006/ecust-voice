@@ -100,6 +100,7 @@ def snapshot(force=False):
         return data
 
 def network_feed(kind,force=False):
+    if kind=='memes':return _network_feed(kind)
     with _feed_locks[kind]:
         cached=_feed_cache.get(kind)
         if not force and cached and cached['expires']>time.time():return cached['data']
@@ -111,12 +112,8 @@ def network_feed(kind,force=False):
 def _network_feed(kind):
     now=int(time.time());platforms=HOT_PLATFORMS if kind=='hot' else MEME_PLATFORMS
     if kind=='memes':
-        from .meme_catalog import build
-        rows=storage.recent_unique_items(list(platforms),now-7*DAY)
-        items=[{'title':r['title'],'platform':platforms[r['source']],'source':r['source'],'ts':r['batch_ts'],
-                'url':source_link((r.get('extra') or {}).get('link') or r.get('url'))} for r in rows]
-        return {'items':build(items),'platforms':[],'generated_at':now,
-                'method':'跨平台聚合10种常用表达，按表达去重；释义参考、近期采集用例和平台搜索分别标示，采集用例按明确词组与语境匹配。'}
+        from .dynamic_memes import snapshot
+        return snapshot()
     stamps=storage.latest_source_batches(list(platforms),now-7*DAY)
     since=max(now-7*DAY,min(stamps.values())-DAY) if stamps else now-7*DAY
     rows=storage.recent_items(list(platforms),since)
