@@ -9,6 +9,7 @@ DAY=86400
 HOT_PLATFORMS={'douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站','bilibili-popular':'B站','toutiao':'头条'}
 MEME_PLATFORMS={'douyin':'抖音','bilibili-hot-search':'B站','bilibili-popular':'B站','weibo':'微博','baidu':'百度'}
 _cache={};_lock=threading.Lock()
+_feed_cache={};_feed_locks={kind:threading.Lock() for kind in ('hot','memes')}
 
 @lru_cache(maxsize=10000)
 def cached_tokens(text):return frozenset(observatory.tokens(text))
@@ -33,9 +34,9 @@ def count_reference(points):
         prior=[p['new_posts'] for p in points[:i] if p.get('observed') and p.get('new_posts') is not None]
         actual=points[i].get('new_posts') if points[i].get('observed') else None
         if len(prior)>=3 and actual is not None:errors.append(abs(actual-sum(prior)/len(prior)))
-    return {'hours':24,'value':round(sum(valid)/len(valid),1) if len(valid)>=3 else None,
+    return {'hours':24,'value':int(math.floor(sum(valid)/len(valid)+0.5)) if len(valid)>=3 else None,
             'windows':len(valid),'mae':round(sum(errors)/len(errors),1) if errors else None,
-            'validation_windows':len(errors),'method':'最近十日完整24小时窗口的新增帖数算术平均值'}
+            'validation_windows':len(errors),'method':'最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算'}
 
 def snapshot(force=False):
     now=int(time.time())
@@ -62,7 +63,9 @@ def snapshot(force=False):
         cov=observatory.coverage(rows,now)
         start=now-10*DAY
         for p in posts:
-            p['theme']=taxonomy.canonical(classify(p['content'])['theme'],p['content'])
+            topic=taxonomy.classify(p['content'])
+            p['theme']=topic['theme']
+            p['classification']={k:v for k,v in topic.items() if k!='theme'}
             p['emotion']=taxonomy.sentiment(p['content'])['label']
             p['red']=positive_practice(p['content'])
         themes=[]
@@ -90,15 +93,33 @@ def snapshot(force=False):
               'practice_count':sum(p['red'] for p in seven),'coverage':cov,'excluded':excluded,
               'wordcloud':[{'term':w,'df':n} for w,n in words.most_common(50)],
               'methods':{'emotion':'规则词典 lexicon-1：积极词次数减消极词次数，前三字内否定词反转；按结果统计帖子比例。',
-                         'classification':'关键词规则确定议题，再映射为统一十二类；文体与实践使用固定活动词。',
+                         'classification':'校园常用词、课程简称及表达意图加权匹配十二类议题；多主题取最高分，未命中保留其他。campus-topics-2。',
                          'heat':'同来源互动量分位数。狐友使用ln(1+曝光)+2ln(1+回复)，贴吧使用2ln(1+回复)。',
                          'increment':'相邻两个覆盖完整的24小时窗口新增帖数之差。'}}
         _cache.update(expires=time.time()+60,data=data)
         return data
 
-def network_feed(kind):
+def network_feed(kind,force=False):
+    with _feed_locks[kind]:
+        cached=_feed_cache.get(kind)
+        if not force and cached and cached['expires']>time.time():return cached['data']
+        data=_network_feed(kind)
+        _feed_cache[kind]={'expires':time.time()+60,'data':data}
+        return data
+
+
+def _network_feed(kind):
     now=int(time.time());platforms=HOT_PLATFORMS if kind=='hot' else MEME_PLATFORMS
-    rows=storage.recent_items(list(platforms),now-7*DAY)
+    if kind=='memes':
+        from .meme_catalog import build
+        rows=storage.recent_unique_items(list(platforms),now-7*DAY)
+        items=[{'title':r['title'],'platform':platforms[r['source']],'source':r['source'],'ts':r['batch_ts'],
+                'url':source_link((r.get('extra') or {}).get('link') or r.get('url'))} for r in rows]
+        return {'items':build(items),'platforms':['B站','抖音','微博','百度'],'generated_at':now,
+                'method':'每个平台展示10种常用表达；释义参考、近期采集用例和平台搜索分别标示，采集用例按明确词组与语境匹配。'}
+    stamps=storage.latest_source_batches(list(platforms),now-7*DAY)
+    since=max(now-7*DAY,min(stamps.values())-DAY) if stamps else now-7*DAY
+    rows=storage.recent_items(list(platforms),since)
     latest={}
     for row in rows:latest[row['source']]=max(latest.get(row['source'],0),row['batch_ts'])
     grouped={};history=defaultdict(dict);source_stamps=defaultdict(set)
@@ -133,21 +154,11 @@ def network_feed(kind):
                       'baseline_samples':len(past),'focus':focus.get(row['title'],'')})
     if kind=='hot':
         items.sort(key=lambda x:(x['signal'] is None,-(x['signal'] or 0),x['rank']))
+        kept=[];seen_titles=defaultdict(set)
+        for item in items:
+            platform=item['platform'];title=re.sub(r'\s+','',item['title'])
+            if title in seen_titles[platform] or len(seen_titles[platform])>=10:continue
+            seen_titles[platform].add(title);kept.append(item)
+        items=kept
         return {'items':items,'platforms':['抖音','澎湃','B站','头条'],'generated_at':now,
                 'method':'S=(当前排名权重−此前24小时排名权重均值)/√(历史方差+0.05)，权重=1/log₂(排名+1)；至少3次历史观测。'}
-    from .memes import NETWORK_MEME_BASE
-    catalog=[]
-    for base in NETWORK_MEME_BASE:
-        terms=[t.strip() for t in re.split(r'[/／（(]|\s+vs\s+',base['term'],flags=re.I) if len(t.strip())>=2]
-        if base['term'].startswith('搭子文化'):terms.append('搭子')
-        if base['term'].startswith('脆皮'):terms.append('脆皮')
-        if base['term'].startswith('偷感'):terms.append('偷感')
-        evidence=[x for x in items if x.get('url') and any(w in x['title'] for w in terms)]
-        if not evidence:continue
-        for platform in sorted({x['platform'] for x in evidence}):
-            links=list({x['url']:x for x in evidence if x['platform']==platform}.values())
-            catalog.append({'term':base['term'],'platform':platform,'meaning':base['meaning'],
-                            'usage':base['usage'],'examples':base.get('examples',[]),
-                            'links':links,'form':base['form']})
-    return {'items':catalog,'platforms':['B站','抖音','微博','百度'],'generated_at':now,
-            'method':'释义来自维护目录，展示条目须有当前平台榜单标题匹配记录；链接指向匹配来源。'}

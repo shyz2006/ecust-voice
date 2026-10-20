@@ -548,7 +548,7 @@ class ReportAgent:
                 word_plan['globalGuidelines'] = [
                     '全报告严格四章，每章500至650字；每章保留事实出处、日期与证据边界。',
                     '心理和社会机制分析须结合事件证据。报告不包含活动策划、班会教案、人员物资或执行排期。',
-                    '少用装饰图表，主要结论用正文表达；四页导出版完整保留正文与来源。',
+                    '少用装饰图表，主要结论用正文表达；导出版自然分页，完整保留正文与来源。',
                 ]
                 word_plan['chapters'] = [dict(entry, targetWords=600, min=450, max=700,minWords=450,maxWords=700)
                                          for entry in word_plan.get('chapters', [])]

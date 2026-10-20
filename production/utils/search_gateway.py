@@ -178,7 +178,12 @@ def local_search(query: str, limit: int = 10) -> Tuple[List[Dict], int]:
             continue
         seen.add(key)
         merged.append(r)
-    return merged[:limit], hidden
+    # Short named subjects must be present, even when the local index scores generic words highly.
+    from utils.topic_guard import subject,relevant
+    topic=subject(query)
+    if topic['strict']:
+        merged=[r for r in merged if relevant((r.get('title') or '')+' '+(r.get('snippet') or ''),topic)]
+    return merged[:limit], hidden if merged else 0
 
 
 _KIND_LABEL = {"tieba-live": "本校贴吧", "tieba-stored": "本校贴吧（已采集）",

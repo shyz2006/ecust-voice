@@ -1,0 +1,8 @@
+{
+  "report_model_before": "poolside/laguna-s-2.1-free",
+  "report_model_after": "minimax/minimax-m3.1-flash:free",
+  "fallback_models": "poolside/laguna-s-2.1-free,minimax/minimax-m3.1-flash:free",
+  "api_keys_and_other_fields_unchanged": true,
+  "secure_backup_on_server": true,
+  "rollback_restores_only_model_fields": true
+}

@@ -1,0 +1,19 @@
+/* Adapted from the Pulse team's original 60-frame dachshund; no legacy data/UI hooks. */
+(()=>{'use strict';
+ const paths=['<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>','<path d="M3 17l5-7 5 3 7-10m-6 0h6v6M3 21h18"/>','<path d="M13 3c1 5-5 5-2 9 2-1 3-3 3-3 4 3 6 11-2 12C3 21 3 12 7 8c0 3 2 3 2 3S8 6 13 3Z"/>','<circle cx="12" cy="12" r="9"/><path d="M8 14q4 5 8 0M8 9h.1M16 9h.1"/>','<path d="m12 2 2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5ZM20 18v4m-2-2h4"/>','<path d="M12 5q-4-3-9-1v15q5-2 9 1 4-3 9-1V4q-5-2-9 1Zm0 0v15"/>'];
+ document.querySelectorAll('.main-nav button').forEach((b,i)=>b.insertAdjacentHTML('afterbegin','<svg class="nav-doodle" viewBox="0 0 24 24" aria-hidden="true">'+paths[i]+'</svg>'));
+ document.querySelector('.brand')?.insertAdjacentHTML('afterend','<svg class="header-pulse" viewBox="0 0 100 30" aria-hidden="true"><path d="M1 16h20l5-7 6 17 9-24 8 18 5-4h12l4-5 5 10 4-5h20"/></svg>');
+ const charm='<div class="page-charm" aria-hidden="true"><span>课间来逛逛</span><svg viewBox="0 0 80 80"><path d="M40 6c9-7 18 1 14 11 11-4 19 6 12 15 12 3 12 16 1 20 6 11-3 20-14 15-3 12-16 12-20 1-11 6-20-3-15-14-12-3-12-16-1-20-6-11 3-20 14-15-2-8 1-11 9-13Z" fill="#f4b775" stroke="#3a303a" stroke-width="1.8"/><circle cx="40" cy="40" r="17" fill="#fff6cd" stroke="#3a303a" stroke-width="1.8"/><path d="M34 36v3m12-3v3m-12 6q6 8 12 0" fill="none" stroke="#3a303a" stroke-width="2" stroke-linecap="round"/></svg></div>';
+ document.querySelectorAll('.page-heading').forEach(h=>{if(!h.querySelector('button'))h.insertAdjacentHTML('beforeend',charm);});
+ const form=document.getElementById('researchForm'),input=document.getElementById('researchQuery'),pane=document.getElementById('research');
+ if(!form||!input)return;
+ const stage=document.createElement('div');stage.className='mascot-stage';stage.innerHTML='<div class="mascot-copy"><strong id="mascotMessage">小腊肠准备出发！</strong><p>人物、地点、时间，想到多少写多少。</p><button class="mascot-pet" type="button">摸摸小狗</button></div><canvas width="474" height="157" aria-hidden="true"></canvas>';
+ input.before(stage);const canvas=stage.querySelector('canvas'),ctx=canvas.getContext('2d'),sheet=new Image(),motion=matchMedia('(prefers-reduced-motion: reduce)');
+ let ready=false,pos=0,velocity=0,target=0,last=0,boopUntil=0,lastDraw=-1;
+ sheet.onload=()=>{ready=true;draw();};sheet.src='/static/img/pulse-dachshund.webp';
+ function update(){const len=Array.from(input.value.trim()).length;target=Math.min(59,len/70*59);document.getElementById('mascotMessage').textContent=len?'记下了，继续说。':'小腊肠准备出发！';}
+ function draw(){if(!ready)return;const frame=Math.max(0,Math.min(59,pos)),key=Math.round(frame*20);if(key===lastDraw)return;lastDraw=key;ctx.clearRect(0,0,474,157);const a=Math.floor(frame),f=frame-a;const blit=(i,alpha)=>{ctx.globalAlpha=alpha;ctx.drawImage(sheet,(i%6)*474,Math.floor(i/6)*157,474,157,0,0,474,157);};blit(a,1);if(f>.01&&a<59)blit(a+1,f);ctx.globalAlpha=1;}
+ function tick(t){requestAnimationFrame(tick);if(document.hidden||pane.hidden){last=0;return;}const dt=last?Math.min(.05,(t-last)/1000):.016;last=t;let goal=t<boopUntil?59:target;if(motion.matches){pos=goal;velocity=0;}else{velocity+=(70*(goal-pos)-14*velocity)*dt;pos+=velocity*dt;}draw();}
+ input.addEventListener('input',update);stage.querySelector('button').onclick=()=>{boopUntil=performance.now()+1100;stage.classList.remove('pet');requestAnimationFrame(()=>stage.classList.add('pet'));document.getElementById('mascotMessage').textContent='汪，灵感已签收！';setTimeout(()=>{stage.classList.remove('pet');update();},1300);};
+ form.addEventListener('submit',()=>{if(input.value.trim())document.getElementById('mascotMessage').textContent='出发，去找原始资料。';});update();requestAnimationFrame(tick);
+})();

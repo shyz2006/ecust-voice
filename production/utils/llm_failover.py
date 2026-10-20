@@ -254,6 +254,7 @@ class ModelFailover(Generic[T]):
     _cooldowns = {}
 
     def __init__(self, primary_model: str, scope: str):
+        aliases={'deepseek-v4-pro':'deepseek/deepseek-v4-pro','deepseek-v4-flash':'deepseek/deepseek-v4-flash'}
         self.primary_model = primary_model
         self.scope = scope.upper()
         raw_fallbacks = (
@@ -264,7 +265,12 @@ class ModelFailover(Generic[T]):
         models = [primary_model]
         models.extend(item.strip() for item in raw_fallbacks.split(","))
         models.extend(_extra_pool())
-        self.models = list(dict.fromkeys(item for item in models if item))
+        expanded=[]
+        for item in models:
+            if item:
+                expanded.append(item)
+                if item in aliases:expanded.append(aliases[item])
+        self.models = list(dict.fromkeys(expanded))
         self.cooldown_seconds = _float_env("LLM_MODEL_COOLDOWN_SECONDS", 300.0)
         self.active_model = primary_model
 
@@ -281,7 +287,11 @@ class ModelFailover(Generic[T]):
             ]
             if ready:
                 if os.getenv("LLM_ADAPTIVE_ROUTING", "1") != "0":
-                    return _MODEL_STATS.order(ready)
+                    ordered=_MODEL_STATS.order(ready)
+                    # Respect the chosen primary; latency may order fallback routes only.
+                    if self.primary_model in ordered:
+                        ordered.remove(self.primary_model);ordered.insert(0,self.primary_model)
+                    return ordered
                 return ready
             # If every route is cooling down, retry the one whose cooldown expires first.
             return sorted(

@@ -1,0 +1,137 @@
+{
+  "name": "campus-polish-20261020",
+  "stage": "/home/ubuntu/bettafish/deploy/campus-polish-20261020",
+  "base_image_id": "sha256:3917114383f8f59b2e5b7dee93d138a196caa0f18955fb712d5c671b8c17620e",
+  "base_image": "bettafish:base-campus-polish-20261020",
+  "candidate_image": "bettafish:candidate-campus-polish-20261020",
+  "candidate_image_id": "sha256:42f15633c742967903570a1e745dee65a94a326b8e2a6418596678a385b82979",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "eb0749cfb81e732e14a94d41ad9227a82365d74efd18ec2bd7a6575c654dd6f9",
+      "expected_before": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "before_sha256": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "eb0749cfb81e732e14a94d41ad9227a82365d74efd18ec2bd7a6575c654dd6f9",
+      "expected_before": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "before_sha256": "e929792ee43e7712bfa8a6260558466eea8971f716965582b41009dd2f3814e0",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "ff9fba28614291b1bf947a730b9cbae21bae8b0d0ca080632ea5a31939a8424e",
+      "expected_before": "ba65a57ff1d1cf8a2e25d3cfcde9bd1a8e18b7afe2f75acb871b198fa8c6525a",
+      "before_sha256": "ba65a57ff1d1cf8a2e25d3cfcde9bd1a8e18b7afe2f75acb871b198fa8c6525a",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "70c83f1f25c674fad09e3f69c5cafed4669687437ccd0da95b43ee89288bb7f2",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "static/js/campus-play.js",
+      "candidate_sha256": "24f1771919d8ef5a14b77efe03c5f0f6353db5d0ff728cf9cfa809f6c50c856c",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/taxonomy.py",
+      "candidate_sha256": "8b7d7ad9e2f9f1efb29bc34ed4ab7c2c647b2107f274574cc94a8a3c4a52b086",
+      "expected_before": "91cb1d54a227765811a5842815b11da4f520a138a3622a216061735caee8fbbe",
+      "before_sha256": "91cb1d54a227765811a5842815b11da4f520a138a3622a216061735caee8fbbe",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "candidate_sha256": "a6e78930f789064b6d400ced777f54666e9951816e5e8cd317d8499921937be1",
+      "expected_before": "4fac574fc3ccb11b3823521ed945f8852bf9f2619a3748d5b569fc601258ed13",
+      "before_sha256": "4fac574fc3ccb11b3823521ed945f8852bf9f2619a3748d5b569fc601258ed13",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/storage.py",
+      "candidate_sha256": "21d5e5f7a73c71d3262fa1b57a7e2c669a69e95444d02a690f8ed0329932d1f4",
+      "expected_before": "394a245ee39ba341ea9456d31759e470ec9ec157649f250cbfe7f664bb3ae0ae",
+      "before_sha256": "394a245ee39ba341ea9456d31759e470ec9ec157649f250cbfe7f664bb3ae0ae",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/meme_catalog.py",
+      "candidate_sha256": "9ff17580960e37f08f456f3f8541d8adb0140c7c443ac6905a63dce7e35d05df",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "2cd496e038f0d30c015a52b5bb995b676c7800a188cf8c61fb3bc280109584b9",
+      "expected_before": "bf09909d5fcdcbf4fdbcb0f00d7af296597bcc8f2198a0680fd2ec21fc910332",
+      "before_sha256": "bf09909d5fcdcbf4fdbcb0f00d7af296597bcc8f2198a0680fd2ec21fc910332",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "f3a67ff92bb8789310a61969a3d17a48a7e085849398c38d12aa09b4f421969a",
+      "expected_before": "e394d6b130801260a4e33a82910f3e82fb43dae29f4a7d893c646f6419073394",
+      "before_sha256": "e394d6b130801260a4e33a82910f3e82fb43dae29f4a7d893c646f6419073394",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/evidence.py",
+      "candidate_sha256": "511da6cca9c3cbc265ab57b0e72efd55de9b8800075db146282b7110e6260dd5",
+      "expected_before": "5e49f459c5c694e48ee7dd52f0092724be677facdeb90e90a883098d77bcf834",
+      "before_sha256": "5e49f459c5c694e48ee7dd52f0092724be677facdeb90e90a883098d77bcf834",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/report_template/校园与青年事件分析报告模板.md",
+      "candidate_sha256": "82e9da59cd4e68126ae8901c2366d0c49c6fed4493d7c43998d0f8aa5cef0b66",
+      "expected_before": "1cb4df72c6717ba5c1f31df0326f85a12bd7cafa3ecb0b59ca9b913a0c192e66",
+      "before_sha256": "1cb4df72c6717ba5c1f31df0326f85a12bd7cafa3ecb0b59ca9b913a0c192e66",
+      "host_existed": true
+    },
+    {
+      "path": "SingleEngineApp/research_worker.py",
+      "candidate_sha256": "a0338d34997adedf6c97b1ed5824181fceb44047bd41414df4b5d11c572cffb8",
+      "expected_before": "48076eeae5020ac3405bdd0ae010050d946ba1015f33a18a13f9797389f3107e",
+      "before_sha256": "48076eeae5020ac3405bdd0ae010050d946ba1015f33a18a13f9797389f3107e",
+      "host_existed": true
+    },
+    {
+      "path": "utils/topic_guard.py",
+      "candidate_sha256": "7408664931278e40b12489e4de84b282a8735c77b1381771e104dfcbf56e7c47",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "utils/search_gateway.py",
+      "candidate_sha256": "bb70a7a1872f712abe30c79b82abde8b96dc9d6fb94c720167a8e7f97c1c0912",
+      "expected_before": "c1881d17f8d7805351b1e468ea10e89ef0a1d6f9ce4219612233d86959358176",
+      "before_sha256": "c1881d17f8d7805351b1e468ea10e89ef0a1d6f9ce4219612233d86959358176",
+      "host_existed": true
+    },
+    {
+      "path": "utils/llm_failover.py",
+      "candidate_sha256": "d8f1526591ece4adb7a921047f49021eac4ac1f415752f67bf209ed9f1f7d00d",
+      "expected_before": "17bb7c177d411c764c62c5a1471420269a91b54fd36df889add831515e3548c3",
+      "before_sha256": "17bb7c177d411c764c62c5a1471420269a91b54fd36df889add831515e3548c3",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/prompts/prompts.py",
+      "candidate_sha256": "15430aa1539a5b024e546a761d3e8aa756e8e6646a97340ba48b663bfc8b1bdd",
+      "expected_before": "1e5f79333ead88506d55b9001f0490df7a106a201c8560a917a2c1ffe63eb748",
+      "before_sha256": "1e5f79333ead88506d55b9001f0490df7a106a201c8560a917a2c1ffe63eb748",
+      "host_existed": true
+    }
+  ],
+  "activated": true
+}

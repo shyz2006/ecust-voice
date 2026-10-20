@@ -61,3 +61,9 @@ COPY SingleEngineApp/insight_engine_streamlit_app.py SingleEngineApp/insight_eng
 COPY SingleEngineApp/research_worker.py SingleEngineApp/research_worker.py
 COPY MindSpider/BroadTopicExtraction/topic_extractor.py MindSpider/BroadTopicExtraction/topic_extractor.py
 COPY CampusPulse CampusPulse
+
+COPY static/css/campus-play.css static/css/campus-play.css
+
+COPY static/js/campus-play.js static/js/campus-play.js
+
+COPY utils/topic_guard.py utils/topic_guard.py

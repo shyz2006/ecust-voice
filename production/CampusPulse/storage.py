@@ -332,6 +332,25 @@ def recent_items(sources: List[str], since_ts: int) -> List[Dict[str, Any]]:
     return out
 
 
+def recent_unique_items(sources: List[str], since_ts: int) -> List[Dict[str, Any]]:
+    """Read only the newest observation of each source/title before decoding JSON."""
+    marks=','.join('?' for _ in sources)
+    with connect() as conn:
+        rows=conn.execute(f'''WITH numbered AS (
+            SELECT id,ROW_NUMBER() OVER(PARTITION BY source,title ORDER BY batch_ts DESC,id DESC) AS n
+            FROM snapshots WHERE batch_ts>=? AND source IN ({marks}))
+            SELECT s.batch_ts,s.source,s.rank,s.title,s.url,s.extra FROM snapshots s
+            JOIN numbered r ON s.id=r.id WHERE r.n=1 ORDER BY s.batch_ts''',[since_ts,*sources]).fetchall()
+    return [{**dict(r),'extra':json.loads(r['extra']) if r['extra'] else {}} for r in rows]
+
+
+def latest_source_batches(sources: List[str], since_ts: int) -> Dict[str,int]:
+    marks=','.join('?' for _ in sources)
+    with connect() as conn:
+        rows=conn.execute(f'SELECT source,MAX(batch_ts) AS stamp FROM snapshots WHERE source IN ({marks}) AND batch_ts>=? GROUP BY source',[*sources,since_ts]).fetchall()
+    return {r['source']:r['stamp'] for r in rows}
+
+
 def load_batch_items(batch_ts: int) -> List[Dict[str, Any]]:
     with connect() as conn:
         rows = conn.execute("SELECT source, rank, title, url, extra FROM snapshots WHERE batch_ts=?",

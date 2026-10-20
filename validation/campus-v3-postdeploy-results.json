@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "public_https": true,
+  "source_hashes_verified": true,
+  "twelve_categories": true,
+  "count_conservation": true,
+  "real_post_links": 392,
+  "hot_records": 40,
+  "meme_records": 40,
+  "integer_post_reference": true,
+  "ten_per_platform": true,
+  "meme_reference_search_distinguished": true,
+  "original_dachshund_present": true,
+  "report_model": "minimax/minimax-m3.1-flash:free",
+  "own_research_history": true,
+  "validation_login_absent": true,
+  "requests": "GET only",
+  "timings_seconds": {
+    "/": 0.043,
+    "/pulse/": 0.02,
+    "/static/css/campus-play.css": 0.026,
+    "/static/js/campus-review.js": 0.02,
+    "/static/js/campus-play.js": 0.031,
+    "/pulse/api/revision/overview": 2.241,
+    "/pulse/api/revision/posts": 0.023,
+    "/pulse/api/revision/ledger": 0.056,
+    "/pulse/api/revision/feed/hot": 0.212,
+    "/pulse/api/revision/feed/memes": 0.338,
+    "/static/img/pulse-dachshund.webp": 0.026,
+    "/pulse/api/revision/research": 0.047
+  }
+}

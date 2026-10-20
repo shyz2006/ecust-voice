@@ -277,7 +277,9 @@ def run_task(engine: str, query: str, task_id: str, token: str) -> None:
         with task_log_context(task_id, engine):
             logger.info(f"[后台研究] {engine} 在服务器后台开始运行（浏览器关闭不影响）：{query}")
             agent = build_agent(engine, task_id)
-            agent._generate_report_structure(query)
+            from utils.topic_guard import prepare_agent
+            if not prepare_agent(agent,engine,query,task_id):
+                agent._generate_report_structure(query)
             _run_paragraphs_parallel(agent, engine)
             final_report = agent._generate_final_report()
             agent._save_report(final_report)

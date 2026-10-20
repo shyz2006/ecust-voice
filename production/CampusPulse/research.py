@@ -83,13 +83,15 @@ def _text_blocks(block):
             out.append(('p',text,[url for cell in cells for item in cell for url in item[2]]))
         return out
     if kind=='paragraph':
-        content=''.join(str(x.get('text','')) for x in block.get('inlines',[]))
+        content=''.join(str(x.get('text','')) for x in block.get('inlines',[])
+                        if not (str(x.get('text','')).strip() in ('来源','原文','参考','出处')
+                                and any(m.get('type')=='link' for m in x.get('marks',[]))))
         links=[]
         for inline in block.get('inlines',[]):
             for mark in inline.get('marks',[]):
                 url=mark.get('href') or (mark.get('value') if mark.get('type')=='link' else None)
                 if isinstance(url,str) and url.startswith(('http://','https://')):links.append(url)
-        return [('p',content,links)] if content else []
+        return [('p',content,links)] if content or links else []
     if kind=='heading':return [('h3',str(block.get('text','')),[])]
     out=[]
     for key in ('blocks','children','items','rows','cells','content','body'):
@@ -103,38 +105,47 @@ def _text_blocks(block):
 
 def report_html(task_id):
     from utils.task_runtime import task_output_dir,read_task_metadata
+    from ReportEngine.evidence import validate_sources,source_evidence
     directory=task_output_dir(task_id,'report')
     files=list((directory/'ir').glob('*.json'))
     if not files:raise ValueError('报告正文尚未就绪')
     doc=json.loads(max(files,key=lambda p:p.stat().st_mtime).read_text(encoding='utf-8'))
     chapters=doc.get('chapters') or []
     if len(chapters)!=4:raise ValueError('报告章节数量待核查，请查看原始研究结果')
-    from ReportEngine.evidence import validate_sources
     validate_sources(doc,task_id)
-    title=html.escape(str((doc.get('metadata') or {}).get('title') or read_task_metadata(task_id).get('query') or '事件分析报告'))
+    query=str(read_task_metadata(task_id).get('query') or (doc.get('metadata') or {}).get('title') or '事件分析报告')
+    title=html.escape(query)
+    catalogue={x['url']:x for x in source_evidence(task_id)}
     sections=[]
-    for i,ch in enumerate(chapters,1):
+    for ch in chapters:
         blocks=_text_blocks(ch.get('blocks',[]));sources=[];body=[]
         for tag,text,links in blocks:
-            body.append(f'<{tag}>{html.escape(text)}</{tag}>');sources.extend(links)
-        # Chapter footnotes remain attached to their source chapter.
+            refs=[]
+            for url in dict.fromkeys(links):
+                if url not in sources:sources.append(url)
+                refs.append('<a href="'+html.escape(url,quote=True)+'" target="_blank" rel="noopener">['+str(sources.index(url)+1)+']</a>')
+            body.append(f'<{tag}>'+html.escape(text)+(('<sup>'+''.join(refs)+'</sup>') if refs else '')+f'</{tag}>')
         for footnote in ch.get('footnotes',[]):
-            if isinstance(footnote,dict):
-                text=footnote.get('text') or footnote.get('content')
-                if isinstance(text,str):body.append('<p class="source">'+html.escape(text)+'</p>')
+            if not isinstance(footnote,dict):continue
+            text=footnote.get('text') or footnote.get('content')
+            if isinstance(text,str):body.append('<p class="source">'+html.escape(text)+'</p>')
+            url=footnote.get('href')
+            if url in catalogue and url not in sources:sources.append(url)
         if not body:raise ValueError('报告章节正文为空，暂不能导出')
-        for number,url in enumerate(dict.fromkeys(sources),1):
-            label=urlsplit(url).hostname or '原始资料'
-            body.append('<p class="source"><a href="'+html.escape(url,quote=True)+'">来源 '+str(number)+'：'+html.escape(label)+'</a></p>')
-        sections.append(f'<section class="paper"><header>校园与青年事件研究 · {i}/4</header><h1>{title}</h1><h2>{html.escape(ch.get("title", ""))}</h2><article>'+''.join(body)+'</article><footer>微舆三引擎研究 · 事实与分析请结合文中来源阅读</footer></section>')
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>事件分析报告</title><style>
-    *{box-sizing:border-box}body{margin:0;color:#24322e;background:#ebece7;font-family:"Noto Sans CJK SC","Noto Sans SC",sans-serif}.paper{width:210mm;height:297mm;padding:17mm 19mm 18mm;margin:8mm auto;background:white;position:relative;break-after:page;overflow:visible}header{font-size:10px;color:#68766f;border-bottom:1px solid #bdcbc0;padding-bottom:8px}h1{font-size:19px;line-height:1.5;margin:18px 0 12px}h2{font-size:18px;color:#285344;margin:14px 0}h3{font-size:1.07em;margin:12px 0 6px}article{font-size:13px;line-height:1.85;overflow-wrap:anywhere}p{margin:0 0 10px;white-space:pre-wrap}.source{font-size:.8em;color:#566b61}a{color:inherit}footer{position:absolute;bottom:11mm;font-size:9px;color:#68766f}.paper:last-child{break-after:auto}@page{size:A4;margin:0}@media print{body{background:white}.paper{margin:0}}
-    </style><body>'''+''.join(sections)+'''<script>window.fitReport=function(){let ok=true;for(const p of document.querySelectorAll('.paper')){const a=p.querySelector('article'),foot=p.querySelector('footer');for(let font=13;font>=9.5;font-=.25){a.style.fontSize=font+'px';if(a.getBoundingClientRect().bottom<foot.getBoundingClientRect().top-12)break;}if(a.getBoundingClientRect().bottom>=foot.getBoundingClientRect().top-8)ok=false;}return ok;};document.fonts.ready.then(()=>window.fitReport());</script></body></html>'''
+        for number,url in enumerate(sources,1):
+            label=catalogue.get(url,{}).get('title') or urlsplit(url).hostname or '原始资料'
+            display=label if len(label)<=100 else label[:100]+'…'
+            body.append('<p class="source"><a href="'+html.escape(url,quote=True)+'" title="'+html.escape(label,quote=True)+'" target="_blank" rel="noopener">['+str(number)+'] '+html.escape(display)+'</a></p>')
+        sections.append('<section class="report-chapter"><h2>'+html.escape(ch.get('title',''))+'</h2><article>'+''.join(body)+'</article></section>')
+    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>事件分析报告</title><style>
+    *{box-sizing:border-box}body{margin:0;color:#24322e;background:#ebece7;font-family:"Noto Sans CJK SC","Noto Sans SC",sans-serif}.report{max-width:900px;padding:40px 48px;margin:24px auto;background:white}header{font-size:11px;color:#68766f;border-bottom:1px solid #bdcbc0;padding-bottom:12px}h1{font-size:26px;line-height:1.5;margin:22px 0 28px;overflow-wrap:anywhere}h2{font-size:20px;color:#285344;margin:28px 0 15px;break-after:avoid}h3{font-size:16px;break-after:avoid}article{font-size:15px;line-height:1.95;overflow-wrap:anywhere}p{margin:0 0 14px;white-space:pre-wrap;orphans:3;widows:3}.source{font-size:11px;color:#566b61;margin:7px 0;break-inside:avoid}a{color:inherit;text-underline-offset:3px}sup{margin-left:4px;font-size:10px}footer{margin-top:28px;padding-top:12px;border-top:1px solid #bdcbc0;font-size:10px;color:#68766f}@page{size:A4;margin:18mm 16mm 20mm}@media(max-width:640px){.report{margin:0;padding:24px 20px}h1{font-size:23px}}@media print{body{background:white}.report{max-width:none;padding:0;margin:0}article{font-size:11pt;line-height:1.8}h1{font-size:21pt}h2{font-size:15pt}p{break-inside:avoid}.source{font-size:8pt}}
+    </style><body><main class="report"><header>校园与青年事件研究</header><h1>'''+title+'''</h1>'''+''.join(sections)+'''<footer>微舆三引擎研究 · 文中编号链接对应本章来源</footer></main></body></html>'''
+
 
 def pdf(task_id):
     from playwright.sync_api import sync_playwright
     from utils.task_runtime import task_output_dir
-    path=task_output_dir(task_id,'report')/'concise-four-pages.pdf'
+    path=task_output_dir(task_id,'report')/'research-report.pdf'
     with _pdf_lock:
         content=report_html(task_id)
         with sync_playwright() as p:
@@ -142,7 +153,8 @@ def pdf(task_id):
             try:
                 page=browser.new_page();page.set_content(content,wait_until='load')
                 page.evaluate('document.fonts.ready')
-                if not page.evaluate('window.fitReport()'):raise ValueError('报告篇幅超出四页排版，需要压缩正文后导出')
-                page.pdf(path=str(path),format='A4',print_background=True,prefer_css_page_size=True)
+                page.pdf(path=str(path),format='A4',print_background=True,prefer_css_page_size=True,
+                         display_header_footer=True,header_template='<span></span>',
+                         footer_template='<div style="width:100%;text-align:center;font-size:9px;color:#777"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
             finally:browser.close()
     return path

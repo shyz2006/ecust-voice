@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "real_three_engine_workflow": true,
+  "chapters": 4,
+  "pdf_pages": 3,
+  "page_text_characters": [
+    1035,
+    1255,
+    1126
+  ],
+  "source_links": 28,
+  "rendered_with": "final candidate code, Chinese fonts, no clipping",
+  "verification_scope": "workflow, retrieved-link membership, percentages and PDF layout; not sentence-level factual verification",
+  "editorial_review_required": true,
+  "research_materials_reused": true,
+  "correct_named_subject": true,
+  "fresh_retrieval_and_first_summary": true,
+  "report_model": "minimax/minimax-m3.1-flash:free"
+}
