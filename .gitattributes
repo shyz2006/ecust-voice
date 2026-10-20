@@ -6,3 +6,5 @@ validation/campus-v5-*.json text eol=lf
 validation/resend-client-*.json text eol=lf
 
 validation/services-discovery-*.json text eol=lf
+
+validation/meme-cleanup-*.json text eol=lf
