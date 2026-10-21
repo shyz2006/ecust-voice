@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "width": 1440,
+      "one_visible_editor": true,
+      "one_form_button": true,
+      "no_refresh_choice": true,
+      "three_refinements": true,
+      "empty_directions_launch": true,
+      "latest_text_forwarded": true,
+      "retry_idempotency": true,
+      "failed_task_editable": true,
+      "stored_draft_migrated": true,
+      "no_overflow": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "one_visible_editor": true,
+      "one_form_button": true,
+      "no_refresh_choice": true,
+      "three_refinements": true,
+      "empty_directions_launch": true,
+      "latest_text_forwarded": true,
+      "retry_idempotency": true,
+      "failed_task_editable": true,
+      "stored_draft_migrated": true,
+      "no_overflow": true,
+      "page_errors": []
+    }
+  ]
+}

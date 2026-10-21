@@ -1,0 +1,46 @@
+{
+  "name": "workshop-steps-final-20261021",
+  "stage": "/home/ubuntu/bettafish/deploy/workshop-steps-final-20261021",
+  "base_image_id": "sha256:37801f32606d3e00f2d47e22f709f8771f8aa0bc2d1b89d5fb32b55c21597c1a",
+  "base_image": "bettafish:base-workshop-steps-final-20261021",
+  "candidate_image": "bettafish:candidate-workshop-steps-final-20261021",
+  "candidate_image_id": "sha256:720475328544643f2c781bceb9e1d74cb4a5d64fcc0d2bd163bd87e748a14fd0",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "expected_before": "f3b4dcdee63e379fac16f74bdb57661258867ec3e75da93bc9f15693352d4a94",
+      "before_sha256": "f3b4dcdee63e379fac16f74bdb57661258867ec3e75da93bc9f15693352d4a94",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "expected_before": "f3b4dcdee63e379fac16f74bdb57661258867ec3e75da93bc9f15693352d4a94",
+      "before_sha256": "f3b4dcdee63e379fac16f74bdb57661258867ec3e75da93bc9f15693352d4a94",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "b59257d4196cc55a9a99b024b3c535685cd938727f7d3c0de4a032533f5768fc",
+      "expected_before": "6960ecde34bdff7f4209cfb31a355c21f40acc30f60648db5f0fa5a2e4db9bb4",
+      "before_sha256": "6960ecde34bdff7f4209cfb31a355c21f40acc30f60648db5f0fa5a2e4db9bb4",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "bb4311ef1b3b6e661fb822d1789af8a98c95336bf4ba045da02b7133a535fd99",
+      "expected_before": "bb4311ef1b3b6e661fb822d1789af8a98c95336bf4ba045da02b7133a535fd99",
+      "before_sha256": "bb4311ef1b3b6e661fb822d1789af8a98c95336bf4ba045da02b7133a535fd99",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-play.js",
+      "candidate_sha256": "fbb2d8c313a195c5efdcf2acdb29129b17ca71f3a009129fdfbc290e5a00dfdf",
+      "expected_before": "fbb2d8c313a195c5efdcf2acdb29129b17ca71f3a009129fdfbc290e5a00dfdf",
+      "before_sha256": "fbb2d8c313a195c5efdcf2acdb29129b17ca71f3a009129fdfbc290e5a00dfdf",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

@@ -48,3 +48,19 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 /* Keep the optional search choice quieter than the single primary action. */
 .research-form label.check-label{display:flex;align-items:center;gap:.55rem;font-size:.9rem;font-weight:400;margin:.8rem 0;color:var(--muted)}
 .research-form label.check-label input{flex:0 0 auto;width:auto;margin:0}
+
+/* One task at a time: topic entry gives way to a compact confirmation sheet. */
+#researchForm[hidden],#researchEntry[hidden],#researchTopicSummary[hidden]{display:none}
+.research-step,.research-topic-summary small{font-size:11px;letter-spacing:.08em;color:#8b7796}
+.research-topic-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;margin-bottom:22px;border-bottom:1px dashed #d9cddd}
+.research-topic-summary>div{min-width:0}.research-topic-summary p{font-size:15px;font-weight:600;color:#54465f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:7px 0 0}
+.research-topic-summary a{font-size:12px;white-space:nowrap;color:#8b7796;text-underline-offset:4px}
+#researchBrief{margin-top:0;padding:0;background:transparent;border:0;border-radius:0}
+#researchBrief .research-question{font-size:15px;line-height:1.8;margin:0 0 20px;color:#6d5d78}
+#researchBrief>label{display:block;margin-bottom:10px;font-size:16px!important}
+#researchFocus{min-height:132px;margin-top:0;background:#f9f6ee}
+#researchBrief .brief-options{margin:0 0 24px}#researchBrief .brief-options legend{font-size:15px;color:#54465f}
+#researchBrief .brief-option:not(:has(input:checked)) small{display:none}
+.brief-loading{display:flex;align-items:center;gap:12px;padding:25px 0}
+#researchForm .form-footer{margin-top:20px}#researchForm .mascot-stage canvas{cursor:pointer}
+@media(max-width:600px){.research-topic-summary{gap:10px}.research-topic-summary p{font-size:14px}#researchForm .form-footer{align-items:center;gap:12px}#researchForm .form-footer p{max-width:45%;line-height:1.6}#researchFocus{min-height:144px}}
