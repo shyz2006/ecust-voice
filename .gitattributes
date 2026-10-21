@@ -22,3 +22,5 @@ validation/meme_footer*.py text eol=lf
 validation/campus-followup-*.json text eol=lf
 validation/campus_followup*.py text eol=lf
 validation/campus_topics4*.py text eol=lf
+validation/refine-fix-*.json text eol=lf
+validation/refine_fix*.py text eol=lf

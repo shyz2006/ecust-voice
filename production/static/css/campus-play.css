@@ -42,3 +42,5 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 @media(prefers-reduced-motion:reduce){.lens-bob,.brief-dot{animation:none!important}}
 
 .research-refine{margin-top:24px;border-top:1px dashed #d2c1df;padding-top:4px}.research-refine>button{font-size:13px}.research-refine .data-note{font-size:12px;line-height:1.7}.research-refine[hidden]{display:none}
+
+.brief-feedback{margin-top:18px;padding:12px 15px;background:#ede5f5;border:1px solid #d3c1df;border-radius:10px;overflow-wrap:anywhere}.brief-feedback.error{background:#fff0e4;color:#9d4e35;border-color:#e9c5aa}.brief-feedback[hidden]{display:none}

@@ -5,6 +5,24 @@ from urllib.parse import urlsplit
 
 STOP={'事件','研究','分析','报告','问题','影响','现象','讨论','发展','最新','动态','信息','中国','社会','如何','什么','相关','报道','记者','大学生','高校','校园'}
 
+# Unambiguous, conventional institutional aliases; no incident-specific interpretation table.
+ENTITY_ALIASES={
+ '清华大学':('清华',),'北京航空航天大学':('北航',),'北京理工大学':('北理工',),
+ '华东理工大学':('华理',),'武汉大学':('武大',),'北京大学':('北大',),
+ '中国科学技术大学':('中科大',),'上海交通大学':('上海交大','上交大'),
+ '复旦大学':('复旦',),'浙江大学':('浙大',),
+}
+
+def entity_text(text):
+    text=re.sub(r'\s+','',str(text or '')).lower()
+    for name,aliases in ENTITY_ALIASES.items():
+        text=text.replace(name,aliases[0])
+        for alias in aliases[1:]:text=text.replace(alias,aliases[0])
+    return text
+
+def anchor_present(anchor,text):return entity_text(anchor) in entity_text(text)
+
+
 def subject(query):
     text=re.sub(r'^(?:请|帮我|关于|研究|分析|一下|的)+','',query.strip())
     core=re.sub(r'(?:事件|风波|争议|现象|分析|研究|报告|的影响|的发展)+$','',text).strip(' ：:，,的')
@@ -27,7 +45,7 @@ def task_subject(task_id):
 def relevant(text,topic):
     text=re.sub(r'\s+','',text or '').lower()
     if topic.get('anchors'):
-        return all(a.lower() in text for a in topic['anchors']) and any(t.lower() in text for t in topic['terms'])
+        return all(anchor_present(a,text) for a in topic['anchors']) and any(entity_text(t) in entity_text(text) for t in topic['terms'])
     if topic['strict']:return re.sub(r'\s+','',topic['core']).lower() in text
     terms=topic['terms'];matches=sum(t in text for t in terms)
     return matches>=min(2,len(terms))
