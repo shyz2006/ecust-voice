@@ -172,3 +172,22 @@ def confirmed(brief_id,index,focus,owner):
         terms=list(dict.fromkeys(w for w in jieba.lcut(focus) if len(w)>=2 and w not in STOP and not any(w in a for a in choice['anchors'])))[:24]
     if not terms:raise ValueError('请再补充具体想研究的问题')
     return {'original_query':row['query'],'supplement':row['context'],'query':focus.strip(),'anchors':choice['anchors'],'focus_terms':terms,'sources':row['sources'],'brief_id':brief_id,'confirmed':True}
+
+
+def exploratory(brief_id,focus,context,owner,index=None):
+    """User-confirmed scope can proceed even when preparation found no suggestions."""
+    row=get(brief_id,owner) if brief_id else {'query':focus,'status':'failed'}
+    if row['status'] not in ('ready','failed'):raise ValueError('请等本轮线索整理完成')
+    if not isinstance(focus,str) or not 1<=len(focus.strip())<=500:raise ValueError('研究问题请输入1至500字')
+    if not isinstance(context,str) or len(context)>500:raise ValueError('补充信息请控制在500字以内')
+    if row['status']=='ready' and type(index) is int and 0<=index<len(row.get('directions',[])):
+        from utils.topic_guard import anchor_present
+        if all(anchor_present(a,focus) for a in row['directions'][index]['anchors']):
+            value=confirmed(brief_id,index,focus,owner)
+            value['supplement']=context.strip()
+            if context.strip()!=row.get('context','').strip():value['sources']=[]
+            return value
+    # No inferred identity or stale suggested anchors: the explicit scope and supplement
+    # are the instructions; ordinary evidence relevance and citation checks still apply.
+    return {'original_query':row['query'],'supplement':context.strip(),'query':focus.strip(),
+            'sources':[],'brief_id':brief_id,'confirmed':True,'exploratory':True}

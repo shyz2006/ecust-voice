@@ -56,7 +56,9 @@ def status(task_id):
         except (ValueError,OSError):
             result.update(status='failed',error='报告未通过正文与原始来源检查，研究材料已保留。')
     elif any(v=='failed' or str(v).startswith('error') for v in result['engines'].values()):
-        result.update(status='failed',error='部分研究引擎未完成，请检查模型与检索服务后重试。')
+        gaps=[task_output_dir(task_id,engine)/'research_information_gap.json' for engine in ('query','media')]
+        messages=[json.loads(p.read_text(encoding='utf-8')).get('message') for p in gaps if p.exists()]
+        result.update(status='failed',error=next((m for m in messages if isinstance(m,str) and m),'部分研究引擎未完成，请检查模型与检索服务后重试。'),information_gap=bool(messages))
     elif report and report.status in ('error','cancelled'):
         result.update(status='failed',error='报告汇总未完成，原始研究材料已保留。请检查报告模型后重试。')
     elif all(v=='completed' for v in result['engines'].values()):

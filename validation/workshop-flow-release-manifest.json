@@ -1,0 +1,67 @@
+{
+  "name": "workshop-flow-20261021",
+  "stage": "/home/ubuntu/bettafish/deploy/workshop-flow-20261021",
+  "base_image_id": "sha256:b32250a124394803ee455a256557a335d9c42f6e349ad925160e6e8f33e7ac60",
+  "base_image": "bettafish:base-workshop-flow-20261021",
+  "candidate_image": "bettafish:candidate-workshop-flow-20261021",
+  "candidate_image_id": "sha256:504e09bd7464f5fe74c191d4232c0c8e8d14cdd937018d720e7fd32d2ce38cd4",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "004c1e6a72d87b49ffb1bd24b66bb98e8a29ce744e1b9edf533ecdcc35635a87",
+      "expected_before": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "before_sha256": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "004c1e6a72d87b49ffb1bd24b66bb98e8a29ce744e1b9edf533ecdcc35635a87",
+      "expected_before": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "before_sha256": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "b36902136cbcfb112e8b7611e19b881afa87bb6ce2f0e692fc90d09688b08b25",
+      "expected_before": "785b0893ee3f1e827325a295533ef0db10fafe055d72d95dec1119b5c9500a55",
+      "before_sha256": "785b0893ee3f1e827325a295533ef0db10fafe055d72d95dec1119b5c9500a55",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "8cf22796baeb5e670fea9a5dcf8f3add89c0d2561b58550de307c8f09b905646",
+      "expected_before": "ba676caf7aab9e221b8cae89a0bc74f00886bf153ffbbfb373aab962ceb66646",
+      "before_sha256": "ba676caf7aab9e221b8cae89a0bc74f00886bf153ffbbfb373aab962ceb66646",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research_brief.py",
+      "candidate_sha256": "90e52c4e2d23aead6309722392411151c86b64b81e745b1bfdf712ea6bc431fa",
+      "expected_before": "007ca91869dd70d92fb04b3d827061c9a27bae0b99fad363ca3e94cd92115c24",
+      "before_sha256": "007ca91869dd70d92fb04b3d827061c9a27bae0b99fad363ca3e94cd92115c24",
+      "host_existed": true
+    },
+    {
+      "path": "utils/topic_guard.py",
+      "candidate_sha256": "1fa56dc1cdf1cc74883cfbf038685065e1c0d6257a01fcb3d1421d88dcc913e2",
+      "expected_before": "9c572462872324d9360b74b1fe938bbfb660704c0646b2a39efcea3915daa56b",
+      "before_sha256": "9c572462872324d9360b74b1fe938bbfb660704c0646b2a39efcea3915daa56b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "6701501b6b2561ec72dd4dda55f7a59ceab5fc5212f9c8cf00dede4fa9eb0ff9",
+      "expected_before": "a306869d69bab8da8e5513fb2867edfeeecd0d33fc5053e89340641f9e6cbe1a",
+      "before_sha256": "a306869d69bab8da8e5513fb2867edfeeecd0d33fc5053e89340641f9e6cbe1a",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "150f26cade6ac479a3ebfcafda81793db3e74b8db7ce425c8547cd48322efdb1",
+      "expected_before": "21637166853ad8184be3589bab98b5beb9c747b4d60ba8789204c9c5c9b84328",
+      "before_sha256": "21637166853ad8184be3589bab98b5beb9c747b4d60ba8789204c9c5c9b84328",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

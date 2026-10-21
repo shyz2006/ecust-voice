@@ -37,6 +37,8 @@ def task_subject(task_id):
     from utils.task_runtime import read_task_metadata
     meta=read_task_metadata(task_id);topic=subject(str(meta.get('query') or ''))
     brief=meta.get('research_brief') or {}
+    if brief.get('confirmed') and brief.get('exploratory'):
+        topic=subject(str(brief.get('query') or meta.get('query') or ''))
     if brief.get('confirmed') and brief.get('anchors'):
         topic.update(strict=False,anchors=brief['anchors'],terms=brief.get('focus_terms') or topic['terms'])
     return topic
@@ -81,6 +83,9 @@ def prepare_agent(agent,engine,query,task_id):
     topic=task_subject(task_id);execute=agent.execute_search_tool
     def guarded(tool_name,query,**kwargs):
         anchored=search_query(str(query),topic)
+        brief=read_task_metadata(task_id).get('research_brief') or {}
+        if brief.get('supplement'):
+            anchored+=' 用户补充：'+brief['supplement']
         # Historical events must not be restricted to a model-invented current date.
         if engine=='query':tool_name='basic_search_news'
         elif engine=='media':tool_name='web_search_only'
@@ -94,11 +99,14 @@ def prepare_agent(agent,engine,query,task_id):
             response=guarded('basic_search_news' if engine=='query' else 'web_search_only',query)
             seeds=[_record(item) for item in (getattr(response,'results',None) or getattr(response,'webpages',None) or [])]
         seeds=[x for x in seeds if x['url'] and x['content'] and urlsplit(x['url']).scheme in ('http','https')][:8]
-        if not seeds:raise ValueError('尚未找到与“'+topic['core']+'”直接相关的原始资料，已停止生成，避免研究对象跑偏。')
+        if not seeds:
+            message='本轮尚未找到能确认“'+topic['core']+'”的原始资料。研究问题与补充内容已保留，建议增加相关人物、时间或一条原文链接后再试。'
+            (task_output_dir(task_id,engine)/'research_information_gap.json').write_text(json.dumps({'message':message},ensure_ascii=False),encoding='utf-8')
+            raise ValueError(message)
         (task_output_dir(task_id,engine)/'state_topic_seed.json').write_text(json.dumps({'subject':topic,'sources':seeds},ensure_ascii=False),encoding='utf-8')
     context=json.dumps(seeds,ensure_ascii=False)
     brief=read_task_metadata(task_id).get('research_brief') or {}
-    context+='\n用户原始表达：'+str(brief.get('original_query',query))+'；用户确认的研究范围：'+query+'。简称、比喻与争议性措辞按研究问题理解，事件指控和群体印象须逐项核查，不作既定事实。'
+    context+='\n用户原始表达：'+str(brief.get('original_query',query))+'；用户补充：'+str(brief.get('supplement',''))+'；用户确认的研究范围：'+query+'。简称、比喻与争议性措辞按研究问题理解，事件指控和群体印象须逐项核查，不作既定事实。'
     agent.state.query=query
     agent.state.report_title=query+' · 研究资料'
     for title,goal in [('主体与事实','核对主体身份、地点、已发生事实和时间线；同名人物须区分。'),

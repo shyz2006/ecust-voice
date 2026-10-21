@@ -184,7 +184,10 @@ def revision_research():
     if not isinstance(request_id,str) or len(request_id)>80:return jsonify(success=False,message='请求编号格式有误'),400
     try:
         brief=None
-        if body.get('brief_id'):
+        if body.get('exploratory') is True:
+            from . import research_brief
+            brief=research_brief.exploratory(body.get('brief_id'),query,body.get('context',''),_username(),body.get('direction'))
+        elif body.get('brief_id'):
             from . import research_brief
             brief=research_brief.confirmed(body['brief_id'],body.get('direction'),query,_username())
         return jsonify(success=True,**research.start(query.strip(),_username(),request_id,brief=brief))
