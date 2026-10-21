@@ -15,13 +15,28 @@ def subject(query):
     terms=list(dict.fromkeys(w.lower() for w in jieba.lcut(core) if len(w.strip())>=2 and w not in STOP))
     return {'query':query,'core':core,'strict':strict,'terms':terms or [core.lower()]}
 
+def task_subject(task_id):
+    from utils.task_runtime import read_task_metadata
+    meta=read_task_metadata(task_id);topic=subject(str(meta.get('query') or ''))
+    brief=meta.get('research_brief') or {}
+    if brief.get('confirmed') and brief.get('anchors'):
+        topic.update(strict=False,anchors=brief['anchors'],terms=brief.get('focus_terms') or topic['terms'])
+    return topic
+
+
 def relevant(text,topic):
     text=re.sub(r'\s+','',text or '').lower()
+    if topic.get('anchors'):
+        return all(a.lower() in text for a in topic['anchors']) and any(t.lower() in text for t in topic['terms'])
     if topic['strict']:return re.sub(r'\s+','',topic['core']).lower() in text
     terms=topic['terms'];matches=sum(t in text for t in terms)
     return matches>=min(2,len(terms))
 
 def search_query(query,topic):
+    if topic.get('anchors'):
+        parts=list(topic['anchors'])
+        if not any(t.lower() in query.lower() for t in topic['terms']):parts+=topic['terms'][:3]
+        return ' '.join(parts+[query])
     core=topic['core']
     return query if core.lower() in query.lower() else core+' '+query
 
@@ -45,7 +60,7 @@ def prepare_agent(agent,engine,query,task_id):
     """New workshop only: literal subject search -> grounded outline -> original research nodes."""
     from utils.task_runtime import read_task_metadata,task_output_dir
     if read_task_metadata(task_id).get('pulse_revision')!=2:return False
-    topic=subject(query);execute=agent.execute_search_tool
+    topic=task_subject(task_id);execute=agent.execute_search_tool
     def guarded(tool_name,query,**kwargs):
         anchored=search_query(str(query),topic)
         # Historical events must not be restricted to a model-invented current date.
@@ -55,12 +70,17 @@ def prepare_agent(agent,engine,query,task_id):
     agent.execute_search_tool=guarded
     seeds=[]
     if engine in ('query','media'):
-        response=guarded('basic_search_news' if engine=='query' else 'web_search_only',topic['core'])
-        seeds=[_record(item) for item in (getattr(response,'results',None) or getattr(response,'webpages',None) or [])]
+        brief=read_task_metadata(task_id).get('research_brief') or {}
+        seeds=[dict(x,content=x.get('snippet','')) for x in brief.get('sources',[]) if relevant(x.get('title','')+' '+x.get('snippet',''),topic)]
+        if not seeds:
+            response=guarded('basic_search_news' if engine=='query' else 'web_search_only',query)
+            seeds=[_record(item) for item in (getattr(response,'results',None) or getattr(response,'webpages',None) or [])]
         seeds=[x for x in seeds if x['url'] and x['content'] and urlsplit(x['url']).scheme in ('http','https')][:8]
         if not seeds:raise ValueError('尚未找到与“'+topic['core']+'”直接相关的原始资料，已停止生成，避免研究对象跑偏。')
         (task_output_dir(task_id,engine)/'state_topic_seed.json').write_text(json.dumps({'subject':topic,'sources':seeds},ensure_ascii=False),encoding='utf-8')
     context=json.dumps(seeds,ensure_ascii=False)
+    brief=read_task_metadata(task_id).get('research_brief') or {}
+    context+='\n用户原始表达：'+str(brief.get('original_query',query))+'；用户确认的研究范围：'+query+'。简称、比喻与争议性措辞按研究问题理解，事件指控和群体印象须逐项核查，不作既定事实。'
     agent.state.query=query
     agent.state.report_title=query+' · 研究资料'
     for title,goal in [('主体与事实','核对主体身份、地点、已发生事实和时间线；同名人物须区分。'),

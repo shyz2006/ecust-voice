@@ -144,6 +144,34 @@ def revision_ledger():
                    recorded_tokens=data['recorded_tokens'],daily_usage=daily)
 
 
+@pulse_bp.before_request
+def research_request_guard():
+    from urllib.parse import urlsplit
+    if request.method=='POST' and request.path.endswith(('/api/revision/research','/api/revision/research/brief')):
+        origin=request.headers.get('Origin')
+        if request.headers.get('Sec-Fetch-Site')=='cross-site' or (origin and urlsplit(origin).netloc!=request.host):return jsonify(success=False,message='请求来源有误'),403
+        if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
+
+
+@pulse_bp.route('/api/revision/research/brief',methods=['POST'])
+def revision_research_brief():
+    from . import research_brief
+    if session.get('authenticated') is not True or not _username():return jsonify(success=False,message='请登录后梳理研究方向'),401
+    body=request.get_json(silent=True)
+    if not isinstance(body,dict):return jsonify(success=False,message='请输入研究主题'),400
+    try:return jsonify(success=True,**research_brief.start(body.get('query'),body.get('context',''),_username()))
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    except Exception:return jsonify(success=False,message='方向梳理服务暂时不可用，请稍后重试'),503
+
+
+@pulse_bp.route('/api/revision/research/brief/<brief_id>')
+def revision_research_brief_status(brief_id):
+    from . import research_brief
+    if session.get('authenticated') is not True or not _username():return jsonify(success=False,message='请登录后查看研究方向'),401
+    try:return jsonify(success=True,**research_brief.get(brief_id,_username()))
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),404
+
+
 @pulse_bp.route('/api/revision/research',methods=['GET','POST'])
 def revision_research():
     from . import research
@@ -154,7 +182,12 @@ def revision_research():
     if not isinstance(query,str) or not 1<=len(query.strip())<=500:return jsonify(success=False,message='请输入1至500字的研究主题'),400
     request_id=body.get('request_id','')
     if not isinstance(request_id,str) or len(request_id)>80:return jsonify(success=False,message='请求编号格式有误'),400
-    try:return jsonify(success=True,**research.start(query.strip(),_username(),request_id))
+    try:
+        brief=None
+        if body.get('brief_id'):
+            from . import research_brief
+            brief=research_brief.confirmed(body['brief_id'],body.get('direction'),query,_username())
+        return jsonify(success=True,**research.start(query.strip(),_username(),request_id,brief=brief))
     except ValueError as exc:return jsonify(success=False,message=str(exc)),400
     except Exception:
         return jsonify(success=False,message='研究服务启动失败，请检查模型与检索配置'),503

@@ -8,7 +8,7 @@ TEMPLATE='校园与青年事件分析报告模板'
 _init_lock=threading.Lock()
 _pdf_lock=threading.Lock()
 
-def start(query,username,request_id=''):
+def start(query,username,request_id='',brief=None):
     from utils.task_runtime import ensure_task,new_task_id,register_task_account,task_metadata_path
     from utils.research_runner import start_research
     from ReportEngine import flask_interface
@@ -28,6 +28,7 @@ def start(query,username,request_id=''):
     ensure_task(task_id,query=query);register_task_account(task_id,username)
     path=task_metadata_path(task_id);meta=json.loads(path.read_text())
     meta.update(report_template=TEMPLATE,report_style='concise',pulse_revision=2)
+    if brief:meta['research_brief']=brief
     temp=path.with_suffix('.revision.tmp');temp.write_text(json.dumps(meta,ensure_ascii=False),encoding='utf-8');os.replace(temp,path)
     from ForumEngine.task_store import initialize_task_forum
     initialize_task_forum(task_id)

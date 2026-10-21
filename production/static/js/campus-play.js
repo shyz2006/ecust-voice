@@ -10,6 +10,10 @@
  document.querySelectorAll('.page-heading').forEach(h=>{if(!h.querySelector('button'))h.insertAdjacentHTML('beforeend',charm);});
  const form=document.getElementById('researchForm'),input=document.getElementById('researchQuery'),pane=document.getElementById('research');
  if(!form||!input)return;
+
+ const workshopCharm=pane.querySelector('.page-charm');
+ if(workshopCharm)workshopCharm.innerHTML='<span>好奇心营业中</span><svg class="workshop-lens" viewBox="0 0 100 100"><path d="M48 5v14m0 55v20" stroke="#82708e" stroke-width="2" stroke-dasharray="3 4"/><g class="lens-bob"><circle cx="43" cy="42" r="25" fill="#e7ddf6" stroke="#494052" stroke-width="2"/><circle cx="43" cy="42" r="18" fill="#fff7dd" stroke="#494052" stroke-width="1.5"/><path d="m61 60 22 22q4 5-2 8t-8-2L54 66" fill="#edbb8c" stroke="#494052" stroke-width="2"/><path d="M33 39v3m14-3v3m-13 7q6 6 12 0" fill="none" stroke="#494052" stroke-width="2" stroke-linecap="round"/><path d="m27 24 7 1-6 6" fill="white"/></g><path class="tiny-star" d="m79 12 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#e6ba62" stroke="#574455" stroke-width="1.5"/></svg>';
+ form.insertAdjacentHTML('afterbegin','<div class="workshop-clips" aria-hidden="true"><span>FIELD NOTES</span><svg viewBox="0 0 90 55"><path d="M18 3v16q0 12 11 12t11-12V8q0-7-7-7t-7 7v14" fill="none" stroke="#88799f" stroke-width="3" stroke-linecap="round"/><path d="m61 9 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#efc471"/><path d="M72 36q9-8 13 0t-13 12q-17-4-12-12t12 0" fill="#eebdb5" stroke="#776378" stroke-width="1.2"/></svg></div>');
  const stage=document.createElement('div');stage.className='mascot-stage';stage.innerHTML='<div class="mascot-copy"><strong id="mascotMessage">小腊肠准备出发！</strong><p>人物、地点、时间，想到多少写多少。</p><button class="mascot-pet" type="button">摸摸小狗</button></div><canvas width="474" height="157" aria-hidden="true"></canvas>';
  input.before(stage);const canvas=stage.querySelector('canvas'),ctx=canvas.getContext('2d'),sheet=new Image(),motion=matchMedia('(prefers-reduced-motion: reduce)');
  let ready=false,pos=0,velocity=0,target=0,last=0,boopUntil=0,lastDraw=-1;
@@ -18,5 +22,5 @@
  function draw(){if(!ready)return;const frame=Math.max(0,Math.min(59,pos)),key=Math.round(frame*20);if(key===lastDraw)return;lastDraw=key;ctx.clearRect(0,0,474,157);const a=Math.floor(frame),f=frame-a;const blit=(i,alpha)=>{ctx.globalAlpha=alpha;ctx.drawImage(sheet,(i%6)*474,Math.floor(i/6)*157,474,157,0,0,474,157);};blit(a,1);if(f>.01&&a<59)blit(a+1,f);ctx.globalAlpha=1;}
  function tick(t){requestAnimationFrame(tick);if(document.hidden||pane.hidden){last=0;return;}const dt=last?Math.min(.05,(t-last)/1000):.016;last=t;let goal=t<boopUntil?59:target;if(motion.matches){pos=goal;velocity=0;}else{velocity+=(70*(goal-pos)-14*velocity)*dt;pos+=velocity*dt;}draw();}
  input.addEventListener('input',update);stage.querySelector('button').onclick=()=>{boopUntil=performance.now()+1100;stage.classList.remove('pet');requestAnimationFrame(()=>stage.classList.add('pet'));document.getElementById('mascotMessage').textContent='汪，灵感已签收！';setTimeout(()=>{stage.classList.remove('pet');update();},1300);};
- form.addEventListener('submit',()=>{if(input.value.trim())document.getElementById('mascotMessage').textContent='出发，去找原始资料。';});update();requestAnimationFrame(tick);
+ form.addEventListener('submit',()=>{if(input.value.trim())document.getElementById('mascotMessage').textContent='先闻闻线索，找对方向。';});update();requestAnimationFrame(tick);
 })();

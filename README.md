@@ -2,13 +2,17 @@
 
 基于 BettaFish 定制的校园观察与研究平台。线上：[华理校园观察](https://smydashuaige.2026515.xyz)，需要登录。
 
+## 2026-10-21 育人工坊修订
+
+新增“意图梳理 → 一轮网页检索 → 可编辑方向确认 → 完整研究”流程，并补充研究主题挂饰。机制、费用与验证边界见 [育人工坊意图澄清说明](育人工坊意图澄清说明_20261021.md)。本轮代码在 `feat/workshop-intent-20261021`，基于已经合并PR #8的main开发。
+
 ## 开发接手入口
 
 请先阅读 **[开发交接文档_20261020.md](开发交接文档_20261020.md)**，其中包含源码结构、六模块机制、外部服务配置、实际调度时间、部署与回退、验证记录和待办。
 
-负责人计划将 [PR #8](https://github.com/shyz2006/ecust-voice/pull/8) 合并到 `main`。合并后从 `main` 开发；合并前最新应用在 `feat/teacher-feedback-20261020`。合并操作本身不会部署服务器；当前应用已部署至 `ubuntu@3.17.59.150` 的 `/home/ubuntu/bettafish`。
+[PR #8](https://github.com/shyz2006/ecust-voice/pull/8) 已合并到 `main`，2026-10-20交接文档记录该轮运行基线。本轮后续修改以顶部修订说明及最新发布记录为准。合并操作本身不会部署服务器；当前应用已部署至 `ubuntu@3.17.59.150` 的 `/home/ubuntu/bettafish`。
 
-线上应用基线为 `e0bf958844e1b05a4a39394b3df918bb117bdbda`，最新发布目录为 `/home/ubuntu/bettafish/deploy/source-links-20261020`。本次交接提交仅更新文档与核查记录。
+线上应用基线为 `e0bf958844e1b05a4a39394b3df918bb117bdbda`，最新发布目录为 `/home/ubuntu/bettafish/deploy/source-links-20261020`。该段记录2026-10-20应用基线；后续修订见顶部说明。
 
 ## 当前功能
 
