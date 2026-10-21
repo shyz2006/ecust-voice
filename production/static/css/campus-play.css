@@ -64,3 +64,5 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 .brief-loading{display:flex;align-items:center;gap:12px;padding:25px 0}
 #researchForm .form-footer{margin-top:20px}#researchForm .mascot-stage canvas{cursor:pointer}
 @media(max-width:600px){.research-topic-summary{gap:10px}.research-topic-summary p{font-size:14px}#researchForm .form-footer{align-items:center;gap:12px}#researchForm .form-footer p{max-width:45%;line-height:1.6}#researchFocus{min-height:144px}}
+
+.brief-choice-kind{font-size:10px;font-style:normal;font-weight:400;color:#8b7796;margin-left:6px;white-space:nowrap}.research-form .brief-option strong{line-height:1.7}

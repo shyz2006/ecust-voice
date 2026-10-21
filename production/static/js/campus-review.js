@@ -152,13 +152,20 @@ $('researchSubmit').onclick=researchAction;
 function renderBrief(d){
  activeBrief=d;const host=$('researchBrief');host.hidden=false;
  if(d.status==='preparing'){showResearchStep(true);host.innerHTML='<p class="brief-loading"><span class="brief-dot" aria-hidden="true"></span>正在寻找相关线索…</p>';return;}
- const directions=d.directions||[];showResearchStep(true);briefBusyState(false);briefFeedback('');
- host.innerHTML=(directions.length?'<fieldset class="brief-options"><legend>选一个关注方向</legend>'+directions.map((item,i)=>'<label class="brief-option"><input type="radio" name="briefDirection" value="'+i+'" '+(i===0?'checked':'')+'><span><strong>'+esc(item.title)+'</strong><span>'+esc(item.reason)+'</span>'+item.citations.slice(0,1).map(c=>{const source=d.sources.find(x=>x.id===c.id);return source?'<small>线索：'+(safeUrl(source.url)?'<a href="'+esc(safeUrl(source.url))+'" target="_blank" rel="noopener noreferrer" title="'+esc(c.quote)+'">'+esc(source.title)+' ↗</a>':esc(source.title))+'</small>':'';}).join('')+'</span></label>').join('')+'</fieldset>':'<p class="research-question">'+esc(d.question||d.interpretation_note||'想重点了解什么？可以补充你知道的背景。')+'</p>')+'<label for="researchFocus">'+(directions.length?'你的研究问题':'你想了解什么？')+'</label><textarea id="researchFocus" rows="4" maxlength="500" placeholder="可以直接沿用，也可以在这里补充背景和你最关心的问题。"></textarea>';
- $('researchFocus').value=directions[0]?.query||d.query||$('researchQuery').value;
- if(d.context&&!$('researchFocus').value.includes(d.context))$('researchFocus').value=$('researchFocus').value+'\n'+d.context;
- host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.addEventListener('change',()=>{$('researchFocus').value=directions[Number(r.value)].query;}));
- try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved?.id===d.id&&typeof saved.focus==='string')$('researchFocus').value=saved.focus;}catch{}
- $('researchFocus').addEventListener('input',()=>{try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&saved.id===d.id){saved.focus=$('researchFocus').value;localStorage.setItem('ecust-research-brief-v1',JSON.stringify(saved));}}catch{}});
+ const directions=d.directions||[],original=d.query||$('researchQuery').value;showResearchStep(true);briefBusyState(false);briefFeedback('');
+ const choices=directions.map((item,i)=>({...item,key:String(i),kind:'检索线索'}));
+ if(!choices.length)choices.push(
+  {key:'pending-event',kind:'待确认切入点',title:'先确认你指的事件与对象',query:original,reason:d.question||d.interpretation_note||'先明确这句话指哪件事、涉及谁，再核对背景与经过。'},
+  {key:'pending-discussion',kind:'待确认切入点',title:'看看大家在讨论什么',query:original+'：重点梳理讨论焦点、不同观点与传播过程。',reason:'围绕原话查找讨论材料，具体指代仍需核实。'});
+ choices.push({key:'custom',kind:'自定义',title:'都不太对，我来说明',query:original,reason:'写下你指的具体事情，以及想重点研究的问题。'});
+ host.innerHTML='<fieldset class="brief-options"><legend>选一个关注方向</legend>'+choices.map((item,i)=>'<label class="brief-option"><input type="radio" name="briefDirection" value="'+esc(item.key)+'" '+(i===0?'checked':'')+'><span><strong>'+esc(item.title)+' <em class="brief-choice-kind">'+esc(item.kind)+'</em></strong><span>'+esc(item.reason)+'</span>'+(item.citations||[]).slice(0,1).map(c=>{const source=(d.sources||[]).find(x=>x.id===c.id);return source?'<small>线索：'+(safeUrl(source.url)?'<a href="'+esc(safeUrl(source.url))+'" target="_blank" rel="noopener noreferrer" title="'+esc(c.quote)+'">'+esc(source.title)+' ↗</a>':esc(source.title))+'</small>':'';}).join('')+'</span></label>').join('')+'</fieldset><label id="researchFocusLabel" for="researchFocus">你的研究问题</label><textarea id="researchFocus" rows="4" maxlength="500" placeholder="说明你指的对象或事件、时间、相关人物，以及想重点研究什么；有链接也可以贴入。"></textarea>';
+ const drafts=Object.fromEntries(choices.map(item=>[item.key,item.query+(d.context&&!item.query.includes(d.context)?'\n'+d.context:'')]));let choice=choices[0].key;
+ try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved?.id===d.id){if(saved.drafts&&typeof saved.drafts==='object')for(const item of choices)if(typeof saved.drafts[item.key]==='string')drafts[item.key]=saved.drafts[item.key];if(typeof saved.focus==='string'){choice=choices.some(item=>item.key===saved.choice)?saved.choice:'custom';drafts[choice]=saved.focus;}}}catch{}
+ function select(key){choice=key;host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.checked=r.value===key);$('researchFocus').value=drafts[key];$('researchFocusLabel').textContent=key==='custom'?'自定义研究问题':'你的研究问题';}
+ function persist(){try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&saved.id===d.id){Object.assign(saved,{focus:$('researchFocus').value,choice,drafts});localStorage.setItem('ecust-research-brief-v1',JSON.stringify(saved));}}catch{}}
+ select(choice);
+ host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.addEventListener('change',()=>{drafts[choice]=$('researchFocus').value;select(r.value);persist();}));
+ $('researchFocus').addEventListener('input',()=>{const value=$('researchFocus').value;choice='custom';drafts.custom=value;host.querySelector('input[value="custom"]').checked=true;$('researchFocusLabel').textContent='自定义研究问题';persist();});
  $('researchFocus').focus({preventScroll:true});$('researchTopicSummary').scrollIntoView({block:'nearest',behavior:'auto'});
 }
 async function launchResearch(){
@@ -166,7 +173,7 @@ async function launchResearch(){
  if(!query||Array.from(query).length>500){briefFeedback('研究问题请输入1至500字',true);$('researchFocus').focus();return;}
  if(Array.from(context).length>500){briefFeedback('补充信息请控制在500字以内',true);return;}
  const selected=$('researchBrief').querySelector('input[name="briefDirection"]:checked');
- const direction=selected?Number(selected.value):null;
+ const direction=selected&&/^\d+$/.test(selected.value)?Number(selected.value):null;
  const key=JSON.stringify([d.id,direction,query,context]);
  if(state.lastSubmittedQuery!==key){state.requestId=crypto.randomUUID();state.lastSubmittedQuery=key;}
  briefFeedback('');$('researchSubmit').disabled=true;$('researchSubmit').textContent='正在发起研究…';

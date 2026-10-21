@@ -1,0 +1,13 @@
+{
+  "restored_tasks": 1,
+  "previous_states": {
+    "insight": "failed",
+    "media": "failed",
+    "query": "failed"
+  },
+  "restarted_engines": {
+    "insight": "started",
+    "media": "started",
+    "query": "started"
+  }
+}
