@@ -133,14 +133,17 @@ async function pollTask(task){
  }catch(e){$('researchProgress').innerHTML=errorState(e.message)+'<button data-resume="'+esc(task)+'">继续查看进度</button>';$('researchSubmit').disabled=false;}
 }
 let briefVersion=0,briefTimer,activeBrief=null;
-function resetBrief(){briefVersion++;clearTimeout(briefTimer);activeBrief=null;$('researchBrief').hidden=true;localStorage.removeItem('ecust-research-brief-v1');if(!state.task||!$('researchSubmit').disabled)$('researchSubmit').disabled=false;}
-$('researchQuery').addEventListener('input',resetBrief);$('researchContext').addEventListener('input',resetBrief);
+function resetBrief(){briefVersion++;clearTimeout(briefTimer);activeBrief=null;$('researchBrief').hidden=true;$('researchRefine').hidden=true;$('researchContext').value='';localStorage.removeItem('ecust-research-brief-v1');if(!state.task||!$('researchSubmit').disabled)$('researchSubmit').disabled=false;}
+$('researchQuery').addEventListener('input',resetBrief);
+$('refineResearch').onclick=()=>{if(!$('researchSubmit').disabled)$('researchForm').requestSubmit();};
+$('researchContext').addEventListener('input',()=>{const changed=$('researchContext').value.trim()!==(activeBrief?.context||'').trim();if($('confirmResearch'))$('confirmResearch').disabled=changed;$('researchRefineHint').textContent=changed?'信息已补充，重新搜索后会更新研究方向。':'已有方向合适时，可直接确认；想换个角度，也可以补充后重新搜索。';});
 function renderBrief(d){
- activeBrief=d;const host=$('researchBrief');host.hidden=false;
+ activeBrief=d;const host=$('researchBrief');host.hidden=false;$('researchRefine').hidden=d.status==='preparing';
  if(d.status==='preparing'){host.innerHTML='<div class="brief-heading"><span class="brief-dot" aria-hidden="true"></span><strong>正在找线索，梳理你想研究的事…</strong></div><p>先查一轮相关资料，再确认研究范围。</p>';return;}
- $('researchSubmit').disabled=false;
- if(d.status==='failed'){host.innerHTML='<p role="alert">'+esc(d.message)+'</p><p>补充背景后，可以再点“梳理研究方向”。</p>';return;}
- host.innerHTML='<div class="brief-heading"><span class="brief-stamp">01 / 选题便签</span><h3>你想研究的是这个方向吗？</h3></div>'+(d.interpretation_note?'<p>'+esc(d.interpretation_note)+'</p>':'')+(d.directions.length?'<fieldset class="brief-options"><legend>选择研究方向</legend>'+d.directions.map((item,i)=>'<label class="brief-option"><input type="radio" name="briefDirection" value="'+i+'" '+(i===0?'checked':'')+'><span><strong>'+esc(item.title)+'</strong><span>'+esc(item.reason)+'</span>'+item.citations.map(c=>{const source=d.sources.find(x=>x.id===c.id);return source?'<small>线索：'+(safeUrl(source.url)?'<a href="'+esc(safeUrl(source.url))+'" target="_blank" rel="noopener noreferrer">'+esc(source.title)+' ↗</a>':esc(source.title))+'<q>'+esc(c.quote)+'</q></small>':'';}).join('')+'</span></label>').join('')+'</fieldset><label for="researchFocus">研究范围 · 可以直接修改</label><textarea id="researchFocus" rows="4" maxlength="500"></textarea><div class="form-footer"><p>选择的是研究方向，报告会继续核对事实和各方说法。</p><button type="button" class="primary" id="confirmResearch">确认方向，开始研究 ↗</button></div>':'<p>'+esc(d.question)+'</p><p>在上方“补充一点背景”里写下你指的含义，再梳理一次。</p>');
+ $('researchSubmit').disabled=false;$('refineResearch').disabled=false;
+ if(d.status==='failed'){host.innerHTML='<p role="alert">'+esc(d.message)+'</p><p>可以在下方补充信息，再搜索一次。</p>';return;}
+ host.innerHTML='<div class="brief-heading"><span class="brief-stamp">01 / 选题便签</span><h3>你想研究的是这个方向吗？</h3></div>'+(d.interpretation_note?'<p>'+esc(d.interpretation_note)+'</p>':'')+(d.directions.length?'<fieldset class="brief-options"><legend>选择研究方向</legend>'+d.directions.map((item,i)=>'<label class="brief-option"><input type="radio" name="briefDirection" value="'+i+'" '+(i===0?'checked':'')+'><span><strong>'+esc(item.title)+'</strong><span>'+esc(item.reason)+'</span>'+item.citations.map(c=>{const source=d.sources.find(x=>x.id===c.id);return source?'<small>线索：'+(safeUrl(source.url)?'<a href="'+esc(safeUrl(source.url))+'" target="_blank" rel="noopener noreferrer">'+esc(source.title)+' ↗</a>':esc(source.title))+'<q>'+esc(c.quote)+'</q></small>':'';}).join('')+'</span></label>').join('')+'</fieldset><label for="researchFocus">这次具体想研究的问题</label><textarea id="researchFocus" rows="4" maxlength="500" placeholder="你最想了解哪些方面？可以补充研究对象、时间范围或关注的问题。"></textarea><div class="form-footer"><p>选择的是研究方向，报告会继续核对事实和各方说法。</p><button type="button" class="primary" id="confirmResearch">确认方向，开始研究 ↗</button></div>':'<p>'+esc(d.question)+'</p><p>在下方补充背景或你更关心的问题，再搜索一次。</p>');
+ $('researchContext').value=d.context||'';$('researchRefineHint').textContent='已有方向合适时，可直接确认；想换个角度，也可以补充后重新搜索。';
  if(!d.directions.length)return;
  $('researchFocus').value=d.directions[0].query;
  host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.addEventListener('change',()=>{$('researchFocus').value=d.directions[Number(r.value)].query;}));
@@ -148,9 +151,9 @@ function renderBrief(d){
   if($('researchSubmit').disabled)return;const query=$('researchFocus').value.trim();if(!query){notice('请填写研究范围');return;}
   const selected=Number(host.querySelector('input:checked').value),key=d.id+'|'+selected+'|'+query;
   if(state.lastSubmittedQuery!==key){state.requestId=crypto.randomUUID();state.lastSubmittedQuery=key;}
-  $('researchSubmit').disabled=true;$('confirmResearch').disabled=true;
-  try{const task=await api('/pulse/api/revision/research',{method:'POST',body:JSON.stringify({query,brief_id:d.id,direction:selected,request_id:state.requestId})});localStorage.removeItem('ecust-research-brief-v1');host.hidden=true;localStorage.setItem('ecust-active-research-v2',task.task_id);pollTask(task.task_id);}
-  catch(error){notice(error.message);$('researchSubmit').disabled=false;$('confirmResearch').disabled=false;}
+  $('researchSubmit').disabled=true;$('confirmResearch').disabled=true;$('refineResearch').disabled=true;
+  try{const task=await api('/pulse/api/revision/research',{method:'POST',body:JSON.stringify({query,brief_id:d.id,direction:selected,request_id:state.requestId})});localStorage.removeItem('ecust-research-brief-v1');host.hidden=true;$('researchRefine').hidden=true;localStorage.setItem('ecust-active-research-v2',task.task_id);pollTask(task.task_id);}
+  catch(error){notice(error.message);$('researchSubmit').disabled=false;$('confirmResearch').disabled=false;$('refineResearch').disabled=false;}
  };
 }
 async function pollBrief(id,version){
@@ -162,7 +165,7 @@ $('researchForm').addEventListener('submit',async e=>{
  if(!query||Array.from(query).length>500){notice('请输入1至500字的研究主题');return;}
  const version=++briefVersion;clearTimeout(briefTimer);$('researchSubmit').disabled=true;renderBrief({status:'preparing'});
  try{const d=await api('/pulse/api/revision/research/brief',{method:'POST',body:JSON.stringify({query,context})});if(version!==briefVersion)return;localStorage.setItem('ecust-research-brief-v1',JSON.stringify({id:d.id,query,context}));renderBrief(d);if(d.status==='preparing')pollBrief(d.id,version);}
- catch(error){if(version!==briefVersion)return;notice(error.message);$('researchSubmit').disabled=false;$('researchBrief').hidden=true;}
+ catch(error){if(version!==briefVersion)return;notice(error.message);$('researchSubmit').disabled=false;$('researchBrief').hidden=true;$('researchRefine').hidden=false;}
 });
 try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&!localStorage.getItem('ecust-active-research-v2')){$('researchQuery').value=saved.query;$('researchContext').value=saved.context;$('researchSubmit').disabled=true;pollBrief(saved.id,++briefVersion);}}catch{}
 

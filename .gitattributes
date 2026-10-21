@@ -19,3 +19,6 @@ validation/workshop_intent*.py text eol=lf
 production/CampusPulse/research_brief.py text eol=lf
 validation/meme-footer-*.json text eol=lf
 validation/meme_footer*.py text eol=lf
+validation/campus-followup-*.json text eol=lf
+validation/campus_followup*.py text eol=lf
+validation/campus_topics4*.py text eol=lf

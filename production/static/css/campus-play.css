@@ -40,3 +40,5 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 @keyframes lensSwing{0%,100%{transform:rotate(-7deg) translateY(0)}50%{transform:rotate(5deg) translateY(-3px)}}@keyframes briefPulse{50%{opacity:.3;transform:scale(.8)}}
 @media(max-width:600px){#research .page-charm svg{width:70px;height:70px}#research .page-heading{min-height:90px}.workshop-ribbon{gap:9px;font-size:10px;margin:12px 0 24px}.workshop-ribbon i{letter-spacing:1px}.workshop-clips{right:10px}.workshop-clips>span{display:none}.research-brief{padding:14px}.research-brief .form-footer{flex-direction:column;align-items:stretch}.research-form .brief-option{padding:12px}.brief-heading h3{font-size:16px}}
 @media(prefers-reduced-motion:reduce){.lens-bob,.brief-dot{animation:none!important}}
+
+.research-refine{margin-top:24px;border-top:1px dashed #d2c1df;padding-top:4px}.research-refine>button{font-size:13px}.research-refine .data-note{font-size:12px;line-height:1.7}.research-refine[hidden]{display:none}

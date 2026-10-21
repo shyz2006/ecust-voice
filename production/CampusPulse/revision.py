@@ -93,7 +93,7 @@ def snapshot(force=False):
               'practice_count':sum(p['red'] for p in seven),'coverage':cov,'excluded':excluded,
               'wordcloud':[{'term':w,'df':n} for w,n in words.most_common(50)],
               'methods':{'emotion':'规则词典 lexicon-1：积极词次数减消极词次数，前三字内否定词反转；按结果统计帖子比例。',
-                         'classification':'校园常用词、课程简称及表达意图加权匹配十二类议题；多主题取最高分，未命中保留其他。campus-topics-2。',
+                         'classification':'校园常用词、同义简称与行为语境加权匹配十二类议题；识别课程咨询、公共空间、社群互动、消费与交易等意图，多主题取最高分。信息不足时归入其他。campus-topics-4。',
                          'heat':'同来源互动量分位数。狐友使用ln(1+曝光)+2ln(1+回复)，贴吧使用2ln(1+回复)。',
                          'increment':'相邻两个覆盖完整的24小时窗口新增帖数之差。'}}
         _cache.update(expires=time.time()+60,data=data)
