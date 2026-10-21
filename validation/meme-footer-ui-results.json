@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "width": 1440,
+      "cards": 10,
+      "introductions": 10,
+      "content_examples": 10,
+      "footer_rows": 0,
+      "no_overflow": true
+    },
+    {
+      "width": 390,
+      "cards": 10,
+      "introductions": 10,
+      "content_examples": 10,
+      "footer_rows": 0,
+      "no_overflow": true
+    }
+  ]
+}

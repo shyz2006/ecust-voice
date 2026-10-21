@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "files_verified": 3,
+  "root_and_pulse_match": true,
+  "public_static_hashes": true,
+  "authenticated_reads": [
+    "overview",
+    "feed/hot",
+    "feed/memes",
+    "ledger",
+    "research",
+    "weekly"
+  ],
+  "invalid_preparation_rejected": true,
+  "model_calls": 0,
+  "search_calls": 0,
+  "emails_sent": 0
+}
