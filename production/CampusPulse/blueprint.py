@@ -147,7 +147,7 @@ def revision_ledger():
 @pulse_bp.before_request
 def research_request_guard():
     from urllib.parse import urlsplit
-    if request.method=='POST' and request.path.endswith(('/api/revision/research','/api/revision/research/brief')):
+    if request.method=='POST' and request.path.endswith(('/api/revision/research','/api/revision/research/brief','/resume-report')):
         origin=request.headers.get('Origin')
         if request.headers.get('Sec-Fetch-Site')=='cross-site' or (origin and urlsplit(origin).netloc!=request.host):return jsonify(success=False,message='请求来源有误'),403
         if not request.is_json:return jsonify(success=False,message='请使用JSON提交'),400
@@ -203,6 +203,17 @@ def revision_research_status(task_id):
     except ValueError:allowed=False
     if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
     return jsonify(success=True,**research.status(task_id))
+
+
+@pulse_bp.route('/api/revision/research/<task_id>/resume-report',methods=['POST'])
+def revision_resume_report(task_id):
+    from . import research
+    try:allowed=research.authorize(task_id,_username()) if session.get('authenticated') is True else False
+    except ValueError:allowed=False
+    if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
+    try:return jsonify(success=True,**research.resume_report(task_id))
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),409
+    except Exception:return jsonify(success=False,message='最终报告暂未启动，请稍后重试'),503
 
 
 @pulse_bp.route('/api/revision/research/<task_id>/report')

@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "active_research_blocks": true,
+  "weekly_generation_blocks": true,
+  "weekly_sending_blocks": true,
+  "idle_passes": true,
+  "active_final_report_blocks": true,
+  "preflight_before_image_switch": true,
+  "external_requests": 0
+}

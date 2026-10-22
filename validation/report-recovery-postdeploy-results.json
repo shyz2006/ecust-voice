@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "files_verified": 7,
+  "root_and_pulse_match": true,
+  "consistent_tab_icons": true,
+  "website_login_http": 200,
+  "served_static_hashes": [
+    "static/js/campus-review.js",
+    "static/css/campus-play.css"
+  ],
+  "report_initialized": true,
+  "model_calls": 0,
+  "search_calls": 0,
+  "emails_sent": 0
+}

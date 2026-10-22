@@ -13,7 +13,7 @@ def start(query,username,request_id='',brief=None):
     from utils.research_runner import start_research
     from ReportEngine import flask_interface
     with _init_lock:
-        if not flask_interface.report_agent and not flask_interface.initialize_report_engine():
+        if not flask_interface.report_agent and not flask_interface.ensure_report_engine():
             raise RuntimeError('报告服务初始化失败，请在配置中检查研究模型')
     from config import settings
     missing=[label for prefix,label in [('QUERY','查询'),('MEDIA','媒体'),('INSIGHT','洞察'),('REPORT','报告')]
@@ -60,9 +60,12 @@ def status(task_id):
         messages=[json.loads(p.read_text(encoding='utf-8')).get('message') for p in gaps if p.exists()]
         result.update(status='failed',error=next((m for m in messages if isinstance(m,str) and m),'部分研究引擎未完成，请检查模型与检索服务后重试。'),information_gap=bool(messages))
     elif report and report.status in ('error','cancelled'):
-        result.update(status='failed',error='报告汇总未完成，原始研究材料已保留。请检查报告模型后重试。')
+        result.update(status='failed',error='报告汇总未完成，原始研究材料已保留，可继续生成最终报告。',can_resume_report=True)
     elif all(v=='completed' for v in result['engines'].values()):
-        result.update(status='reporting',progress=getattr(report,'progress',0))
+        if report and report.status in ('pending','running'):
+            result.update(status='reporting',progress=getattr(report,'progress',0))
+        else:
+            result.update(status='awaiting_report',progress=0,message='研究材料已齐备，最终报告尚未启动，可继续生成报告。',can_resume_report=True)
     else:result['status']='queued' if any(v=='queued' for v in result['engines'].values()) else 'running'
     return result
 
@@ -161,3 +164,18 @@ def pdf(task_id):
                          footer_template='<div style="width:100%;text-align:center;font-size:9px;color:#777"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
             finally:browser.close()
     return path
+
+
+def resume_report(task_id):
+    """Retry only final synthesis; preserve all three completed research outputs."""
+    from utils.task_runtime import read_task_metadata
+    from utils.research_runner import all_engines_completed,_config_port
+    import requests
+    if not all_engines_completed(task_id):raise ValueError('请等待三个研究引擎完成')
+    response=requests.post('http://127.0.0.1:'+str(_config_port())+'/api/report/generate',
+                           json={'research_task_id':task_id,'query':read_task_metadata(task_id).get('query','')},timeout=30)
+    value=response.json()
+    if response.status_code==409 and value.get('current_task',{}).get('status') in ('pending','running'):
+        return {'task_id':task_id,'status':'reporting','reused':True}
+    if response.status_code!=200 or not value.get('success'):raise ValueError('最终报告未能启动，请检查报告模型配置后重试')
+    return {'task_id':task_id,'status':'completed' if value.get('existing') else 'reporting'}

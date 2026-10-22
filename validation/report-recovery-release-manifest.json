@@ -1,0 +1,60 @@
+{
+  "name": "report-recovery-20261022",
+  "stage": "/home/ubuntu/bettafish/deploy/report-recovery-20261022",
+  "base_image_id": "sha256:2a1c1a3178d9e55817d8e1410d150e03858482599ade321db074a215dc52bf3e",
+  "base_image": "bettafish:base-report-recovery-20261022",
+  "candidate_image": "bettafish:candidate-report-recovery-20261022",
+  "candidate_image_id": "sha256:0696b19d0b9991f1838975882d646ff69ff30b967208465b10515d111682f3a6",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "b29858f3c6408c320b45bd4f9c0b23e63ca2b5423092e792a4ca6c70d93614b2",
+      "expected_before": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "before_sha256": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "b29858f3c6408c320b45bd4f9c0b23e63ca2b5423092e792a4ca6c70d93614b2",
+      "expected_before": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "before_sha256": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "d792268b43234d19090445eb028fd42b37600508f9def58c366e0c2aa1e65574",
+      "expected_before": "e3b96574b8aee7ae94b5f9a03000b29347cc47edd23d9ccf7ca0a858264295de",
+      "before_sha256": "e3b96574b8aee7ae94b5f9a03000b29347cc47edd23d9ccf7ca0a858264295de",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "a4c12cc6122dc560f3cffb6cb03939a8db74176cd8450d597370cb93e7ff814f",
+      "expected_before": "f8516027e849804eb8a8596cc0b12cc6f4ccbac31cc072db6cdcae18b099744d",
+      "before_sha256": "f8516027e849804eb8a8596cc0b12cc6f4ccbac31cc072db6cdcae18b099744d",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "54b911744e08b9acb1a9c6013929ef306b811992c8283d2fc87e691877fdb635",
+      "expected_before": "3b50e0c03941139314c5f85367935aaeb6cd3621586ce7d84a566dbe68937547",
+      "before_sha256": "150f26cade6ac479a3ebfcafda81793db3e74b8db7ce425c8547cd48322efdb1",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "328f1635bcfaf529feb273cfbe015a9783a554d234be034f8e450be96549695a",
+      "expected_before": "37627fb432251e5b3fb5c65dd05309b5f79c508890d1042cb799acdf9b2f2e94",
+      "before_sha256": "6701501b6b2561ec72dd4dda55f7a59ceab5fc5212f9c8cf00dede4fa9eb0ff9",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "5325c4ea2f044b8341c3aec24b0bcdf596051c5247d8e9a48262793a9eeb2b48",
+      "expected_before": "57452149aae23d7bcdfdf54d103a878cfdec79f53b75e26fda400a483f79de1c",
+      "before_sha256": "57452149aae23d7bcdfdf54d103a878cfdec79f53b75e26fda400a483f79de1c",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}
