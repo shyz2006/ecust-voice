@@ -45,6 +45,7 @@ from utils.task_runtime import (
     task_has_any_account,
     register_task_workspace,
 )
+from utils import access
 
 # 导入ReportEngine
 try:
@@ -129,10 +130,36 @@ def logout():
 
 @app.route('/api/auth/check')
 def auth_check():
-    """Lightweight endpoint called internally by Nginx for every request."""
-    if session.get('authenticated') is True:
-        return ('', 204)
-    return ('', 401)
+    """Lightweight endpoint called internally by Nginx for every request.
+
+    nginx 直接反代的 Streamlit 引擎页（/insight/ 等）不经过 Flask，所以在这里按原始路径拦截普通用户。
+    """
+    if session.get('authenticated') is not True:
+        return ('', 401)
+    original = urlsplit(request.headers.get('X-Original-URI') or '/').path
+    if not access.is_admin() and not access.user_may_access(original):
+        return ('', 403)
+    return ('', 204)
+
+
+@app.route('/api/auth/me')
+def auth_me():
+    if session.get('authenticated') is not True:
+        return jsonify(success=False, message='请先登录'), 401
+    return jsonify(success=True, username=access.current_username(), role=access.role())
+
+
+@app.before_request
+def enforce_account_role():
+    """普通用户只能使用校园观察与研究服务；模型、检索、邮件、采集与引擎接口仅管理员可用。"""
+    path = request.path
+    if access.is_internal_request() or access.is_admin() or access.user_may_access(path, request.method):
+        return None
+    if session.get('authenticated') is not True:
+        return jsonify(success=False, message='请先登录'), 401
+    if request.method == 'GET' and not path.startswith(('/api/', '/pulse/api/')) and 'text/html' in (request.headers.get('Accept') or ''):
+        return redirect('/')
+    return jsonify(success=False, message='该功能仅管理员可用'), 403
 
 # eventlet 在客户端主动断开时偶尔会抛出 ConnectionAbortedError，这里做一次防御性包裹，
 # 避免无意义的堆栈污染日志（仅在 eventlet 可用时启用）。
@@ -1528,11 +1555,26 @@ def test_model_connection():
     return jsonify(result),200 if result['success'] else 400
 
 
+SECRET_MASK = '********'
+
+
+def _is_secret_key(key):
+    return key.endswith(('API_KEY', 'PASSWORD', 'SECRET', 'TOKEN'))
+
+
+def masked_config_values():
+    """密钥只返回是否已配置（掩码），不回传原文。"""
+    return {
+        key: (SECRET_MASK if value else '') if _is_secret_key(key) else value
+        for key, value in read_config_values().items()
+    }
+
+
 @app.route('/api/config', methods=['GET'])
 def get_config():
     """Expose selected configuration values to the frontend."""
     try:
-        config_values = read_config_values()
+        config_values = masked_config_values()
         return jsonify({'success': True, 'config': config_values})
     except Exception as exc:
         logger.exception("读取配置失败")
@@ -1549,7 +1591,11 @@ def update_config():
     updates = {}
     for key, value in payload.items():
         if key in CONFIG_KEYS:
-            updates[key] = value if value is not None else ''
+            value = value if value is not None else ''
+            # 密钥留空或回传掩码时沿用已保存值
+            if _is_secret_key(key) and (value == '' or value == SECRET_MASK):
+                continue
+            updates[key] = value
 
     if not updates:
         return jsonify({'success': False, 'message': '没有可更新的配置项'}), 400
@@ -1558,7 +1604,7 @@ def update_config():
         write_config_values(updates)
         from CampusPulse.config import refresh_runtime
         refresh_runtime()
-        updated_config = read_config_values()
+        updated_config = masked_config_values()
         return jsonify({'success': True, 'config': updated_config})
     except Exception as exc:
         logger.exception("更新配置失败")

@@ -68,3 +68,6 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 .brief-choice-kind{font-size:10px;font-style:normal;font-weight:400;color:#8b7796;margin-left:6px;white-space:nowrap}.research-form .brief-option strong{line-height:1.7}
 
 .workshop-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:8px}.workshop-tab-icon{width:17px;height:17px;flex:0 0 17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* Account roles: management entries stay hidden until /api/auth/me confirms an admin. */
+html:not([data-role=admin]) .admin-only{display:none!important}
+.account-badge{align-self:center;padding:5px 11px;border:1.5px solid #29252d;border-radius:999px;background:#fffefa;box-shadow:2px 2px 0 #29252d;font-size:12px;font-weight:700;white-space:nowrap}.account-badge.is-admin{background:#fff0b4}

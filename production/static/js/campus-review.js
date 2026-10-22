@@ -6,6 +6,8 @@ const shortDate=ts=>new Date(ts*1000).toLocaleDateString('zh-CN',{timeZone:'Asia
 const DAY=86400,NAMES={'huyou-school':'狐友华理圈','tieba-school':'华理贴吧','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站热搜','bilibili-popular':'B站热门','toutiao':'头条','weibo':'微博','baidu':'百度'};
 const state={tab:'campus',overview:null,hot:null,memes:null,hotPlatform:'抖音',ledger:null,modalVersion:0,task:null,poll:null,overviewPromise:null};
 let noticeTimer;
+// 角色只决定显示哪些入口；权限以服务端校验为准。
+fetch('/api/auth/me',{headers:{'Accept':'application/json'}}).then(r=>r.ok?r.json():null).then(me=>{if(!me)return;document.documentElement.dataset.role=me.role;const badge=$('accountBadge');badge.textContent=(me.role==='admin'?'管理员 · ':'')+me.username;badge.classList.toggle('is-admin',me.role==='admin');badge.hidden=false;}).catch(()=>{});
 function notice(message){$('notice').textContent=message;$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,6500);}
 async function api(url,options={}){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
@@ -115,6 +117,7 @@ async function loadLedger(force=false){
  const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#77957e','#94a6b2','#b9836e'][i]}));
  $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"');
  $('themeBars').innerHTML=bars(themeRows,r=>'data-theme-trend="'+esc(r.label)+'"');$('sourceBars').innerHTML=bars(sourceRows,r=>'data-source="'+r.key+'"');
+ if(!l.daily_usage){$('tokenChart').innerHTML='';return;}
  const total=l.daily_usage.reduce((n,x)=>n+(x.tokens||0),0),unknown=l.daily_usage.reduce((n,x)=>n+(x.unknown_calls||0),0);
  $('tokenChart').innerHTML='<div class="usage-summary"><div><span>近14天已记录用量</span><strong>'+num(total)+' <small>Token</small></strong></div><p>'+l.daily_usage.length+' 天 · 含今天'+(unknown?' · '+num(unknown)+' 次调用未返回用量':'')+'</p></div><div class="usage-days">'+l.daily_usage.map(x=>'<article class="usage-day"><time>'+esc(x.day)+'</time><strong>'+(x.has_records===false?'—':num(x.tokens))+'</strong><span>Token</span>'+(x.unknown_calls?'<small>'+num(x.unknown_calls)+' 次调用未提供用量</small>':(x.has_records===false?'<small>当日暂无记录</small>':'<small>当日已记录</small>'))+'</article>').join('')+'</div>'+(l.daily_usage.length?'':'<p class="empty">开始研究后，这里会留下每天的用量记录。</p>');
 }
