@@ -1,0 +1,53 @@
+{
+  "name": "refine-fix-20261021",
+  "stage": "/home/ubuntu/bettafish/deploy/refine-fix-20261021",
+  "base_image_id": "sha256:558ee98e45bfe78a6edceb66eaeaf82d7bafc1b9ecaa83e6aaf642039354a54e",
+  "base_image": "bettafish:base-refine-fix-20261021",
+  "candidate_image": "bettafish:candidate-refine-fix-20261021",
+  "candidate_image_id": "sha256:b32250a124394803ee455a256557a335d9c42f6e349ad925160e6e8f33e7ac60",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "expected_before": "ed5bea65a743800a0da2138b3b5111a9e1a145fe79ff73778f87c3bd3722b3fd",
+      "before_sha256": "ed5bea65a743800a0da2138b3b5111a9e1a145fe79ff73778f87c3bd3722b3fd",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "990c4bddb968bf96722b5cd1d515f92239cf53aa7bceba0506dbb8d5f2caf3f6",
+      "expected_before": "ed5bea65a743800a0da2138b3b5111a9e1a145fe79ff73778f87c3bd3722b3fd",
+      "before_sha256": "ed5bea65a743800a0da2138b3b5111a9e1a145fe79ff73778f87c3bd3722b3fd",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "785b0893ee3f1e827325a295533ef0db10fafe055d72d95dec1119b5c9500a55",
+      "expected_before": "1f96e28f9eec2f8940cb4b8ba317e6c485bdbd92683a33db4d26b46344712272",
+      "before_sha256": "1f96e28f9eec2f8940cb4b8ba317e6c485bdbd92683a33db4d26b46344712272",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "ba676caf7aab9e221b8cae89a0bc74f00886bf153ffbbfb373aab962ceb66646",
+      "expected_before": "5c6fbac6125dc89db7dcfad8c85c7fbe441a5e23e652ed38ff4363aa41de8ca2",
+      "before_sha256": "5c6fbac6125dc89db7dcfad8c85c7fbe441a5e23e652ed38ff4363aa41de8ca2",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research_brief.py",
+      "candidate_sha256": "007ca91869dd70d92fb04b3d827061c9a27bae0b99fad363ca3e94cd92115c24",
+      "expected_before": "aaa03ea245e78e2791d86a3ede615d741bdfdc188cfd188e7eb4115b5c33cba4",
+      "before_sha256": "aaa03ea245e78e2791d86a3ede615d741bdfdc188cfd188e7eb4115b5c33cba4",
+      "host_existed": true
+    },
+    {
+      "path": "utils/topic_guard.py",
+      "candidate_sha256": "9c572462872324d9360b74b1fe938bbfb660704c0646b2a39efcea3915daa56b",
+      "expected_before": "b747f5eee97669f2681091beb08e53432099602b939ca0c82b3959b098e9646c",
+      "before_sha256": "b747f5eee97669f2681091beb08e53432099602b939ca0c82b3959b098e9646c",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

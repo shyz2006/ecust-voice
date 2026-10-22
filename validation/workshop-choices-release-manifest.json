@@ -1,0 +1,46 @@
+{
+  "name": "workshop-choices-20261021",
+  "stage": "/home/ubuntu/bettafish/deploy/workshop-choices-20261021",
+  "base_image_id": "sha256:720475328544643f2c781bceb9e1d74cb4a5d64fcc0d2bd163bd87e748a14fd0",
+  "base_image": "bettafish:base-workshop-choices-20261021",
+  "candidate_image": "bettafish:candidate-workshop-choices-20261021",
+  "candidate_image_id": "sha256:2a1c1a3178d9e55817d8e1410d150e03858482599ade321db074a215dc52bf3e",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "expected_before": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "before_sha256": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "5fb8dc69a89813145d38df32ebd568595366de2cfffdc8f25e45e189e198f83f",
+      "expected_before": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "before_sha256": "e2685000c881579cb59b1be0e4ce64fae94e4b5cb994969e789f0720ecaf3a43",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "e3b96574b8aee7ae94b5f9a03000b29347cc47edd23d9ccf7ca0a858264295de",
+      "expected_before": "b59257d4196cc55a9a99b024b3c535685cd938727f7d3c0de4a032533f5768fc",
+      "before_sha256": "b59257d4196cc55a9a99b024b3c535685cd938727f7d3c0de4a032533f5768fc",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "f8516027e849804eb8a8596cc0b12cc6f4ccbac31cc072db6cdcae18b099744d",
+      "expected_before": "bb4311ef1b3b6e661fb822d1789af8a98c95336bf4ba045da02b7133a535fd99",
+      "before_sha256": "bb4311ef1b3b6e661fb822d1789af8a98c95336bf4ba045da02b7133a535fd99",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research_brief.py",
+      "candidate_sha256": "2ea7e4114542b958ffdceb5ca9c10e96225f40cff794402978f757b0bd1197f7",
+      "expected_before": "28847c111c2ac4b2c281ba6a6a569bea3cd2152a8f080cb709a2b34817a6f2e3",
+      "before_sha256": "90e52c4e2d23aead6309722392411151c86b64b81e745b1bfdf712ea6bc431fa",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

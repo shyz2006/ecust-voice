@@ -1,0 +1,15 @@
+{
+  "engines": {
+    "insight": "completed",
+    "media": "completed",
+    "query": "completed"
+  },
+  "report_status": "completed",
+  "report_progress": 100,
+  "report_initialized": true,
+  "final_html_present": true,
+  "restarted_research_engines": 0,
+  "emails_sent": 0,
+  "validated_report": true,
+  "report_bytes": 18185
+}

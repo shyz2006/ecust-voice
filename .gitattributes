@@ -14,3 +14,13 @@ validation/meme-cards-*.json text eol=lf
 validation/source-links-*.json text eol=lf
 
 validation/handoff-*.json text eol=lf
+validation/workshop-intent-*.json text eol=lf
+validation/workshop_intent*.py text eol=lf
+production/CampusPulse/research_brief.py text eol=lf
+validation/meme-footer-*.json text eol=lf
+validation/meme_footer*.py text eol=lf
+validation/campus-followup-*.json text eol=lf
+validation/campus_followup*.py text eol=lf
+validation/campus_topics4*.py text eol=lf
+validation/refine-fix-*.json text eol=lf
+validation/refine_fix*.py text eol=lf

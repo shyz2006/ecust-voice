@@ -4,8 +4,8 @@ from urllib.parse import urlsplit,urldefrag
 
 def source_evidence(task_id):
     from utils.task_runtime import task_output_dir,read_task_metadata
-    from utils.topic_guard import subject,relevant
-    topic=subject(str(read_task_metadata(task_id).get('query') or ''))
+    from utils.topic_guard import task_subject,relevant
+    topic=task_subject(task_id)
     evidence={}
     def visit(value,engine):
         if isinstance(value,list):
@@ -36,8 +36,8 @@ def evidence_context(task_id):
     records=source_evidence(task_id)
     if not records:raise ValueError('研究材料尚无可核对的原始来源链接')
     from utils.task_runtime import read_task_metadata
-    from utils.topic_guard import subject
-    topic=subject(str(read_task_metadata(task_id).get('query') or ''))
+    from utils.topic_guard import task_subject
+    topic=task_subject(task_id)
     order={'官方发布':0,'媒体报道或转载':1,'其他网页':2,'社区发言或评论':3}
     records.sort(key=lambda x:(order[x['source_type']],topic['core'] not in x['title'],-sum(t in x['title'].lower() for t in topic['terms'])))
     selected=[dict(x,excerpt=x['excerpt'][:1000]) for x in records[:24]]

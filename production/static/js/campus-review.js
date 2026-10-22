@@ -97,7 +97,7 @@ let memePoll;
 function renderMemes(d){
  clearTimeout(memePoll);
  const seen=new Set(),cards=[...(d.items||[]).map(x=>({...x,confirmed:true})),...(d.candidates||[]).map(x=>({...x,confirmed:false}))].filter(x=>{const key=x.term.replace(/\s+/g,'').toLowerCase();if(seen.has(key)||!x.links?.length)return false;seen.add(key);return true;}).slice(0,10);
- $('memeFeed').innerHTML=cards.map((x,i)=>`<article class="feed-card meme-card ${x.confirmed?'confirmed':'discovered'}"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.form||'网络表达')}</span><span class="meme-status" title="${esc(x.confirmed?'已根据用例与释义资料核对':x.reason||'等待释义资料核对')}">${x.confirmed?'释义已核对':'新发现 · 用法观察'}</span></div><h2>${esc(x.term)}</h2><div class="meme-intro"><h3>简介</h3><p>${esc(x.confirmed?x.meaning:x.observation)}</p></div><div class="meme-uses"><h3>看看大家怎么用</h3>${x.links.slice(0,2).map(memeUseLink).join('')}</div><div class="meme-card-footer">${x.confirmed?sourceLink(x.reference_url,'释义参考 ↗'):'<span class="muted">释义资料待核对</span>'}<span class="muted">${num(x.observed_count)} 个独立用例</span></div></article>`).join('');
+ $('memeFeed').innerHTML=cards.map((x,i)=>`<article class="feed-card meme-card ${x.confirmed?'confirmed':'discovered'}"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.form||'网络表达')}</span><span class="meme-status" title="${esc(x.confirmed?'已根据用例与释义资料核对':x.reason||'等待释义资料核对')}">${x.confirmed?'释义已核对':'新发现 · 用法观察'}</span></div><h2>${esc(x.term)}</h2><div class="meme-intro"><h3>简介</h3><p>${esc(x.confirmed?x.meaning:x.observation)}</p></div><div class="meme-uses"><h3>看看大家怎么用</h3>${x.links.slice(0,2).map(memeUseLink).join('')}</div></article>`).join('');
  if(d.running)memePoll=setTimeout(()=>{if(state.tab==='memes')loadFeed('memes',true).catch(e=>notice(e.message));},5000);
 }
 
@@ -121,18 +121,82 @@ async function loadLedger(force=false){
 async function openSource(source){if(['huyou-school','tieba-school'].includes(source))return openPosts({source},NAMES[source]+' · 原帖');const version=showDialog((NAMES[source]||source)+' · 采集记录');try{const d=await api('/pulse/api/revision/source-posts?'+qs({source}));if(version===state.modalVersion)$('detailBody').innerHTML='<p class="muted">近7天 '+num(d.total)+' 条独立记录</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 const METHODS={sample:['采集范围','校内讨论来自狐友华理圈与华理贴吧。首页显示近7天，趋势显示近10天。帖子按来源与帖子标识合并，同一帖多次采集合并计数；各平台分别计数。'],emotion:['文本表达倾向','使用固定词典 lexicon-1 统计积极与消极词出现次数，前三字内否定词反转。积极命中数高于消极记为积极，低于记为消极，相等记为中性；比例按帖子数计算。此项描述采集文本，词典与规则可复查。'],heat:['来源内互动分位','狐友互动原始量 = ln(1+累计曝光)+2ln(1+累计回复)，贴吧 = 2ln(1+累计回复)。在同来源样本中计算百分位，零互动记为0，同互动量同分。曝光单位为展示次数。'],trend:['新增帖与次日参考','每24小时按帖子发布时间统计独立新帖，缺少发布时间时采用首次采集时间。相邻两个完整日窗计算增量；缺测保留空值。次日参考取最近十日完整日窗的算术平均值并四舍五入为整数篇，至少3个完整日窗才提供。历史误差通过逐窗回看、只使用此前资料计算平均绝对误差。'],signal:['升温信号','排名权重 w=1/log₂(排名+1)。取同平台此前24小时各采集批次的权重序列，未上榜记为0；S=(当前权重−历史均值)/√(历史方差+0.05)。至少3次历史观测，按S降序排列，信号相同按采集记录的来源序位排序。该指标由排名记录计算。']};
 function showMethod(key){const m=METHODS[key]||METHODS.sample;const dialog=document.createElement('dialog');dialog.className='config-dialog';dialog.innerHTML='<div class="dialog-head"><h2>'+esc(m[0])+'</h2><button aria-label="关闭">×</button></div><div class="dialog-body method-text"><p>'+esc(m[1])+'</p></div>';document.body.append(dialog);dialog.querySelector('button').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
-async function loadReports(){try{const d=await api('/pulse/api/revision/research');$('researchHistory').innerHTML=d.items.map(t=>'<article class="record"><div><strong>'+esc(t.query)+'</strong><p>'+date(t.created_at)+' · '+esc(({completed:'已完成',running:'研究中',reporting:'报告汇总中',queued:'排队中',failed:'未完成'})[t.status]||t.status)+'</p></div><div class="record-actions">'+(t.status==='completed'?'<button data-report="'+esc(t.task_id)+'">阅读报告 ↗</button><a href="/pulse/api/revision/research/'+encodeURIComponent(t.task_id)+'/report?format=pdf" target="_blank" rel="noopener">导出 PDF</a>':t.status!=='failed'?'<button data-resume="'+esc(t.task_id)+'">查看进度</button>':'<button data-repeat-query="'+esc(t.query)+'">重新研究 ↗</button>')+'</div></article>').join('')||empty('生成的研究报告将在这里归档');}catch(e){$('researchHistory').innerHTML=errorState(e.message,'research');}}
+async function loadReports(){try{const d=await api('/pulse/api/revision/research');$('researchHistory').innerHTML=d.items.map(t=>'<article class="record"><div><strong>'+esc(t.query)+'</strong><p>'+date(t.created_at)+' · '+esc(({completed:'已完成',running:'研究中',reporting:'报告汇总中',awaiting_report:'待生成报告',queued:'排队中',failed:'未完成'})[t.status]||t.status)+'</p></div><div class="record-actions">'+(t.status==='completed'?'<button data-report="'+esc(t.task_id)+'">阅读报告 ↗</button><a href="/pulse/api/revision/research/'+encodeURIComponent(t.task_id)+'/report?format=pdf" target="_blank" rel="noopener">导出 PDF</a>':(t.status==='awaiting_report'||t.can_resume_report)?'<button data-resume-report="'+esc(t.task_id)+'">继续生成报告 ↗</button>':t.status!=='failed'?'<button data-resume="'+esc(t.task_id)+'">查看进度</button>':'<button data-repeat-query="'+esc(t.query)+'">重新研究 ↗</button>')+'</div></article>').join('')||empty('生成的研究报告将在这里归档');}catch(e){$('researchHistory').innerHTML=errorState(e.message,'research');}}
 function openReport(task){const version=showDialog('事件分析报告');$('detailBody').innerHTML='<p class="muted">四章分析 · A4 自然分页 <a href="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report?format=pdf" target="_blank" rel="noopener">下载 PDF ↗</a></p><iframe title="事件分析报告" sandbox="allow-scripts allow-popups" style="width:100%;height:65dvh;border:0;margin-top:15px" src="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report"></iframe>';return version;}
 async function pollTask(task){
  clearTimeout(state.poll);state.task=task;$('researchProgress').hidden=false;$('researchSubmit').disabled=true;
  try{const d=await api('/pulse/api/revision/research/'+encodeURIComponent(task));if(state.task!==task)return;
   const names={query:'查询取证',media:'媒体检索',insight:'公众讨论分析'},labels={idle:'准备中',queued:'排队中',running:'进行中',completed:'已完成',failed:'未完成'};
-  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
-  if(['completed','failed'].includes(d.status)){$('researchSubmit').disabled=false;state.lastSubmittedQuery=null;state.requestId=null;localStorage.removeItem('ecust-active-research-v2');await loadReports();}
+  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='awaiting_report'?'研究材料已齐备，等待生成报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+((d.status==='awaiting_report'||d.can_resume_report)?'<p><button data-resume-report="'+esc(task)+'">继续生成报告 ↗</button></p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
+  if(['completed','failed'].includes(d.status)){$('researchForm').hidden=false;$('researchSubmit').disabled=false;state.lastSubmittedQuery=null;state.requestId=null;localStorage.removeItem('ecust-active-research-v2');if(d.status==='failed'&&activeBrief){$('researchBrief').hidden=false;showResearchStep(true);}else{activeBrief=null;showResearchStep(false);}updateResearchAction();await loadReports();}
   else state.poll=setTimeout(()=>pollTask(task),4000);
  }catch(e){$('researchProgress').innerHTML=errorState(e.message)+'<button data-resume="'+esc(task)+'">继续查看进度</button>';$('researchSubmit').disabled=false;}
 }
-$('researchForm').addEventListener('submit',async e=>{e.preventDefault();if($('researchSubmit').disabled)return;const query=$('researchQuery').value.trim();if(!query||Array.from(query).length>500){notice('请输入1至500字的研究主题');return;}if(state.lastSubmittedQuery!==query){state.requestId=crypto.randomUUID();state.lastSubmittedQuery=query;}$('researchSubmit').disabled=true;try{const d=await api('/pulse/api/revision/research',{method:'POST',body:JSON.stringify({query,request_id:state.requestId})});localStorage.setItem('ecust-active-research-v2',d.task_id);pollTask(d.task_id);}catch(error){notice(error.message);$('researchSubmit').disabled=false;}});
+let briefVersion=0,briefTimer,activeBrief=null,briefBusy=false;
+function briefFeedback(message,error=false){const el=$('briefFeedback');el.hidden=!message;el.textContent=message;el.classList.toggle('error',error);}
+function updateResearchAction(){
+ const ready=activeBrief&&['ready','failed'].includes(activeBrief.status);
+ $('researchSubmit').textContent=briefBusy?'正在找线索…':ready?'开始研究 ↗':'查找线索 ↗';
+}
+function briefBusyState(busy){briefBusy=busy;$('researchSubmit').disabled=busy;updateResearchAction();}
+function showResearchStep(confirm){$('researchEntry').hidden=confirm;$('researchTopicSummary').hidden=!confirm;$('researchTopicText').textContent=$('researchQuery').value;$('researchTopicText').title=$('researchQuery').value;}
+function resetBrief(){const researchRunning=!briefBusy&&$('researchSubmit').disabled&&state.task;briefVersion++;clearTimeout(briefTimer);activeBrief=null;briefBusyState(false);if(researchRunning)$('researchSubmit').disabled=true;briefFeedback('');$('researchBrief').hidden=true;showResearchStep(false);localStorage.removeItem('ecust-research-brief-v1');}
+$('researchQuery').addEventListener('input',resetBrief);
+$('researchEditTopic').onclick=e=>{e.preventDefault();if($('researchSubmit').disabled)return;const focus=$('researchFocus')?.value.trim();if(focus)$('researchQuery').value=focus;resetBrief();$('researchQuery').focus();};
+async function researchAction(){
+ if(briefBusy||$('researchSubmit').disabled)return;
+ if(!activeBrief||!['ready','failed'].includes(activeBrief.status))return submitResearchBrief();
+ return launchResearch();
+}
+$('researchSubmit').onclick=researchAction;
+function renderBrief(d){
+ activeBrief=d;const host=$('researchBrief');host.hidden=false;
+ if(d.status==='preparing'){showResearchStep(true);host.innerHTML='<p class="brief-loading"><span class="brief-dot" aria-hidden="true"></span>正在寻找相关线索…</p>';return;}
+ const directions=d.directions||[],original=d.query||$('researchQuery').value;showResearchStep(true);briefBusyState(false);briefFeedback('');
+ const choices=directions.map((item,i)=>({...item,key:String(i),kind:'检索线索'}));
+ if(!choices.length)choices.push(
+  {key:'pending-event',kind:'待确认切入点',title:'先确认你指的事件与对象',query:original,reason:d.question||d.interpretation_note||'先明确这句话指哪件事、涉及谁，再核对背景与经过。'},
+  {key:'pending-discussion',kind:'待确认切入点',title:'看看大家在讨论什么',query:original+'：重点梳理讨论焦点、不同观点与传播过程。',reason:'围绕原话查找讨论材料，具体指代仍需核实。'});
+ choices.push({key:'custom',kind:'自定义',title:'都不太对，我来说明',query:original,reason:'写下你指的具体事情，以及想重点研究的问题。'});
+ host.innerHTML='<fieldset class="brief-options"><legend>选一个关注方向</legend>'+choices.map((item,i)=>'<label class="brief-option"><input type="radio" name="briefDirection" value="'+esc(item.key)+'" '+(i===0?'checked':'')+'><span><strong>'+esc(item.title)+' <em class="brief-choice-kind">'+esc(item.kind)+'</em></strong><span>'+esc(item.reason)+'</span>'+(item.citations||[]).slice(0,1).map(c=>{const source=(d.sources||[]).find(x=>x.id===c.id);return source?'<small>线索：'+(safeUrl(source.url)?'<a href="'+esc(safeUrl(source.url))+'" target="_blank" rel="noopener noreferrer" title="'+esc(c.quote)+'">'+esc(source.title)+' ↗</a>':esc(source.title))+'</small>':'';}).join('')+'</span></label>').join('')+'</fieldset><label id="researchFocusLabel" for="researchFocus">你的研究问题</label><textarea id="researchFocus" rows="4" maxlength="500" placeholder="说明你指的对象或事件、时间、相关人物，以及想重点研究什么；有链接也可以贴入。"></textarea>';
+ const drafts=Object.fromEntries(choices.map(item=>[item.key,item.query+(d.context&&!item.query.includes(d.context)?'\n'+d.context:'')]));let choice=choices[0].key;
+ try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved?.id===d.id){if(saved.drafts&&typeof saved.drafts==='object')for(const item of choices)if(typeof saved.drafts[item.key]==='string')drafts[item.key]=saved.drafts[item.key];if(typeof saved.focus==='string'){choice=choices.some(item=>item.key===saved.choice)?saved.choice:'custom';drafts[choice]=saved.focus;}}}catch{}
+ function select(key){choice=key;host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.checked=r.value===key);$('researchFocus').value=drafts[key];$('researchFocusLabel').textContent=key==='custom'?'自定义研究问题':'你的研究问题';}
+ function persist(){try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&saved.id===d.id){Object.assign(saved,{focus:$('researchFocus').value,choice,drafts});localStorage.setItem('ecust-research-brief-v1',JSON.stringify(saved));}}catch{}}
+ select(choice);
+ host.querySelectorAll('input[name="briefDirection"]').forEach(r=>r.addEventListener('change',()=>{drafts[choice]=$('researchFocus').value;select(r.value);persist();}));
+ $('researchFocus').addEventListener('input',()=>{const value=$('researchFocus').value;choice='custom';drafts.custom=value;host.querySelector('input[value="custom"]').checked=true;$('researchFocusLabel').textContent='自定义研究问题';persist();});
+ $('researchFocus').focus({preventScroll:true});$('researchTopicSummary').scrollIntoView({block:'nearest',behavior:'auto'});
+}
+async function launchResearch(){
+ const d=activeBrief,query=$('researchFocus').value.trim(),context='';
+ if(!query||Array.from(query).length>500){briefFeedback('研究问题请输入1至500字',true);$('researchFocus').focus();return;}
+ if(Array.from(context).length>500){briefFeedback('补充信息请控制在500字以内',true);return;}
+ const selected=$('researchBrief').querySelector('input[name="briefDirection"]:checked');
+ const direction=selected&&/^\d+$/.test(selected.value)?Number(selected.value):null;
+ const key=JSON.stringify([d.id,direction,query,context]);
+ if(state.lastSubmittedQuery!==key){state.requestId=crypto.randomUUID();state.lastSubmittedQuery=key;}
+ briefFeedback('');$('researchSubmit').disabled=true;$('researchSubmit').textContent='正在发起研究…';
+ try{const task=await api('/pulse/api/revision/research',{method:'POST',body:JSON.stringify({query,brief_id:d.id,direction,context,exploratory:true,request_id:state.requestId})});localStorage.removeItem('ecust-research-brief-v1');$('researchBrief').hidden=true;showResearchStep(false);localStorage.setItem('ecust-active-research-v2',task.task_id);$('researchForm').hidden=true;pollTask(task.task_id);}
+ catch(error){briefFeedback(error.message,true);$('researchSubmit').disabled=false;updateResearchAction();}
+}
+async function pollBrief(id,version){
+ try{const d=await api('/pulse/api/revision/research/brief/'+encodeURIComponent(id));if(version!==briefVersion)return;renderBrief(d);if(d.status==='preparing')briefTimer=setTimeout(()=>pollBrief(id,version),2000);}
+ catch(error){if(version!==briefVersion)return;let draft=$('researchQuery').value;try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved?.id===id)draft=saved.focus||[saved.query,saved.context].filter(Boolean).join('\n');}catch{}renderBrief({status:'failed',query:draft,context:'',directions:[],id:null,question:'暂时没取到线索，可以在这里写下具体想了解的问题。'});briefFeedback(error.message,true);}
+}
+async function submitResearchBrief(){
+ if(briefBusy||$('researchSubmit').disabled)return;
+ const query=$('researchQuery').value.trim(),context=activeBrief?.context||'';
+ if(!query||Array.from(query).length>500){briefFeedback('请输入1至500字的研究主题',true);$('researchQuery').focus();return;}
+ const previousBrief=activeBrief;const version=++briefVersion;clearTimeout(briefTimer);briefBusyState(true);briefFeedback('');renderBrief({status:'preparing'});
+
+ try{const d=await api('/pulse/api/revision/research/brief',{method:'POST',body:JSON.stringify({query,context})});if(version!==briefVersion)return;localStorage.setItem('ecust-research-brief-v1',JSON.stringify({id:d.id,query,context}));renderBrief(d);if(d.status==='preparing')pollBrief(d.id,version);}
+ catch(error){if(version!==briefVersion)return;renderBrief(previousBrief&&['ready','failed'].includes(previousBrief.status)?{...previousBrief,context}:{status:'failed',query,context,directions:[],id:null});briefFeedback(error.message+'；可以按当前问题开始研究。',true);}
+}
+$('researchForm').addEventListener('submit',e=>{e.preventDefault();researchAction();});
+
+try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&!localStorage.getItem('ecust-active-research-v2')){$('researchQuery').value=saved.query;$('researchSubmit').disabled=true;pollBrief(saved.id,++briefVersion);}}catch{}
+
 $('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{await api('/pulse/api/collect',{method:'POST',body:'{}'});notice('采集任务已提交，完成后可刷新页面查看。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
 let service='llm',serviceConfig=null,serviceDraft={};
 function stashService(){if(service!=='mail')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
@@ -168,6 +232,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.feed){if(b.dataset.feed==='hot')state.hotPlatform=b.dataset.platform;return loadFeed(b.dataset.feed).catch(x=>notice(x.message));}
  if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;return activate(b.dataset.retry);}
  if(b.dataset.report)return openReport(b.dataset.report);
+ if(b.dataset.resumeReport){b.disabled=true;api('/pulse/api/revision/research/'+encodeURIComponent(b.dataset.resumeReport)+'/resume-report',{method:'POST',body:'{}'}).then(()=>{localStorage.setItem('ecust-active-research-v2',b.dataset.resumeReport);pollTask(b.dataset.resumeReport);loadReports();}).catch(error=>{b.disabled=false;notice(error.message);});return;}
  if(b.dataset.resume)return pollTask(b.dataset.resume);
  if(b.dataset.repeatQuery){$('researchQuery').value=b.dataset.repeatQuery;$('researchQuery').dispatchEvent(new Event('input'));state.lastSubmittedQuery=null;state.requestId=null;activate('research');$('researchQuery').focus();return;}
 });

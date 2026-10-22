@@ -39,6 +39,7 @@ report_bp = Blueprint('report_engine', __name__)
 # 全局变量
 report_agent = None
 task_lock = threading.Lock()
+_report_init_lock = threading.Lock()
 
 # ====== 流式推送与任务历史管理 ======
 # 通过有界deque缓存最近的事件，方便SSE断线后快速补发
@@ -330,6 +331,13 @@ def initialize_report_engine():
         report_agent = None
         logger.exception(f"Report Engine初始化失败: {exc}")
         return False
+
+
+def ensure_report_engine():
+    """Background workers may reach generation before any browser initializes it."""
+    if report_agent:return True
+    with _report_init_lock:
+        return bool(report_agent) or initialize_report_engine()
 
 
 class ReportTask:
@@ -697,8 +705,8 @@ def generate_report():
             client_id = validate_runtime_id(str(client_id), 'client_id')
         ensure_task(research_task_id, client_id=client_id, query=query)
 
-        if not report_agent:
-            return jsonify({'success': False, 'error': 'Report Engine未初始化'}), 500
+        if not ensure_report_engine():
+            return jsonify({'success': False, 'error': '报告服务初始化失败，请检查报告模型配置'}), 503
 
         engines_status = check_engines_ready(research_task_id)
         if not engines_status['ready']:

@@ -1,0 +1,81 @@
+{
+  "name": "workshop-intent-20261021",
+  "stage": "/home/ubuntu/bettafish/deploy/workshop-intent-20261021",
+  "base_image_id": "sha256:f054f44db123574509bb98bbed4c77afe6ab0aa0c85ffe82d38360612e65da73",
+  "base_image": "bettafish:base-workshop-intent-20261021",
+  "candidate_image": "bettafish:candidate-workshop-intent-20261021",
+  "candidate_image_id": "sha256:d72b2b6db7f5c0195b93630239f5132d238220db1b64e29ac39e13b42aa75adf",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "74f5cf4282e7a6260822b7ab47b81a1e9db9e242d21311bcdfa036cb74ffa7bf",
+      "expected_before": "901fb9a4da377b7f351e4bd710f56f721b43f1ea7af7231d3fce9dcbb8f5b3d1",
+      "before_sha256": "901fb9a4da377b7f351e4bd710f56f721b43f1ea7af7231d3fce9dcbb8f5b3d1",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "74f5cf4282e7a6260822b7ab47b81a1e9db9e242d21311bcdfa036cb74ffa7bf",
+      "expected_before": "901fb9a4da377b7f351e4bd710f56f721b43f1ea7af7231d3fce9dcbb8f5b3d1",
+      "before_sha256": "901fb9a4da377b7f351e4bd710f56f721b43f1ea7af7231d3fce9dcbb8f5b3d1",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "69f62a3d0a6fc48758e39d5ec6c010ecc7bd558212952310d09777108f205f44",
+      "expected_before": "0bbeb8f8f11d3505207176075b04f39b3080793fc998d1768935f0cdabaef294",
+      "before_sha256": "0bbeb8f8f11d3505207176075b04f39b3080793fc998d1768935f0cdabaef294",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-play.js",
+      "candidate_sha256": "9e3dc9a410751f53fe09486e2ecb3f765fa3a0f54ecb54043087627e24aa774f",
+      "expected_before": "65d9f922d91fd96ae36c59cd43fe852aa983056182496d7e3dd7302222bf8797",
+      "before_sha256": "65d9f922d91fd96ae36c59cd43fe852aa983056182496d7e3dd7302222bf8797",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "0b54931cea7c1d216b15c954da3367a655e1d46426c9eb524bb38c8af0ac6a17",
+      "expected_before": "b991e7d9ce3ed3ce2cf7f7c72daef1499647b2902abd063b1dfc3369601d04fb",
+      "before_sha256": "b991e7d9ce3ed3ce2cf7f7c72daef1499647b2902abd063b1dfc3369601d04fb",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "21637166853ad8184be3589bab98b5beb9c747b4d60ba8789204c9c5c9b84328",
+      "expected_before": "2cd496e038f0d30c015a52b5bb995b676c7800a188cf8c61fb3bc280109584b9",
+      "before_sha256": "2cd496e038f0d30c015a52b5bb995b676c7800a188cf8c61fb3bc280109584b9",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research_brief.py",
+      "candidate_sha256": "aaa03ea245e78e2791d86a3ede615d741bdfdc188cfd188e7eb4115b5c33cba4",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "a306869d69bab8da8e5513fb2867edfeeecd0d33fc5053e89340641f9e6cbe1a",
+      "expected_before": "e5d0ddab6b9f84ebb1b15286e39f2cfcbdfb7b1128bd61d587c36f7efc97a289",
+      "before_sha256": "a32d907abd66c2e0daac4e4d579812a3a0337de14d533d92a31f8c52d4f147ea",
+      "host_existed": true
+    },
+    {
+      "path": "utils/topic_guard.py",
+      "candidate_sha256": "b747f5eee97669f2681091beb08e53432099602b939ca0c82b3959b098e9646c",
+      "expected_before": "7408664931278e40b12489e4de84b282a8735c77b1381771e104dfcbf56e7c47",
+      "before_sha256": "7408664931278e40b12489e4de84b282a8735c77b1381771e104dfcbf56e7c47",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/evidence.py",
+      "candidate_sha256": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "expected_before": "511da6cca9c3cbc265ab57b0e72efd55de9b8800075db146282b7110e6260dd5",
+      "before_sha256": "511da6cca9c3cbc265ab57b0e72efd55de9b8800075db146282b7110e6260dd5",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

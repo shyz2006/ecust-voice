@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "width": 1440,
+      "decorations": true,
+      "preview": true,
+      "editable_scope": true,
+      "confirmation": true,
+      "no_evidence_clarification": true,
+      "no_overflow": true,
+      "reduced_motion": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "decorations": true,
+      "preview": true,
+      "editable_scope": true,
+      "confirmation": true,
+      "no_evidence_clarification": true,
+      "no_overflow": true,
+      "reduced_motion": true,
+      "page_errors": []
+    }
+  ]
+}

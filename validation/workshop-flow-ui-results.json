@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "width": 1440,
+      "single_button": true,
+      "three_empty_refinements_launch": true,
+      "fresh_context_forwarded": true,
+      "edited_scope_launch": true,
+      "failed_preparation_launch": true,
+      "retry_idempotency": true,
+      "no_overflow": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "single_button": true,
+      "three_empty_refinements_launch": true,
+      "fresh_context_forwarded": true,
+      "edited_scope_launch": true,
+      "failed_preparation_launch": true,
+      "retry_idempotency": true,
+      "no_overflow": true,
+      "page_errors": []
+    }
+  ]
+}

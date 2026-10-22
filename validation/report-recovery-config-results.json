@@ -1,0 +1,11 @@
+{
+  "active_weeklies": 0,
+  "key_configured": true,
+  "automatic_enabled": true,
+  "website_http": 200,
+  "comparison_baseline": "current_preflight",
+  "predeployment_guard_passed": true,
+  "configuration_unchanged": true,
+  "emails_sent": 0,
+  "passed": true
+}

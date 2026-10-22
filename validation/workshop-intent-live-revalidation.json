@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "query": "武汉大学内战",
+      "supplemented": false,
+      "directions": [],
+      "needs_context": true
+    },
+    {
+      "query": "武汉大学内战",
+      "supplemented": true,
+      "directions": [
+        "争议标签的跨平台传播与扩散",
+        "官方回应中的学科与校友身份建构"
+      ],
+      "needs_context": false
+    },
+    {
+      "query": "南京大学帝王蟹事件",
+      "supplemented": false,
+      "directions": [
+        "南京大学帝王蟹事件的事实与应对时间线",
+        "高校食堂定位与多元餐饮需求争议",
+        "高校舆情事件与新闻传播教学"
+      ],
+      "needs_context": false
+    }
+  ],
+  "new_model_calls": 0,
+  "new_search_calls": 0,
+  "full_reports_started": 0,
+  "emails_sent": 0
+}
