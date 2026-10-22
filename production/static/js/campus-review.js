@@ -48,8 +48,12 @@ function renderTrends(){
  $('trendMetrics').innerHTML=metric('十日独立帖子',d.total)+metric('近24小时新增帖',latest)+metric('统一议题分类',d.themes.length)+metric('完整观测日窗',d.coverage.filter(c=>c.ready).length);
  $('trendScope').textContent=shortDate(d.window_start)+'—'+shortDate(d.generated_at);
  $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color)+'</td><td>'+num(t.posts_24h)+' 篇</td><td>'+(t.delta==null?'待完整采集':(t.delta>0?'+':'')+num(t.delta))+'</td><td>'+(t.reference.value==null?'资料待补齐':'约 '+num(Math.round(t.reference.value))+' 篇')+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
- const words=d.wordcloud.slice(0,35),max=Math.max(1,...words.map(w=>w.df)),colors=['#365e4c','#7e735f','#6c8791','#8d7967','#738166'];
- $('wordcloud').innerHTML=words.map((w,i)=>'<button data-word="'+esc(w.term)+'" style="font-size:'+(13+22*Math.sqrt(w.df/max)).toFixed(1)+'px;color:'+colors[i%colors.length]+'" title="'+esc(w.term)+' · '+w.df+' 篇">'+esc(w.term)+'</button>').join('')||empty('采集后将显示校园关键词');
+ // 贴纸墙：大小随独立帖数，倾斜角由词本身决定（刷新不乱跳），热门词排在中间
+ const words=d.wordcloud.slice(0,35),max=Math.max(1,...words.map(w=>w.df)),min=Math.min(max,...words.map(w=>w.df)),tones=['sun','lilac','peach','mint','sky','paper'];
+ const scale=df=>max===min?0.5:Math.pow((df-min)/(max-min),0.75);
+ const tilt=term=>{let h=7;for(const ch of term)h=(h*31+ch.codePointAt(0))%997;return (h%9-4)*0.9;};
+ const centered=[];words.forEach((w,i)=>i%2?centered.push({w,i}):centered.unshift({w,i}));
+ $('wordcloud').innerHTML=centered.map(({w,i})=>'<button class="word-chip tone-'+tones[i%tones.length]+'" data-word="'+esc(w.term)+'" style="--k:'+scale(w.df).toFixed(3)+';--tilt:'+tilt(w.term).toFixed(1)+'deg" title="'+esc(w.term)+' · '+w.df+' 篇独立帖">'+(i<3?'<i class="word-rank">'+(i+1)+'</i>':'')+esc(w.term)+'<small>'+num(w.df)+'</small></button>').join('')||empty('采集后将显示校园关键词');
 }
 function showDialog(title){
  const dialog=$('detailDialog');state.modalVersion++;$('detailTitle').textContent=title;$('detailBody').innerHTML=empty('正在读取…');if(!dialog.open)dialog.showModal();$('detailBody').scrollTop=0;return state.modalVersion;
@@ -76,9 +80,15 @@ async function loadFeed(kind,force=false){
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);
- $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2><p class="signal-sticker">升温 ${x.signal==null?'积累中':num(x.signal)}</p><div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
+ $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2>${signalPill(x.signal)}<div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty('这个平台的内容正在整理中。');
 }
 
+function signalPill(signal){
+ const flame='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.6 1.2c.5 2.6-2.9 3.7-2.9 7.1a2.4 2.4 0 0 0 .6 1.7C5 9.6 4.4 8.5 4.6 7.2 3.4 8.3 3 9.6 3 10.8 3 13.2 5.2 15 8 15s5-1.8 5-4.4c0-3.4-2.6-4.4-2.4-7-.9.5-1.6 1.4-1.8 2.5-.4-1.7-.1-3.4-.2-4.9z"/></svg>';
+ if(signal==null)return '<p class="signal-sticker heat-pending" title="至少需要三次历史观测才计算升温">'+flame+'升温积累中</p>';
+ const level=signal>=2?'hot':signal>=1?'warm':signal>0?'mild':'cool',value=Math.abs(signal).toFixed(1);
+ return '<p class="signal-sticker heat-'+level+'" title="升温指数：与此前24小时排名相比的变化，数值越大升温越快">'+flame+(signal>0?'升温 <b>'+value+'</b>':'热度回落 <b>'+value+'</b>')+'</p>';
+}
 function sourceSearchUrl(platform,title){const prefix={'B站':'https://search.bilibili.com/all?keyword=','抖音':'https://www.douyin.com/search/','微博':'https://s.weibo.com/weibo?q=','百度':'https://www.baidu.com/s?wd='}[platform];return prefix?prefix+encodeURIComponent(title):null;}
 function memeUseLink(p){
  const url=safeUrl(p.url);if(!url)return '';
@@ -102,18 +112,29 @@ function renderMemes(d){
 }
 
 
-function donut(title,rows,total,action){
- const radius=46,c=2*Math.PI*radius;let offset=0;const circles=rows.filter(r=>r.value>0).map(r=>{const length=c*r.value/(total||1),result='<circle cx="64" cy="64" r="46" fill="none" stroke="'+r.color+'" stroke-width="14" stroke-dasharray="'+length+' '+(c-length)+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 64 64)" role="button" tabindex="0" '+action(r)+' aria-label="'+esc(r.label)+' '+num(r.value)+'"><title>'+esc(r.label)+' '+num(r.value)+'</title></circle>';offset+=length;return result;});
- return '<section class="donut-card"><h2>'+esc(title)+'</h2><div class="donut-visual"><svg viewBox="0 0 128 128"><circle cx="64" cy="64" r="46" fill="none" stroke="#e7e9e1" stroke-width="14"/>'+circles.join('')+'<text x="64" y="63" text-anchor="middle" font-size="17" fill="#24372e">'+num(total)+'</text><text x="64" y="80" text-anchor="middle" font-size="9" fill="#78877c">点击核查</text></svg><div class="donut-legend">'+rows.map(r=>'<button '+action(r)+'><span><i class="dot" style="background:'+r.color+'"></i>'+esc(r.label)+'</span><b>'+num(r.value)+'</b></button>').join('')+'</div></div></section>';
+function donut(title,rows,total,action,unit='篇'){
+ // 卡通甜甜圈：从大到小排列，段间留缝，墨线描边；悬停时中心显示该项占比
+ const items=rows.filter(r=>r.value>0).sort((a,b)=>b.value-a.value),sum=items.reduce((n,r)=>n+r.value,0)||1;
+ const C=2*Math.PI*50,gap=items.length>1?2.4:0,pct=v=>{const p=v/sum*100;return (p<10?p.toFixed(1):Math.round(p))+'%';};let offset=0;
+ const segs=items.map((r,i)=>{const length=Math.max(0.8,C*r.value/sum-gap),el='<circle class="seg" data-i="'+i+'" cx="70" cy="70" r="50" stroke="'+r.color+'" stroke-dasharray="'+length.toFixed(2)+' '+(C-length).toFixed(2)+'" stroke-dashoffset="'+(-offset-gap/2).toFixed(2)+'" transform="rotate(-90 70 70)" role="button" tabindex="0" '+action(r)+' aria-label="'+esc(r.label)+' '+num(r.value)+' '+unit+'，占'+pct(r.value)+'"><title>'+esc(r.label)+' · '+num(r.value)+' '+unit+'</title></circle>';offset+=C*r.value/sum;return el;}).join('');
+ const legend=items.map((r,i)=>'<button class="legend-row" data-i="'+i+'" data-label="'+esc(r.label)+'" data-pct="'+pct(r.value)+'" '+action(r)+'><i class="blob" style="background:'+r.color+'"></i><span class="legend-label">'+esc(r.label)+'</span><b>'+num(r.value)+'<small>'+pct(r.value)+'</small></b></button>').join('');
+ return '<section class="donut-card"><h2>'+esc(title)+'</h2><div class="donut-visual"><svg viewBox="0 0 140 140"><circle class="donut-shadow" cx="73" cy="74" r="50"/><circle class="donut-track" cx="70" cy="70" r="50"/>'+segs+'<circle class="donut-rim" cx="70" cy="70" r="61"/><circle class="donut-rim" cx="70" cy="70" r="39"/><text class="donut-num" x="70" y="72" data-total="'+num(total)+'">'+num(total)+'</text><text class="donut-sub" x="70" y="87" data-sub="'+unit+' · 点击核查">'+unit+' · 点击核查</text></svg><div class="donut-legend">'+(legend||'<p class="empty">暂无数据</p>')+'</div></div></section>';
 }
+function focusDonut(card,i){
+ card.classList.toggle('has-focus',i!=null);card.querySelectorAll('[data-i]').forEach(el=>el.classList.toggle('on',el.dataset.i===i));
+ const big=card.querySelector('.donut-num'),sub=card.querySelector('.donut-sub'),row=i==null?null:card.querySelector('.legend-row[data-i="'+i+'"]');
+ if(!big)return;big.textContent=row?row.dataset.pct:big.dataset.total;sub.textContent=row?row.dataset.label:sub.dataset.sub;
+}
+['mouseover','focusin'].forEach(type=>$('ledgerDonuts').addEventListener(type,e=>{const card=e.target.closest('.donut-card');if(card)focusDonut(card,e.target.closest('[data-i]')?.dataset.i??null);}));
+['mouseout','focusout'].forEach(type=>$('ledgerDonuts').addEventListener(type,e=>{const card=e.target.closest('.donut-card');if(card&&!card.contains(e.relatedTarget))focusDonut(card,null);}));
 function bars(rows,action){const max=Math.max(1,...rows.map(r=>r.value));return rows.map(r=>'<button class="bar-row" '+action(r)+'><span>'+esc(r.label)+'</span><span class="bar-track"><i style="width:'+(r.value/max*100)+'%;background:'+r.color+'"></i></span><b>'+num(r.value)+'</b></button>').join('');}
 async function loadLedger(force=false){
  const d=await overview(force);if(!state.ledger||force)state.ledger=await api('/pulse/api/revision/ledger');const l=state.ledger;
  const hotSources=['douyin','thepaper','bilibili-hot-search','bilibili-popular','toutiao'],memeSources=['douyin','bilibili-hot-search','bilibili-popular','weibo','baidu'];
  $('ledgerMetrics').innerHTML=metric('累计校内独立帖',l.unique_school_posts)+metric('青年热点来源记录',l.sources.filter(s=>hotSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('梗文化来源记录',l.sources.filter(s=>memeSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('已完成研究报告',l.reports_completed);
  const themeRows=d.themes.map(t=>({label:t.theme,value:t.posts,color:t.color})),sourceRows=l.sources.map((s,i)=>({label:NAMES[s.source]||s.source,key:s.source,value:s.unique,color:d.themes[i%d.themes.length].color}));
- const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#77957e','#94a6b2','#b9836e'][i]}));
- $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"');
+ const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#5fb98f','#a9b8cc','#f28f6b'][i]}));
+ $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"','条');
  $('themeBars').innerHTML=bars(themeRows,r=>'data-theme-trend="'+esc(r.label)+'"');$('sourceBars').innerHTML=bars(sourceRows,r=>'data-source="'+r.key+'"');
  if(!l.daily_usage){$('tokenChart').innerHTML='';return;}
  const total=l.daily_usage.reduce((n,x)=>n+(x.tokens||0),0),unknown=l.daily_usage.reduce((n,x)=>n+(x.unknown_calls||0),0);
