@@ -26,6 +26,8 @@ MAX_ATTEMPTS = 5
 EMAIL_DAILY_LIMIT = 5
 IP_HOURLY_LIMIT = 10
 GLOBAL_DAILY_LIMIT = 200
+COMMON_WORDS = ('password', 'passw0rd', 'qwerty', 'iloveyou', 'admin', 'ecust', 'welcome', 'abc123', 'letmein', '123123', '520520', '5201314')
+SEQUENCE_RE = re.compile(r'0123|1234|2345|3456|4567|5678|6789|abcd|qwer|asdf')
 DOMAIN_RE = re.compile(r'^(?=.{3,100}$)[a-z0-9-]+(\.[a-z0-9-]+)+$')
 EMAIL_RE = re.compile(r'^[a-z0-9._%+\-]{1,64}@([a-z0-9-]+(\.[a-z0-9-]+)+)$')
 _SCHEMA = """
@@ -107,6 +109,19 @@ def normalize_email(value, domains):
     return email
 
 
+def weak_password(password, username, email):
+    """与登录页“力量测试机”的“弱”档一致：太常见、纯数字/连号或包含用户名、邮箱前缀。"""
+    lower = password.lower()
+    local = email.split('@')[0]
+    if re.fullmatch(r'(.)\1+', password):
+        return True
+    if len(password) < 12 and (password.isdigit() or SEQUENCE_RE.search(lower)):
+        return True
+    if len(password) < 14 and any(word in lower for word in COMMON_WORDS):
+        return True
+    return (len(username) >= 3 and username.lower() in lower) or (len(local) >= 4 and local in lower)
+
+
 def _code_hash(email, code):
     secret = (os.getenv('WEB_SESSION_SECRET') or 'campus-register').encode()
     return hmac.new(secret, (email + ':' + code).encode(), hashlib.sha256).hexdigest()
@@ -170,6 +185,8 @@ def register(email, code, username, password, reserved_usernames):
     username = str(username or '').strip()
     accounts.validate_username(username)
     accounts.validate_password(password)
+    if weak_password(password, username, email):
+        raise ValueError('密码太弱了，换个更长、更不常见的密码')
     if username in reserved_usernames or accounts.get(username):
         raise ValueError('该用户名已被使用，请换一个')
     if accounts.get_by_email(email):

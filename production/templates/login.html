@@ -319,12 +319,94 @@
             animation: pop 320ms var(--spring) both;
         }
 
+        /* ---------- 密码力量测试机：注册按钮是锤子，敲下去看小球能飞多高 ---------- */
+        .striker {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 300 / 200;
+            margin: 2px auto 0;
+            --tone: #b9b0a6;
+        }
+        .striker[data-level="0"] { --tone: var(--danger); }
+        .striker[data-level="1"] { --tone: #e39a2d; }
+        .striker[data-level="2"],
+        .striker[data-level="3"] { --tone: #3a9b68; }
+        .striker-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+        .striker-art .seg { fill: #ece6dc; transition: fill 240ms ease; }
+        .striker-art .seg-label { fill: var(--muted); font-size: 12px; font-weight: 700; text-anchor: end; transition: fill 240ms ease; }
+        .striker-art .bell { fill: #cfc7bc; transform-box: fill-box; transform-origin: 50% 0; transition: fill 240ms ease; }
+        .striker-art .ring-waves { fill: none; stroke: var(--tone); stroke-width: 2.4; stroke-linecap: round; opacity: 0; }
+        .striker-art .base { fill: #d8d0c4; }
+        .striker-art .lever { transform-box: view-box; transform-origin: 112px 182px; transition: transform 140ms ease-out; }
+        .striker-art .lever rect { fill: #a59c92; }
+        .striker-art .puck { fill: var(--ink); }
+        .striker-art .ground { stroke: #b9b0a6; stroke-width: 1.5; stroke-dasharray: 4 5; }
+        .striker.hit .lever { transform: rotate(7deg); }
+        .striker[data-level="0"] .seg.s0,
+        .striker[data-level="1"] .seg.s0, .striker[data-level="1"] .seg.s1,
+        .striker[data-level="2"] .seg.s0, .striker[data-level="2"] .seg.s1, .striker[data-level="2"] .seg.s2,
+        .striker[data-level="3"] .seg { fill: var(--tone); }
+        .striker[data-level="0"] .seg-label.s0,
+        .striker[data-level="1"] .seg-label.s1,
+        .striker[data-level="2"] .seg-label.s2,
+        .striker[data-level="3"] .seg-label.s3 { fill: var(--tone); }
+        .striker[data-level="3"] .bell { fill: var(--tone); }
+        .striker.ring .bell { animation: bellRing 520ms ease-in-out 2; }
+        .striker.ring .ring-waves { animation: waves 520ms ease-out 2; }
+
+        .hammer {
+            position: absolute;
+            left: 83%;
+            bottom: 4%;
+            width: 0;
+            height: 58%;
+            padding: 0;
+            border: 0;
+            background: none;
+            cursor: pointer;
+            transform-origin: 50% 100%;
+            transition: transform 420ms cubic-bezier(.2, .9, .3, 1.2);
+        }
+        .hammer::before {
+            content: "";
+            position: absolute;
+            left: -3px;
+            top: 6px;
+            bottom: 0;
+            width: 6px;
+            border-radius: 3px;
+            background: #a59c92;
+        }
+        .hammer-head {
+            position: absolute;
+            left: 0;
+            top: 0;
+            padding: 9px 16px;
+            border: 1.5px solid var(--ink);
+            border-radius: 999px;
+            background: var(--ink);
+            color: #fff;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 3px 3px 0 var(--accent-soft);
+            transform: translate(-50%, -50%);
+        }
+        .hammer.swing { transform: rotate(-68deg); transition: transform 230ms cubic-bezier(.6, 0, .9, .4); }
+        .hammer:disabled { cursor: wait; }
+        .hammer:disabled .hammer-head { background: #51416d; }
+        .hammer:focus-visible .hammer-head { outline: 3px solid var(--accent); outline-offset: 2px; }
+        #signupPassword.is-weak { border-color: var(--danger); box-shadow: 3px 3px 0 var(--danger); }
+
         .footnote { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
 
         @media (hover: hover) and (pointer: fine) {
             .submit-button:not(:disabled):hover { background: #51416d; transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--accent-soft); }
             .password-toggle:hover { background: #ded6e8; }
             .mode-switch button[aria-selected="false"]:hover { background: #fff7d6; }
+            .hammer:not(:disabled):not(.swing):hover { transform: rotate(-6deg); }
             .dog { cursor: pointer; }
         }
 
@@ -335,6 +417,8 @@
         @keyframes draw { 0% { stroke-dashoffset: 160; } 55%, 100% { stroke-dashoffset: 0; } }
         @keyframes pop { from { opacity: 0; transform: scale(.6) rotate(-6deg); } }
         @keyframes hop { 40% { translate: 0 -12px; } }
+        @keyframes bellRing { 25% { transform: rotate(14deg); } 75% { transform: rotate(-14deg); } }
+        @keyframes waves { from { opacity: .9; } to { opacity: 0; } }
         @keyframes shake { 20%, 60% { translate: -6px 0; } 40%, 80% { translate: 6px 0; } }
 
         @media (max-width: 760px) {
@@ -425,7 +509,7 @@
                 </form>
 
                 {% if signup.enabled %}
-                <form id="signupForm" role="tabpanel" aria-labelledby="signupTab" hidden>
+                <form id="signupForm" role="tabpanel" aria-labelledby="signupTab" novalidate hidden>
                     <div class="field">
                         <label for="signupEmail">校园邮箱</label>
                         <div class="input-wrap">
@@ -446,7 +530,25 @@
                         <input id="signupPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="至少 8 位">
                     </div>
                     <p class="form-status" id="signupStatus" role="status"></p>
-                    <button class="submit-button" id="signupButton" type="submit">注册并进入</button>
+                    <div class="striker" id="striker">
+                        <svg class="striker-art" viewBox="0 0 300 200" aria-hidden="true">
+                            <path class="ring-waves" d="M36 8q-8 12 0 24M28 3q-12 17 0 34M84 8q8 12 0 24M92 3q12 17 0 34"/>
+                            <path class="bell" d="M60 6a3 3 0 0 1 3 3v2.4A17 17 0 0 1 77 28v4H43v-4a17 17 0 0 1 14-16.6V9a3 3 0 0 1 3-3zM40 33h40a2.5 2.5 0 0 1 0 5H40a2.5 2.5 0 0 1 0-5z"/>
+                            <rect class="seg s3" x="53" y="44" width="14" height="27" rx="4"/>
+                            <rect class="seg s2" x="53" y="76" width="14" height="27" rx="4"/>
+                            <rect class="seg s1" x="53" y="108" width="14" height="27" rx="4"/>
+                            <rect class="seg s0" x="53" y="140" width="14" height="27" rx="4"/>
+                            <text class="seg-label s3" x="44" y="62">很强</text>
+                            <text class="seg-label s2" x="44" y="94">良好</text>
+                            <text class="seg-label s1" x="44" y="126">一般</text>
+                            <text class="seg-label s0" x="44" y="158">弱</text>
+                            <rect class="base" x="45" y="176" width="30" height="13" rx="3"/>
+                            <g class="lever"><rect x="62" y="179" width="104" height="6" rx="3"/><rect x="152" y="173" width="16" height="8" rx="2"/></g>
+                            <rect class="puck" id="puck" x="48" y="164" width="24" height="10" rx="5"/>
+                            <line class="ground" x1="8" y1="193" x2="292" y2="193"/>
+                        </svg>
+                        <button class="hammer" id="signupButton" type="submit" aria-label="注册并进入"><span class="hammer-head" id="hammerHead">注册并进入</span></button>
+                    </div>
                 </form>
                 {% endif %}
 
@@ -600,6 +702,7 @@
                     document.getElementById('title').textContent = title;
                     document.getElementById('intro').textContent = intro;
                     if (errorBox) errorBox.hidden = signupMode;
+                    document.querySelector('.dog-yard').hidden = signupMode;
                     (signupMode ? document.getElementById('signupEmail') : user).focus();
                     mood();
                 }
@@ -644,12 +747,85 @@
                     el.addEventListener('blur', () => setTimeout(mood, 0));
                 });
 
+                // 密码力度：0 弱 · 1 一般 · 2 良好 · 3 很强（服务端会再拦一次弱密码）
+                const COMMON = ['password', 'passw0rd', 'qwerty', 'iloveyou', 'admin', 'ecust', 'welcome', 'abc123', 'letmein', '123123', '520520', '5201314'];
+                function strength(pw, username, email) {
+                    if (pw.length < 8) return 0;
+                    const lower = pw.toLowerCase();
+                    const local = (email.split('@')[0] || '').toLowerCase();
+                    if (/^(.)\1+$/.test(pw)) return 0;
+                    if (pw.length < 12 && (/^\d+$/.test(pw) || /0123|1234|2345|3456|4567|5678|6789|abcd|qwer|asdf/.test(lower))) return 0;
+                    if (pw.length < 14 && COMMON.some((word) => lower.includes(word))) return 0;
+                    if ((username.length >= 3 && lower.includes(username.toLowerCase())) || (local.length >= 4 && lower.includes(local))) return 0;
+                    const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((re) => re.test(pw)).length;
+                    const score = (pw.length >= 12) + (pw.length >= 16) + (pw.length >= 20) + (kinds >= 2) + (kinds >= 3);
+                    return score >= 4 ? 3 : score >= 2 ? 2 : score >= 1 ? 1 : 0;
+                }
+
+                const striker = document.getElementById('striker');
+                const puck = document.getElementById('puck');
+                const hammerHead = document.getElementById('hammerHead');
+                const passwordField = document.getElementById('signupPassword');
+                const RISE = [-14, -46, -78, -124];
+                const VERDICT = [
+                    ['弱 · 太容易被猜到，换个更长、更不常见的密码', 'error'],
+                    ['一般 · 可以用，再长一点会更安全', ''],
+                    ['良好 · 不错的密码', 'ok'],
+                    ['很强 · 铃铛响了！', 'ok']
+                ];
+                const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+                const calm = matchMedia('(prefers-reduced-motion: reduce)');
+
+                function resetStriker() {
+                    striker.removeAttribute('data-level');
+                    striker.classList.remove('ring', 'hit');
+                    passwordField.classList.remove('is-weak');
+                }
+                passwordField.addEventListener('input', resetStriker);
+
+                async function strike(level) {
+                    resetStriker();
+                    setStatus('', '');
+                    if (calm.matches) {
+                        striker.dataset.level = level;
+                        return;
+                    }
+                    signupButton.classList.add('swing');
+                    await wait(230);
+                    striker.classList.add('hit');
+                    const climb = level === 3 ? 420 : 300 + level * 70;
+                    puck.animate([
+                        { transform: 'translateY(0)' },
+                        { transform: 'translateY(' + RISE[level] + 'px)', offset: 0.45, easing: 'ease-in' },
+                        { transform: 'translateY(0)' }
+                    ], { duration: climb * 2.2, easing: 'cubic-bezier(.15,.8,.35,1)' });
+                    signupButton.classList.remove('swing');
+                    await wait(climb);
+                    striker.dataset.level = level;
+                    if (level === 3) striker.classList.add('ring');
+                    await wait(160);
+                    striker.classList.remove('hit');
+                    await wait(level === 3 ? 700 : 420);
+                }
+
                 signupForm.addEventListener('submit', async (event) => {
                     event.preventDefault();
+                    if (signupButton.disabled) return;
                     const values = Object.fromEntries(new FormData(signupForm).entries());
+                    if (!values.email.trim() || !document.getElementById('signupEmail').checkValidity()) return grumble('先填一个正确的校园邮箱');
                     if (!/^\d{6}$/.test(values.code.trim())) return grumble('验证码是 6 位数字');
+                    if (values.username.trim().length < 2) return grumble('用户名至少 2 位');
                     signupButton.disabled = true;
-                    signupButton.textContent = '正在注册…';
+                    const level = strength(values.password, values.username.trim(), values.email.trim());
+                    await strike(level);
+                    setStatus(VERDICT[level][0], VERDICT[level][1]);
+                    if (level === 0) {
+                        passwordField.classList.add('is-weak');
+                        signupButton.disabled = false;
+                        passwordField.focus();
+                        return;
+                    }
+                    hammerHead.textContent = '正在注册…';
                     try {
                         const data = await post({ action: 'register', email: values.email.trim(), code: values.code.trim(), username: values.username.trim(), password: values.password });
                         setStatus('注册成功，正在进入…', 'ok');
@@ -660,7 +836,7 @@
                         setTimeout(() => location.assign(data.redirect || '/'), 650);
                     } catch (err) {
                         signupButton.disabled = false;
-                        signupButton.textContent = '注册并进入';
+                        hammerHead.textContent = '注册并进入';
                         grumble(err.message);
                     }
                 });
