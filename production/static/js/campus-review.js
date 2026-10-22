@@ -115,6 +115,7 @@ async function loadLedger(force=false){
  const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#77957e','#94a6b2','#b9836e'][i]}));
  $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"');
  $('themeBars').innerHTML=bars(themeRows,r=>'data-theme-trend="'+esc(r.label)+'"');$('sourceBars').innerHTML=bars(sourceRows,r=>'data-source="'+r.key+'"');
+ if(!l.daily_usage){$('tokenChart').innerHTML='';return;}
  const total=l.daily_usage.reduce((n,x)=>n+(x.tokens||0),0),unknown=l.daily_usage.reduce((n,x)=>n+(x.unknown_calls||0),0);
  $('tokenChart').innerHTML='<div class="usage-summary"><div><span>近14天已记录用量</span><strong>'+num(total)+' <small>Token</small></strong></div><p>'+l.daily_usage.length+' 天 · 含今天'+(unknown?' · '+num(unknown)+' 次调用未返回用量':'')+'</p></div><div class="usage-days">'+l.daily_usage.map(x=>'<article class="usage-day"><time>'+esc(x.day)+'</time><strong>'+(x.has_records===false?'—':num(x.tokens))+'</strong><span>Token</span>'+(x.unknown_calls?'<small>'+num(x.unknown_calls)+' 次调用未提供用量</small>':(x.has_records===false?'<small>当日暂无记录</small>':'<small>当日已记录</small>'))+'</article>').join('')+'</div>'+(l.daily_usage.length?'':'<p class="empty">开始研究后，这里会留下每天的用量记录。</p>');
 }
@@ -199,14 +200,15 @@ try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'nul
 
 $('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{await api('/pulse/api/collect',{method:'POST',body:'{}'});notice('采集任务已提交，完成后可刷新页面查看。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
 let service='llm',serviceConfig=null,serviceDraft={};
-function stashService(){if(service!=='mail')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
+function stashService(){if(service==='llm'||service==='search')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
 async function config(tab='llm'){
  try{
   stashService();service=tab;
   document.querySelectorAll('[data-service]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.service===tab)));
-  $('configForm').hidden=tab==='mail';$('mailSettingsPane').hidden=tab!=='mail';$('configStatus').textContent='';
+  $('configForm').hidden=tab==='mail'||tab==='accounts';$('mailSettingsPane').hidden=tab!=='mail';$('accountsPane').hidden=tab!=='accounts';$('configStatus').textContent='';
   if(!$('configDialog').open)$('configDialog').showModal();
   if(tab==='mail'){await window.CampusWeekly.fill();return;}
+  if(tab==='accounts'){await window.CampusAccounts.fill();return;}
   if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
   const c={...serviceConfig,...serviceDraft};
   $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型。密钥留空时沿用已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';

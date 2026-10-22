@@ -13,6 +13,8 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, redirect, request, send_from_directory, session, Response, send_file
 
+from utils import access
+
 from . import pipeline, storage
 from .agents import analysis_options, router, workflows, workers
 from .agents.orchestrator import Orchestrator
@@ -38,6 +40,13 @@ def revision_cache_policy(response):
     if '/api/revision/' in request.path:
         response.headers['Cache-Control']='no-store'
     return response
+
+
+def _weekly_config_view(weekly):
+    """普通用户只看到寄送安排，不返回发件人、收件邮箱与调度状态。"""
+    value=weekly.config()
+    if access.is_admin():return value
+    return {k:value[k] for k in ('enabled','schedule','next_send')}
 
 
 def _username() -> str:
@@ -138,10 +147,12 @@ def revision_ledger():
                "FROM pulse_usage WHERE ts>=? AND ts<=? GROUP BY day ORDER BY day",(start,int(time.time())))]
     by_day={r['day']:r for r in daily}
     daily=[dict(by_day.get(day.isoformat(),{'day':day.isoformat(),'tokens':None,'unknown_calls':0}),has_records=day.isoformat() in by_day) for day in days]
-    return jsonify(success=True,generated_at=data['generated_at'],observed_since=data['observed_since'],
-                   unique_school_posts=data['unique_school_posts'],reports_completed=data['main_reports_completed'],
-                   unique_items=sum(s['unique'] for s in sources),sources=sources,
-                   recorded_tokens=data['recorded_tokens'],daily_usage=daily)
+    payload=dict(generated_at=data['generated_at'],observed_since=data['observed_since'],
+                 unique_school_posts=data['unique_school_posts'],reports_completed=data['main_reports_completed'],
+                 unique_items=sum(s['unique'] for s in sources),sources=sources)
+    # 模型用量属于底层运行信息，只给管理员看
+    if access.is_admin():payload.update(recorded_tokens=data['recorded_tokens'],daily_usage=daily)
+    return jsonify(success=True,**payload)
 
 
 @pulse_bp.before_request
@@ -825,7 +836,7 @@ def revision_weekly(report_id=None):
     try:
         body=request.get_json(silent=True) or {}
         if request.path.endswith('/config'):
-            return jsonify(success=True,config=weekly.save_config(body) if request.method=='POST' else weekly.config())
+            return jsonify(success=True,config=weekly.save_config(body) if request.method=='POST' else _weekly_config_view(weekly))
         if request.path.endswith('/test-email'):
             address=str(body.get('recipient') or '').strip()
             if not weekly.email_address(address):raise ValueError('请填写测试收件邮箱')
@@ -849,7 +860,7 @@ def revision_weekly(report_id=None):
                 return jsonify(success=True,id=report_id)
             return jsonify(success=True,item=row)
         if request.method=='POST':return jsonify(success=True,id=weekly.start())
-        return jsonify(success=True,items=weekly.recent(),config=weekly.config())
+        return jsonify(success=True,items=weekly.recent(),config=_weekly_config_view(weekly))
     except ValueError as exc:return jsonify(success=False,message=str(exc)),400
     except Exception:return jsonify(success=False,message='周报服务暂未完成，请稍后重试'),503
 
