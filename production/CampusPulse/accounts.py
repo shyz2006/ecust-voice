@@ -1,9 +1,11 @@
-"""站内账号：管理员在页面上创建的登录账号，只保存密码哈希。
+"""站内账号：管理员在页面上创建或用校园邮箱自助注册的登录账号，只保存密码哈希。
 
 .env 中的 WEB_AUTH_USERNAME / WEB_AUTH_ACCOUNTS 账号仍由服务器配置管理，这里不能修改；
 站内账号不能与它们重名。version 在改密码、改角色、停用时递增，用来让旧会话失效。
+自助注册的账号带已验证的邮箱，可用用户名或邮箱登录。
 """
 import re
+import threading
 import time
 from contextlib import contextmanager
 
@@ -25,7 +27,8 @@ CREATE TABLE IF NOT EXISTS web_accounts (
     created_at INTEGER NOT NULL,
     created_by TEXT,
     updated_at INTEGER NOT NULL,
-    last_login INTEGER
+    last_login INTEGER,
+    email TEXT
 )"""
 _ready = False
 
@@ -36,12 +39,15 @@ def _conn():
     with storage.connect() as conn:
         if not _ready:
             conn.execute(_SCHEMA)
+            if 'email' not in {r['name'] for r in conn.execute('PRAGMA table_info(web_accounts)')}:
+                conn.execute('ALTER TABLE web_accounts ADD COLUMN email TEXT')
+            conn.execute('CREATE UNIQUE INDEX IF NOT EXISTS web_accounts_email ON web_accounts(email)')
             _ready = True
         yield conn
 
 
 def _public(row):
-    return {k: row[k] for k in ('username', 'role', 'created_at', 'created_by', 'updated_at', 'last_login')} | {
+    return {k: row[k] for k in ('username', 'email', 'role', 'created_at', 'created_by', 'updated_at', 'last_login')} | {
         'disabled': bool(row['disabled']), 'source': 'site'}
 
 
@@ -67,6 +73,13 @@ def get(username):
         return conn.execute('SELECT * FROM web_accounts WHERE username=?', (username,)).fetchone()
 
 
+def get_by_email(email):
+    if not email:
+        return None
+    with _conn() as conn:
+        return conn.execute('SELECT * FROM web_accounts WHERE email=?', (email.lower(),)).fetchone()
+
+
 def any_active():
     with _conn() as conn:
         return conn.execute('SELECT 1 FROM web_accounts WHERE disabled=0 LIMIT 1').fetchone() is not None
@@ -77,27 +90,41 @@ def list_all():
         return [_public(r) for r in conn.execute('SELECT * FROM web_accounts ORDER BY created_at')]
 
 
-def verify(username, password):
-    """密码正确且未停用时返回账号行；用户不存在时也做一次哈希比较，避免按耗时猜测账号。"""
-    row = get(username) if isinstance(username, str) else None
+def _touch_login(username):
+    try:
+        with _conn() as conn:
+            conn.execute('UPDATE web_accounts SET last_login=? WHERE username=?', (int(time.time()), username))
+    except Exception:
+        pass
+
+
+def verify(identifier, password):
+    """用户名或邮箱 + 密码正确且未停用时返回账号行；不存在时也做一次哈希比较，避免按耗时猜测账号。"""
+    if not isinstance(identifier, str):
+        row = None
+    else:
+        row = get_by_email(identifier.strip()) if '@' in identifier else get(identifier)
     ok = check_password_hash(row['password_hash'] if row else _DUMMY_HASH, password or '')
     if not row or not ok or row['disabled']:
         return None
-    with _conn() as conn:
-        conn.execute('UPDATE web_accounts SET last_login=? WHERE username=?', (int(time.time()), username))
+    # 最近登录时间只是参考信息，采集写库时不能拖住登录
+    threading.Thread(target=_touch_login, args=(row['username'],), daemon=True).start()
     return row
 
 
-def create(username, password, role, created_by):
+def create(username, password, role, created_by, email=None):
     validate_username(username)
     validate_password(password)
     validate_role(role)
+    email = email.lower() if email else None
     now = int(time.time())
     with _conn() as conn:
         if conn.execute('SELECT 1 FROM web_accounts WHERE username=?', (username,)).fetchone():
             raise ValueError('该用户名已存在')
-        conn.execute('INSERT INTO web_accounts(username,password_hash,role,created_at,created_by,updated_at) VALUES(?,?,?,?,?,?)',
-                     (username, generate_password_hash(password), role, now, created_by, now))
+        if email and conn.execute('SELECT 1 FROM web_accounts WHERE email=?', (email,)).fetchone():
+            raise ValueError('该邮箱已注册，请直接登录')
+        conn.execute('INSERT INTO web_accounts(username,password_hash,role,created_at,created_by,updated_at,email) VALUES(?,?,?,?,?,?,?)',
+                     (username, generate_password_hash(password), role, now, created_by, now, email))
     return _public(get(username))
 
 

@@ -58,15 +58,25 @@ def site_account(username):
 
 
 def authenticate(username, password):
-    """校验登录；成功时返回写入会话的信息，失败返回 None。服务器账号优先。"""
+    """校验登录（站内账号也可用邮箱）；成功时返回写入会话的信息，失败返回 None。服务器账号优先。"""
     servers = server_accounts()
     if username in servers:
         if hmac.compare_digest(password or '', servers[username]):
-            return {'source': 'server'}
+            return {'source': 'server', 'username': username}
         return None
     from CampusPulse import accounts
     row = accounts.verify(username, password)
-    return {'source': 'site', 'version': row['version']} if row else None
+    return {'source': 'site', 'version': row['version'], 'username': row['username']} if row else None
+
+
+def start_session(account):
+    session.clear()
+    session.permanent = True
+    session['authenticated'] = True
+    session['username'] = account['username']
+    session['account_source'] = account['source']
+    if 'version' in account:
+        session['account_version'] = account['version']
 
 
 def credentials_configured():

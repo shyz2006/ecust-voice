@@ -185,6 +185,7 @@
         .input-wrap { position: relative; }
 
         input[type="text"],
+        input[type="email"],
         input[type="password"] {
             width: 100%;
             min-height: 48px;
@@ -199,14 +200,16 @@
             box-shadow: 0 0 0 var(--ink);
             transition: box-shadow 180ms var(--spring), transform 180ms var(--spring), background-color 160ms ease;
         }
-        #password { padding-right: 76px; }
+        .input-wrap input { padding-right: 76px; }
+        #signupEmail { padding-right: 112px; }
         input:focus {
             background: #fffdf4;
             box-shadow: 3px 3px 0 var(--accent);
             transform: translate(-1px, -1px);
         }
 
-        .password-toggle {
+        .password-toggle,
+        .inline-action {
             position: absolute;
             top: 50%;
             right: 7px;
@@ -223,6 +226,37 @@
             transform: translateY(-50%);
             transition: background-color 160ms ease;
         }
+
+        .inline-action { min-width: 96px; background: var(--sticky); }
+        .inline-action:disabled { cursor: default; background: #f1ede4; color: var(--muted); }
+
+        .mode-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 0 0 22px;
+            padding: 5px;
+            border: 1.5px solid var(--ink);
+            border-radius: 14px;
+            background: var(--cream);
+        }
+        .mode-switch button {
+            min-height: 38px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 750;
+            transition: background-color 160ms ease, box-shadow 160ms var(--spring);
+        }
+        .mode-switch button[aria-selected="true"] { background: var(--ink); color: #fff; box-shadow: 0 3px 0 var(--accent-soft); }
+
+        .form-status { min-height: 20px; margin: -4px 0 10px; color: var(--muted); font-size: 13px; font-weight: 650; }
+        .form-status.is-error { color: var(--danger); }
+        .form-status.is-ok { color: #2f7d5b; }
 
         .submit-button {
             width: 100%;
@@ -290,6 +324,7 @@
         @media (hover: hover) and (pointer: fine) {
             .submit-button:not(:disabled):hover { background: #51416d; transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--accent-soft); }
             .password-toggle:hover { background: #ded6e8; }
+            .mode-switch button[aria-selected="false"]:hover { background: #fff7d6; }
             .dog { cursor: pointer; }
         }
 
@@ -357,9 +392,16 @@
 
         <main>
             <div class="form-wrap">
-                <p class="eyebrow">WELCOME BACK</p>
-                <h1>欢迎回来</h1>
-                <p class="intro">使用管理员提供的账号登录。</p>
+                <p class="eyebrow" id="eyebrow">WELCOME BACK</p>
+                <h1 id="title">欢迎回来</h1>
+                <p class="intro" id="intro">{{ '使用账号或校园邮箱登录。' if signup.enabled else '使用管理员提供的账号登录。' }}</p>
+
+                {% if signup.enabled %}
+                <div class="mode-switch" role="tablist" aria-label="登录或注册">
+                    <button type="button" role="tab" id="loginTab" aria-controls="loginForm" aria-selected="true">登录</button>
+                    <button type="button" role="tab" id="signupTab" aria-controls="signupForm" aria-selected="false">校园邮箱注册</button>
+                </div>
+                {% endif %}
 
                 {% if error %}<div class="error" role="alert"><span aria-hidden="true">🐾</span>{{ error }}</div>{% endif %}
 
@@ -367,7 +409,7 @@
                     <input type="hidden" name="next" value="{{ next_url }}">
 
                     <div class="field">
-                        <label for="username">用户名</label>
+                        <label for="username">{{ '用户名或邮箱' if signup.enabled else '用户名' }}</label>
                         <input id="username" name="username" type="text" autocomplete="username" inputmode="text" required autofocus>
                     </div>
 
@@ -381,6 +423,32 @@
 
                     <button class="submit-button" id="loginButton" type="submit">进入校园</button>
                 </form>
+
+                {% if signup.enabled %}
+                <form id="signupForm" role="tabpanel" aria-labelledby="signupTab" hidden>
+                    <div class="field">
+                        <label for="signupEmail">校园邮箱</label>
+                        <div class="input-wrap">
+                            <input id="signupEmail" name="email" type="email" autocomplete="email" required placeholder="例如 学号@{{ signup.domains[0] }}">
+                            <button class="inline-action" id="sendCode" type="button">获取验证码</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="signupCode">邮箱验证码</label>
+                        <input id="signupCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="6 位数字">
+                    </div>
+                    <div class="field">
+                        <label for="signupUsername">用户名</label>
+                        <input id="signupUsername" name="username" type="text" autocomplete="username" minlength="2" maxlength="32" required placeholder="2–32 位，中英文、数字、_ . -">
+                    </div>
+                    <div class="field">
+                        <label for="signupPassword">设置密码</label>
+                        <input id="signupPassword" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="至少 8 位">
+                    </div>
+                    <p class="form-status" id="signupStatus" role="status"></p>
+                    <button class="submit-button" id="signupButton" type="submit">注册并进入</button>
+                </form>
+                {% endif %}
 
                 <div class="dog-yard" aria-hidden="true">
                     <div class="dog" id="dog"></div>
@@ -402,7 +470,9 @@
             const dog = document.getElementById('dog');
             const bubble = document.getElementById('bubble');
             const hasError = {{ 'true' if error else 'false' }};
+            const signupForm = document.getElementById('signupForm');
             let lastLine = '';
+            let signupMode = false;
 
             // 帧：0 生气 · 1–3 好奇变长 · 4–6 开心 · 7 吐舌头
             const setFrame = (n) => dog.style.setProperty('--frame', n);
@@ -420,7 +490,23 @@
                 dog.classList.add(cls);
             };
 
+            function signupMood() {
+                const inputs = [...signupForm.querySelectorAll('input')];
+                const filled = inputs.filter((el) => el.value.trim()).length;
+                const active = document.activeElement;
+                setFrame(filled ? Math.min(6, 1 + filled + (filled === inputs.length ? 1 : 0)) : 1);
+                const secret = active && active.type === 'password' && signupForm.contains(active);
+                dog.classList.toggle('turned', !!secret);
+                if (secret) say(active.value ? '嘘，我转过去了，不偷看…' : '设个好记的密码，我不看～');
+                else if (active && active.id === 'signupEmail') say('用华理邮箱就行，我帮你寄验证码');
+                else if (active && active.id === 'signupCode') say('去邮箱翻翻那 6 位数字～');
+                else if (active && active.id === 'signupUsername') say('起个大家认得出的名字吧');
+                else if (filled === inputs.length) say('都填好啦！点「注册并进入」');
+                else say('新朋友！先填校园邮箱～');
+            }
+
             function mood() {
+                if (signupMode) return signupMood();
                 const u = user.value.trim().length;
                 const p = pass.value.length;
                 // 小腊肠随着填写一点点变长
@@ -467,6 +553,120 @@
                 say('出发咯！');
                 dog.classList.add('leaving');
             });
+
+            if (signupForm) {
+                const loginTab = document.getElementById('loginTab');
+                const signupTab = document.getElementById('signupTab');
+                const sendCode = document.getElementById('sendCode');
+                const status = document.getElementById('signupStatus');
+                const signupButton = document.getElementById('signupButton');
+                const errorBox = document.querySelector('.error');
+                const heading = {
+                    login: ['WELCOME BACK', '欢迎回来', '使用账号或校园邮箱登录。'],
+                    signup: ['JOIN US', '加入华理校园观察', '用校园邮箱收一个验证码，注册后即可使用。']
+                };
+                const endpoint = '/login' + location.search;
+                let countdown = 0;
+
+                const setStatus = (text, kind) => {
+                    status.textContent = text;
+                    status.className = 'form-status' + (kind ? ' is-' + kind : '');
+                };
+                const post = async (body) => {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    const data = await response.json().catch(() => ({ success: false, message: '服务暂时不可用，请稍后重试' }));
+                    if (!response.ok || !data.success) throw new Error(data.message || '操作未完成，请稍后重试');
+                    return data;
+                };
+                const grumble = (text) => {
+                    setStatus(text, 'error');
+                    setFrame(0);
+                    replay('grumpy');
+                    say('呜…没成功，看看上面的提示');
+                };
+
+                function setMode(next) {
+                    signupMode = next === 'signup';
+                    form.hidden = signupMode;
+                    signupForm.hidden = !signupMode;
+                    loginTab.setAttribute('aria-selected', String(!signupMode));
+                    signupTab.setAttribute('aria-selected', String(signupMode));
+                    const [eyebrow, title, intro] = heading[next];
+                    document.getElementById('eyebrow').textContent = eyebrow;
+                    document.getElementById('title').textContent = title;
+                    document.getElementById('intro').textContent = intro;
+                    if (errorBox) errorBox.hidden = signupMode;
+                    (signupMode ? document.getElementById('signupEmail') : user).focus();
+                    mood();
+                }
+                loginTab.addEventListener('click', () => setMode('login'));
+                signupTab.addEventListener('click', () => setMode('signup'));
+
+                function tick() {
+                    sendCode.disabled = countdown > 0;
+                    sendCode.textContent = countdown > 0 ? countdown + ' 秒后重发' : '获取验证码';
+                    if (countdown > 0) {
+                        countdown -= 1;
+                        setTimeout(tick, 1000);
+                    }
+                }
+
+                sendCode.addEventListener('click', async () => {
+                    const email = document.getElementById('signupEmail');
+                    if (!email.value.trim() || !email.checkValidity()) {
+                        email.focus();
+                        return grumble('先填一个正确的校园邮箱');
+                    }
+                    sendCode.disabled = true;
+                    sendCode.textContent = '发送中…';
+                    try {
+                        const data = await post({ action: 'send_code', email: email.value.trim() });
+                        setStatus(data.message, 'ok');
+                        setFrame(7);
+                        replay('hop');
+                        say('验证码寄出去啦，去邮箱看看～');
+                        countdown = data.cooldown || 60;
+                        document.getElementById('signupCode').focus();
+                    } catch (err) {
+                        countdown = 0;
+                        grumble(err.message);
+                    }
+                    tick();
+                });
+
+                signupForm.querySelectorAll('input').forEach((el) => {
+                    el.addEventListener('input', mood);
+                    el.addEventListener('focus', mood);
+                    el.addEventListener('blur', () => setTimeout(mood, 0));
+                });
+
+                signupForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const values = Object.fromEntries(new FormData(signupForm).entries());
+                    if (!/^\d{6}$/.test(values.code.trim())) return grumble('验证码是 6 位数字');
+                    signupButton.disabled = true;
+                    signupButton.textContent = '正在注册…';
+                    try {
+                        const data = await post({ action: 'register', email: values.email.trim(), code: values.code.trim(), username: values.username.trim(), password: values.password });
+                        setStatus('注册成功，正在进入…', 'ok');
+                        dog.classList.remove('turned');
+                        setFrame(7);
+                        say('欢迎加入！');
+                        dog.classList.add('leaving');
+                        setTimeout(() => location.assign(data.redirect || '/'), 650);
+                    } catch (err) {
+                        signupButton.disabled = false;
+                        signupButton.textContent = '注册并进入';
+                        grumble(err.message);
+                    }
+                });
+
+                if (location.hash === '#signup') setMode('signup');
+            }
 
             if (hasError) {
                 setFrame(0);

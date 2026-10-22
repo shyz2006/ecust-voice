@@ -12,7 +12,7 @@
 
  function record(a){
   const server=a.source==='server',self=me&&a.username===me.username;
-  const meta=[ROLE[a.role]||a.role,server?'服务器账号':'站内账号',a.disabled?'已停用':'',a.created_by?a.created_by+' 创建于 '+date(a.created_at):'',server?'':(a.last_login?'最近登录 '+date(a.last_login):'尚未登录')].filter(Boolean).join(' · ');
+  const meta=[ROLE[a.role]||a.role,server?'服务器账号':'站内账号',a.email||'',a.disabled?'已停用':'',a.created_by?a.created_by+' 创建于 '+date(a.created_at):'',server?'':(a.last_login?'最近登录 '+date(a.last_login):'尚未登录')].filter(Boolean).join(' · ');
   const name=esc(a.username);
   const actions=server?'<span class="weekly-status">在服务器 .env 中维护</span>':self?'<span class="weekly-status">当前登录账号</span>':
    '<button type="button" data-acct-role="'+name+'" data-to="'+(a.role==='admin'?'user':'admin')+'">'+(a.role==='admin'?'设为普通用户':'设为管理员')+'</button>'+
@@ -25,7 +25,17 @@
   $('accountCreateStatus').textContent='';
   try{const d=await api('/api/accounts');$('accountList').innerHTML=[...d.server,...d.site].map(record).join('')||'<p class="empty">还没有账号。</p>';}
   catch(e){$('accountList').innerHTML='<p class="error">'+esc(e.message)+'</p>';}
+  try{showRegistration(await api('/api/accounts/registration'));}catch(e){$('registrationStatus').textContent=e.message;}
  }
+ function showRegistration(d){
+  const f=$('registrationForm');f.elements.enabled.checked=d.config.enabled;f.elements.domains.value=d.config.domains.join(', ');
+  $('registrationMail').textContent=d.mail_ready?'验证码通过「Resend 邮件」中已验证的发件邮箱发送。每个邮箱每分钟 1 次、每天 5 次，全站每天最多 200 封。':'「Resend 邮件」尚未配置好已验证的发件邮箱，登录页暂不显示注册入口。';
+ }
+ $('registrationForm').onsubmit=async e=>{
+  e.preventDefault();const f=e.currentTarget,b=f.querySelector('button.primary');b.disabled=true;
+  try{const d=await api('/api/accounts/registration','POST',{enabled:f.elements.enabled.checked,domains:f.elements.domains.value});showRegistration(d);$('registrationStatus').textContent=d.config.enabled?'已开放校园邮箱注册':'已关闭自助注册';}
+  catch(err){$('registrationStatus').textContent=err.message;}finally{b.disabled=false;}
+ };
  window.CampusAccounts={fill};
 
  $('accountGenerate').onclick=()=>{$('accountCreateForm').elements.password.value=randomPassword();};

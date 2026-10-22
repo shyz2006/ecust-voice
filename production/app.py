@@ -87,24 +87,53 @@ def login():
     """
     next_url = _safe_next_url(request.values.get('next'))
     error = None
+    if request.method == 'POST' and request.is_json:
+        # nginx 只对 /login 免登录，所以自助注册也走这里（JSON 请求）
+        return _registration_action(next_url)
     if request.method == 'POST':
-        supplied_username = request.form.get('username', '')
+        supplied_username = request.form.get('username', '').strip()
         supplied_password = request.form.get('password', '')
         account = access.authenticate(supplied_username, supplied_password) if supplied_username else None
         if account:
-            session.clear()
-            session.permanent = True
-            session['authenticated'] = True
-            session['username'] = supplied_username
-            session['account_source'] = account['source']
-            if 'version' in account:
-                session['account_version'] = account['version']
+            access.start_session(account)
             return redirect(next_url)
         error = '用户名或密码错误'
         if not access.credentials_configured():
             logger.error('WEB_AUTH_USERNAME/WEB_AUTH_PASSWORD 未配置，拒绝登录')
             error = '服务器登录配置缺失，请联系管理员'
-    return render_template('login.html', error=error, next_url=next_url)
+    from CampusPulse import registration
+    try:
+        signup = registration.public_config()
+    except Exception:
+        logger.exception('读取注册设置失败')
+        signup = {'enabled': False, 'domains': []}
+    return render_template('login.html', error=error, next_url=next_url, signup=signup)
+
+
+def _registration_action(next_url):
+    """校园邮箱注册：action=send_code 发送验证码，action=register 校验并创建账号后直接登录。"""
+    from CampusPulse import registration
+    rejected = _same_origin_json()
+    if rejected:
+        return rejected
+    body = request.get_json(silent=True) or {}
+    ip = (request.headers.get('X-Real-IP') or request.remote_addr or '')[:64]
+    try:
+        if body.get('action') == 'send_code':
+            email = registration.send_code(body.get('email'), ip)
+            return jsonify(success=True, cooldown=registration.RESEND_COOLDOWN,
+                           message=f'验证码已发送到 {email}，{registration.CODE_TTL // 60} 分钟内有效')
+        if body.get('action') == 'register':
+            row = registration.register(body.get('email'), body.get('code'), body.get('username'),
+                                        body.get('password'), set(access.server_accounts()))
+            access.start_session({'source': 'site', 'version': row['version'], 'username': row['username']})
+            return jsonify(success=True, redirect=next_url, message='注册成功')
+    except ValueError as exc:
+        return jsonify(success=False, message=str(exc)), 400
+    except Exception:
+        logger.exception('自助注册失败')
+        return jsonify(success=False, message='注册服务暂时不可用，请稍后重试'), 503
+    return jsonify(success=False, message='未知操作'), 400
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -191,6 +220,20 @@ def manage_accounts():
         return jsonify(success=False, message=str(exc)), 400
     logger.info(f'管理员 {access.current_username()} 创建账号 {username}（{item["role"]}）')
     return jsonify(success=True, account=item)
+
+
+@app.route('/api/accounts/registration', methods=['GET', 'POST'])
+def manage_registration():
+    """管理员设置校园邮箱注册开关与允许的邮箱后缀。"""
+    from CampusPulse import registration
+    rejected = _same_origin_json()
+    if rejected:
+        return rejected
+    try:
+        value = registration.save_config(request.get_json(silent=True) or {}) if request.method == 'POST' else registration.config()
+    except ValueError as exc:
+        return jsonify(success=False, message=str(exc)), 400
+    return jsonify(success=True, config=value, mail_ready=registration.mail_ready())
 
 
 @app.route('/api/accounts/<username>', methods=['PATCH', 'DELETE'])
