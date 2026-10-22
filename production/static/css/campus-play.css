@@ -71,3 +71,9 @@ h1{font-size:38px;font-weight:800;letter-spacing:-.04em}h2{font-weight:700}butto
 /* Account roles: management entries stay hidden until /api/auth/me confirms an admin. */
 html:not([data-role=admin]) .admin-only{display:none!important}
 .account-badge{align-self:center;padding:5px 11px;border:1.5px solid #29252d;border-radius:999px;background:#fffefa;box-shadow:2px 2px 0 #29252d;font-size:12px;font-weight:700;white-space:nowrap}.account-badge.is-admin{background:#fff0b4}
+button.account-badge{cursor:pointer;color:#29252d}button.account-badge:hover{transform:translateY(-1px);background:#fff7d6}
+#accountsPane .config-engine:first-child{border-top:0;padding-top:0}.config-engine select{width:100%;background:var(--paper);border:1px solid var(--line);padding:9px 10px;border-radius:3px;color:var(--ink)}
+.input-with-action{display:flex;gap:8px}.input-with-action input{flex:1;min-width:0}.input-with-action button{white-space:nowrap;font-size:12px}
+.account-record .record-actions{flex-wrap:wrap;justify-content:flex-end;white-space:normal}.account-record.is-disabled strong{color:var(--muted);text-decoration:line-through}
+.record-actions .danger-action{background:#fff3ef;color:#b4483f}.account-reset{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.account-reset input{width:170px;background:var(--paper);border:1px solid var(--line);padding:7px 9px;border-radius:3px;color:var(--ink)}
+.password-dialog{width:min(460px,94vw)}

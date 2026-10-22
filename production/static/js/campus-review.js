@@ -6,8 +6,6 @@ const shortDate=ts=>new Date(ts*1000).toLocaleDateString('zh-CN',{timeZone:'Asia
 const DAY=86400,NAMES={'huyou-school':'狐友华理圈','tieba-school':'华理贴吧','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站热搜','bilibili-popular':'B站热门','toutiao':'头条','weibo':'微博','baidu':'百度'};
 const state={tab:'campus',overview:null,hot:null,memes:null,hotPlatform:'抖音',ledger:null,modalVersion:0,task:null,poll:null,overviewPromise:null};
 let noticeTimer;
-// 角色只决定显示哪些入口；权限以服务端校验为准。
-fetch('/api/auth/me',{headers:{'Accept':'application/json'}}).then(r=>r.ok?r.json():null).then(me=>{if(!me)return;document.documentElement.dataset.role=me.role;const badge=$('accountBadge');badge.textContent=(me.role==='admin'?'管理员 · ':'')+me.username;badge.classList.toggle('is-admin',me.role==='admin');badge.hidden=false;}).catch(()=>{});
 function notice(message){$('notice').textContent=message;$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,6500);}
 async function api(url,options={}){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
@@ -202,14 +200,15 @@ try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'nul
 
 $('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{await api('/pulse/api/collect',{method:'POST',body:'{}'});notice('采集任务已提交，完成后可刷新页面查看。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
 let service='llm',serviceConfig=null,serviceDraft={};
-function stashService(){if(service!=='mail')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
+function stashService(){if(service==='llm'||service==='search')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
 async function config(tab='llm'){
  try{
   stashService();service=tab;
   document.querySelectorAll('[data-service]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.service===tab)));
-  $('configForm').hidden=tab==='mail';$('mailSettingsPane').hidden=tab!=='mail';$('configStatus').textContent='';
+  $('configForm').hidden=tab==='mail'||tab==='accounts';$('mailSettingsPane').hidden=tab!=='mail';$('accountsPane').hidden=tab!=='accounts';$('configStatus').textContent='';
   if(!$('configDialog').open)$('configDialog').showModal();
   if(tab==='mail'){await window.CampusWeekly.fill();return;}
+  if(tab==='accounts'){await window.CampusAccounts.fill();return;}
   if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
   const c={...serviceConfig,...serviceDraft};
   $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型。密钥留空时沿用已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';

@@ -13,8 +13,6 @@ os.environ['PYTHONUNBUFFERED'] = '1'  # 禁用Python输出缓冲，确保日志�
 import subprocess
 import time
 import threading
-import hmac
-import json
 from datetime import datetime
 from queue import Queue
 from urllib.parse import urlencode, urlsplit
@@ -92,31 +90,18 @@ def login():
     if request.method == 'POST':
         supplied_username = request.form.get('username', '')
         supplied_password = request.form.get('password', '')
-        accounts = {
-            os.getenv('WEB_AUTH_USERNAME', ''): os.getenv('WEB_AUTH_PASSWORD', '')
-        }
-        try:
-            additional_accounts = json.loads(os.getenv('WEB_AUTH_ACCOUNTS', '{}'))
-            if isinstance(additional_accounts, dict):
-                accounts.update({
-                    str(username): str(password)
-                    for username, password in additional_accounts.items()
-                })
-        except json.JSONDecodeError:
-            logger.error('WEB_AUTH_ACCOUNTS 格式无效，已忽略附加账号配置')
-
-        expected_password = accounts.get(supplied_username, '')
-        credentials_configured = any(username and password for username, password in accounts.items())
-        if credentials_configured and expected_password and hmac.compare_digest(
-            supplied_password, expected_password
-        ):
+        account = access.authenticate(supplied_username, supplied_password) if supplied_username else None
+        if account:
             session.clear()
             session.permanent = True
             session['authenticated'] = True
             session['username'] = supplied_username
+            session['account_source'] = account['source']
+            if 'version' in account:
+                session['account_version'] = account['version']
             return redirect(next_url)
         error = '用户名或密码错误'
-        if not credentials_configured:
+        if not access.credentials_configured():
             logger.error('WEB_AUTH_USERNAME/WEB_AUTH_PASSWORD 未配置，拒绝登录')
             error = '服务器登录配置缺失，请联系管理员'
     return render_template('login.html', error=error, next_url=next_url)
@@ -134,7 +119,7 @@ def auth_check():
 
     nginx 直接反代的 Streamlit 引擎页（/insight/ 等）不经过 Flask，所以在这里按原始路径拦截普通用户。
     """
-    if session.get('authenticated') is not True:
+    if not access.session_valid():
         return ('', 401)
     original = urlsplit(request.headers.get('X-Original-URI') or '/').path
     if not access.is_admin() and not access.user_may_access(original):
@@ -144,15 +129,107 @@ def auth_check():
 
 @app.route('/api/auth/me')
 def auth_me():
-    if session.get('authenticated') is not True:
+    if not access.session_valid():
         return jsonify(success=False, message='请先登录'), 401
-    return jsonify(success=True, username=access.current_username(), role=access.role())
+    return jsonify(success=True, username=access.current_username(), role=access.role(),
+                   source=session.get('account_source') or 'server')
+
+
+def _same_origin_json():
+    """账号接口只接受本站发起的 JSON 请求。"""
+    origin = request.headers.get('Origin')
+    if request.headers.get('Sec-Fetch-Site') == 'cross-site' or (origin and urlsplit(origin).netloc != request.host):
+        return jsonify(success=False, message='请求来源有误'), 403
+    if request.method != 'GET' and request.method != 'DELETE' and not request.is_json:
+        return jsonify(success=False, message='请使用JSON提交'), 400
+    return None
+
+
+@app.route('/api/account/password', methods=['POST'])
+def change_own_password():
+    """站内账号修改自己的密码；服务器账号由 .env 管理。"""
+    from CampusPulse import accounts
+    rejected = _same_origin_json()
+    if rejected:
+        return rejected
+    if not access.session_valid():
+        return jsonify(success=False, message='请先登录'), 401
+    if session.get('account_source') != 'site':
+        return jsonify(success=False, message='该账号由服务器配置管理，请联系管理员修改'), 400
+    body = request.get_json(silent=True) or {}
+    username = access.current_username()
+    if not accounts.verify(username, str(body.get('current_password') or '')):
+        return jsonify(success=False, message='当前密码不正确'), 400
+    try:
+        accounts.update(username, password=body.get('new_password'))
+    except ValueError as exc:
+        return jsonify(success=False, message=str(exc)), 400
+    # 改密码会让其他设备上的会话失效，当前会话换成新版本继续使用
+    session['account_version'] = accounts.get(username)['version']
+    return jsonify(success=True, message='密码已修改')
+
+
+@app.route('/api/accounts', methods=['GET', 'POST'])
+def manage_accounts():
+    """管理员查看与创建站内账号（是否为管理员由 before_request 校验）。"""
+    from CampusPulse import accounts
+    rejected = _same_origin_json()
+    if rejected:
+        return rejected
+    if request.method == 'GET':
+        admins = access.admin_usernames()
+        servers = [{'username': name, 'role': 'admin' if name in admins else 'user', 'source': 'server'}
+                   for name in sorted(access.server_accounts())]
+        return jsonify(success=True, me=access.current_username(), server=servers, site=accounts.list_all())
+    body = request.get_json(silent=True) or {}
+    username = str(body.get('username') or '').strip()
+    if username in access.server_accounts():
+        return jsonify(success=False, message='该用户名已用于服务器账号'), 400
+    try:
+        item = accounts.create(username, body.get('password'), body.get('role') or 'user', access.current_username())
+    except ValueError as exc:
+        return jsonify(success=False, message=str(exc)), 400
+    logger.info(f'管理员 {access.current_username()} 创建账号 {username}（{item["role"]}）')
+    return jsonify(success=True, account=item)
+
+
+@app.route('/api/accounts/<username>', methods=['PATCH', 'DELETE'])
+def manage_account(username):
+    from CampusPulse import accounts
+    rejected = _same_origin_json()
+    if rejected:
+        return rejected
+    if username in access.server_accounts():
+        return jsonify(success=False, message='服务器账号请在 .env 中修改'), 400
+    me = access.current_username()
+    body = request.get_json(silent=True) or {}
+    # 防止管理员把自己锁在外面
+    if username == me and (request.method == 'DELETE' or body.get('disabled') or body.get('role') == 'user'):
+        return jsonify(success=False, message='不能停用、删除或降级当前登录的账号'), 400
+    try:
+        if request.method == 'DELETE':
+            accounts.delete(username)
+            logger.info(f'管理员 {me} 删除账号 {username}')
+            return jsonify(success=True)
+        item = accounts.update(username, password=body.get('password'), role=body.get('role'),
+                               disabled=body.get('disabled'))
+    except LookupError as exc:
+        return jsonify(success=False, message=str(exc)), 404
+    except ValueError as exc:
+        return jsonify(success=False, message=str(exc)), 400
+    logger.info(f'管理员 {me} 更新账号 {username}：{sorted(body)}')
+    if username == me and body.get('password') is not None:
+        session['account_version'] = accounts.get(username)['version']
+    return jsonify(success=True, account=item)
 
 
 @app.before_request
 def enforce_account_role():
     """普通用户只能使用校园观察与研究服务；模型、检索、邮件、采集与引擎接口仅管理员可用。"""
     path = request.path
+    if session.get('authenticated') is True and not access.session_valid():
+        # 账号被停用、删除或改过密码：旧会话作废
+        session.clear()
     if access.is_internal_request() or access.is_admin() or access.user_may_access(path, request.method):
         return None
     if session.get('authenticated') is not True:
