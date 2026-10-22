@@ -85,18 +85,19 @@
         .brand-mark {
             display: grid;
             place-items: center;
-            width: 46px;
             height: 46px;
+            padding: 0 12px;
             border: 1.5px solid var(--ink);
             border-radius: 14px;
             background: var(--sticky);
             box-shadow: 3px 3px 0 var(--ink);
             font-family: Georgia, "Times New Roman", serif;
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 800;
+            letter-spacing: 0.04em;
             transform: rotate(-5deg);
         }
-        .brand-text strong { display: block; font-family: Georgia, serif; font-size: 19px; letter-spacing: 0.02em; }
+        .brand-text strong { display: block; font-size: 17px; font-weight: 800; }
         .brand-text span { font-size: 12px; font-weight: 700; color: var(--muted); }
 
         .headline { margin: 46px 0 0; font-size: clamp(30px, 3.6vw, 40px); line-height: 1.22; font-weight: 800; letter-spacing: -0.03em; }
@@ -333,8 +334,8 @@
             <svg class="doodle doodle-plane" viewBox="0 0 80 50" aria-hidden="true"><path d="M3 41Q26 43 19 27T41 18" fill="none" stroke="#c4a9d8" stroke-width="1.5" stroke-dasharray="3 4"/><g stroke="#695377" stroke-width="1.4" stroke-linejoin="round"><path d="m26 19 31-10-9 28-7-12Z" fill="#e8dafa"/><path d="m26 19 15 6L57 9 37 29Z" fill="#fff7e4"/><path d="m37 29 4-4 1 10Z" fill="#c7b0e4"/></g></svg>
 
             <div class="brand">
-                <div class="brand-mark" aria-hidden="true">EC</div>
-                <div class="brand-text"><strong>ECUST</strong><span>校园观察与研究 · 华东理工大学</span></div>
+                <div class="brand-mark">ECUST</div>
+                <div class="brand-text"><strong>校园观察与研究</strong><span>华东理工大学</span></div>
             </div>
 
             <h2 class="headline">今天的华理，<br>大家在<mark>聊什么</mark>？</h2>
