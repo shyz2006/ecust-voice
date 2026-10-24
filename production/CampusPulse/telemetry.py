@@ -67,13 +67,13 @@ def record_rows(conn, rows):
         seen_alias = old_key != key and conn.execute('SELECT 1 FROM pulse_seen_posts WHERE key=?',(old_key,)).fetchone()
         _add(conn, 'observations', 1)
         _add(conn, 'observations:'+src, 1)
-        if src in ('huyou-school', 'tieba-school'):
+        if src in ('huyou-school', 'tieba-school', 'xiaohongshu-school', 'douyin-school'):
             _add(conn, 'school_observations', 1)
         cur = conn.execute('INSERT OR IGNORE INTO pulse_seen_posts(key,source) VALUES (?,?)', (key, src))
         if cur.rowcount and not seen_alias:
             _add(conn, 'unique_items', 1)
             _add(conn, 'unique:'+src, 1)
-            if src in ('huyou-school','tieba-school'):
+            if src in ('huyou-school','tieba-school','xiaohongshu-school','douyin-school'):
                 _add(conn, 'unique_school_posts', 1)
 
 

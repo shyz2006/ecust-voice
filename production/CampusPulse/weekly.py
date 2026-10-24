@@ -221,7 +221,7 @@ def recent():
     with storage.connect() as conn:return [dict(r) for r in conn.execute('SELECT id,cutoff,kind,created,status,error,send_state,sent_at,email_id FROM pulse_weekly ORDER BY cutoff DESC LIMIT 20')]
 
 def generate(report_id):
-    if not lease('generate:'+report_id,600):return
+    if not lease('generate:'+report_id,3600):return
     try:
         row=get(report_id)
         if row['status']=='ready':return
@@ -230,6 +230,8 @@ def generate(report_id):
         with storage.connect() as conn:conn.execute('UPDATE pulse_weekly SET data=? WHERE id=?',(json.dumps(data,ensure_ascii=False),report_id))
         if data['current_total']<5:raise ValueError('本周有效帖子少于5条，暂缓生成周报')
         insights,model=summarize(data);data.update(insights=insights,model=model)
+        from . import report_contract
+        data['report']=report_contract.generate('校园每周社会公共热点观察', data['evidence'],writer=report_chapter)
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='ready',data=?,error=NULL WHERE id=?",(json.dumps(data,ensure_ascii=False),report_id))
     except Exception as exc:
         message=str(exc) if isinstance(exc,ValueError) else '周报模型或数据读取未完成，请检查报告模型后重试'
@@ -266,7 +268,7 @@ def report_html(row):
         item=by_id[key];url=revision.source_link(item.get('url'))
         sources.append('<p id="'+e(key)+'"><b>['+key+'] '+('本周' if item['period']=='current' else '上周')+'</b> · '+date(item['published'])+'<br>'+e(item['text'])+
             (' <a href="'+e(url,quote=True)+'" target="_blank" rel="noopener">查看原帖</a>' if url else ' · 原帖地址待补充')+'</p>')
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px;border-radius:12px}.sources p{font-size:12px;padding:12px;background:#f4f1ed}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media print{main{padding:0}h2{break-after:avoid}tr,.sources p{break-inside:avoid}}</style><main><span>华理 · 校园周报</span><h1>'''+e(data['insights']['headline'])+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><div class="scope"><p>本周采集 '+str(data['current_total'])+' 篇，同期 '+str(data['previous_total'])+' 篇；完整观测日窗 '+str(data['observed_days'])+'/7，同期 '+str(data['previous_observed_days'])+'/7。观察范围为已采集的公开校内讨论，供结合原帖理解。</p></div>'+''.join(parts)+'<h2>接下来可以了解什么</h2><ul>'+''.join('<li>'+e(x)+'</li>' for x in data['insights']['follow_up'])+'</ul><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><h2>观察依据</h2><div class="sources">'+''.join(sources)+'</div><footer>数量由程序统计；文字由报告模型基于上述摘录归纳，供教师审阅。危机线索在关怀入口单独核查。'+e(data['method'])+'</footer></main></html>'
+    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px;border-radius:12px}.sources p{font-size:12px;padding:12px;background:#f4f1ed}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media print{main{padding:0}h2{break-after:avoid}tr,.sources p{break-inside:avoid}}</style><main><span>华理 · 校园周报</span><h1>'''+e(data['insights']['headline'])+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><div class="scope"><p>本周采集 '+str(data['current_total'])+' 篇，同期 '+str(data['previous_total'])+' 篇；完整观测日窗 '+str(data['observed_days'])+'/7，同期 '+str(data['previous_observed_days'])+'/7。观察范围为已采集的公开校内讨论，供结合原帖理解。</p></div>'+(''.join('<section><h2>'+e(c['title'])+'</h2>'+''.join('<h3>'+e(s['title'])+'</h3><p>'+e(s['content'])+'</p>' for s in c['sections'])+'</section>' for c in data['report']['chapters']) if data.get('report') else ''.join(parts))+'<h2>接下来可以了解什么</h2><ul>'+''.join('<li>'+e(x)+'</li>' for x in data['insights']['follow_up'])+'</ul><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><h2>观察依据</h2><div class="sources">'+''.join(sources)+'</div><footer>数量由程序统计；文字由报告模型基于上述摘录归纳，供教师审阅。危机线索在关怀入口单独核查。'+e(data['method'])+'</footer></main></html>'
 
 def resend(payload,key,api_key):
     request=Request('https://api.resend.com/emails',data=json.dumps(payload,ensure_ascii=False).encode(),
@@ -348,3 +350,24 @@ def start_scheduler():
             except Exception:_scheduler_error=True  # Status is durable; never log keys/provider bodies.
             time.sleep(20)
     threading.Thread(target=loop,daemon=True,name='campus-weekly-clock').start()
+
+
+def report_chapter(system,user,**kwargs):
+    """Use the configured REPORT engine, preserving its usage accounting."""
+    from config import reload_settings
+    from openai import OpenAI
+    from . import model_connection,telemetry
+    settings=reload_settings()
+    client=OpenAI(api_key=settings.REPORT_ENGINE_API_KEY,base_url=settings.REPORT_ENGINE_BASE_URL,max_retries=0)
+    started=time.time();recorded=False;tracked=getattr(client.chat.completions.create,'_bf_usage_ledger',False)
+    try:
+        response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,messages=[{'role':'system','content':system},{'role':'user','content':user}],temperature=.25,timeout=180,max_tokens=kwargs.get('max_tokens',6500),reasoning_effort='low')
+        if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
+        recorded=True
+        if response.choices[0].finish_reason=='length':raise ValueError('报告章节被截断，请重试')
+        raw=re.sub(r'^```(?:json)?\s*|\s*```$','',(response.choices[0].message.content or '').strip())
+        return json.loads(raw)
+    except Exception:
+        if not tracked and not recorded:telemetry.record_response(None,time.time()-started,success=False,engine='校园周报')
+        raise
+    finally:client.close()

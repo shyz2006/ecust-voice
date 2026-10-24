@@ -1,0 +1,58 @@
+{
+  "name": "report-sources-20261023",
+  "deployed_source_sha256": {
+    "CampusPulse/issues.py": "d39e5d480c810aee9bf400fd197d9b08043b3be2eca21ffd248c7857726af134",
+    "CampusPulse/collectors.py": "1857d8e3b3045faab63b9c556548c4cc5e0a3bb4c7ae724c1c9cd79afb0d2683",
+    "CampusPulse/weekly.py": "f2e37c953e748402cd6341fc72188c876eec6cbac9bfd0d9d29dd89f9ac17333",
+    "CampusPulse/research.py": "9c0e9ae1583aee7ccf94369bf31af39c9d433009c3059919ba1c9560a94c4034",
+    "CampusPulse/report_contract.py": "9e85dba6d30f7883e059a97525b89aeb810117aa18721916beb307056a8b82b6",
+    "CampusPulse/telemetry.py": "5a9e655e452bc8e8041fbe00ce0f3ee16d28ff9985540691f0abd8dd26d4dbb3",
+    "CampusPulse/post_identity.py": "e1aac352ad60da44f0089b93b6476a8ef2cae056d41bf7336139950ac4402864",
+    "CampusPulse/pipeline.py": "a0141ebb5461ea9e12f4273d92e78db589af1576b5ea7232a610afdf1da8cfa5",
+    "CampusPulse/revision.py": "c0c93112b1322df5d5b6b6a7c443b0c098687b1c76a80f197fed42d84ff6682f",
+    "CampusPulse/search.py": "dc0343722c335831a4c999999e51dea47a166deb9e3481a0031e5e0b8bf32913",
+    "CampusPulse/auto_reports.py": "a0876c5b76f4dac43003acb7d1963216c0948cef6ccaec11d06a7423413f50ca",
+    "CampusPulse/campus.py": "dc461108ec2e2b9851619290c5122f1ffd8cdcf7ea24c30fb1c30c88d581056a",
+    "CampusPulse/observatory.py": "b99438a924a189d97da2d057a4ab0bbe8d95b56fe5f1a3f37a37d9b9763e13bb",
+    "CampusPulse/agents/orchestrator.py": "81c3be81141ce827758ca299c50c88090731479014051b5bc765e66df49883e7",
+    "CampusPulse/sources/campus_social.py": "91bb0290f8fcc4e450b3acf6d7c1093fd2da2b259bdf2d004878c5e90c682eab",
+    "ReportEngine/agent.py": "5c5ffa72526cf1a616f9a080ac1d799adc858ff66c5dfcd6ea2c66d449a8e9f9",
+    "ReportEngine/prompts/prompts.py": "eef34dc3cd10251e2da4c76468040449157208bcc7abfadc14cc7fc942362e76",
+    "ReportEngine/report_template/社会公共热点事件分析报告模板.md": "21d800ac97eb2b999fac2b6e10ad8ae13d8715b37ca6038bb48e72df6bcccc3d",
+    "templates/index.html": "6c44f194bc964f16969c8c1b23bae27775ef862757dc8263862ed30b7af48a6d",
+    "static/js/campus-review.js": "018c9ec98af5be0308422552bb90ac6d21ba5522bca64613e11fea4eb0439a37",
+    "CampusPulse/blueprint.py": "6867f6e6a2712f5d1a044862188fed2e80cc82f6df1ca09d45d77765f63891b2"
+  },
+  "isolated_long_report": {
+    "characters": 8618,
+    "chapters": 5,
+    "subsections": 12,
+    "production_record_created": false
+  },
+  "prior_local_tests_passed": 93,
+  "https_verified": [
+    "login",
+    "homepage",
+    "revision routes",
+    "new source filters",
+    "existing report HTML",
+    "existing report PDF"
+  ],
+  "data_limitations": {
+    "xiaohongshu_school_posts_verified": false,
+    "douyin_school_posts_verified": false,
+    "xiaohongshu_hotlist_verified": false
+  },
+  "asset_source_sha256": {
+    "static/css/campus-review.css": "51e39e53d7d74afa633b78ca0bfd345088eb96479609d62a676e56162dd07b21",
+    "static/css/campus-play.css": "d76514c3c1f2773f5ec5ffb6a97db0dbb049d7cac6c60cd096cac84a64d5d684",
+    "static/js/campus-play.js": "fbb2d8c313a195c5efdcf2acdb29129b17ca71f3a009129fdfbc290e5a00dfdf",
+    "CampusPulse/templates/pulse.html": "9fe0449bb47dd50d8c06356c8c9e6ac5b51df0eb80b7e7f2cde094e22c8f8413"
+  },
+  "github_sync_validation": {
+    "report_contract_tests_passed": 9,
+    "javascript_syntax_passed": true,
+    "staged_diff_check_passed": true,
+    "credential_pattern_scan_passed": true
+  }
+}

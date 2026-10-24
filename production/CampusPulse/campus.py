@@ -31,7 +31,7 @@ THEME_WEIGHT = {"灌水/水楼": 0.1, "跑腿/二手交易": 0.4, "失物招领/
 NON_PSYCH_THEMES = {"灌水/水楼", "跑腿/二手交易", "失物招领/求助"}
 TREND_MIN_DAYS = float(os.getenv("PULSE_TREND_MIN_DAYS", "7"))
 EMOTIONS = ["积极", "中性", "消极"]
-SCHOOL_SOURCES = ["huyou-school", "tieba-school"]
+SCHOOL_SOURCES = ["huyou-school", "tieba-school", "xiaohongshu-school", "douyin-school"]
 _PREFIX = "post3:"  # 增加广告识别与“灌水/水楼”主题后重新标注
 
 _RULE_THEMES = {

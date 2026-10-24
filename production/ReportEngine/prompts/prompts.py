@@ -680,6 +680,13 @@ def current_report_style():
 
 
 def styled_prompt(name):
+    if current_report_style() == 'public_event':
+        if name == 'CHAPTER_JSON':
+            base = _BASE_PROMPTS[name]
+        else:
+            base = _BASE_PROMPTS[name].replace('总字数约20000字，可上下浮动5%', '总字数约10000字，范围8000至12000字')
+        return base + "\n社会公共热点事件报告硬性要求：严格按照给定模板的五章十二小节，逐一输出小节标题。只写当前章，每章正文1600至2400字，全文目标一万字。使用heading与paragraph块、真实来源链接。区别事实、观点、解释假设与证据缺口；无时间序列或跨平台数据时不能虚构传播路径，无代表性数据时不能编造情绪比例或全校民意。心理社会思政分析要落到具体证据和替代解释，避免理论堆砌。末章给出介入/关注/规避及条件、角色、步骤、建议时间、验收标准。章内只引用原始证据目录真实URL，不把上游模型意见当事实，不重复凑字。行动核实事件场所、时段与服务规则，不追查发帖人身份；少数个帖优先具体回应，不直接建议全校改革、普遍调查或新设监督机制。验收写可核对的结果，不任意编造百分比门槛；建议目标须标明建议及设定依据。"
+
     if current_report_style() == "concise":
         if name == 'CHAPTER_JSON':
             return '''你是校园与青年事件研究报告的编辑。根据用户给出的section和原始检索证据目录，只写当前一章。

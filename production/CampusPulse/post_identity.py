@@ -18,6 +18,17 @@ def identifier(row):
                 return feed
         except ValueError:
             pass
+    if source in ('xiaohongshu-school','douyin-school'):
+        try:
+            parsed=urlsplit(link)
+            host=(parsed.hostname or '').removeprefix('www.')
+            pattern = r'^/(?:explore|discovery/item)/([a-zA-Z0-9]+)' if source=='xiaohongshu-school' else r'^/(?:video|note)/(\d+)'
+            expected = 'xiaohongshu.com' if source=='xiaohongshu-school' else 'douyin.com'
+            match=re.match(pattern,parsed.path)
+            if parsed.scheme=='https' and host==expected and match:
+                return expected+':'+match[1]
+        except ValueError:
+            pass
     if source=='tieba-school':
         try:
             parsed=urlsplit(link)

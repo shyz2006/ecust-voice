@@ -85,7 +85,7 @@ def revision_overview():
 
 @pulse_bp.route('/api/revision/posts')
 def revision_posts():
-    from . import revision,taxonomy
+    from . import revision,taxonomy,observatory
     data=revision.snapshot();posts=data['posts']
     theme=request.args.get('theme','');emotion=request.args.get('emotion','')
     if theme and theme not in taxonomy.THEMES:return jsonify(success=False,message='无效议题分类'),400
@@ -94,7 +94,7 @@ def revision_posts():
     if emotion:posts=[p for p in posts if p['emotion']==emotion]
     if request.args.get('red')=='1':posts=[p for p in posts if p['red']]
     source=request.args.get('source','')
-    if source and source not in ('huyou-school','tieba-school'):return jsonify(success=False,message='无效来源'),400
+    if source and source not in observatory.SOURCES:return jsonify(success=False,message='无效来源'),400
     if source:posts=[p for p in posts if p['source']==source]
     word=request.args.get('word','').strip()[:30]
     if word:posts=[p for p in posts if word in p['content']]

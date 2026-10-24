@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from . import storage
 
-TEMPLATE='校园与青年事件分析报告模板'
+TEMPLATE='社会公共热点事件分析报告模板'
 _init_lock=threading.Lock()
 _pdf_lock=threading.Lock()
 
@@ -27,7 +27,7 @@ def start(query,username,request_id='',brief=None):
         return {'task_id':task_id,'status':status(task_id)['status'],'reused':True}
     ensure_task(task_id,query=query);register_task_account(task_id,username)
     path=task_metadata_path(task_id);meta=json.loads(path.read_text())
-    meta.update(report_template=TEMPLATE,report_style='concise',pulse_revision=2)
+    meta.update(report_template=TEMPLATE,report_style='public_event',pulse_revision=2)
     if brief:meta['research_brief']=brief
     temp=path.with_suffix('.revision.tmp');temp.write_text(json.dumps(meta,ensure_ascii=False),encoding='utf-8');os.replace(temp,path)
     from ForumEngine.task_store import initialize_task_forum
@@ -117,7 +117,17 @@ def report_html(task_id):
     if not files:raise ValueError('报告正文尚未就绪')
     doc=json.loads(max(files,key=lambda p:p.stat().st_mtime).read_text(encoding='utf-8'))
     chapters=doc.get('chapters') or []
-    if len(chapters)!=4:raise ValueError('报告章节数量待核查，请查看原始研究结果')
+    style=read_task_metadata(task_id).get('report_style')
+    expected=5 if style=='public_event' else 4
+    if len(chapters)!=expected:raise ValueError('报告章节数量待核查，请查看原始研究结果')
+    if style=='public_event':
+        from .report_contract import CHAPTERS
+        total=sum(len(''.join(t.split())) for chapter in chapters for _,t,_ in _text_blocks(chapter.get('blocks',[])))
+        if not 8000 <= total <= 12000:raise ValueError('报告正文须为8000至12000字，请继续生成')
+        for chapter, (title, headings) in zip(chapters, CHAPTERS):
+            text=''.join(t for _,t,_ in _text_blocks(chapter.get('blocks',[])))
+            if not 1000 <= len(''.join(text.split())) <= 3000:raise ValueError('报告正文未达到约一万字要求，请继续生成')
+            if any(h not in text for h in headings):raise ValueError('报告小节缺失，请继续生成')
     validate_sources(doc,task_id)
     query=str(read_task_metadata(task_id).get('query') or (doc.get('metadata') or {}).get('title') or '事件分析报告')
     title=html.escape(query)

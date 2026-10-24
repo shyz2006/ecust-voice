@@ -49,11 +49,14 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain
     body = {"query": query, "freshness": freshness, "count": count, "answer": False, "stream": False}
     if "web-search" in url:
         body = {"query": query, "freshness": freshness, "count": count, "summary": True}
+    if include:
+        body["include"] = include
+    cache_query = query + ("\ninclude:"+include if include else "")
     try:  # 检索网关：结果缓存 + 每日调用上限（校园脉搏不属于研究任务）
         from utils import search_gateway as gateway
     except Exception:  # pragma: no cover - 独立运行 / 测试环境
         gateway = None
-    payload = gateway.cache_get(url, query, freshness, count, False) if gateway else None
+    payload = gateway.cache_get(url, cache_query, freshness, count, False) if gateway else None
     if payload is None:
         scope = gateway.current_scope() if gateway else ""
         if gateway and not gateway.try_consume(scope):
@@ -81,7 +84,7 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain
                 gateway.refund(scope)
             raise SearchUnavailable(f"博查返回错误: {payload.get('msg')}")
         if gateway:
-            gateway.cache_put(url, query, freshness, count, False, payload)
+            gateway.cache_put(url, cache_query, freshness, count, False, payload)
 
     raw = _parse_ai_search(payload) or _parse_web_search(payload)
     results = []

@@ -22,13 +22,13 @@ from loguru import logger
 from . import campus, collectors, lens, memes, metrics, storage, transitions, video_features
 from .burst import AccelerationSketch, batch_observations
 from .config import settings
-from .sources import bilibili, huyou, tieba
+from .sources import bilibili, huyou, tieba, campus_social
 from .topics import build_topics
 
 _run_lock = threading.Lock()
 _state: Dict = {"running": False, "stage": None, "last_error": None, "enriching": None}
 
-FORUM_SOURCES = ["huyou-school", "huyou-national", "tieba-school"]
+FORUM_SOURCES = ["huyou-school", "huyou-national", "tieba-school", "xiaohongshu-school", "douyin-school"]
 UGC_SOURCES = ["bilibili-popular", *FORUM_SOURCES]
 
 
@@ -96,6 +96,9 @@ def _fetch_all() -> Dict:
             errors.update(tb["errors"])
         except Exception as exc:
             errors["tieba"] = str(exc)[:200]
+    social = campus_social.collect()
+    items += social['items']
+    errors.update(social['errors'])
     if settings.bilibili_enabled:
         try:
             bl = bilibili.collect()

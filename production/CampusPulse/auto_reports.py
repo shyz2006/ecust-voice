@@ -105,11 +105,24 @@ def compose(data, kind):
                 f"本窗口{t['posts']}条，占样本{t['posts']/max(total,1):.1%}。状态：{t['phase']}。"
                 +(f"速度{t['velocity']:+.3f}、加速度{t['acceleration']:+.3f}。" if t['velocity'] is not None else '连续窗口覆盖不足，不给出升温结论。'),
                 'actions':[]})
+    # Preserve the original computed facts; report evidence is a statistical snapshot,
+    # not invented quotes or full-text posts. Both scheduled report kinds use the contract.
+    from . import llm, report_contract
+    report_meter = llm.UsageMeter()
+    report = report_contract.generate('校园宏观观察周报' if kind == 'macro' else '校园分主题三日分析',
+        [{'id':'S1','scope':data['method']['limits'],'facts':facts,'generated_at':data['generated_at']}], report_meter)
+    summary = report['markdown']
+    counts = report_meter.as_dict()
+    if usage:
+        for key in ('prompt_tokens','completion_tokens','total_tokens','calls'):
+            if key in counts and isinstance(counts[key], (int,float)):
+                counts[key] += usage.get(key,0)
+    usage = counts
     return {'title':'校园宏观观察周报' if kind == 'macro' else '校园分主题三日简析',
             'summary':summary,'generated_at':data['generated_at'],'kind':kind, 'facts':facts,
-            'observations':interpretation,'usage':usage,'snapshot':{'total':total,'by_source':data['by_source'],
+            'report':report,'observations':interpretation,'usage':usage,'snapshot':{'total':total,'by_source':data['by_source'],
                 'window_start':data['window_start'],'coverage':data['coverage'],'method':data['method']},
-            'notice':'统计事实由程序计算；宏观解释由模型辅助生成，需教师复核。简析为规则统计，不调用模型。'}
+            'notice':'统计事实由程序计算；宏观解释由模型辅助生成，需教师复核。报告正文按统一模板由模型辅助生成，统计事实仍由程序计算。'}
 
 
 def run_slot(kind, ts):

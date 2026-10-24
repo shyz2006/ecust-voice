@@ -117,6 +117,14 @@ class Orchestrator:
             return self._finish(query, profile, wf, pick_reason, ledger, pool, degraded_draft(pool),
                                 verdict=None, degraded=True)
 
+        # All successfully generated reports share the user's five-chapter contract.
+        from .. import report_contract
+        report = report_contract.generate(query, pool.as_list(), self.meter,
+                    on_chapter=lambda title: self._step('ReportEditor', '生成章节', chapter=title))
+        draft['report'] = report
+        draft['topics'] = report_contract.as_topics(report)
+        draft['summary'] = '社会公共热点事件分析报告 · 正文'+str(report['word_count'])+'字'
+
         # ---- 中心验证 + 修订（外循环）
         verdict = verifier.verify(query, profile.intent, draft, pool, self.trace,
                                   use_judge=wf.verification == "rule+judge", meter=self.meter)
@@ -137,6 +145,8 @@ class Orchestrator:
                 self._step("Reviser", "修订失败", note=str(exc))
                 break
             revised = schema.normalize_output(revised)
+            revised['report'] = report
+            revised['topics'] = report_contract.as_topics(report)
             new_verdict = verifier.verify(query, profile.intent, revised, pool, self.trace,
                                           use_judge=wf.verification == "rule+judge", meter=self.meter)
             self._step("Verifier", f"第{rounds}轮复核", score=new_verdict["score"],

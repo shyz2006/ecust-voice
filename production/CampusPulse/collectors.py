@@ -64,7 +64,7 @@ def _fetch_source(source: str) -> Tuple[str, List[Dict[str, Any]], str]:
 
 def collect_hotlists(sources: List[str] = None) -> Dict[str, Any]:
     """并发拉取所有热榜源，返回 {batch_ts, items, errors}。"""
-    sources = sources or settings.sources
+    sources = list(dict.fromkeys([*(sources if sources is not None else settings.sources), "xiaohongshu"]))
     batch_ts = int(time.time())
     all_items: List[Dict[str, Any]] = []
     errors: Dict[str, str] = {}

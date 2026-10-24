@@ -464,11 +464,11 @@ class ReportAgent:
 
         normalized_reports = self._normalize_reports(reports)
         self.chapter_generation_node._MIN_BODY_CHARACTERS = type(self.chapter_generation_node)._MIN_BODY_CHARACTERS
-        if self._task_report_meta.get('report_style') == 'concise':
+        if self._task_report_meta.get('report_style') in ('concise','public_event'):
             from .evidence import evidence_context
             normalized_reports = {'query_engine': evidence_context(research_task_id), 'media_engine': '', 'insight_engine': ''}
             forum_logs = ''  # Generated debate is analysis, not independently retrieved evidence.
-            self.chapter_generation_node._MIN_BODY_CHARACTERS = 450
+            self.chapter_generation_node._MIN_BODY_CHARACTERS = 1000 if self._task_report_meta.get('report_style')=='public_event' else 450
 
         def emit(event_type: str, payload: Dict[str, Any]):
             """面向Report Engine流通道的事件分发器，保证错误不外泄。"""
@@ -526,7 +526,7 @@ class ReportAgent:
                 'toc': layout_design.get('tocTitle')
             })
             emit('progress', {'progress': 15, 'message': '文档标题/目录设计完成'})
-            if self._task_report_meta.get('report_style') == 'concise':
+            if self._task_report_meta.get('report_style') in ('concise','public_event'):
                 layout_design['hero'] = {}
             # 使用刚生成的设计稿对全书进行篇幅规划，约束各章字数与重点
             word_plan = self._run_stage_with_retry(
@@ -557,6 +557,11 @@ class ReportAgent:
                     for sub in subs:
                         if isinstance(sub, dict):
                             sub.update(targetWords=max(80,600//max(1,len(subs))), min=50, max=max(120,700//max(1,len(subs))))
+            if self._task_report_meta.get('report_style') == 'public_event':
+                if len(sections)!=5:raise ValueError('社会公共热点报告必须包含五章')
+                word_plan['totalWords']=10000
+                word_plan['globalGuidelines']=['全文8000至12000字，目标10000字；逐一覆盖模板十二小节，不重复凑字。','事实必须引用原始证据；时间、传播路径和情绪比例未知时明确证据不足，分析须有具体材料、替代解释及核查方法。','第五章给介入/关注/规避的判断依据、触发条件、责任角色、时限和验收；未知项待确认。']
+                word_plan['chapters']=[dict(e,targetWords=2000,min=1600,max=2400,minWords=1600,maxWords=2400,sections=[]) for e in word_plan.get('chapters',[])]
             emit('stage', {
                 'stage': 'word_plan_ready',
                 'chapter_targets': len(word_plan.get('chapters', []))
@@ -632,6 +637,8 @@ class ReportAgent:
             self.chapter_generation_node._ensure_run_state(run_dir.name)
             chapter_results: Dict[str, Any] = {}
 
+            if self._task_report_meta.get('report_style')=='public_event':
+                generation_context['max_tokens']=10000
             def _gen_section(section):
                 nonlocal completed_chapters
                 logger.info(f"生成章节: {section.title}")
@@ -669,13 +676,20 @@ class ReportAgent:
                             run_dir,
                             stream_callback=chunk_callback
                         )
-                        if self._task_report_meta.get('report_style') == 'concise':
+                        if self._task_report_meta.get('report_style') in ('concise','public_event'):
                             from .evidence import validate_sources
                             try:
                                 validate_sources({'chapters': [chapter_payload]}, research_task_id)
                                 body = ''.join(str(run.get('text', '')) for block in chapter_payload.get('blocks', [])
                                                for run in block.get('inlines', []))
-                                if len(body) > 900:
+                                if self._task_report_meta.get('report_style')=='public_event':
+                                    from CampusPulse.research import _text_blocks
+                                    from CampusPulse.report_contract import CHAPTERS
+                                    text=''.join(t for _,t,_ in _text_blocks(chapter_payload.get('blocks',[])))
+                                    if not 1000 <= len(''.join(text.split())) <= 3000:raise ValueError('本章正文须为1000至3000字，全文目标一万字')
+                                    headings=CHAPTERS[sections.index(section)][1]
+                                    if any(h not in text for h in headings):raise ValueError('报告缺少模板规定的小节标题')
+                                elif len(body) > 900:
                                     raise ValueError('简明报告每章正文最多900字，请压缩为500至650字，引用限1至3处')
                             except ValueError as exc:
                                 raise ChapterValidationError(str(exc)) from exc

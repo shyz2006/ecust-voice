@@ -343,6 +343,10 @@ def run_job(job_id):
                 if not exc.repairable:raise
                 raw = llm.chat_json(BRIEF_SYSTEM,request+'\n上一稿未通过校验：'+str(exc)+'。请重写完整JSON，保持事实范围不变。',**kwargs)
                 result = validate_brief(raw, {p['ref'] for p in item['evidence']})
+            from . import report_contract
+            report = report_contract.generate(item['title'], [{**x,'id':x['ref']} for x in material], meter)
+            result['report'] = report
+            result['reading'] = report['markdown']
             result.update(generated_at=int(time.time()),usage=meter.as_dict(),analysis_options=options)
         with storage.connect() as conn:
             if conn.execute('SELECT status FROM pulse_issue_jobs WHERE id=?',(job_id,)).fetchone()[0]!='running':

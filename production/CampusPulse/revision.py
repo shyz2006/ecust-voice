@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 from . import campus,observatory,storage,taxonomy
 
 DAY=86400
-HOT_PLATFORMS={'douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站','bilibili-popular':'B站','toutiao':'头条'}
+HOT_PLATFORMS={'xiaohongshu':'小红书','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站','bilibili-popular':'B站','toutiao':'头条'}
 MEME_PLATFORMS={'douyin':'抖音','bilibili-hot-search':'B站','bilibili-popular':'B站','weibo':'微博','baidu':'百度'}
 _cache={};_lock=threading.Lock()
 _feed_cache={};_feed_locks={kind:threading.Lock() for kind in ('hot','memes')}
