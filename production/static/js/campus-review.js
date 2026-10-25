@@ -44,12 +44,11 @@ function comparisonMarkup(t){
  return value+(c.basis==='latest_complete'?'<small class="window-note" title="'+esc('该窗 '+c.current+' 篇，前窗 '+c.previous+' 篇')+'">最近完整窗<br>'+shortDate(c.start)+'—'+shortDate(c.end)+'</small>':'');
 }
 function referenceMarkup(r){return r.value==null?'<span class="muted">积累至3个完整日窗</span>':'约 '+num(Math.round(r.value))+' 篇<small class="window-note">'+(r.lag_windows?'历史基线 · ':'')+r.windows+' 个完整日窗</small>';}
-function spark(points,color,width=160,height=40,reference=null){
- const valid=points.map(p=>p.new_posts).filter(v=>v!=null),future=reference?.value,hasFuture=future!=null,max=Math.max(1,...valid,...points.map(p=>p.posts||0),hasFuture?future:0),step=(width-8)/Math.max(1,points.length-1+(hasFuture?1:0));let path='',pen=false;
+function spark(points,color,width=160,height=35){
+ const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(1,...valid),step=(width-8)/Math.max(1,points.length-1);let path='',pen=false;
  points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(4+i*step).toFixed(1)+','+(height-5-p.new_posts/max*(height-10)).toFixed(1);pen=true;});
- const partial=points.map((p,i)=>p.new_posts==null?'<circle cx="'+(4+i*step)+'" cy="'+(height-5-(p.posts||0)/max*(height-10))+'" r="2.4" fill="none" stroke="#a8aaa2"><title>采集有间断：已采集 '+(p.posts||0)+' 篇</title></circle>':'').join('');
- const forecast=hasFuture?'<line x1="'+(width-4-step)+'" x2="'+(width-4)+'" y1="'+(height-5-future/max*(height-10))+'" y2="'+(height-5-future/max*(height-10))+'" stroke="#9274b1" stroke-dasharray="3 2"/><circle cx="'+(width-4)+'" cy="'+(height-5-future/max*(height-10))+'" r="3" fill="var(--surface)" stroke="#9274b1"><title>次日参考：约 '+future+' 篇，基于 '+reference.windows+' 个完整日窗</title></circle>':'';
- return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="十日新增帖走势与次日参考"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="1.8"/>'+partial+forecast+'</svg>';
+ const gaps=points.map((p,i)=>p.new_posts==null?'<rect x="'+Math.max(1,4+(i-.45)*step)+'" y="2" width="'+Math.min(step*.9,width-5-Math.max(1,4+(i-.45)*step))+'" height="'+(height-5)+'" rx="2" fill="#e9e5dd"><title>'+shortDate(p.ts+DAY)+' 采集间断</title></rect>':'').join('');
+ return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="十日完整日窗走势，灰色为采集间断">'+gaps+'<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="1.8"/></svg>';
 }
 function renderTrends(){
  const d=state.overview;if(!d)return;const latest=d.themes.reduce((s,t)=>s+t.posts_24h,0);
@@ -57,7 +56,7 @@ function renderTrends(){
  $('trendScope').textContent=shortDate(d.window_start)+'—'+shortDate(d.generated_at);
  const partial=!d.coverage.slice(-2).every(c=>c.ready),pair=d.themes[0]?.comparison;
  $('trendStatus').hidden=!partial;$('trendStatus').textContent=partial?'最近两日采集有间断，近24h显示已采集数量。'+(pair?.basis==='latest_complete'?'较前窗取最近连续完整日窗（'+shortDate(pair.start)+'—'+shortDate(pair.end)+'）的对比。':'连续完整日窗积累后显示对比。')+'次日参考依据历史完整日窗计算。':'';
- $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color,160,40,t.reference)+'</td><td>'+num(t.posts_24h)+' 篇'+(!d.coverage.at(-1)?.ready?'<small class="window-note">已采集</small>':'')+'</td><td>'+comparisonMarkup(t)+'</td><td>'+referenceMarkup(t.reference)+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
+ $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color)+'</td><td>'+num(t.posts_24h)+' 篇'+(!d.coverage.at(-1)?.ready?'<small class="window-note">已采集</small>':'')+'</td><td>'+comparisonMarkup(t)+'</td><td>'+referenceMarkup(t.reference)+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
  // 贴纸墙：大小随独立帖数，倾斜角由词本身决定（刷新不乱跳），热门词排在中间
  const words=d.wordcloud.slice(0,35),max=Math.max(1,...words.map(w=>w.df)),min=Math.min(max,...words.map(w=>w.df)),tones=['sun','lilac','peach','mint','sky','paper'];
  const scale=df=>max===min?0.5:Math.pow((df-min)/(max-min),0.75);
@@ -71,18 +70,34 @@ function showDialog(title){
 function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url,p.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开原帖 ↗')+'</article>').join('')||empty('当前范围暂无对应帖子');}
 async function openPosts(params,title){const version=showDialog(title);try{const d=await api('/pulse/api/revision/posts?'+qs(params));if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="muted">'+num(d.total)+' 条 · 按发布时间倒序</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 function fullChart(t){
- const points=t.timeline,r=t.reference||{},hasFuture=r.value!=null,width=780,height=280,left=36,right=45,top=20,bottom=42;
- const valid=points.flatMap(p=>[p.new_posts,p.new_posts==null?p.posts:null]).filter(v=>v!=null),max=Math.max(4,...valid,hasFuture?(r.upper??r.value):0),nice=Math.ceil(max/4)*4,dx=(width-left-right)/Math.max(1,points.length-1+(hasFuture?1:0)),y=v=>height-bottom-v/nice*(height-top-bottom);let path='',pen=false;
+ const r=t.reference||{};
+ function plot(mobile){
+ const points=t.timeline,width=mobile?360:720,height=mobile?240:255,left=40,right=mobile?14:20,top=30,bottom=36;
+ const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(4,...valid),nice=Math.ceil(max/4)*4,dx=(width-left-right)/Math.max(1,points.length-1),y=v=>height-bottom-v/nice*(height-top-bottom);let path='',pen=false;
  points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(left+i*dx)+','+y(p.new_posts);pen=true;});
- const grid=[0,1,2,3,4].map(i=>'<line x1="'+left+'" x2="'+(width-right)+'" y1="'+y(i*nice/4)+'" y2="'+y(i*nice/4)+'" stroke="#dde2d8"/><text x="'+(left-8)+'" y="'+(y(i*nice/4)+4)+'" text-anchor="end" fill="#78877c" font-size="11">'+i*nice/4+'</text>').join('');
- const dots=points.map((p,i)=>'<g><text x="'+(left+i*dx)+'" y="'+(height-12)+'" text-anchor="middle" fill="#78877c" font-size="11">'+shortDate(p.ts+DAY)+'</text>'+(p.new_posts==null?'<circle cx="'+(left+i*dx)+'" cy="'+y(p.posts||0)+'" r="4" fill="none" stroke="#a8aaa2"><title>采集有间断：已采集 '+(p.posts||0)+' 篇</title></circle>':'<circle cx="'+(left+i*dx)+'" cy="'+y(p.new_posts)+'" r="4" fill="'+t.color+'"><title>'+shortDate(p.ts)+' '+p.new_posts+' 篇</title></circle>')+'</g>').join('');
- const fx=left+points.length*dx,band=hasFuture&&r.lower!=null&&r.upper!=null?'<rect x="'+(fx-12)+'" y="'+y(r.upper)+'" width="24" height="'+(y(r.lower)-y(r.upper))+'" rx="5" fill="#9274b1" opacity=".16"><title>历史误差参考范围 '+r.lower+'—'+r.upper+' 篇</title></rect>':'';
- const forecast=hasFuture?'<g class="reference-projection"><line x1="'+(fx-dx*.5)+'" x2="'+fx+'" y1="'+y(r.value)+'" y2="'+y(r.value)+'" stroke="#9274b1" stroke-width="2" stroke-dasharray="5 4"/>'+band+'<circle cx="'+fx+'" cy="'+y(r.value)+'" r="5" fill="white" stroke="#9274b1" stroke-width="2"/><text x="'+fx+'" y="'+Math.max(14,y(r.upper??r.value)-10)+'" text-anchor="middle" fill="#9274b1" font-size="12">约 '+r.value+' 篇</text><text x="'+fx+'" y="'+(height-12)+'" text-anchor="middle" fill="#9274b1" font-size="11">次日参考</text></g>':'';
- return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart" role="img" aria-label="'+esc(t.theme)+'十日新增帖走势与次日参考">'+grid+'<path d="'+path+'" fill="none" stroke="'+t.color+'" stroke-width="2.5"/>'+dots+forecast+'</svg>';
+ const gaps=[];for(let i=0;i<points.length;i++){if(points[i].new_posts!=null)continue;let j=i;while(j+1<points.length&&points[j+1].new_posts==null)j++;const x=Math.max(left,left+(i-.45)*dx),end=Math.min(width-right,left+(j+.45)*dx);gaps.push('<g class="collection-gap"><rect x="'+x+'" y="'+top+'" width="'+(end-x)+'" height="'+(height-bottom-top)+'" rx="6" fill="#ece8df" opacity=".7"/><text x="'+((x+end)/2)+'" y="'+(top+22)+'" text-anchor="middle" fill="#81796f" font-size="'+(mobile?10:12)+'">'+(end-x>(mobile?40:90)?'采集间断':'缺测')+'</text></g>');i=j;}
+ const grid=[0,1,2,3,4].map(i=>'<line x1="'+left+'" x2="'+(width-right)+'" y1="'+y(i*nice/4)+'" y2="'+y(i*nice/4)+'" stroke="#e8e4dd"/><text x="'+(left-9)+'" y="'+(y(i*nice/4)+4)+'" text-anchor="end" fill="#8a818c" font-size="12">'+i*nice/4+'</text>').join('');
+ const last=points.findLastIndex(p=>p.new_posts!=null),n=points.length-1;
+ const tickCandidates=[0,Math.round(n*.25),Math.round(n*.5),last>=0&&last<n?last:Math.round(n*.75),n].filter((v,i,all)=>all.indexOf(v)===i).sort((a,b)=>a-b);
+ const ticks=new Set(tickCandidates.filter((v,i)=>i===tickCandidates.length-1||tickCandidates[i+1]-v>=2));
+ const dates=points.map((p,i)=>mobile&&!ticks.has(i)?'':'<text class="trend-date-label" x="'+(left+i*dx)+'" y="'+(height-10)+'" text-anchor="middle" fill="#8a818c" font-size="12">'+shortDate(p.ts+DAY)+'</text>').join('');
+ const dots=points.map((p,i)=>p.new_posts==null?'':'<circle class="observed-point" cx="'+(left+i*dx)+'" cy="'+y(p.new_posts)+'" r="'+(i===last?4.5:3.5)+'" fill="'+t.color+'"><title>'+shortDate(p.ts+DAY)+'：'+p.new_posts+' 篇</title></circle>'+(i===last?'<text x="'+(left+i*dx)+'" y="'+Math.max(18,y(p.new_posts)-12)+'" text-anchor="middle" fill="'+t.color+'" font-size="13" font-weight="700">'+p.new_posts+' 篇</text>':'')).join('');
+ return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart '+(mobile?'trend-chart-mobile':'trend-chart-desktop')+'" role="img" aria-label="'+esc(t.theme)+'十日完整日窗新增帖走势">'+gaps.join('')+grid+'<path class="observed-series" d="'+path+'" fill="none" stroke="'+t.color+'" stroke-width="2.5" stroke-linejoin="round"/>'+dots+dates+'</svg>';
+ }
+ const svg=plot(false)+plot(true);
+ const reference='<aside class="trend-reference-card" aria-label="次日参考"><div class="trend-reference-heading"><span>次日参考</span><time>'+ (r.target_end?shortDate(r.target_end):'')+'</time></div><div class="trend-reference-number">'+(r.value==null?'—':'<small>约</small> '+num(r.value)+'<small>篇</small>')+'</div><p>'+(r.value==null?'积累3个完整日窗后生成':'按 '+num(r.windows)+' 个完整日窗的平均值')+'</p>'+(r.lower!=null?'<dl><dt>参考范围</dt><dd>'+num(r.lower)+'—'+num(r.upper)+' 篇</dd></dl>':'')+(r.as_of?'<p class="trend-reference-date">最近完整数据 · '+shortDate(r.as_of)+'</p>':'')+'</aside>';
+ return '<div class="trend-detail-layout"><section class="trend-plot-panel"><div class="trend-plot-heading"><strong>近十日新增讨论</strong><span><i style="background:'+t.color+'"></i>完整日窗</span></div><div class="trend-plot-scroll">'+svg+'</div></section>'+reference+'</div>';
+}
+function trendDetail(t){
+ const c=t.comparison||{},partial=t.timeline.at(-1)?.new_posts==null,change=c.value==null?'—':(c.value>0?'+':'')+num(c.value),missing=t.timeline.filter(p=>p.new_posts==null);
+ const summary='<div class="trend-detail-metrics"><div><span>十日采集</span><strong>'+num(t.posts)+'<small>篇</small></strong></div><div><span>近24h'+(partial?' · 已采集':'新增')+'</span><strong>'+num(t.posts_24h)+'<small>篇</small></strong></div><div><span>'+(c.basis==='latest_complete'?'最近完整日窗变化':'较前窗')+'</span><strong>'+change+(c.value==null?'':'<small>篇</small>')+'</strong><small>'+(c.start?shortDate(c.start)+'—'+shortDate(c.end):'待连续完整日窗')+'</small></div></div>';
+ const gapNote=missing.length?'<p class="trend-gap-note"><span>间断期已采集</span>'+missing.map(p=>shortDate(p.ts+DAY)+'：'+num(p.posts||0)+' 篇').join(' · ')+'</p>':'';
+ const r=t.reference,method='<details class="trend-method"><summary>统计与参考依据</summary><p>横轴为向前滚动的24小时日窗，实线连接完整采集的窗口，阴影标出采集间断。间断期的已采集数量列在图下。</p><p>次日参考取最近十日完整日窗的平均新增帖数，共 '+num(r.windows)+' 个有效窗口。'+(r.mae!=null?'历史平均绝对误差 '+num(r.mae)+' 篇；参考范围按缺测间隔扩宽。':'历史误差随完整窗口积累。')+'参考范围用于展示历史误差。</p></details>';
+ return summary+fullChart(t)+gapNote+method;
 }
 async function openTrend(name){
  const version=showDialog(name+' · 走势与原帖');try{const d=await overview(),t=d.themes.find(x=>x.theme===name);if(!t)throw Error('议题不存在');const posts=await api('/pulse/api/revision/posts?'+qs({theme:name}));if(version!==state.modalVersion)return;
- $('detailBody').innerHTML='<div class="trend-summary"><span>十日 '+num(t.posts)+' 篇</span><span>近24h '+num(t.posts_24h)+' 篇</span><span>较前窗 '+comparisonMarkup(t)+'</span><span>次日参考 '+referenceMarkup(t.reference)+'</span></div>'+fullChart(t)+'<p class="data-note">'+esc(t.reference.method)+'；'+t.reference.windows+' 个完整日窗。实线为完整日窗，灰色空心点为间断期已采集数；紫色标记为次日参考。'+(t.reference.lag_windows?'最近完整日窗截至 '+date(t.reference.as_of)+'，当前参考沿用历史基线。':'')+(t.reference.lower!=null?'历史误差参考范围 '+t.reference.lower+'—'+t.reference.upper+' 篇，按缺测间隔扩宽。':'')+(t.reference.mae!=null?'历史滚动平均绝对误差 '+num(t.reference.mae)+' 篇（'+t.reference.validation_windows+' 窗）。':'历史误差待积累。')+'</p><h3 class="post-group-title">对应原帖 · '+num(posts.total)+' 条</h3>'+renderPosts(posts.posts);
+ $('detailBody').innerHTML=trendDetail(t)+'<h3 class="post-group-title">对应原帖 · '+num(posts.total)+' 条</h3>'+renderPosts(posts.posts);
  }catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}
 }
 async function loadCare(){

@@ -13,12 +13,13 @@ assert(!elements.trendStatus.hidden);
 assert(elements.trendRows.innerHTML.includes('约 0 篇'));
 assert(!elements.trendRows.innerHTML.includes('待完整采集'));
 const svg=vm.runInNewContext(full+';fullChart(state.overview.themes[0])',context);
-assert(svg.includes('class="reference-projection"'));assert(svg.includes('次日参考'));
-assert(svg.includes('历史误差参考范围'));assert(svg.includes('已采集 3 篇'));
+assert(svg.includes('class="trend-reference-card"'));assert(svg.includes('次日参考'));assert(!svg.includes('reference-projection'));
+assert(svg.includes('参考范围'));assert(svg.includes('class="collection-gap"'));assert(!svg.includes('已采集 3 篇'));
+ const detail=vm.runInNewContext('trendDetail(state.overview.themes[0])',context);assert(detail.includes('间断期已采集'));assert(detail.includes('统计与参考依据'));
 assert(!/NaN|undefined/.test(svg));
 context.state.overview.coverage.forEach(c=>c.ready=true);vm.runInNewContext('renderTrends()',context);assert(elements.trendStatus.hidden);
 for(const path of ['production/templates/index.html','production/CampusPulse/templates/pulse.html']){
- const html=fs.readFileSync(path,'utf8');assert(html.includes('id="trendStatus"'));assert(html.includes('id="hotScope"'));assert(html.includes('campus-review.js?v=20261025t1'));
+ const html=fs.readFileSync(path,'utf8');assert(html.includes('id="trendStatus"'));assert(html.includes('id="hotScope"'));assert(html.includes('campus-review.js?v=20261025t2'));
 }
-const result={passed:true,dated_fallback_comparison:true,partial_collection_notice:true,zero_reference_visible:true,reference_chart_and_error_band:true,gap_counts_not_filled_as_complete:true,templates_updated:2};
+const result={passed:true,dated_fallback_comparison:true,partial_collection_notice:true,zero_reference_visible:true,separate_reference_card_and_range:true,gap_counts_not_filled_as_complete:true,templates_updated:2};
 fs.writeFileSync('validation/trends-search-ui-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

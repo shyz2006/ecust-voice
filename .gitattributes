@@ -41,3 +41,6 @@ validation/trends-search-*.json text eol=lf
 validation/trends_search*.py text eol=lf
 validation/trends_search*.cjs text eol=lf
 趋势展示与小红书扩充说明_20261025.md text eol=lf
+validation/trend-chart-*.json text eol=lf
+validation/trend_chart*.py text eol=lf
+validation/trend_chart*.cjs text eol=lf
