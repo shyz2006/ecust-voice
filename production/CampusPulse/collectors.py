@@ -35,6 +35,11 @@ _HEADERS = {
 
 
 def _fetch_source(source: str) -> Tuple[str, List[Dict[str, Any]], str]:
+    if source == 'xiaohongshu':
+        try:
+            from .sources.xiaohongshu_hot import fetch
+            return fetch()
+        except Exception:return source,[],"小红书热点读取暂未完成"
     url = f"{settings.newsnow_base_url}/api/s?id={source}&latest"
     for attempt in range(2):
         try:

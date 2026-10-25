@@ -1,0 +1,44 @@
+{
+  "running": false,
+  "enriching": false,
+  "stage": null,
+  "error": null,
+  "xiaohongshu_batches": [
+    {
+      "batch_ts": 1792932600,
+      "n": 20
+    }
+  ],
+  "latest_status": "complete",
+  "latest_items": 521,
+  "source_counts": {
+    "baidu": 30,
+    "bilibili-hot-search": 30,
+    "bilibili-popular": 150,
+    "douyin": 30,
+    "huyou-national": 20,
+    "huyou-school": 51,
+    "thepaper": 20,
+    "tieba": 30,
+    "tieba-school": 60,
+    "toutiao": 30,
+    "weibo": 30,
+    "xiaohongshu": 20,
+    "zhihu": 20
+  },
+  "errors": {
+    "xiaohongshu-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论",
+    "douyin-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论"
+  },
+  "ledger_xiaohongshu": {
+    "latest_count": 20,
+    "observations": 20,
+    "source": "xiaohongshu",
+    "unique": 20
+  },
+  "hot_cards": 10,
+  "all_hot_cards_have_focus": true,
+  "hot_search_links": true,
+  "source_posts_total": 20,
+  "source_post_search_links": true
+}

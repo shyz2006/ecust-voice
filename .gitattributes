@@ -33,3 +33,7 @@ validation/collection-*.json text eol=lf
 validation/collection_*.py text eol=lf
 validation/collection_*.cjs text eol=lf
 数据账本更正与采集恢复_20261025.md text eol=lf
+validation/xiaohongshu-*.json text eol=lf
+validation/xiaohongshu_*.py text eol=lf
+validation/xiaohongshu_*.cjs text eol=lf
+小红书采集修复说明_20261025.md text eol=lf

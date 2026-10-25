@@ -148,7 +148,7 @@ def _network_feed(kind):
                       'title':row['title'],'source':row['source'],'platform':platforms[row['source']],
                       'rank':row['rank'],'url':source_link((row.get('extra') or {}).get('link') or row.get('url')),
                       'ts':stamp,'signal':round(score,3) if score is not None else None,
-                      'baseline_samples':len(past),'focus':focus.get(row['title'],'')})
+                      'baseline_samples':len(past),'focus':focus.get(row['title'],''),'link_kind':(row.get('extra') or {}).get('link_kind')})
     if kind=='hot':
         items.sort(key=lambda x:(x['signal'] is None,-(x['signal'] or 0),x['rank']))
         kept=[];seen_titles=defaultdict(set)
@@ -160,5 +160,5 @@ def _network_feed(kind):
         from .hot_focus import brief
         for item in items:
             item['focus'],item['focus_method']=brief(item['title'],item['focus'])
-        return {'items':items,'platforms':['抖音','澎湃','B站','头条'],'generated_at':now,
+        return {'items':items,'platforms':list(dict.fromkeys(HOT_PLATFORMS.values())),'generated_at':now,
                 'method':'S=(当前排名权重−此前24小时排名权重均值)/√(历史方差+0.05)，权重=1/log₂(排名+1)；至少3次历史观测。'}

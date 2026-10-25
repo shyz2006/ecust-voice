@@ -124,7 +124,7 @@ def revision_source_posts():
     for r in rows:
         url=(r.get('extra') or {}).get('link') or r.get('url')
         key=url or r['title']
-        seen[key]={'source':source,'content':r['title'],'link':revision.source_link(url),'published':r['batch_ts'],'time_basis':'first_observed'}
+        seen[key]={'source':source,'content':r['title'],'link':revision.source_link(url),'published':r['batch_ts'],'time_basis':'first_observed','link_kind':(r.get('extra') or {}).get('link_kind')}
     posts=sorted(seen.values(),key=lambda p:-p['published'])
     return jsonify(success=True,posts=posts,total=len(posts))
 

@@ -52,10 +52,11 @@ class CollectionIsolationTests(unittest.TestCase):
         response=Mock();response.json.return_value={'items':[{'title':'真实条目','url':'https://example.invalid/post'},None,{'title':123}]}
         failure=requests.HTTPError(response=Mock(status_code=500))
         def get(url,**kwargs):
-            if 'id=xiaohongshu&' in url:raise failure
+            if 'id=douyin&' in url:raise failure
             return response
-        with patch.object(collectors.requests,'get',side_effect=get):result=collectors.collect_hotlists(['weibo'])
-        self.assertEqual(len(result['items']),1);self.assertIn('500',result['errors']['xiaohongshu'])
+        with patch.object(collectors.requests,'get',side_effect=get),patch('CampusPulse.sources.xiaohongshu_hot.fetch',return_value=('xiaohongshu',[],'')):
+            result=collectors.collect_hotlists(['weibo','douyin'])
+        self.assertEqual(len(result['items']),1);self.assertIn('500',result['errors']['douyin'])
     def test_successful_healthy_items_reach_persistence(self):
         batch={'batch_ts':123,'items':[{'source':'weibo','title':'条目'}],'errors':{'xiaohongshu':'HTTP500'},'meta':{}}
         with patch.object(pipeline,'_fetch_all',return_value=batch),patch.object(pipeline.storage,'record_fetch') as save,patch.object(pipeline,'analyze_batch',return_value={'complete':True}):result=pipeline.run_once(use_llm=False)
