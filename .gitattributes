@@ -24,3 +24,7 @@ validation/campus_followup*.py text eol=lf
 validation/campus_topics4*.py text eol=lf
 validation/refine-fix-*.json text eol=lf
 validation/refine_fix*.py text eol=lf
+
+validation/report-weekly-*.json text eol=lf
+validation/report_weekly*.py text eol=lf
+周报与报告修复说明_20261025.md text eol=lf
