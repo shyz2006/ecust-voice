@@ -89,6 +89,14 @@ class WeeklyCheckpointTests(unittest.TestCase):
             failed=weekly.get('test');self.assertEqual(failed['status'],'failed');self.assertIn('长报告生成',failed['error']);self.assertIn('insights',failed['data'])
             with patch.object(contract,'generate',side_effect=complete):weekly.generate('test')
             self.assertEqual(summarize.call_count,1);self.assertEqual(weekly.get('test')['status'],'ready')
+    def test_excess_observations_are_selected_only_after_evidence_checks(self):
+        data=weekly.get('test')['data']
+        signals=[{'title':'待核查','observation':'资料不足','evidence':['UNKNOWN']}]
+        signals += [{'title':'观察'+str(i),'observation':'关注学习体验','evidence':['S1']} for i in range(22)]
+        value=weekly.select_insights({'headline':'观察','signals':signals,'follow_up':['了解诉求']*6},data)
+        self.assertEqual(len(value['signals']),5);self.assertEqual(len(value['follow_up']),4)
+        self.assertTrue(all(x['evidence']==['S1'] for x in value['signals']))
+        weekly.validate_insights(value,data)
     def test_complete_valid_json_with_length_flag_is_accepted(self):
         from types import SimpleNamespace
         response=SimpleNamespace(choices=[SimpleNamespace(finish_reason='length',message=SimpleNamespace(content=json.dumps(self.insights)))],usage=None)

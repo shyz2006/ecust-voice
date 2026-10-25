@@ -187,6 +187,34 @@ def validate_insights(value,data):
     value['follow_up']=follow
     return value
 
+def select_insights(value,data):
+    """Select at most five grounded observations when a model exceeds the display limit."""
+    if not isinstance(value,dict):return value
+    signals=value.get('signals')
+    if isinstance(signals,list) and len(signals)>5:
+        accepted=[];seen=set()
+        for signal in signals[:24]:
+            try:
+                checked=validate_insights({'headline':value.get('headline'),'signals':[signal],'follow_up':[]},data)['signals'][0]
+            except ValueError:continue
+            identity=(checked['title'].strip(),checked['observation'].strip())
+            if identity in seen:continue
+            seen.add(identity);accepted.append(checked)
+            if len(accepted)==5:break
+        value={**value,'signals':accepted}
+    if isinstance(value.get('follow_up'),list):value={**value,'follow_up':value['follow_up'][:4]}
+    return value
+
+
+def summary_material(data):
+    # Keep every theme, but avoid asking the model to summarize each of 108 excerpts.
+    material={k:v for k,v in data.items() if k not in ('insights','report','report_chapters','model')}
+    grouped=defaultdict(list)
+    for item in data['evidence']:grouped[(item.get('period'),item.get('theme'))].append(item)
+    material['evidence']=[item for (period,_),rows in grouped.items() for item in rows[:2 if period=='current' else 1]]
+    return material
+
+
 def summarize(data,feedback=""):
     from config import reload_settings
     from openai import OpenAI
@@ -196,7 +224,7 @@ def summarize(data,feedback=""):
     started=time.time();recorded=False;tracked=getattr(client.chat.completions.create,'_bf_usage_ledger',False)
     try:
         response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,
-            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps({k:v for k,v in data.items() if k not in ('insights','report','report_chapters','model')},ensure_ascii=False)+('\n上次检查反馈：'+feedback+'。请修正后返回完整JSON。' if feedback else '')}],
+            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps(summary_material(data),ensure_ascii=False)+('\n上次检查反馈：'+feedback+'。请修正后返回完整JSON。' if feedback else '')}],
             temperature=.25,timeout=180,max_tokens=16000,reasoning_effort='low')
         if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
         recorded=True
@@ -206,7 +234,7 @@ def summarize(data,feedback=""):
         except json.JSONDecodeError:
             if response.choices[0].finish_reason=='length':raise ValueError('周报输出被截断，未形成完整摘要，请重试') from None
             raise
-        return validate_insights(value,data),settings.REPORT_ENGINE_MODEL_NAME
+        return validate_insights(select_insights(value,data),data),settings.REPORT_ENGINE_MODEL_NAME
     except Exception:
         if not tracked and not recorded:telemetry.record_response(None,time.time()-started,success=False,engine='校园周报')
         raise

@@ -1,12 +1,12 @@
 """Prepare an immutable candidate and activate with source/image/data guards."""
 import base64,hashlib,io,json,pathlib,subprocess,sys,tarfile
 repo=pathlib.Path(__file__).resolve().parent.parent
-name='report-weekly-ledger-20261025-r3'
+name='report-weekly-ledger-20261025-r4'
 paths=['templates/index.html', 'CampusPulse/templates/pulse.html', 'static/js/campus-review.js', 'static/css/campus-play.css', 'CampusPulse/research.py', 'CampusPulse/blueprint.py', 'CampusPulse/report_contract.py', 'CampusPulse/weekly.py', 'CampusPulse/storage.py', 'CampusPulse/agents/orchestrator.py', 'ReportEngine/agent.py', 'ReportEngine/flask_interface.py', 'tests/test_report_contract.py', 'tests/test_report_repairs.py']
 ssh=[r'E:\git\git\Git\usr\bin\ssh.exe','-i',str(repo.parent.parent/'亚马逊云 美国/aws-us-yzjp1test.pem'),'-o','BatchMode=yes','-o','ConnectTimeout=15','ubuntu@3.17.59.150','sudo -n python3 -']
 mode=sys.argv[1] if len(sys.argv)>1 else 'prepare'
 if mode=='prepare':
- previous={x['path']:x['candidate_sha256'] for x in json.loads((repo/'validation/report-weekly-ledger-r2-release-manifest.json').read_text(encoding='utf-8'))['files']}
+ previous={x['path']:x['candidate_sha256'] for x in json.loads((repo/'validation/report-weekly-ledger-r3-release-manifest.json').read_text(encoding='utf-8'))['files']}
  items=[];payload=io.BytesIO()
  with tarfile.open(fileobj=payload,mode='w:gz') as archive:
   for p in paths:
@@ -118,7 +118,7 @@ except Exception:
 result=subprocess.run(ssh,input=script.encode(),capture_output=True,timeout=300)
 if result.returncode:print(result.stderr.decode(errors='replace')[-1500:]);raise SystemExit(result.returncode)
 data=json.loads(result.stdout)
-prefix='report-weekly-ledger-r3'
+prefix='report-weekly-ledger-r4'
 dest=repo/'validation'/(prefix+('-release-manifest.json' if mode=='prepare' else '-deployment-result.json'))
 dest.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps(data,ensure_ascii=False))
