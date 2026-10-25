@@ -28,3 +28,8 @@ validation/refine_fix*.py text eol=lf
 validation/report-weekly-*.json text eol=lf
 validation/report_weekly*.py text eol=lf
 周报与报告修复说明_20261025.md text eol=lf
+
+validation/collection-*.json text eol=lf
+validation/collection_*.py text eol=lf
+validation/collection_*.cjs text eol=lf
+数据账本更正与采集恢复_20261025.md text eol=lf

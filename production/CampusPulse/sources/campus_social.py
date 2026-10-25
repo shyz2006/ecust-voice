@@ -41,7 +41,10 @@ def collect():
     for source, (domain, _) in PLATFORMS.items():
         key = 'social-search:v1:'+source
         blob = storage.kv_get(key)
-        cached = json.loads(blob) if blob else None
+        try:
+            cached = json.loads(blob) if blob else None
+            if not isinstance(cached,dict) or not isinstance(cached.get('ts'),(int,float)) or not isinstance(cached.get('items'),list):cached=None
+        except (ValueError,TypeError):cached=None
         if cached and time.time()-cached['ts'] < 21600:
             items.extend(cached['items'])
             if cached.get('error'):
@@ -55,6 +58,8 @@ def collect():
             error = '' if found else '公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论'
         except search.SearchUnavailable:
             found, error = [], '公开检索不可用，请检查搜索配置或调用额度；未取得平台正文与互动数据'
+        except Exception:
+            found, error = [], '该平台检索响应未完成，其他来源继续采集'
         items.extend(found)
         if error:
             errors[source] = error

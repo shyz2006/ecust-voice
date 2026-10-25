@@ -36,30 +36,34 @@ _HEADERS = {
 
 def _fetch_source(source: str) -> Tuple[str, List[Dict[str, Any]], str]:
     url = f"{settings.newsnow_base_url}/api/s?id={source}&latest"
-    try:
-        resp = requests.get(
-            url, headers={**_HEADERS, "Referer": settings.newsnow_base_url}, timeout=20
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as exc:
-        return source, [], str(exc)
-
-    items = []
-    for idx, raw in enumerate(data.get("items") or [], start=1):
-        title = (raw.get("title") or "").strip()
-        if not title:
-            continue
-        items.append(
-            {
-                "source": source,
-                "rank": idx,
-                "title": title,
-                "url": raw.get("url") or raw.get("mobileUrl"),
-                "extra": raw.get("extra") or {},
-            }
-        )
-    return source, items, "" if items else f"空结果(status={data.get('status')})"
+    for attempt in range(2):
+        try:
+            resp = requests.get(url,headers={**_HEADERS,"Referer":settings.newsnow_base_url},timeout=20)
+            resp.raise_for_status()
+            data=resp.json()
+            if not isinstance(data,dict) or not isinstance(data.get('items'),list):
+                return source,[],"上游返回格式异常"
+            items=[]
+            for idx,raw in enumerate(data['items'],start=1):
+                if not isinstance(raw,dict) or not isinstance(raw.get('title'),str):continue
+                title=raw['title'].strip()
+                if not title:continue
+                items.append({'source':source,'rank':idx,'title':title,'url':raw.get('url') or raw.get('mobileUrl'),
+                              'extra':raw.get('extra') if isinstance(raw.get('extra'),dict) else {}})
+            return source,items,"" if items else "来源暂无有效条目"
+        except requests.HTTPError as exc:
+            code=getattr(getattr(exc,'response',None),'status_code',None)
+            if attempt==0 and code in (500,502,503,504):
+                time.sleep(1);continue
+            return source,[],"上游接口HTTP "+str(code or '错误')
+        except requests.Timeout:
+            if attempt==0:time.sleep(1);continue
+            return source,[],"来源请求超时"
+        except requests.ConnectionError:
+            if attempt==0:time.sleep(1);continue
+            return source,[],"来源网络连接失败"
+        except (ValueError,TypeError,AttributeError):return source,[],"上游返回格式异常"
+        except Exception:return source,[],"来源请求暂未完成"
 
 
 def collect_hotlists(sources: List[str] = None) -> Dict[str, Any]:
@@ -68,7 +72,7 @@ def collect_hotlists(sources: List[str] = None) -> Dict[str, Any]:
     batch_ts = int(time.time())
     all_items: List[Dict[str, Any]] = []
     errors: Dict[str, str] = {}
-    with ThreadPoolExecutor(max_workers=min(8, len(sources) or 1)) as pool:
+    with ThreadPoolExecutor(max_workers=min(3, len(sources) or 1)) as pool:
         for source, items, err in pool.map(_fetch_source, sources):
             if err:
                 errors[source] = err

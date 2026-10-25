@@ -1,0 +1,74 @@
+{
+  "name": "collection-restore-20261025",
+  "stage": "/home/ubuntu/bettafish/deploy/collection-restore-20261025",
+  "base_image_id": "sha256:60bad74560afb98fd1bf7f64115073951298bb16a235dd5188d6a7408b12883a",
+  "base_image": "bettafish:base-collection-restore-20261025",
+  "candidate_image": "bettafish:candidate-collection-restore-20261025",
+  "candidate_image_id": "sha256:f571b7d3ae2ba6b54fe3999285cf2419bed84e8e5ddb4a3814d52c2c7eb8ef45",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "70a24a0f4357061805c2839d233e368dd45f3c9f0974b0d19c42c7d8c323d818",
+      "expected_before": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "before_sha256": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "4ce87c73ba21a1a1881cad611950457b54f7109a6693fa3ed00b659f3dfb8fd8",
+      "expected_before": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "before_sha256": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "018c9ec98af5be0308422552bb90ac6d21ba5522bca64613e11fea4eb0439a37",
+      "expected_before": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "before_sha256": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "d76514c3c1f2773f5ec5ffb6a97db0dbb049d7cac6c60cd096cac84a64d5d684",
+      "expected_before": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "before_sha256": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/search.py",
+      "candidate_sha256": "a10b7a83b50433435f09260c313352c0e3a765d9f0da51e577ebca26cfdbdf5f",
+      "expected_before": "dc0343722c335831a4c999999e51dea47a166deb9e3481a0031e5e0b8bf32913",
+      "before_sha256": "dc0343722c335831a4c999999e51dea47a166deb9e3481a0031e5e0b8bf32913",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/collectors.py",
+      "candidate_sha256": "b054d642d79a769a6f76be3759ee78b5c8cafd76098a19a814e249a486f835cc",
+      "expected_before": "1857d8e3b3045faab63b9c556548c4cc5e0a3bb4c7ae724c1c9cd79afb0d2683",
+      "before_sha256": "1857d8e3b3045faab63b9c556548c4cc5e0a3bb4c7ae724c1c9cd79afb0d2683",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/pipeline.py",
+      "candidate_sha256": "2e680870bf9b1a1c2777fa513864a5627d99638dd28935c0d038d20ed06e5ff0",
+      "expected_before": "a0141ebb5461ea9e12f4273d92e78db589af1576b5ea7232a610afdf1da8cfa5",
+      "before_sha256": "a0141ebb5461ea9e12f4273d92e78db589af1576b5ea7232a610afdf1da8cfa5",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/sources/campus_social.py",
+      "candidate_sha256": "b97bdf57685795fca445210e99438dec847ebd5f30bafb22873a86ab05117a25",
+      "expected_before": "91bb0290f8fcc4e450b3acf6d7c1093fd2da2b259bdf2d004878c5e90c682eab",
+      "before_sha256": "91bb0290f8fcc4e450b3acf6d7c1093fd2da2b259bdf2d004878c5e90c682eab",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_collection_recovery.py",
+      "candidate_sha256": "3d0d17766ab988390b0920a800dd3f2cad10d56800bce103517fd8d39ee52316",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "activated": false
+}

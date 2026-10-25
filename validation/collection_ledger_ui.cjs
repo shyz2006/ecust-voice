@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const file='production/static/js/campus-review.js',src=fs.readFileSync(file,'utf8');
+const body=src.slice(src.indexOf('async function loadLedger('),src.indexOf('async function openSource('));
+const elements={};const $=id=>elements[id]||(elements[id]={innerHTML:''});
+const ledger={unique_school_posts:10,reports_completed:2,unique_items:105,sources:[{source:'weibo',unique:100},{source:'xiaohongshu',unique:0},{source:'xiaohongshu-school',unique:0},{source:'huyou-school',unique:5}]};
+const context={state:{},$,overview:async()=>({themes:[{theme:'学业',posts:10,color:'#aaa'}],emotion:{积极:1,中性:8,消极:1},total:10}),api:async()=>ledger,metric:(name,n)=>'<article class="metric">'+name+':'+n+'</article>',donut:()=>'',bars:rows=>JSON.stringify(rows),NAMES:{weibo:'微博',xiaohongshu:'小红书','xiaohongshu-school':'小红书华理讨论（搜索摘要）','huyou-school':'狐友华理圈'}};
+(async()=>{await vm.runInNewContext(body+';loadLedger(true)',context);const cards=elements.ledgerMetrics.innerHTML;
+ assert.equal((cards.match(/class="metric"/g)||[]).length,4);assert(!cards.includes('小红书'));
+ const rows=JSON.parse(elements.sourceBars.innerHTML);assert.equal(rows.filter(x=>x.label.includes('小红书')).length,1);assert.equal(rows.find(x=>x.key==='xiaohongshu').value,0);assert.equal(rows.find(x=>x.key==='weibo').value,100);
+ const result={passed:true,top_cards:4,separate_xiaohongshu_cards:0,xiaohongshu_rows:1,existing_platform_count_preserved:true};fs.writeFileSync('validation/collection-ledger-ui-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));})().catch(e=>{console.error(e);process.exit(1)});

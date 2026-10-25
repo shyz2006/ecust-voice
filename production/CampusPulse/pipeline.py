@@ -96,9 +96,14 @@ def _fetch_all() -> Dict:
             errors.update(tb["errors"])
         except Exception as exc:
             errors["tieba"] = str(exc)[:200]
-    social = campus_social.collect()
-    items += social['items']
-    errors.update(social['errors'])
+    try:
+        social = campus_social.collect()
+        items += social['items']
+        errors.update(social['errors'])
+    except Exception as exc:
+        logger.warning('[CampusPulse] 新增校园来源未完成：{}',type(exc).__name__)
+        for source in campus_social.PLATFORMS:
+            errors[source] = '该来源检索未完成，其他来源继续采集'
     if settings.bilibili_enabled:
         try:
             bl = bilibili.collect()

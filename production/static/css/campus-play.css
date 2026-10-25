@@ -119,8 +119,3 @@ button.account-badge{cursor:pointer;color:#29252d}button.account-badge:hover{tra
 @media(max-width:1240px){.donut-visual{grid-template-columns:1fr}.donut-visual svg{width:150px;height:150px}}
 @media(max-width:800px){.donut-visual{grid-template-columns:1fr;max-width:none}.donut-visual svg{width:150px;height:150px;margin:0 auto 4px}.donut-legend{max-width:none;margin:0}}
 @media(prefers-reduced-motion:reduce){.word-field button.word-chip,.donut-visual .seg{transition:none}}
-
-/* Six ledger counters stay balanced across screen sizes. */
-#ledgerMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:900px){#ledgerMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){#ledgerMetrics{grid-template-columns:minmax(0,1fr)}}

@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "top_cards": 4,
+  "xiaohongshu_in_platform_rows": true,
+  "xiaohongshu_visible_rows": 1,
+  "restored_hot_sources": [
+    "baidu",
+    "bilibili-hot-search",
+    "douyin",
+    "thepaper",
+    "tieba",
+    "toutiao",
+    "weibo",
+    "zhihu"
+  ],
+  "source_counts": {
+    "baidu": 30,
+    "bilibili-hot-search": 30,
+    "bilibili-popular": 150,
+    "douyin": 30,
+    "huyou-national": 19,
+    "huyou-school": 52,
+    "thepaper": 20,
+    "tieba": 30,
+    "tieba-school": 60,
+    "toutiao": 30,
+    "weibo": 30,
+    "zhihu": 20
+  },
+  "batch_items": 501,
+  "batch_status": "complete",
+  "batch_bjt": "2026-10-25T19:13:58+08:00",
+  "source_errors": {
+    "xiaohongshu": "上游接口HTTP 500",
+    "xiaohongshu-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论",
+    "douyin-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论"
+  },
+  "weekly_preview_preserved": true,
+  "emails_sent": 0,
+  "tests_passed": 10,
+  "report_regressions_passed": 33
+}

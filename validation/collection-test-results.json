@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "collection_tests": 10,
+  "report_regression_tests": 33,
+  "isolated_network": "disabled",
+  "model_calls": 0,
+  "emails_sent": 0
+}
