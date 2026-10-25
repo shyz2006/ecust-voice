@@ -37,3 +37,7 @@ validation/xiaohongshu-*.json text eol=lf
 validation/xiaohongshu_*.py text eol=lf
 validation/xiaohongshu_*.cjs text eol=lf
 小红书采集修复说明_20261025.md text eol=lf
+validation/trends-search-*.json text eol=lf
+validation/trends_search*.py text eol=lf
+validation/trends_search*.cjs text eol=lf
+趋势展示与小红书扩充说明_20261025.md text eol=lf

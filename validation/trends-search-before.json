@@ -1,0 +1,663 @@
+{
+  "generated_at": "2026-10-25T21:41:24+08:00",
+  "coverage": [
+    {
+      "start": "2026-10-15T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.5
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.5
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-16T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.5
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.5
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-17T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 48,
+          "span_hours": 23.6
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 48,
+          "span_hours": 23.6
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-18T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 49,
+          "span_hours": 23.8
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 49,
+          "span_hours": 23.8
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-19T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.3
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.3
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-20T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.4
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.4
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-21T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 48,
+          "span_hours": 23.8
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 48,
+          "span_hours": 23.8
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-22T21:41:24+08:00",
+      "ready": true,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.4
+        },
+        "tieba-school": {
+          "ready": true,
+          "samples": 47,
+          "span_hours": 23.4
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-23T21:41:24+08:00",
+      "ready": false,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "tieba-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    },
+    {
+      "start": "2026-10-24T21:41:24+08:00",
+      "ready": false,
+      "sources": {
+        "douyin-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        },
+        "huyou-school": {
+          "ready": false,
+          "samples": 7,
+          "span_hours": 2.3
+        },
+        "tieba-school": {
+          "ready": false,
+          "samples": 7,
+          "span_hours": 2.3
+        },
+        "xiaohongshu-school": {
+          "ready": false,
+          "samples": 0,
+          "span_hours": 0.0
+        }
+      }
+    }
+  ],
+  "themes": [
+    {
+      "theme": "学业课程",
+      "posts_24h": 8,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 7.7,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 40,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 30,
+          "observed": true,
+          "posts": 30,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 8,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "考试考证",
+      "posts_24h": 1,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 2.5,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 3,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 0,
+          "observed": true,
+          "posts": 0,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "升学就业",
+      "posts_24h": 1,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 2.3,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 5,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 3,
+          "observed": true,
+          "posts": 3,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "校园设施与管理",
+      "posts_24h": 7,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 7.4,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 23,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 32,
+          "observed": true,
+          "posts": 32,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 4,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 7,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "食堂与生活服务",
+      "posts_24h": 13,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 4.5,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 17,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 16,
+          "observed": true,
+          "posts": 16,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 2,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 13,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "宿舍生活",
+      "posts_24h": 1,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 2.2,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 6,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 4,
+          "observed": true,
+          "posts": 4,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "社交与同伴",
+      "posts_24h": 8,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 4.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 19,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 23,
+          "observed": true,
+          "posts": 23,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 3,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 8,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "恋爱情感",
+      "posts_24h": 0,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 0.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 1,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 1,
+          "observed": true,
+          "posts": 1,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "身心与情绪",
+      "posts_24h": 1,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 1.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 5,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 4,
+          "observed": true,
+          "posts": 4,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 0,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "文体与实践",
+      "posts_24h": 6,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 14.7,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 30,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 23,
+          "observed": true,
+          "posts": 23,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 4,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 6,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "交易与互助",
+      "posts_24h": 9,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 3.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 16,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 10,
+          "observed": true,
+          "posts": 10,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 9,
+          "ts": 1792849284
+        }
+      ]
+    },
+    {
+      "theme": "其他校园讨论",
+      "posts_24h": 9,
+      "delta": null,
+      "reference": {
+        "hours": 24,
+        "mae": 13.7,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "validation_windows": 5,
+        "value": 17,
+        "windows": 8
+      },
+      "tail": [
+        {
+          "new_posts": 29,
+          "observed": true,
+          "posts": 29,
+          "ts": 1792676484
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792762884
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 9,
+          "ts": 1792849284
+        }
+      ]
+    }
+  ]
+}

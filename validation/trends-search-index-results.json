@@ -1,0 +1,43 @@
+{
+  "queries_tested": 6,
+  "returned_web_pages": 237,
+  "eligible_school_notes": 0,
+  "configured_plan": [
+    {
+      "query": "华东理工大学",
+      "count_requested": 50,
+      "returned": 30,
+      "eligible": 0
+    },
+    {
+      "query": "华理 奉贤",
+      "count_requested": 50,
+      "returned": 32,
+      "eligible": 0
+    },
+    {
+      "query": "华理 徐汇",
+      "count_requested": 50,
+      "returned": 29,
+      "eligible": 0
+    },
+    {
+      "query": "华东理工大学 小红书 笔记",
+      "count_requested": 50,
+      "returned": 48,
+      "eligible": 0
+    }
+  ],
+  "extra_note_path_queries": [
+    {
+      "query": "site:xiaohongshu.com/explore 华东理工大学",
+      "returned": 48,
+      "eligible": 0
+    },
+    {
+      "query": "site:xiaohongshu.com/discovery/item 华东理工大学",
+      "returned": 50,
+      "eligible": 0
+    }
+  ]
+}

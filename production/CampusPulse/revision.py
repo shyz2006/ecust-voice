@@ -34,9 +34,32 @@ def count_reference(points):
         prior=[p['new_posts'] for p in points[:i] if p.get('observed') and p.get('new_posts') is not None]
         actual=points[i].get('new_posts') if points[i].get('observed') else None
         if len(prior)>=3 and actual is not None:errors.append(abs(actual-sum(prior)/len(prior)))
-    return {'hours':24,'value':int(math.floor(sum(valid)/len(valid)+0.5)) if len(valid)>=3 else None,
+    last_valid=next((i for i in range(len(points)-1,-1,-1) if points[i].get('observed') and points[i].get('new_posts') is not None),None)
+    lag=len(points)-1-last_valid if last_valid is not None else None
+    value=int(math.floor(sum(valid)/len(valid)+0.5)) if len(valid)>=3 else None
+    mae=sum(errors)/len(errors) if errors else None
+    width=mae*math.sqrt(lag+1) if mae is not None and lag is not None else None
+    return {'hours':24,'value':value,
             'windows':len(valid),'mae':round(sum(errors)/len(errors),1) if errors else None,
+            'as_of':points[last_valid]['ts']+DAY if last_valid is not None else None,
+            'lag_windows':lag,'target_end':points[-1]['ts']+2*DAY if points else None,
+            'lower':max(0,math.floor(value-width)) if value is not None and width is not None else None,
+            'upper':math.ceil(value+width) if value is not None and width is not None else None,
             'validation_windows':len(errors),'method':'最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算'}
+
+
+def window_comparison(points):
+    """Keep the latest comparable pair visible without treating collection gaps as zero."""
+    for i in range(len(points)-1,0,-1):
+        current,previous=points[i],points[i-1]
+        if not (current.get('observed') and previous.get('observed')):continue
+        if current.get('new_posts') is None or previous.get('new_posts') is None:continue
+        if current['ts']-previous['ts']!=DAY:continue
+        return {'value':current['new_posts']-previous['new_posts'],
+                'basis':'current' if i==len(points)-1 else 'latest_complete',
+                'current':current['new_posts'],'previous':previous['new_posts'],
+                'start':current['ts'],'end':current['ts']+DAY,'previous_start':previous['ts']}
+    return {'value':None,'basis':'unavailable'}
 
 def snapshot(force=False):
     now=int(time.time())
@@ -80,7 +103,7 @@ def snapshot(force=False):
             delta=last['new_posts']-prev['new_posts'] if last['observed'] and prev['observed'] else None
             themes.append({'theme':name,'color':color,'posts':len(group),
                 'posts_7d':sum(p['published']>=now-7*DAY for p in group),'posts_24h':last['posts'],
-                'delta':delta,'timeline':points,'reference':count_reference(points),
+                'delta':delta,'comparison':window_comparison(points),'timeline':points,'reference':count_reference(points),
                 'emotion':dict(Counter(p['emotion'] for p in group)),
                 'by_source':dict(Counter(p['source'] for p in group)),
                 'examples':[{'content':p['content'],'link':p.get('link')} for p in sorted((p for p in group if p.get('link')),key=lambda x:-x['published'])[:3]]})
@@ -95,7 +118,7 @@ def snapshot(force=False):
               'methods':{'emotion':'规则词典 lexicon-1：积极词次数减消极词次数，前三字内否定词反转；按结果统计帖子比例。',
                          'classification':'校园常用词、同义简称与行为语境加权匹配十二类议题；识别课程咨询、公共空间、社群互动、消费与交易等意图，多主题取最高分。信息不足时归入其他。campus-topics-4。',
                          'heat':'同来源互动量分位数。狐友使用ln(1+曝光)+2ln(1+回复)，贴吧使用2ln(1+回复)。',
-                         'increment':'相邻两个覆盖完整的24小时窗口新增帖数之差。'}}
+                         'increment':'相邻两个覆盖完整的24小时窗口新增帖数之差。最近日窗缺测时，展示最近一组连续完整日窗的对比及日期；近期已采集数量单独保留。'}}
         _cache.update(expires=time.time()+60,data=data)
         return data
 
@@ -125,7 +148,8 @@ def _network_feed(kind):
         weight=1/math.log2(max(1,int(observatory.numeric(row.get('rank')) or 1))+1)
         source_stamps[row['source']].add(row['batch_ts'])
         history[key][row['batch_ts']]=weight
-        if kind=='memes' or row['batch_ts']==latest[row['source']]:grouped[key]=row
+        keep=row['batch_ts']>=now-DAY if row['source']=='xiaohongshu' else row['batch_ts']==latest[row['source']]
+        if keep and (key not in grouped or row['batch_ts']>=grouped[key]['batch_ts']):grouped[key]=row
     focus={}
     # Existing annotations call the short public-interest explanation one_liner.
     # It is descriptive only and never enters the numerical ranking.
@@ -143,14 +167,17 @@ def _network_feed(kind):
         h=history[key];stamp=row['batch_ts'];past=[h.get(ts,0) for ts in sorted(source_stamps[row['source']]) if stamp-DAY<=ts<stamp]
         baseline=sum(past)/len(past) if past else 0
         variance=sum((v-baseline)**2 for v in past)/len(past) if past else 0
-        score=(h[stamp]-baseline)/math.sqrt(variance+0.05) if len(past)>=3 else None
+        recent_topic=row['source']=='xiaohongshu' and stamp<latest[row['source']]
+        score=(h[stamp]-baseline)/math.sqrt(variance+0.05) if len(past)>=3 and not recent_topic else None
         items.append({'id':hashlib.sha1(('|'.join(key)).encode()).hexdigest()[:16],
                       'title':row['title'],'source':row['source'],'platform':platforms[row['source']],
                       'rank':row['rank'],'url':source_link((row.get('extra') or {}).get('link') or row.get('url')),
                       'ts':stamp,'signal':round(score,3) if score is not None else None,
-                      'baseline_samples':len(past),'focus':focus.get(row['title'],''),'link_kind':(row.get('extra') or {}).get('link_kind')})
+                      'baseline_samples':len(past),'focus':focus.get(row['title'],''),'link_kind':(row.get('extra') or {}).get('link_kind'),
+                      'recent_topic':recent_topic})
     if kind=='hot':
-        items.sort(key=lambda x:(x['signal'] is None,-(x['signal'] or 0),x['rank']))
+        candidate_counts=dict(Counter(item['platform'] for item in items))
+        items.sort(key=lambda x:(x['recent_topic'],x['signal'] is None,-(x['signal'] or 0),x['rank']))
         kept=[];seen_titles=defaultdict(set)
         for item in items:
             platform=item['platform'];title=re.sub(r'\s+','',item['title'])
@@ -161,4 +188,5 @@ def _network_feed(kind):
         for item in items:
             item['focus'],item['focus_method']=brief(item['title'],item['focus'])
         return {'items':items,'platforms':list(dict.fromkeys(HOT_PLATFORMS.values())),'generated_at':now,
+                'candidate_counts':candidate_counts,'xiaohongshu_pool_hours':24,
                 'method':'S=(当前排名权重−此前24小时排名权重均值)/√(历史方差+0.05)，权重=1/log₂(排名+1)；至少3次历史观测。'}

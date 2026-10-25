@@ -26,13 +26,16 @@ class CollectionIsolationTests(unittest.TestCase):
         self.assertEqual(result['items'],batch['items']);self.assertIn('xiaohongshu-school',result['errors']);self.assertIn('douyin-school',result['errors'])
     def test_one_school_adapter_does_not_cancel_the_other(self):
         rows=[{'title':'华东理工大学校园讨论','snippet':'活动','url':'https://www.douyin.com/video/12345'}]
-        with patch.object(campus_social.storage,'kv_get',return_value=None),patch.object(campus_social.storage,'kv_set'),patch.object(campus_social.search,'web_search',side_effect=[TypeError('bad'),rows]):
+        def search_call(query,**kwargs):
+            if kwargs.get('include')=='douyin.com':return rows
+            raise TypeError('bad')
+        with patch.object(campus_social.storage,'kv_get',return_value=None),patch.object(campus_social.storage,'kv_set'),patch.object(campus_social.search,'web_search',side_effect=search_call):
             result=campus_social.collect()
         self.assertIn('xiaohongshu-school',result['errors']);self.assertEqual(result['items'][0]['source'],'douyin-school')
     def test_malformed_cache_does_not_stop_school_searches(self):
         with patch.object(campus_social.storage,'kv_get',return_value=b'[]'),patch.object(campus_social.storage,'kv_set'),patch.object(campus_social.search,'web_search',return_value=[]) as search_call:
             result=campus_social.collect()
-        self.assertEqual(search_call.call_count,4);self.assertEqual(len(result['errors']),2)
+        self.assertEqual(search_call.call_count,6);self.assertEqual(len(result['errors']),2)
     def test_bad_hotlist_response_shape_becomes_source_error(self):
         response=Mock();response.json.return_value=['unexpected']
         with patch.object(collectors.requests,'get',return_value=response):source,items,error=collectors._fetch_source('weibo')

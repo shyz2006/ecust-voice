@@ -5,7 +5,7 @@ import requests
 from .. import storage
 from ..config import settings
 
-CACHE_SECONDS=3600
+CACHE_SECONDS=1800
 FAILURE_COOLDOWN=300
 
 

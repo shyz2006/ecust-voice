@@ -22,7 +22,7 @@ class RednoteSourceTests(unittest.TestCase):
     def test_provider_error_cannot_become_a_valid_list(self):
         for payload in ({'code':500,'data':[{'title':'错误'}]},{'code':200,'data':[]},[]):
             with self.assertRaises(ValueError):xhs.normalize(payload,1)
-    def test_success_is_cached_for_one_hour(self):
+    def test_success_is_cached_for_half_hour(self):
         with patch.object(xhs.requests,'get',return_value=self.response) as get:
             first=xhs.fetch();second=xhs.fetch()
         self.assertEqual(get.call_count,1);self.assertEqual(first,second)
