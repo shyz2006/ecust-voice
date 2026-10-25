@@ -19,6 +19,12 @@ class ReportRepairTests(unittest.TestCase):
             report=contract.generate('问题',[{'id':'S1'}],resume=prefix,checkpoint=lambda c:saved.append(len(c)))
         self.assertEqual(writer.call_count,2);self.assertEqual(saved[0],3)
         self.assertEqual(report['word_count'],8006)
+    def test_overlong_chapter_is_returned_to_writer_for_editing(self):
+        overlong=section(contract.CHAPTERS[0][1],5678)
+        with patch('CampusPulse.llm.chat_json',side_effect=[overlong]+[section(hs,1800) for _,hs in contract.CHAPTERS]) as writer:
+            report=contract.generate('问题',[{'id':'S1'}])
+        self.assertEqual(report['word_count'],9000)
+        self.assertIn('上一稿章节JSON',writer.call_args_list[1].args[1]);self.assertIn('分小节正文预算',writer.call_args_list[1].args[1])
     def test_negated_identity_boundary_is_not_an_action_instruction(self):
         row=section(contract.CHAPTERS[-1][1],1800)
         row['sections'][-1]['content']+='严禁核查发帖人身份，也不应识别作者实名。'

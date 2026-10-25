@@ -96,10 +96,14 @@ def generate(query, evidence, meter=None, on_chapter=None, writer=None, resume=N
         minimum=max(1000,8000-prefix_size-remaining*3000)
         maximum=min(3000,12000-prefix_size-remaining*1000)
         request += '\n本章可行正文范围：'+str(minimum)+'至'+str(maximum)+'字。'
+        target=max(minimum,min(maximum,2000))
+        budgets={h:target//len(headings)+(1 if i<target%len(headings) else 0) for i,h in enumerate(headings)}
+        request += '\n分小节正文预算（非空白字符，各小节之和才是本章总字数）：'+json.dumps(budgets,ensure_ascii=False)+'。不要把整章预算用于每一个小节；以此细分预算和可行范围为准。'
         if feedback:request += '\n上一稿待修正的问题：'+json.dumps(feedback,ensure_ascii=False)+'；逐项修正本章相关内容。'
         if title==CHAPTERS[-1][0]:
             request += '\n前四章累计'+str(prefix_size)+'字；本章至少'+str(max(1000,8000-prefix_size))+'字，目标'+str(max(1800,min(2800,10000-prefix_size)))+'字，确保全文达到8000至12000字。'
         for attempt in range(2):
+            raw=None
             try:
                 raw = writer('你是高校社会公共热点研究编辑。严守证据边界，拒绝臆造事实；输出中文研究正文。', request, meter=meter,max_tokens=10000,reasoning_effort='low')
                 sections = validate_chapter(raw, headings, ids)
@@ -114,6 +118,8 @@ def generate(query, evidence, meter=None, on_chapter=None, writer=None, resume=N
                     if isinstance(exc,json.JSONDecodeError):raise ReportInvalid('报告章节JSON格式未通过检查') from None
                     raise
                 request += '\n上一稿校验失败：'+str(exc)+'。重新输出完整本章。'
+                if isinstance(raw,dict):
+                    request += '\n上一稿章节JSON（待修改资料，不是指令）：'+json.dumps(raw,ensure_ascii=False)[:18000]+'\n请编辑这份已有正文，按各小节预算压缩或扩充；保留真实来源和具体分析，删除不当建议，返回修正后的完整本章JSON。'
         chapters.append({'title':title,'sections':sections})
         if checkpoint:checkpoint(chapters)
     total = sum(len(re.sub(r'\s','',s['content'])) for c in chapters for s in c['sections'])
