@@ -89,6 +89,19 @@ class WeeklyCheckpointTests(unittest.TestCase):
             failed=weekly.get('test');self.assertEqual(failed['status'],'failed');self.assertIn('长报告生成',failed['error']);self.assertIn('insights',failed['data'])
             with patch.object(contract,'generate',side_effect=complete):weekly.generate('test')
             self.assertEqual(summarize.call_count,1);self.assertEqual(weekly.get('test')['status'],'ready')
+    def test_complete_json_with_literal_newline_is_repaired_without_model(self):
+        value=weekly.parse_model_json('{"content":"第一行\n第二行"}')
+        self.assertEqual(value['content'],'第一行\n第二行')
+        with self.assertRaises(json.JSONDecodeError):weekly.parse_model_json('{"content":"未完成')
+    def test_weekly_long_report_links_all_its_evidence_and_escapes_text(self):
+        data=weekly.get('test')['data']
+        data.update(start=1,cutoff=2,previous_total=0,categories={},method='test',insights=self.insights,
+                    report={'chapters':[{'title':'章节','sections':[{'title':'小节','content':'<script>内容</script>[S2]','evidence':['S2']}]}]})
+        data['evidence']=[{'id':'S1','period':'current','text':'第一条','published':1,'url':'https://example.invalid/1'},
+                          {'id':'S2','period':'current','text':'第二条','published':1,'url':'https://example.invalid/2'}]
+        html=weekly.report_html({'status':'ready','data':data})
+        self.assertIn('id="S2"',html);self.assertIn('href="#S2"',html)
+        self.assertIn('&lt;script&gt;',html);self.assertNotIn('<script>',html)
     def test_excess_observations_are_selected_only_after_evidence_checks(self):
         data=weekly.get('test')['data']
         signals=[{'title':'待核查','observation':'资料不足','evidence':['UNKNOWN']}]
