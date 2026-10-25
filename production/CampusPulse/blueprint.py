@@ -134,7 +134,8 @@ def revision_ledger():
     from . import telemetry,revision
     data=telemetry.dashboard()
     allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)
-    sources=[s for s in data.get('sources',[]) if s['source'] in allowed]
+    by_source={s['source']:s for s in data.get('sources',[]) if s['source'] in allowed}
+    sources=[by_source.get(name,{'source':name,'unique':0,'observations':0,'latest_count':None}) for name in sorted(allowed)]
     # Cost, vendor and legacy national-comparison values are excluded from this presentation API.
     from datetime import datetime,timedelta,timezone
     today=datetime.now(timezone(timedelta(hours=8))).date()

@@ -1,0 +1,109 @@
+{
+  "name": "report-weekly-ledger-20261025-r2",
+  "stage": "/home/ubuntu/bettafish/deploy/report-weekly-ledger-20261025-r2",
+  "base_image_id": "sha256:51b45351dbde86b551fb0b1aeb8bd65561bfdd17f5d8a23f76e15d7aa6f8b141",
+  "base_image": "bettafish:base-report-weekly-ledger-20261025-r2",
+  "candidate_image": "bettafish:candidate-report-weekly-ledger-20261025-r2",
+  "candidate_image_id": "sha256:f70eaab78050f74468b977ac0ceda09bbbed018bf09337aebdf8fab27f0be424",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "expected_before": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "before_sha256": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "expected_before": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "before_sha256": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "expected_before": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "before_sha256": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "expected_before": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "before_sha256": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "a6917c29b0f8141293e236ee628eeaf28fc6a3515ad95434099a172069b67058",
+      "expected_before": "a6917c29b0f8141293e236ee628eeaf28fc6a3515ad95434099a172069b67058",
+      "before_sha256": "a6917c29b0f8141293e236ee628eeaf28fc6a3515ad95434099a172069b67058",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "35729961fa805720677cfb15476697c802c7e3df994c409d9c735a7b528ab760",
+      "expected_before": "35729961fa805720677cfb15476697c802c7e3df994c409d9c735a7b528ab760",
+      "before_sha256": "35729961fa805720677cfb15476697c802c7e3df994c409d9c735a7b528ab760",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_contract.py",
+      "candidate_sha256": "16095c671bb69a8afab04db8a7fc13cd13f4ffc1688f767007ce15f52a08740d",
+      "expected_before": "16095c671bb69a8afab04db8a7fc13cd13f4ffc1688f767007ce15f52a08740d",
+      "before_sha256": "16095c671bb69a8afab04db8a7fc13cd13f4ffc1688f767007ce15f52a08740d",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "cda299ee39a046fccadba68455d18f46f460622d9f507d0469f8110ede1966e3",
+      "expected_before": "cda299ee39a046fccadba68455d18f46f460622d9f507d0469f8110ede1966e3",
+      "before_sha256": "cda299ee39a046fccadba68455d18f46f460622d9f507d0469f8110ede1966e3",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/storage.py",
+      "candidate_sha256": "edc509b74400cc6c4d7ede7078464925f92ce83f549c62fba574fab18666bef4",
+      "expected_before": "21d5e5f7a73c71d3262fa1b57a7e2c669a69e95444d02a690f8ed0329932d1f4",
+      "before_sha256": "21d5e5f7a73c71d3262fa1b57a7e2c669a69e95444d02a690f8ed0329932d1f4",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/agents/orchestrator.py",
+      "candidate_sha256": "5f3c847ba3b9f4b18833377e9774867870cbee610fba8cefba0a0bcb992b303b",
+      "expected_before": "5f3c847ba3b9f4b18833377e9774867870cbee610fba8cefba0a0bcb992b303b",
+      "before_sha256": "5f3c847ba3b9f4b18833377e9774867870cbee610fba8cefba0a0bcb992b303b",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "ff461106ee7acf55326aa205fad254611072a490a7cfea14b5fc3225bbb415ea",
+      "expected_before": "ff461106ee7acf55326aa205fad254611072a490a7cfea14b5fc3225bbb415ea",
+      "before_sha256": "ff461106ee7acf55326aa205fad254611072a490a7cfea14b5fc3225bbb415ea",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "expected_before": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "before_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_contract.py",
+      "candidate_sha256": "d29686be49efe2687e30bb9834c8dced57da411400dcf3e4d3cec1976e3f4e5f",
+      "expected_before": "d29686be49efe2687e30bb9834c8dced57da411400dcf3e4d3cec1976e3f4e5f",
+      "before_sha256": "d29686be49efe2687e30bb9834c8dced57da411400dcf3e4d3cec1976e3f4e5f",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "647556ab6da2137cf77f18fa612e041ec324ebbf6dc8263fa5469576f616b094",
+      "expected_before": "08d6494377ff85b0b6fbe41b8e2703ca80456640df6b69c296f6bdc1eb711903",
+      "before_sha256": "08d6494377ff85b0b6fbe41b8e2703ca80456640df6b69c296f6bdc1eb711903",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

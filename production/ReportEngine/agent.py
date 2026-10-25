@@ -858,6 +858,9 @@ class ReportAgent:
                 manifest_meta,
                 chapters
             )
+            if self._task_report_meta.get('report_style') == 'public_event':
+                from CampusPulse.report_contract import validate_ir
+                validate_ir(document_ir)
             emit('stage', {'stage': 'chapters_compiled', 'chapter_count': len(chapters)})
             html_report = self.renderer.render(document_ir)
             emit('stage', {'stage': 'html_rendered', 'html_length': len(html_report)})

@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "tests": 27,
+  "environment": "production-derived candidate container",
+  "network": "disabled",
+  "model_calls": 0,
+  "emails_sent": 0
+}

@@ -54,7 +54,10 @@ def status(task_id):
             report_html(task_id)
             result.update(status='completed',report_url=f'/pulse/api/revision/research/{task_id}/report')
         except (ValueError,OSError):
-            result.update(status='failed',error='报告未通过正文与原始来源检查，研究材料已保留。')
+            if report and report.status in ('pending','running'):
+                result.update(status='reporting',progress=getattr(report,'progress',0))
+            else:
+                result.update(status='failed',error='报告未通过正文与原始来源检查，研究材料已保留，可继续生成报告。',can_resume_report=True)
     elif any(v=='failed' or str(v).startswith('error') for v in result['engines'].values()):
         gaps=[task_output_dir(task_id,engine)/'research_information_gap.json' for engine in ('query','media')]
         messages=[json.loads(p.read_text(encoding='utf-8')).get('message') for p in gaps if p.exists()]
@@ -121,13 +124,8 @@ def report_html(task_id):
     expected=5 if style=='public_event' else 4
     if len(chapters)!=expected:raise ValueError('报告章节数量待核查，请查看原始研究结果')
     if style=='public_event':
-        from .report_contract import CHAPTERS
-        total=sum(len(''.join(t.split())) for chapter in chapters for _,t,_ in _text_blocks(chapter.get('blocks',[])))
-        if not 8000 <= total <= 12000:raise ValueError('报告正文须为8000至12000字，请继续生成')
-        for chapter, (title, headings) in zip(chapters, CHAPTERS):
-            text=''.join(t for _,t,_ in _text_blocks(chapter.get('blocks',[])))
-            if not 1000 <= len(''.join(text.split())) <= 3000:raise ValueError('报告正文未达到约一万字要求，请继续生成')
-            if any(h not in text for h in headings):raise ValueError('报告小节缺失，请继续生成')
+        from .report_contract import validate_ir
+        validate_ir(doc)
     validate_sources(doc,task_id)
     query=str(read_task_metadata(task_id).get('query') or (doc.get('metadata') or {}).get('title') or '事件分析报告')
     title=html.escape(query)
@@ -183,7 +181,7 @@ def resume_report(task_id):
     import requests
     if not all_engines_completed(task_id):raise ValueError('请等待三个研究引擎完成')
     response=requests.post('http://127.0.0.1:'+str(_config_port())+'/api/report/generate',
-                           json={'research_task_id':task_id,'query':read_task_metadata(task_id).get('query','')},timeout=30)
+                           json={'research_task_id':task_id,'query':read_task_metadata(task_id).get('query',''),'regenerate':True},timeout=30)
     value=response.json()
     if response.status_code==409 and value.get('current_task',{}).get('status') in ('pending','running'):
         return {'task_id':task_id,'status':'reporting','reused':True}

@@ -157,6 +157,8 @@ def connect():
                     telemetry.initialize(conn)
                     from . import issues
                     issues.initialize(conn)
+                    # Migrations may write rows; callers must receive a clean transaction.
+                    conn.commit()
                     _initialized = True
         yield conn
         conn.commit()

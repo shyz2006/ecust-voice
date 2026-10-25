@@ -187,7 +187,7 @@ def validate_insights(value,data):
     value['follow_up']=follow
     return value
 
-def summarize(data):
+def summarize(data,feedback=""):
     from config import reload_settings
     from openai import OpenAI
     from . import telemetry,model_connection
@@ -196,14 +196,17 @@ def summarize(data):
     started=time.time();recorded=False;tracked=getattr(client.chat.completions.create,'_bf_usage_ledger',False)
     try:
         response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,
-            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps(data,ensure_ascii=False)}],
+            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps({k:v for k,v in data.items() if k not in ('insights','report','report_chapters','model')},ensure_ascii=False)+('\n上次检查反馈：'+feedback+'。请修正后返回完整JSON。' if feedback else '')}],
             temperature=.25,timeout=180,max_tokens=16000,reasoning_effort='low')
         if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
         recorded=True
-        if response.choices[0].finish_reason=='length':raise ValueError('周报生成未完成，请重试')
         raw=response.choices[0].message.content or ''
         raw=re.sub(r'^```(?:json)?\s*|\s*```$','',raw.strip())
-        return validate_insights(json.loads(raw),data),settings.REPORT_ENGINE_MODEL_NAME
+        try:value=json.loads(raw)
+        except json.JSONDecodeError:
+            if response.choices[0].finish_reason=='length':raise ValueError('周报输出被截断，未形成完整摘要，请重试') from None
+            raise
+        return validate_insights(value,data),settings.REPORT_ENGINE_MODEL_NAME
     except Exception:
         if not tracked and not recorded:telemetry.record_response(None,time.time()-started,success=False,engine='校园周报')
         raise
@@ -220,23 +223,51 @@ def recent():
     initialize()
     with storage.connect() as conn:return [dict(r) for r in conn.execute('SELECT id,cutoff,kind,created,status,error,send_state,sent_at,email_id FROM pulse_weekly ORDER BY cutoff DESC LIMIT 20')]
 
+def generation_error(exc):
+    from . import model_connection,report_contract
+    if isinstance(exc,json.JSONDecodeError):return '模型返回的JSON格式未通过检查，请重试'
+    if isinstance(exc,report_contract.ReportInvalid):return str(exc)
+    if isinstance(exc,ValueError) and str(exc).startswith(('周报','本周','报告','证据')):return str(exc)
+    return model_connection.safe_error(exc)
+
+
 def generate(report_id):
     if not lease('generate:'+report_id,3600):return
+    stage='读取资料'
     try:
         row=get(report_id)
         if row['status']=='ready':return
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='generating',generation_attempts=generation_attempts+1 WHERE id=?",(report_id,))
         data=row.get('data') or packet(row['cutoff'])
-        with storage.connect() as conn:conn.execute('UPDATE pulse_weekly SET data=? WHERE id=?',(json.dumps(data,ensure_ascii=False),report_id))
+        def persist():
+            with storage.connect() as conn:conn.execute('UPDATE pulse_weekly SET data=? WHERE id=?',(json.dumps(data,ensure_ascii=False),report_id))
+        persist()
         if data['current_total']<5:raise ValueError('本周有效帖子少于5条，暂缓生成周报')
-        insights,model=summarize(data);data.update(insights=insights,model=model)
+        stage='摘要提炼'
+        if data.get('insights'):
+            try:validate_insights(data['insights'],data)
+            except ValueError:data.pop('insights',None)
+        if not data.get('insights'):
+            feedback=''
+            for attempt in range(2):
+                try:
+                    insights,model=summarize(data,feedback)
+                    data.update(insights=insights,model=model);persist();break
+                except (ValueError,json.JSONDecodeError) as exc:
+                    if attempt:raise
+                    feedback=generation_error(exc)
+        stage='长报告生成'
         from . import report_contract
-        data['report']=report_contract.generate('校园每周社会公共热点观察', data['evidence'],writer=report_chapter)
+        def checkpoint(chapters):
+            data['report_chapters']=chapters;persist()
+        data['report']=report_contract.generate('校园每周社会公共热点观察',data['evidence'],writer=report_chapter,
+            resume=data.get('report_chapters'),checkpoint=checkpoint)
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='ready',data=?,error=NULL WHERE id=?",(json.dumps(data,ensure_ascii=False),report_id))
     except Exception as exc:
-        message=str(exc) if isinstance(exc,ValueError) else '周报模型或数据读取未完成，请检查报告模型后重试'
+        message=stage+'：'+generation_error(exc)
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='failed',error=?,generation_retry=? WHERE id=?",(message[:200],int(time.time())+180,report_id))
     finally:release('generate:'+report_id)
+
 
 def start(cutoff=None,scheduled=False,send_at=None):
     initialize();cutoff=int(cutoff or time.time())
@@ -364,7 +395,6 @@ def report_chapter(system,user,**kwargs):
         response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,messages=[{'role':'system','content':system},{'role':'user','content':user}],temperature=.25,timeout=180,max_tokens=kwargs.get('max_tokens',6500),reasoning_effort='low')
         if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
         recorded=True
-        if response.choices[0].finish_reason=='length':raise ValueError('报告章节被截断，请重试')
         raw=re.sub(r'^```(?:json)?\s*|\s*```$','',(response.choices[0].message.content or '').strip())
         return json.loads(raw)
     except Exception:
