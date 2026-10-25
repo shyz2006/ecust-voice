@@ -620,6 +620,25 @@ def kv_set(key: str, value: bytes) -> None:
         )
 
 
+def record_collection_attempt(attempt: Dict[str, Any]) -> None:
+    """Keep failed fetch attempts even when no snapshot batch could be committed."""
+    payload=json.dumps(attempt,ensure_ascii=False).encode('utf-8')
+    key='collection:attempt:'+str(attempt['id'])
+    with connect() as conn:
+        for name in (key,'collection:last_attempt'):
+            conn.execute('INSERT INTO kv(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value',(name,payload))
+        conn.execute("DELETE FROM kv WHERE key LIKE 'collection:attempt:%' AND key NOT IN "
+                     "(SELECT key FROM kv WHERE key LIKE 'collection:attempt:%' ORDER BY rowid DESC LIMIT 1500)")
+
+
+def last_collection_attempt() -> Optional[Dict[str, Any]]:
+    blob=kv_get('collection:last_attempt')
+    try:
+        value=json.loads(blob) if blob else None
+        return value if isinstance(value,dict) else None
+    except (ValueError,TypeError):return None
+
+
 # ------------------------------------------------------------------ 匿名投票
 
 def create_poll(token: str, title: str, items: List[Dict[str, Any]], created_by: str, days: int = 14) -> None:

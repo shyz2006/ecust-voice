@@ -28,6 +28,11 @@ from .topics import build_topics
 _run_lock = threading.Lock()
 _state: Dict = {"running": False, "stage": None, "last_error": None, "enriching": None}
 
+
+def _save_attempt(attempt):
+    try:storage.record_collection_attempt(attempt)
+    except Exception as exc:logger.warning('[CampusPulse] 采集尝试记录未保存：{}',type(exc).__name__)
+
 FORUM_SOURCES = ["huyou-school", "huyou-national", "tieba-school", "xiaohongshu-school", "douyin-school"]
 UGC_SOURCES = ["bilibili-popular", *FORUM_SOURCES]
 
@@ -243,6 +248,8 @@ def run_once(use_llm: bool = True) -> Dict:
     if not _run_lock.acquire(blocking=False):
         return {"skipped": True, "reason": "已有采集任务在运行"}
     _state.update(running=True, stage="抓取中", last_error=None)
+    attempt={'id':time.time_ns(),'started_at':int(time.time()),'status':'running'}
+    _save_attempt(attempt)
     batch_ts = None
     try:
         t0 = time.time()
@@ -258,10 +265,15 @@ def run_once(use_llm: bool = True) -> Dict:
         stats = analyze_batch(batch_ts, fetched["items"], use_llm)
         stats["errors"] = fetched["errors"]
         stats["fetch_seconds"] = fetched["meta"]["fetch_seconds"]
+        attempt.update(status='complete',completed_at=int(time.time()),batch_ts=batch_ts,
+                       items=len(fetched['items']),source_errors=fetched['errors'])
+        _save_attempt(attempt)
         return stats
     except Exception as exc:
         logger.exception(f"[CampusPulse] 流水线失败: {exc}")
         _state["last_error"] = str(exc)[:300]
+        attempt.update(status='failed',completed_at=int(time.time()),batch_ts=batch_ts,error=str(exc)[:300])
+        _save_attempt(attempt)
         if batch_ts:
             storage.mark_batch_failed(batch_ts, str(exc))
         return {"error": str(exc)}
@@ -311,6 +323,9 @@ def status() -> Dict:
                  f"尚未完成分析，页面展示的是上一个完整批次"
                  + (f"：{fetch.get('error')}" if fetch.get("error") else ""))
     errors = ((complete or {}).get("stats") or {}).get("errors") or {}
+    last_attempt=storage.last_collection_attempt()
+    if not alert and last_attempt and last_attempt.get('status')=='failed':
+        alert='最近一次采集未完成：'+str(last_attempt.get('error') or '请查看采集记录')
     failed_hot = [s for s in settings.sources if s in errors]
     if not alert and failed_hot:
         alert = (f"公开热榜源异常：{len(failed_hot)}/{len(settings.sources)} 个获取失败（第三方聚合服务 newsnow）"
@@ -321,6 +336,8 @@ def status() -> Dict:
         "stage": _state["stage"],
         "enriching": bool(_state.get("enriching")),
         "last_error": _state["last_error"],
+        "last_attempt": last_attempt,
+        "scheduler_alive": bool(_scheduler and _scheduler.is_alive()),
         "last_fetch": fetch["batch_ts"] if fetch else None,
         "last_fetch_status": fetch["status"] if fetch else None,
         "last_complete": complete["batch_ts"] if complete else None,
@@ -352,11 +369,20 @@ def start_scheduler() -> None:
             recover_pending()
         except Exception as exc:
             logger.warning(f"[CampusPulse] 补做批次失败: {exc}")
+        retry_at=0
         while True:
-            latest = storage.latest_batch()
-            last = latest["fetched_at"] if latest else 0
-            if time.time() - last >= settings.collect_interval_min * 60 - 30:
-                run_once()
+            try:
+                latest = storage.latest_batch('complete')
+                last = latest["fetched_at"] if latest else 0
+                now=time.time()
+                if now>=retry_at and now-last>=settings.collect_interval_min*60-30:
+                    result=run_once()
+                    retry_at=time.time()+300 if result.get('error') else 0
+            except Exception as exc:
+                # A temporary database/driver error must not silently kill scheduling.
+                _state['last_error']='定时采集暂未完成：'+str(exc)[:200]
+                logger.exception('[CampusPulse] 定时采集循环异常，将在5分钟后重试')
+                retry_at=time.time()+300
             time.sleep(60)
 
     _scheduler = threading.Thread(target=loop, name="campus-pulse-scheduler", daemon=True)

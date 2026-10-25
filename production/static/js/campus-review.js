@@ -29,7 +29,7 @@ async function activate(tab){
 }
 function renderCampus(){
  const data=state.overview;if(!data)return;
- $('homeSample').textContent=num(data.total_7d);$('campusUpdated').textContent='更新于 '+date(data.generated_at);$('practicePosts').querySelector('strong').textContent=num(data.practice_count);
+ $('homeSample').textContent=num(data.total_7d);$('campusUpdated').textContent=data.observed_at?'采集于 '+date(data.observed_at)+(data.collection_health==='delayed'?' · 采集延迟':''):'等待首次采集';$('campusUpdated').classList.toggle('error',data.collection_health==='delayed');$('practicePosts').querySelector('strong').textContent=num(data.practice_count);
  const count=Object.values(data.emotion||{}).reduce((s,v)=>s+v,0),negative=(data.emotion?.消极||0)/(count||1);
  const weather=!count?['○','等待样本','新采集的讨论将显示在这里。']:negative<.2?['☀','晴朗','多数表达平稳，关注同学的日常与收获。']:negative<.4?['☀','晴间多云','日常讨论中伴有一些困扰，值得倾听。']:['☁','多云','近期困扰表达较多，留意具体诉求。'];
  $('weather').innerHTML='<span class="weather-symbol" aria-hidden="true">'+weather[0]+'</span><div><div class="weather-title">校园心情 · '+weather[1]+'</div><p class="weather-caption">'+weather[2]+'</p></div><button class="text-button" style="margin-left:auto;font-size:11px;white-space:nowrap" data-method="emotion">计算口径 ↗</button>';

@@ -110,7 +110,12 @@ def snapshot(force=False):
         words=Counter(w for p in posts for w in set(p['terms']))
         seven=[p for p in posts if p['published']>=now-7*DAY]
         public=[{k:v for k,v in p.items() if k not in ('observations','terms','raw_heat')} for p in posts]
-        data={'generated_at':now,'window_start':start,'window_days':10,'taxonomy':list(taxonomy.THEMES),
+        observed_at=max((r['batch_ts'] for r in rows),default=None)
+        from .config import settings
+        late_after=3*max(10,settings.collect_interval_min)*60
+        data={'generated_at':now,'observed_at':observed_at,
+              'collection_health':'empty' if observed_at is None else 'delayed' if now-observed_at>late_after else 'fresh',
+              'window_start':start,'window_days':10,'taxonomy':list(taxonomy.THEMES),
               'themes':themes,'posts':public,'total':len(posts),'total_7d':len(seven),
               'emotion':dict(Counter(p['emotion'] for p in seven)),
               'practice_count':sum(p['red'] for p in seven),'coverage':cov,'excluded':excluded,

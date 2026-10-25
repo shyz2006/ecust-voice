@@ -62,7 +62,7 @@ class CollectionIsolationTests(unittest.TestCase):
         self.assertEqual(len(result['items']),1);self.assertIn('500',result['errors']['douyin'])
     def test_successful_healthy_items_reach_persistence(self):
         batch={'batch_ts':123,'items':[{'source':'weibo','title':'条目'}],'errors':{'xiaohongshu':'HTTP500'},'meta':{}}
-        with patch.object(pipeline,'_fetch_all',return_value=batch),patch.object(pipeline.storage,'record_fetch') as save,patch.object(pipeline,'analyze_batch',return_value={'complete':True}):result=pipeline.run_once(use_llm=False)
+        with patch.object(pipeline,'_fetch_all',return_value=batch),patch.object(pipeline.storage,'record_fetch') as save,patch.object(pipeline.storage,'record_collection_attempt'),patch.object(pipeline,'analyze_batch',return_value={'complete':True}):result=pipeline.run_once(use_llm=False)
         save.assert_called_once();self.assertTrue(result['complete']);self.assertIn('xiaohongshu',result['errors'])
 
 if __name__=='__main__':unittest.main()
