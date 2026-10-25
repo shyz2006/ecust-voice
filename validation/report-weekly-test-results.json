@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "tests": 30,
+  "tests": 32,
   "environment": "production-derived candidate container",
   "network": "disabled",
   "model_calls": 0,

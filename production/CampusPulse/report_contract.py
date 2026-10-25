@@ -15,6 +15,19 @@ class ReportInvalid(ValueError):
     pass
 
 
+def suggests_identity_investigation(content):
+    pattern=r'(?:核查|核实|确认|识别).{0,8}(?:发帖人|作者).{0,5}(?:身份|实名)'
+    for match in re.finditer(pattern,content):
+        prefix=re.split(r'[。；;，,！？!?\n]',content[max(0,match.start()-16):match.start()])[-1]
+        # A prohibition is not an instruction to investigate; double negation is.
+        double=re.search(r'(?:不能|不得|不应|不宜|不可|不要|无需)不$',prefix)
+        negated=re.search(r'(?:不应|不得|不要|禁止|不建议|避免|无需|不宜|不可|不再|严禁)[^。；;！？!?\n]{0,8}$',prefix)
+        if negated and not double:continue
+        if prefix.endswith('不') and not double:continue
+        return True
+    return False
+
+
 def validate_chapter(raw, headings, ids):
     rows = raw.get('sections') if isinstance(raw, dict) else None
     if not isinstance(rows, list) or len(rows) != len(headings):
@@ -33,7 +46,7 @@ def validate_chapter(raw, headings, ids):
             raise ReportInvalid('报告正文引用了不存在的证据')
         if not refs and '证据不足' not in content:
             raise ReportInvalid('无引用的小节必须明确证据不足')
-        if title.startswith('5.3') and re.search(r'(?:核查|核实|确认|识别).{0,8}(?:发帖人|作者).{0,5}(?:身份|实名)',content):
+        if title.startswith('5.3') and suggests_identity_investigation(content):
             raise ReportInvalid('行动应核实事件场所、时段和服务规则，不应追查发帖人身份')
         output.append({'title': title, 'content': content.strip(), 'evidence': list(dict.fromkeys(refs))})
     size = sum(len(re.sub(r'\s', '', x['content'])) for x in output)

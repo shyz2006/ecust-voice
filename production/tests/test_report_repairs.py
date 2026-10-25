@@ -19,6 +19,14 @@ class ReportRepairTests(unittest.TestCase):
             report=contract.generate('问题',[{'id':'S1'}],resume=prefix,checkpoint=lambda c:saved.append(len(c)))
         self.assertEqual(writer.call_count,2);self.assertEqual(saved[0],3)
         self.assertEqual(report['word_count'],8006)
+    def test_negated_identity_boundary_is_not_an_action_instruction(self):
+        row=section(contract.CHAPTERS[-1][1],1800)
+        row['sections'][-1]['content']+='严禁核查发帖人身份，也不应识别作者实名。'
+        contract.validate_chapter(row,contract.CHAPTERS[-1][1],{'S1'})
+    def test_identity_instruction_cannot_hide_behind_another_clause_or_double_negative(self):
+        for content in ('不得猜测。建议核查发帖人身份。','不得猜测，随后核查发帖人身份。','不得不核查发帖人身份。'):
+            row=section(contract.CHAPTERS[-1][1],1800);row['sections'][-1]['content']+=content
+            with self.assertRaises(contract.ReportInvalid):contract.validate_chapter(row,contract.CHAPTERS[-1][1],{'S1'})
     def test_invalid_json_receives_one_bounded_chapter_repair(self):
         values=[json.JSONDecodeError('truncated','',0)]+[section(hs,1800) for _,hs in contract.CHAPTERS]
         with patch('CampusPulse.llm.chat_json',side_effect=values) as writer:
