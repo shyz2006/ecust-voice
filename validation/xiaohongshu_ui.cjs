@@ -13,7 +13,7 @@ const ctx={state:{hotPlatform:'小红书'},$,api:async()=>({platforms:['B站','�
  assert(elements.hotScope.textContent.includes('20 个话题'));assert(!elements.hotScope.hidden);
  const post=vm.runInNewContext(render+';renderPosts(state.hot.items.slice(0,1))',ctx);
  assert(post.includes('在平台搜索话题'));assert(!post.includes('打开原帖'));
- for(const path of ['production/templates/index.html','production/CampusPulse/templates/pulse.html'])assert(fs.readFileSync(path,'utf8').includes('campus-review.js?v=20261026m2'));
+ for(const path of ['production/templates/index.html','production/CampusPulse/templates/pulse.html'])assert(fs.readFileSync(path,'utf8').includes('campus-review.js?v=20261026t1'));
  const result={passed:true,hot_cards:10,platform_search_labels:true,source_dialog_search_label:true,templates_updated:2};
  fs.writeFileSync('validation/xiaohongshu-ui-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 })().catch(e=>{console.error(e);process.exit(1)});

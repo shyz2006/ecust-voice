@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "viewport": "desktop",
+      "document_overflow": false,
+      "modal_fits": true,
+      "date_labels_do_not_overlap": true,
+      "estimates_labeled_and_grey_mask_removed": true,
+      "separate_reference_card": true,
+      "methods_expand": true
+    },
+    {
+      "viewport": "mobile",
+      "document_overflow": false,
+      "modal_fits": true,
+      "date_labels_do_not_overlap": true,
+      "estimates_labeled_and_grey_mask_removed": true,
+      "separate_reference_card": true,
+      "methods_expand": true
+    },
+    {
+      "case": "zero",
+      "passed": true
+    },
+    {
+      "case": "missing",
+      "passed": true
+    },
+    {
+      "case": "isolated",
+      "passed": true
+    }
+  ]
+}

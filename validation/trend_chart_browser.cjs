@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('p
 const {chromium}=require('C:/Users/19946/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const src=fs.readFileSync('production/static/js/campus-review.js','utf8');
 const prefix=src.slice(src.indexOf('const $='),src.indexOf('const DAY='));
-const funcs=src.slice(src.indexOf('function fullChart('),src.indexOf('async function openTrend('));
+const funcs=src.slice(src.indexOf('function trendDisplayPoints('),src.indexOf('function renderTrends('))+src.slice(src.indexOf('function fullChart('),src.indexOf('async function openTrend('));
 const fixture=JSON.parse(fs.readFileSync('validation/trend-chart-fixture.json','utf8'));
 const context={document:{},theme:fixture.themes[0]};
 const content=vm.runInNewContext(prefix+'const DAY=86400;'+funcs+';trendDetail(theme)',context);
@@ -18,7 +18,7 @@ const dest='C:/Users/19946/Desktop/育人项目/分析资料/趋势图修复预�
   await page.evaluate(({content,name,total})=>{document.getElementById('detailTitle').textContent=name+' · 走势与原帖';document.getElementById('detailBody').innerHTML=content+'<h3 class="post-group-title">对应原帖 · '+total+' 条</h3>';document.getElementById('detailDialog').showModal();},{content,name:fixture.themes[0].theme,total:fixture.themes[0].posts});
   await page.locator('.trend-reference-card').waitFor();
   assert.equal(await page.locator('.observed-point:visible').count(),fixture.themes[0].timeline.filter(x=>x.new_posts!=null).length);
-  assert.equal(await page.locator('.reference-projection').count(),0);assert(await page.locator('.collection-gap').count()>0);
+  assert.equal(await page.locator('.reference-projection').count(),0);assert.equal(await page.locator('.collection-gap').count(),0);assert(await page.locator('.estimated-point:visible').count()>0);
   assert.equal(await page.locator('.trend-method').getAttribute('open'),null);
   const labels=await page.locator('.trend-chart:visible .trend-date-label').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right};}));
   for(let i=1;i<labels.length;i++)assert(labels[i].left>=labels[i-1].right,'Date labels overlap');

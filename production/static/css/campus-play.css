@@ -129,3 +129,5 @@ button.account-badge{cursor:pointer;color:#29252d}button.account-badge:hover{tra
 @media(max-width:520px){.model-config-grid{grid-template-columns:1fr}.model-engine>summary{align-items:start}.model-engine>summary>span{max-width:55%}.model-connection-actions>span{flex-basis:100%}}
 
 .model-engine{padding-top:14px;padding-bottom:14px}.model-engine>summary>span{margin-left:auto}.model-engine>summary:after{content:"⌄";font-size:16px;color:var(--muted);transform:rotate(-90deg)}.model-engine[open]>summary:after{transform:none}
+
+.trend-plot-heading .trend-legend{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}.trend-legend .estimate-line{height:0;background:transparent;border-top:2px dashed; border-radius:0}.estimated-point{cursor:help}.trend-last-label{paint-order:stroke;stroke:#fffdf8;stroke-width:4px;stroke-linejoin:round}

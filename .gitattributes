@@ -56,3 +56,8 @@ validation/report-resume-*.json text eol=lf
 validation/report_resume*.py text eol=lf
 validation/report_recover*.py text eol=lf
 报告汇总故障修复说明_20261026.md text eol=lf
+
+validation/trend-estimate-*.json text eol=lf
+validation/trend_estimate*.py text eol=lf
+validation/trend_estimate*.cjs text eol=lf
+趋势预估展示说明_20261026.md text eol=lf

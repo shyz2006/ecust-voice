@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "version": "20261026t1",
+  "checks": [
+    {
+      "path": "static/js/campus-review.js",
+      "http": 200,
+      "sha256": "5d806011e573a809bcfec5cdca3f8ec8ee9051dc2aa9bc3ef67683f663b8af15",
+      "matches_local": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "http": 200,
+      "sha256": "6b4296032cc3db15200ff8f4825419cff998551973afb94648e864203c3cc3b5",
+      "matches_local": true
+    }
+  ]
+}

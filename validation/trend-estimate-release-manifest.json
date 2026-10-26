@@ -1,0 +1,39 @@
+{
+  "name": "trend-estimate-20261026-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/trend-estimate-20261026-r1",
+  "base_image_id": "sha256:50e9aa155fb04a9059c57f6b9132c371de15cb035f0c2d0a42f826976e7326ec",
+  "base_image": "bettafish:base-trend-estimate-20261026-r1",
+  "candidate_image": "bettafish:candidate-trend-estimate-20261026-r1",
+  "candidate_image_id": "sha256:fe095293b2bb2a3c0ed6f59233f3c03c691b97185925ebe6d98eec62a8e1e51b",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "2f8b3cd969bf5fa788614caeaa183a7cb758e737517ed413469cd5b2ad0ede14",
+      "expected_before": "f52920a5282550283fcc034433e768991280a6335f7ea35ec2be85c57d582303",
+      "before_sha256": "f52920a5282550283fcc034433e768991280a6335f7ea35ec2be85c57d582303",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "601d4473d9bfc29171fc9d0b445de83e4df40635099eaa16a29e59c89e937cbc",
+      "expected_before": "9beeb20b38e3f39e52588e750880b1213f778d590148eab86c3c308b07cc270f",
+      "before_sha256": "9beeb20b38e3f39e52588e750880b1213f778d590148eab86c3c308b07cc270f",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "5d806011e573a809bcfec5cdca3f8ec8ee9051dc2aa9bc3ef67683f663b8af15",
+      "expected_before": "549582f47449cd7ee7915fd9c8f271ce5f226b983e9a81712b8d17c59e0b78d6",
+      "before_sha256": "549582f47449cd7ee7915fd9c8f271ce5f226b983e9a81712b8d17c59e0b78d6",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "6b4296032cc3db15200ff8f4825419cff998551973afb94648e864203c3cc3b5",
+      "expected_before": "d9e129bdca0e0706bc6ce04b96c2b12818a3f3bab3cf123932a0b3e5e6e1173b",
+      "before_sha256": "d9e129bdca0e0706bc6ce04b96c2b12818a3f3bab3cf123932a0b3e5e6e1173b",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}
