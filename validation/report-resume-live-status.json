@@ -1,0 +1,20 @@
+{
+  "report": {
+    "task_id": "report_3dd07fc4ade143d29a23788db515c90a",
+    "status": "completed",
+    "progress": 100,
+    "created_at": "2026-10-26T09:21:23.085898",
+    "updated_at": "2026-10-26T09:25:45.446957",
+    "error_kind": null
+  },
+  "validated_reports": [
+    {
+      "html_readable": true,
+      "subsections": 12,
+      "chapters": 5,
+      "body_characters": 11323,
+      "bytes": 148165,
+      "sha256": "0f9e049a9ebdf8f0b9a6648edc3546a76b23683646c01b6760c8a5a16bd3649d"
+    }
+  ]
+}

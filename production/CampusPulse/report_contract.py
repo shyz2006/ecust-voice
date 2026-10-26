@@ -149,3 +149,15 @@ def validate_ir(document):
         if any(h not in text for h in headings):raise ReportInvalid('报告小节缺失')
     if not 8000<=total<=12000:raise ReportInvalid('报告正文须为8000至12000字')
     return total
+
+
+def validate_planned_ir_chapter(chapter, headings):
+    """Honor equal chapter budgets before five parallel chapters reach final assembly."""
+    from .research import _text_blocks
+    text=''.join(t for _,t,_ in _text_blocks(chapter.get('blocks',[])))
+    size=len(''.join(text.split()))
+    if not 1600 <= size <= 2400:
+        raise ReportInvalid('本章正文须为1600至2400字，当前'+str(size)+'字；请按规划调整本章，保留来源和具体分析')
+    if any(h not in text for h in headings):
+        raise ReportInvalid('报告缺少模板规定的小节标题')
+    return size

@@ -51,3 +51,8 @@ validation/model-settings-*.json text eol=lf
 validation/model_settings*.py text eol=lf
 validation/model_settings*.cjs text eol=lf
 模型配置恢复说明_20261026.md text eol=lf
+
+validation/report-resume-*.json text eol=lf
+validation/report_resume*.py text eol=lf
+validation/report_recover*.py text eol=lf
+报告汇总故障修复说明_20261026.md text eol=lf

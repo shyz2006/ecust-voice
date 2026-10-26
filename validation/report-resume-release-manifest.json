@@ -1,0 +1,53 @@
+{
+  "name": "report-resume-20261026-r2",
+  "stage": "/home/ubuntu/bettafish/deploy/report-resume-20261026-r2",
+  "base_image_id": "sha256:9cd6240d35d8162bd3ee585b7e6a9fc47123b40b166baf885c87a857be78eff6",
+  "base_image": "bettafish:base-report-resume-20261026-r2",
+  "candidate_image": "bettafish:candidate-report-resume-20261026-r2",
+  "candidate_image_id": "sha256:50e9aa155fb04a9059c57f6b9132c371de15cb035f0c2d0a42f826976e7326ec",
+  "files": [
+    {
+      "path": "ReportEngine/core/template_parser.py",
+      "candidate_sha256": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc",
+      "expected_before": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc",
+      "before_sha256": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b",
+      "expected_before": "9958722225c5e62b536090369825db1810b693d97c4dd553653d537dd7d66fd2",
+      "before_sha256": "9958722225c5e62b536090369825db1810b693d97c4dd553653d537dd7d66fd2",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f",
+      "expected_before": "be8e65763412260708952c5fccb9d0b4262c8e414ea83ebaa82fa57391c6d9e0",
+      "before_sha256": "be8e65763412260708952c5fccb9d0b4262c8e414ea83ebaa82fa57391c6d9e0",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471",
+      "expected_before": "f5b3d1c4128aec93cdbd482a2b28f26f63e5d0c80058aec2ac6f9bac4f3ab51e",
+      "before_sha256": "f5b3d1c4128aec93cdbd482a2b28f26f63e5d0c80058aec2ac6f9bac4f3ab51e",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_contract.py",
+      "candidate_sha256": "e3f7d52da1d7ce02bfef82dcdf52ae0fed42a183867571878cd92f476371fd85",
+      "expected_before": "6f8eb7f6dd5dcfc5f084ae89b3b53ca2c6f106015d78888eda6751247738d7b8",
+      "before_sha256": "6f8eb7f6dd5dcfc5f084ae89b3b53ca2c6f106015d78888eda6751247738d7b8",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/nodes/chapter_generation_node.py",
+      "candidate_sha256": "68e85a6fd70030da754bfb379d4a43612e79d7979fb8df2e66d50992febdeb53",
+      "expected_before": "14d45a9b0c9c01f7c72477ee9a9c7d15a4b0f6ebec4496ae312b12b8a61d8db4",
+      "before_sha256": "14d45a9b0c9c01f7c72477ee9a9c7d15a4b0f6ebec4496ae312b12b8a61d8db4",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

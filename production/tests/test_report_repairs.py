@@ -59,7 +59,7 @@ class ReportRepairTests(unittest.TestCase):
         from CampusPulse import research
         response=Mock(status_code=200);response.json.return_value={'success':True}
         with patch('utils.research_runner.all_engines_completed',return_value=True),patch('utils.research_runner._config_port',return_value=5000),patch('utils.task_runtime.read_task_metadata',return_value={'query':'原问题'}),patch('requests.post',return_value=response) as post:
-            result=research.resume_report('task_test')
+            result=research._submit_report('task_test')
         self.assertTrue(post.call_args.kwargs['json']['regenerate']);self.assertEqual(result['status'],'reporting')
     def test_cold_storage_allows_explicit_lease_transaction(self):
         from CampusPulse import storage
@@ -143,3 +143,47 @@ class WeeklyCheckpointTests(unittest.TestCase):
         self.assertEqual(summarize.call_count,2);self.assertIn('周报引用',summarize.call_args.args[1]);self.assertEqual(weekly.get('test')['status'],'ready')
 
 if __name__=='__main__':unittest.main()
+
+
+class ReportTemplateAndRecoveryTests(unittest.TestCase):
+    def test_real_public_event_template_has_five_chapters_and_twelve_subsections(self):
+        from ReportEngine.core.template_parser import parse_template_sections
+        template=Path('ReportEngine/report_template/社会公共热点事件分析报告模板.md').read_text(encoding='utf-8')
+        chapters=parse_template_sections(template)
+        self.assertEqual(len(chapters),5)
+        self.assertEqual(sum(len(c.outline) for c in chapters),12)
+        self.assertEqual(chapters[0].number,'1.0')
+    def test_single_level_markdown_chapters_are_preserved(self):
+        from ReportEngine.core.template_parser import parse_template_sections
+        self.assertEqual(len(parse_template_sections('# One\ntext\n# Two')),2)
+    def test_recovery_accepts_without_waiting_and_deduplicates(self):
+        from CampusPulse import research
+        import threading
+        entered=threading.Event();release=threading.Event();finished=threading.Event()
+        def blocked(tid):
+            entered.set();release.wait(3);finished.set()
+        with patch('utils.research_runner.all_engines_completed',return_value=True),patch.object(research,'_submit_report',side_effect=blocked) as submit:
+            first=research.resume_report('task_async_test')
+            self.assertEqual(first['status'],'reporting');self.assertTrue(entered.wait(1))
+            self.assertTrue(research.resume_report('task_async_test')['reused'])
+            self.assertEqual(submit.call_count,1)
+            release.set();self.assertTrue(finished.wait(1))
+
+
+class ParallelReportBudgetTests(unittest.TestCase):
+    def test_individually_short_chapters_cannot_pass_planned_budget(self):
+        short={'blocks':[{'type':'paragraph','inlines':[{'text':'材料'*600}]}]}
+        with self.assertRaises(contract.ReportInvalid):contract.validate_planned_ir_chapter(short,[])
+    def test_five_accepted_budgets_imply_valid_total_range(self):
+        for size in (1600,2000,2400):
+            chapter={'blocks':[{'type':'paragraph','inlines':[{'text':'材'*size}]}]}
+            total=sum(contract.validate_planned_ir_chapter(chapter,[]) for _ in range(5))
+            self.assertTrue(8000<=total<=12000)
+    def test_actual_chapter_prompt_receives_edit_request_and_previous_draft(self):
+        from ReportEngine.nodes.chapter_generation_node import ChapterGenerationNode
+        from ReportEngine.core.template_parser import TemplateSection
+        node=ChapterGenerationNode.__new__(ChapterGenerationNode)
+        section=TemplateSection('1.0 摘要','summary',10,2,'1.0 摘要',chapter_id='S1')
+        payload=node._build_payload(section,{'revision_feedback':'当前1200字，扩写至1600至2400字','previous_chapter_draft':'已有正文及引用'})
+        self.assertIn('1600至2400',payload['revisionRequest']['issue'])
+        self.assertEqual(payload['revisionRequest']['previousDraft'],'已有正文及引用')
