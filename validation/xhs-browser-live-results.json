@@ -1,0 +1,13 @@
+{
+  "notes_uploaded": 0,
+  "model_calls": 0,
+  "emails_sent": 0,
+  "https_nginx_scoped_ping": 200,
+  "token_denied_config": true,
+  "anonymous_loopback_denied": true,
+  "helper_zip_http": 200,
+  "helper_zip_verified": true,
+  "ui_module_http": 200,
+  "real_user_capture_verified": false,
+  "temporary_pair_restored": true
+}

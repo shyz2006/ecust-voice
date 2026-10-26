@@ -61,3 +61,18 @@ validation/trend-estimate-*.json text eol=lf
 validation/trend_estimate*.py text eol=lf
 validation/trend_estimate*.cjs text eol=lf
 趋势预估展示说明_20261026.md text eol=lf
+
+validation/xhs-school-*.json text eol=lf
+validation/xhs_school*.py text eol=lf
+华理小红书校园检索修复说明_20261026.md text eol=lf
+
+host-deployment/Dockerfile.local text eol=lf
+validation/xhs-browser-*.json text eol=lf
+validation/xhs-auto-*.json text eol=lf
+validation/xhs-extension-*.json text eol=lf
+validation/xhs_browser*.py text eol=lf
+validation/xhs_*.cjs text eol=lf
+browser-tools/** text eol=lf
+
+开发交接说明_20261026.md text eol=lf
+小红书本机定时同步说明_20261026.md text eol=lf

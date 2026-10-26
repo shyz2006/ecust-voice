@@ -1,0 +1,22 @@
+{
+  "source_hash": "2ae60a6a1e140ecc4499e40327bd18461cfa9b3f519081b9371feb25fe6ad04c",
+  "cache_max_age_seconds": 21600,
+  "query_limit": 4,
+  "provided_link_validation": {
+    "input": 3,
+    "resolved_count": 3,
+    "distinct_notes": 3,
+    "all_platform_notes": true,
+    "published_dates_fabricated": false,
+    "inserted_into_post_statistics": false
+  },
+  "pipeline_running": false,
+  "automatic_collection": {
+    "cache_present": false,
+    "count": 0,
+    "error": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论",
+    "refreshed_source_cache": true
+  },
+  "model_calls": 0,
+  "emails_sent": 0
+}

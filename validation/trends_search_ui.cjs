@@ -19,7 +19,7 @@ assert(svg.includes('参考范围'));assert(!svg.includes('class="collection-gap
 assert(!/NaN|undefined/.test(svg));
 context.state.overview.coverage.forEach(c=>c.ready=true);vm.runInNewContext('renderTrends()',context);assert(!elements.trendStatus.hidden);context.state.overview.themes.forEach(t=>t.timeline.forEach(p=>p.new_posts=p.posts));vm.runInNewContext('renderTrends()',context);assert(elements.trendStatus.hidden);
 for(const path of ['production/templates/index.html','production/CampusPulse/templates/pulse.html']){
- const html=fs.readFileSync(path,'utf8');assert(html.includes('id="trendStatus"'));assert(html.includes('id="hotScope"'));assert(html.includes('campus-review.js?v=20261026t1'));
+ const html=fs.readFileSync(path,'utf8');assert(html.includes('id="trendStatus"'));assert(html.includes('id="hotScope"'));assert(html.includes('campus-review.js?v=20261026b1'));
 }
 const result={passed:true,dated_fallback_comparison:true,partial_collection_notice:true,zero_reference_visible:true,separate_reference_card_and_range:true,gap_counts_not_filled_as_complete:true,templates_updated:2};
 fs.writeFileSync('validation/trends-search-ui-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

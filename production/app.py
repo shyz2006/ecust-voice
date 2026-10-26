@@ -148,6 +148,10 @@ def auth_check():
 
     nginx 直接反代的 Streamlit 引擎页（/insight/ 等）不经过 Flask，所以在这里按原始路径拦截普通用户。
     """
+    original = urlsplit(request.headers.get('X-Original-URI') or '/').path
+    if original in ('/pulse/api/xhs-browser/push','/pulse/api/xhs-browser/ping'):
+        from CampusPulse.xhs_browser_import import token_owner
+        return ('',204 if token_owner(request.headers.get('Authorization')) else 401)
     if not access.session_valid():
         return ('', 401)
     original = urlsplit(request.headers.get('X-Original-URI') or '/').path
@@ -270,6 +274,8 @@ def manage_account(username):
 def enforce_account_role():
     """普通用户只能使用校园观察与研究服务；模型、检索、邮件、采集与引擎接口仅管理员可用。"""
     path = request.path
+    # The route independently requires a scoped browser upload token, including on loopback.
+    if path in ('/pulse/api/xhs-browser/push','/pulse/api/xhs-browser/ping'):return None
     if session.get('authenticated') is True and not access.session_valid():
         # 账号被停用、删除或改过密码：旧会话作废
         session.clear()

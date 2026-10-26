@@ -52,7 +52,7 @@ class SchoolSearchExpansionTests(unittest.TestCase):
         self.assertEqual(len(found[0]['extra']['search_queries']),4)
     def test_search_pool_is_bounded_at_one_hundred_distinct_notes(self):
         def results(query,**kwargs):
-            offset=0 if query=='华东理工大学' else 50
+            offset=0 if 'site:www.xiaohongshu.com/explore' in query else 50
             return [note(i+offset) for i in range(50)]
         with patch.object(campus_social.search,'web_search',side_effect=results) as call:
             found,error=campus_social.retrieve('xiaohongshu-school')

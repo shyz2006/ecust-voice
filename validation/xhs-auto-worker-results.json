@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "fixture_only": true,
+  "checks": [
+    "alarm_rotates_uploads_and_preserves_schedule",
+    "verification_pauses_without_upload"
+  ],
+  "real_user_capture_verified": false
+}

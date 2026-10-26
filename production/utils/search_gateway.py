@@ -83,8 +83,12 @@ def _event(scope: str, kind: str, query: str, local: int = 0, detail: str = "") 
         pass
 
 
-def cache_get(endpoint: str, query: str, freshness: str, count: int, answer: bool) -> Optional[dict]:
+def cache_get(endpoint: str, query: str, freshness: str, count: int, answer: bool, *, max_age_seconds: Optional[float] = None) -> Optional[dict]:
     ttl = _TTL_HOURS.get(freshness or "", DEFAULT_TTL_HOURS) * 3600
+    if max_age_seconds is not None:
+        ttl = min(ttl, max(0, float(max_age_seconds)))
+    if ttl <= 0:
+        return None
     try:
         conn = _connect()
         row = conn.execute("SELECT created, count, answer, payload FROM cache WHERE key=?",

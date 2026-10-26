@@ -69,3 +69,9 @@ COPY static/js/campus-play.js static/js/campus-play.js
 COPY utils/topic_guard.py utils/topic_guard.py
 
 COPY static/js/campus-weekly.js static/js/campus-weekly.js
+
+COPY static/js/campus-xhs-sync.js static/js/campus-xhs-sync.js
+
+COPY static/downloads static/downloads
+
+COPY static/js/campus-model-settings.js static/js/campus-model-settings.js

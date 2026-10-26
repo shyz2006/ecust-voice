@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "disposable_profile": true,
+  "fixture_only": true,
+  "extension_manifest_loaded": true,
+  "real_extension_injection_and_upload": true,
+  "real_user_capture_verified": false
+}

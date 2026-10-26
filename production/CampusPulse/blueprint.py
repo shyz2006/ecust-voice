@@ -475,6 +475,57 @@ def api_collect():
     return jsonify({"success": True, "message": "已开始采集，约 30~90 秒后刷新"})
 
 
+@pulse_bp.route('/api/xhs-browser/status',methods=['GET'])
+@pulse_bp.route('/api/xhs-browser/import',methods=['POST'])
+@pulse_bp.route('/api/xhs-browser/key',methods=['POST'])
+def xhs_browser_sync():
+    from urllib.parse import urlsplit
+    from . import xhs_browser_import as bridge
+    if session.get('authenticated') is not True or not _username():
+        return jsonify(success=False,message='请先登录管理员账号'),401
+    if not access.is_admin():return jsonify(success=False,message='仅管理员可同步采集资料'),403
+    if request.method=='GET':
+        response=jsonify(success=True,**bridge.status());response.headers['Cache-Control']='no-store';return response
+    origin=request.headers.get('Origin')
+    if request.headers.get('Sec-Fetch-Site')=='cross-site' or (origin and urlsplit(origin).netloc!=request.host):
+        return jsonify(success=False,message='请从本站设置页面同步'),403
+    if not request.is_json:return jsonify(success=False,message='请选择采集助手导出的JSON文件'),400
+    if (request.content_length or 0)>131072 or len(request.get_data(cache=True))>131072:
+        return jsonify(success=False,message='文件过大，每次最多同步三十条卡片'),413
+    if request.path.endswith('/key'):
+        body=request.get_json(silent=True)
+        action=body.get('action') if isinstance(body,dict) else None
+        if action=='revoke':
+            bridge.revoke_pair();return jsonify(success=True,message='已断开本机自动同步')
+        if action!='pair':return jsonify(success=False,message='请选择连接或断开操作'),400
+        response=jsonify(success=True,**bridge.rotate_pair(_username()))
+        response.headers['Cache-Control']='no-store';return response
+    try:
+        result=bridge.save(request.get_json(silent=True),_username())
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    bridge.request_refresh()
+    return jsonify(success=True,**result,message='文件已接收，正在更新校园统计')
+
+
+@pulse_bp.route('/api/xhs-browser/push',methods=['POST'])
+@pulse_bp.route('/api/xhs-browser/ping',methods=['GET'])
+def xhs_browser_token_sync():
+    from . import xhs_browser_import as bridge
+    owner=bridge.token_owner(request.headers.get('Authorization'))
+    if not owner:return jsonify(success=False,message='同步码已失效，请在校园平台重新连接'),401
+    if request.method=='GET':
+        response=jsonify(success=True,message='连接成功，仅允许上传校园笔记')
+        response.headers['Cache-Control']='no-store';return response
+    if not request.is_json:return jsonify(success=False,message='请使用JSON提交卡片'),400
+    if (request.content_length or 0)>131072 or len(request.get_data(cache=True))>131072:
+        return jsonify(success=False,message='每次最多同步三十条卡片'),413
+    try:result=bridge.auto_push(request.get_json(silent=True),owner)
+    except ValueError as exc:return jsonify(success=False,message=str(exc)),400
+    except RuntimeError as exc:return jsonify(success=False,message=str(exc)),429
+    bridge.request_refresh()
+    return jsonify(success=True,**result)
+
+
 @pulse_bp.route("/api/route", methods=["POST"])
 def api_route():
     query = (request.get_json(silent=True) or {}).get("query", "").strip()

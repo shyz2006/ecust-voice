@@ -87,7 +87,7 @@ function renderTrends(){
 function showDialog(title){
  const dialog=$('detailDialog');state.modalVersion++;$('detailTitle').textContent=title;$('detailBody').innerHTML=empty('正在读取…');if(!dialog.open)dialog.showModal();$('detailBody').scrollTop=0;return state.modalVersion;
 }
-function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url,p.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开原帖 ↗')+'</article>').join('')||empty('当前范围暂无对应帖子');}
+function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+(p.content_kind==='browser_card'?' · 本机登录同步':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url,p.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开原帖 ↗')+'</article>').join('')||empty('当前范围暂无对应帖子');}
 async function openPosts(params,title){const version=showDialog(title);try{const d=await api('/pulse/api/revision/posts?'+qs(params));if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="muted">'+num(d.total)+' 条 · 按发布时间倒序</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 function fullChart(t){
  const r=t.reference||{},display=trendDisplayPoints(t.timeline),hasEstimates=display.some(p=>p.estimated);
@@ -279,6 +279,7 @@ async function config(tab='llm'){
   document.querySelectorAll('[data-service]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.service===tab)));
   $('configForm').hidden=tab==='mail'||tab==='accounts';$('mailSettingsPane').hidden=tab!=='mail';$('accountsPane').hidden=tab!=='accounts';$('configStatus').textContent='';
   if(!$('configDialog').open)$('configDialog').showModal();
+  window.CampusXhsSync?.toggle(tab==='search');
   if(tab==='mail'){await window.CampusWeekly.fill();return;}
   if(tab==='accounts'){await window.CampusAccounts.fill();return;}
   if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
