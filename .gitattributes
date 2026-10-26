@@ -76,3 +76,6 @@ browser-tools/** text eol=lf
 
 开发交接说明_20261026.md text eol=lf
 小红书本机定时同步说明_20261026.md text eol=lf
+
+validation/xhs-helper-*.json text eol=lf
+validation/xhs_helper*.py text eol=lf
