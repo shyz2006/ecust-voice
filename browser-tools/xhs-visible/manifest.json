@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "华理校园笔记 · 本机同步助手",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "在本机正常登录后定时读取华理公开搜索卡片并同步到校园平台，保留手动导出。",
   "permissions": [
     "activeTab",

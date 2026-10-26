@@ -16,8 +16,16 @@ const {chromium}=require('C:/Users/19946/.cache/codex-runtimes/codex-primary-run
   assert.equal(uploaded.length,1);assert.equal(uploaded[0].items[0].title,'华理校园测试卡片');assert.equal(uploaded[0].items[0].excerpt,'');
   const status=await worker.evaluate(()=>chrome.storage.local.get(['enabled','last']));assert(status.enabled);assert.equal(status.last.state,'complete');
   await popup.locator('#pause').click();await popup.locator('#autoStatus').filter({hasText:'自动同步未运行'}).waitFor();
+  const existing=await context.newPage();await existing.goto('https://www.xiaohongshu.com/search_result?keyword=%E5%8D%8E%E7%90%86&type=51');
+  await existing.setContent('<section class="note-item"><a style="display:none" href="/search_result/bbbbbbbbbbbbbbbbbbbbbbbb?xsec_token=fixture-link"></a><div style="height:100px">公开封面</div><div class="title">华理当前页测试</div></section>');
+  await worker.evaluate(async()=>{const tabs=await chrome.tabs.query({active:true,lastFocusedWindow:true});await chrome.storage.local.set({last:{state:'paused',at:Date.now()-600000},ownedTab:tabs[0].id});});
+  await popup.evaluate(()=>chrome.runtime.sendMessage({action:'sync-current'}));
+  for(let n=0;n<150&&uploaded.length<2;n++)await popup.waitForTimeout(100);
+  await popup.locator('#autoStatus').filter({hasText:'已同步 1 条'}).waitFor({timeout:15000});
+  assert.equal(uploaded.length,2,JSON.stringify(await worker.evaluate(()=>chrome.storage.local.get('last'))));assert.equal(uploaded[1].items[0].title,'华理当前页测试');assert(!existing.isClosed());
+  assert.equal((await worker.evaluate(()=>chrome.storage.local.get('enabled'))).enabled,false);
   await popup.screenshot({path:'C:/Users/19946/Desktop/育人项目/分析资料/小红书本机同步预览_20261026/extension.png'});
-  const result={passed:true,disposable_profile:true,fixture_only:true,extension_manifest_loaded:true,real_extension_injection_and_upload:true,real_user_capture_verified:false};
+  const result={passed:true,disposable_profile:true,fixture_only:true,extension_manifest_loaded:true,real_extension_injection_and_upload:true,current_page_upload_without_closing_user_tab:true,real_user_capture_verified:false};
   fs.writeFileSync('validation/xhs-extension-browser-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
  }finally{await context.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

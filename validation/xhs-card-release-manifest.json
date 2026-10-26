@@ -1,0 +1,18 @@
+{
+  "name": "xhs-card-20261026-r3",
+  "stage": "/home/ubuntu/bettafish/deploy/xhs-card-20261026-r3",
+  "base_image_id": "sha256:94f891cddd75e63877c9f4c756a8929095fc12bbf8801ad157a941ac8f38a565",
+  "base_image": "bettafish:base-xhs-card-20261026-r3",
+  "candidate_image": "bettafish:candidate-xhs-card-20261026-r3",
+  "candidate_image_id": "sha256:efd579a7bda7bdaebd1a8d9e095c2aeb05ab7c1cc825d92e41d126dd1629b171",
+  "files": [
+    {
+      "path": "static/downloads/ecust-xhs-browser-helper.zip",
+      "candidate_sha256": "287c1719bed9de1e7dec6c5c873d13db74b01ee3d2638fb59f813273eed675ad",
+      "expected_before": "46acb36e63f460a2032c41d18239ffb22ce587229c57b9a193e7b2ff6f398b3f",
+      "before_sha256": "46acb36e63f460a2032c41d18239ffb22ce587229c57b9a193e7b2ff6f398b3f",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

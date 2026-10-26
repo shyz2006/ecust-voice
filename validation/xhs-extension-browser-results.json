@@ -4,5 +4,6 @@
   "fixture_only": true,
   "extension_manifest_loaded": true,
   "real_extension_injection_and_upload": true,
+  "current_page_upload_without_closing_user_tab": true,
   "real_user_capture_verified": false
 }

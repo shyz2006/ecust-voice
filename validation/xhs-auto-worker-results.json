@@ -3,7 +3,9 @@
   "fixture_only": true,
   "checks": [
     "alarm_rotates_uploads_and_preserves_schedule",
-    "verification_pauses_without_upload"
+    "verification_pauses_without_upload",
+    "resume_and_manual_upload_preserve_current_page",
+    "no_match_preserves_read_diagnostics"
   ],
   "real_user_capture_verified": false
 }
