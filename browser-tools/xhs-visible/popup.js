@@ -1,7 +1,7 @@
 (()=>{'use strict';const button=document.getElementById('capture'),status=document.getElementById('status'),download=document.getElementById('download');
-const el=id=>document.getElementById(id);
+const el=id=>document.getElementById(id);let initialized=false;
 async function send(message){const result=await chrome.runtime.sendMessage(message);if(!result?.success)throw Error(result?.message||'助手尚未就绪');return result;}
-async function refresh(){try{const s=await send({action:'state'});el('hours').value=String(s.hours);el('run').hidden=!s.enabled;el('pause').hidden=!s.enabled;el('connect').textContent=s.enabled?'保存同步设置':s.paired?'恢复自动同步':'连接并开启自动同步';el('autoStatus').textContent=(s.enabled?'自动同步已开启':'自动同步未运行')+(s.last?' · '+s.last.message:'')+(s.alarm?.scheduledTime?' · 下次 '+new Date(s.alarm.scheduledTime).toLocaleString('zh-CN'):'');if(s.paired)el('token').placeholder='已保存同步码，留空沿用';}catch(e){el('autoStatus').textContent=e.message;}}
+async function refresh(){try{const s=await send({action:'state'});if(!initialized){el('hours').value=String(s.hours);initialized=true;}el('run').hidden=!s.enabled;el('pause').hidden=!s.enabled;el('connect').textContent=s.enabled?'保存同步设置':s.paired?'恢复自动同步':'连接并开启自动同步';el('autoStatus').textContent=(s.enabled?'自动同步已开启':'自动同步未运行')+(s.last?' · '+s.last.message:'')+(s.alarm?.scheduledTime?' · 下次 '+new Date(s.alarm.scheduledTime).toLocaleString('zh-CN'):'');if(s.paired)el('token').placeholder='已保存同步码，留空沿用';}catch(e){el('autoStatus').textContent=e.message;}}
 for(const [id,action] of [['connect','connect'],['pause','pause'],['run','run']])el(id).onclick=async()=>{el(id).disabled=true;try{await send({action,token:el('token').value,hours:el('hours').value});el('token').value='';await refresh();}catch(e){el('autoStatus').textContent=e.message;}finally{el(id).disabled=false;}};
 refresh();setInterval(refresh,3000);
 button.onclick=async()=>{button.disabled=true;status.textContent='正在读取已加载的卡片…';try{

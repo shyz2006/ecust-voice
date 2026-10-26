@@ -1,0 +1,18 @@
+{
+  "name": "xhs-helper-20261026-r2",
+  "stage": "/home/ubuntu/bettafish/deploy/xhs-helper-20261026-r2",
+  "base_image_id": "sha256:8b3d4732c0d3299b72a684bf47f1fc0350dc847d2637594aa826eafe6fe82d81",
+  "base_image": "bettafish:base-xhs-helper-20261026-r2",
+  "candidate_image": "bettafish:candidate-xhs-helper-20261026-r2",
+  "candidate_image_id": "sha256:94f891cddd75e63877c9f4c756a8929095fc12bbf8801ad157a941ac8f38a565",
+  "files": [
+    {
+      "path": "static/downloads/ecust-xhs-browser-helper.zip",
+      "candidate_sha256": "46acb36e63f460a2032c41d18239ffb22ce587229c57b9a193e7b2ff6f398b3f",
+      "expected_before": "5536198d2c19946b26ef3d11b43b4b251a3b0c27197a4a5c9ea843886a9c4271",
+      "before_sha256": "5536198d2c19946b26ef3d11b43b4b251a3b0c27197a4a5c9ea843886a9c4271",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

@@ -10,6 +10,7 @@ const {chromium}=require('C:/Users/19946/.cache/codex-runtimes/codex-primary-run
   await context.route('https://www.xiaohongshu.com/**',r=>r.fulfill({contentType:'text/html; charset=utf-8',body:'<!doctype html><meta charset="utf-8"><section class="note-item"><a class="cover" href="/search_result/aaaaaaaaaaaaaaaaaaaaaaaa?xsec_token=fixture-link"><img width="100" height="100" alt="华理校园测试卡片"></a><a class="title" href="/explore/aaaaaaaaaaaaaaaaaaaaaaaa">华理校园测试卡片</a></section>'}));
   let worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker',{timeout:15000});
   const id=new URL(worker.url()).host,popup=await context.newPage();await popup.goto('chrome-extension://'+id+'/popup.html');
+  await popup.locator('#hours').selectOption('12');await popup.waitForTimeout(3200);assert.equal(await popup.locator('#hours').inputValue(),'12');
   await popup.locator('#token').fill('ecust_xhs_'+'a'.repeat(43));await popup.locator('#connect').click();
   await popup.locator('#autoStatus').filter({hasText:'已同步 1 条'}).waitFor({timeout:35000});
   assert.equal(uploaded.length,1);assert.equal(uploaded[0].items[0].title,'华理校园测试卡片');assert.equal(uploaded[0].items[0].excerpt,'');
