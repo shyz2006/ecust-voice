@@ -1,0 +1,136 @@
+{
+  "status": {
+    "running": false,
+    "enriching": false,
+    "last_error": null,
+    "last_complete": 1792936611,
+    "interval_min": 30
+  },
+  "batches_by_day": {
+    "2026-10-23": {
+      "complete": 43
+    },
+    "2026-10-25": {
+      "complete": 9
+    }
+  },
+  "last_batches": [
+    {
+      "ts": "2026-10-25T19:13:58+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T19:44:42+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T20:15:25+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T20:35:09+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T20:50:00+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T21:20:38+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T21:50:58+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-25T21:56:51+08:00",
+      "status": "complete",
+      "error": null
+    }
+  ],
+  "first_gap_before_recovery": [
+    {
+      "ts": "2026-10-23T00:13:19+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T00:43:48+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T01:14:26+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T01:45:00+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T02:15:45+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T02:46:14+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T03:16:50+08:00",
+      "status": "complete",
+      "error": null
+    },
+    {
+      "ts": "2026-10-23T03:47:16+08:00",
+      "status": "complete",
+      "error": null
+    }
+  ],
+  "published_records": [
+    {
+      "date": "2026-10-23",
+      "source": "huyou-school",
+      "unique": 158
+    },
+    {
+      "date": "2026-10-23",
+      "source": "tieba-school",
+      "unique": 8
+    },
+    {
+      "date": "2026-10-24",
+      "source": "huyou-school",
+      "unique": 5
+    },
+    {
+      "date": "2026-10-25",
+      "source": "huyou-school",
+      "unique": 58
+    },
+    {
+      "date": "2026-10-24",
+      "source": "tieba-school",
+      "unique": 12
+    },
+    {
+      "date": "2026-10-25",
+      "source": "tieba-school",
+      "unique": 10
+    }
+  ],
+  "unknown_published": {
+    "huyou-school": 13
+  }
+}

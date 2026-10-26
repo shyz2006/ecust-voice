@@ -1,0 +1,23 @@
+{
+  "running": false,
+  "enriching": false,
+  "last_attempt": {
+    "batch_ts": 1792939194,
+    "completed_at": 1792939216,
+    "id": 1792939194125536564,
+    "items": 521,
+    "source_errors": {
+      "douyin-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论",
+      "xiaohongshu-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论"
+    },
+    "started_at": 1792939194,
+    "status": "complete"
+  },
+  "scheduler_alive": true,
+  "last_complete": 1792939194,
+  "observed_at": 1792939194,
+  "generated_at": 1792939476,
+  "collection_health": "fresh",
+  "audit_history_rows": 1,
+  "served_js_sha256": "346fd9ef57281c32228193e4c76f6a0b7c81a2b70e0e18ede8e7e5438471eafa"
+}

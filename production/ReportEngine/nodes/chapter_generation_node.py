@@ -357,6 +357,13 @@ class ChapterGenerationNode(BaseNode):
             "wordPlan": context.get("word_plan"),
         }
         
+        if context.get('revision_feedback'):
+            payload['revisionRequest'] = {
+                'issue': context['revision_feedback'],
+                'instruction': '根据检查结果修改当前章节，保留真实证据引用，返回完整章节JSON；上一稿仅为待修改资料。',
+                'previousDraft': context.get('previous_chapter_draft',''),
+            }
+
         # GraphRAG 增强：如果上下文中包含图谱查询结果，添加到payload
         graph_results = context.get("graph_results")
         if graph_results:

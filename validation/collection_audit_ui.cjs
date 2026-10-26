@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const src=fs.readFileSync('production/static/js/campus-review.js','utf8');
+const code=src.slice(src.indexOf('function renderCampus('),src.indexOf('function metric('));
+const nodes={},$=id=>nodes[id]||(nodes[id]={textContent:'',innerHTML:'',querySelector:()=>({textContent:''}),classList:{toggle:(k,v)=>{nodes[id].error=v;}}});
+const context={$,state:{overview:{total_7d:2,practice_count:0,generated_at:2000000,observed_at:1992800,collection_health:'delayed',themes:[],emotion:{}}},num:String,date:v=>'DATE-'+v,empty:String,esc:String};
+vm.runInNewContext(code+';renderCampus()',context);
+assert(nodes.campusUpdated.textContent.includes('1992800'));assert(!nodes.campusUpdated.textContent.includes('2000000'));assert(nodes.campusUpdated.textContent.includes('采集延迟'));assert(nodes.campusUpdated.error);
+context.state.overview.collection_health='fresh';vm.runInNewContext('renderCampus()',context);assert(!nodes.campusUpdated.error);
+context.state.overview.observed_at=null;vm.runInNewContext('renderCampus()',context);assert.equal(nodes.campusUpdated.textContent,'等待首次采集');
+const result={passed:true,shows_observation_time:true,delayed_collection_visible:true,empty_state:true};fs.writeFileSync('validation/collection-audit-ui-results.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

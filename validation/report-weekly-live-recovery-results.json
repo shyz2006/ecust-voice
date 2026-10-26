@@ -1,0 +1,18 @@
+{
+  "status": "ready",
+  "chapters": 5,
+  "sections": 12,
+  "word_count": 9824,
+  "html_bytes": 54834,
+  "linked_evidence": 47,
+  "missing_reference_targets": 0,
+  "delivery_config_ready": true,
+  "automatic_sending_enabled": true,
+  "send_time": "14:00",
+  "weekday": 4,
+  "recipient_count": 4,
+  "send_attempts": 0,
+  "emails_sent_this_validation": 0,
+  "historical_send_decision": "preview_only_requested_by_user",
+  "resend_attempted": false
+}

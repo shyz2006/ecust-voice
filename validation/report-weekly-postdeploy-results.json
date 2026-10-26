@@ -1,0 +1,8 @@
+{
+  "login_http": 200,
+  "ledger_http": 200,
+  "xiaohongshu_hotlist_unique": 0,
+  "xiaohongshu_campus_unique": 0,
+  "served_new_ledger_js": true,
+  "tests_passed": 33
+}

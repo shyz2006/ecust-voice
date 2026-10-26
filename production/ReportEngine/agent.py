@@ -502,6 +502,8 @@ class ReportAgent:
                 raise ValueError("模板无法解析出章节，请检查模板内容。")
             if (getattr(self, '_task_report_meta', {}) or {}).get('report_style') == 'concise' and len(sections) != 4:
                 raise ValueError('简明事件报告模板必须恰好包含四章。')
+            if self._task_report_meta.get('report_style') == 'public_event' and len(sections) != 5:
+                raise ValueError('社会公共热点报告必须包含五章')
             emit('stage', {'stage': 'template_sliced', 'section_count': len(sections)})
 
             template_text = template_result.get('template_content', '')
@@ -558,7 +560,6 @@ class ReportAgent:
                         if isinstance(sub, dict):
                             sub.update(targetWords=max(80,600//max(1,len(subs))), min=50, max=max(120,700//max(1,len(subs))))
             if self._task_report_meta.get('report_style') == 'public_event':
-                if len(sections)!=5:raise ValueError('社会公共热点报告必须包含五章')
                 word_plan['totalWords']=10000
                 word_plan['globalGuidelines']=['全文8000至12000字，目标10000字；逐一覆盖模板十二小节，不重复凑字。','事实必须引用原始证据；时间、传播路径和情绪比例未知时明确证据不足，分析须有具体材料、替代解释及核查方法。','第五章给介入/关注/规避的判断依据、触发条件、责任角色、时限和验收；未知项待确认。']
                 word_plan['chapters']=[dict(e,targetWords=2000,min=1600,max=2400,minWords=1600,maxWords=2400,sections=[]) for e in word_plan.get('chapters',[])]
@@ -668,11 +669,12 @@ class ReportAgent:
                 best_sparse_candidate: Dict[str, Any] | None = None
                 best_sparse_score = -1
                 fallback_used = False
+                section_context = dict(generation_context)
                 while attempt <= chapter_max_attempts:
                     try:
                         chapter_payload = self.chapter_generation_node.run(
                             section,
-                            generation_context,
+                            section_context,
                             run_dir,
                             stream_callback=chunk_callback
                         )
@@ -683,18 +685,17 @@ class ReportAgent:
                                 body = ''.join(str(run.get('text', '')) for block in chapter_payload.get('blocks', [])
                                                for run in block.get('inlines', []))
                                 if self._task_report_meta.get('report_style')=='public_event':
-                                    from CampusPulse.research import _text_blocks
-                                    from CampusPulse.report_contract import CHAPTERS
-                                    text=''.join(t for _,t,_ in _text_blocks(chapter_payload.get('blocks',[])))
-                                    if not 1000 <= len(''.join(text.split())) <= 3000:raise ValueError('本章正文须为1000至3000字，全文目标一万字')
-                                    headings=CHAPTERS[sections.index(section)][1]
-                                    if any(h not in text for h in headings):raise ValueError('报告缺少模板规定的小节标题')
+                                    from CampusPulse.report_contract import CHAPTERS,validate_planned_ir_chapter
+                                    validate_planned_ir_chapter(chapter_payload,CHAPTERS[sections.index(section)][1])
                                 elif len(body) > 900:
                                     raise ValueError('简明报告每章正文最多900字，请压缩为500至650字，引用限1至3处')
                             except ValueError as exc:
                                 raise ChapterValidationError(str(exc)) from exc
                         break
                     except (ChapterJsonParseError, ChapterContentError, ChapterValidationError) as structured_error:
+                        section_context["revision_feedback"] = str(structured_error)[:1500]
+                        if isinstance(chapter_payload,dict):
+                            section_context["previous_chapter_draft"] = json.dumps(chapter_payload,ensure_ascii=False)[:24000]
                         if isinstance(structured_error, ChapterContentError):
                             error_kind = "content_sparse"
                             readable_label = "内容密度异常"
@@ -858,6 +859,9 @@ class ReportAgent:
                 manifest_meta,
                 chapters
             )
+            if self._task_report_meta.get('report_style') == 'public_event':
+                from CampusPulse.report_contract import validate_ir
+                validate_ir(document_ir)
             emit('stage', {'stage': 'chapters_compiled', 'chapter_count': len(chapters)})
             html_report = self.renderer.render(document_ir)
             emit('stage', {'stage': 'html_rendered', 'html_length': len(html_report)})

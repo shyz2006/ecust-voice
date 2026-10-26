@@ -104,6 +104,8 @@ def parse_template_sections(template_md: str) -> List[TemplateSection]:
     order = SECTION_ORDER_STEP
     used_slugs = set()
 
+    # A document title is not a chapter when numbered level-two chapters follow.
+    has_chapter_headings = any(re.match(r"^##[ \t]+", line.strip()) for line in template_md.splitlines())
     for raw_line in template_md.splitlines():
         if not raw_line.strip():
             continue
@@ -113,6 +115,8 @@ def parse_template_sections(template_md: str) -> List[TemplateSection]:
 
         meta = _classify_line(stripped, indent)
         if not meta:
+            continue
+        if has_chapter_headings and meta["depth"] == 1 and stripped.startswith("# ") and not meta["number"]:
             continue
 
         if meta["is_section"]:

@@ -1,0 +1,391 @@
+{
+  "running": false,
+  "enriching": false,
+  "complete_windows": 8,
+  "themes": [
+    {
+      "theme": "学业课程",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 29,
+        "end": 1792763849,
+        "previous": 35,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -6
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 26,
+        "mae": 7.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 54,
+        "validation_windows": 5,
+        "value": 40,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "考试考证",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 0,
+        "end": 1792763849,
+        "previous": 3,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -3
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 0,
+        "mae": 2.5,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 8,
+        "validation_windows": 5,
+        "value": 3,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "升学就业",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 3,
+        "end": 1792763849,
+        "previous": 1,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": 2
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 1,
+        "mae": 2.2,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 9,
+        "validation_windows": 5,
+        "value": 5,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "校园设施与管理",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 31,
+        "end": 1792763849,
+        "previous": 23,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": 8
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 10,
+        "mae": 7.0,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 36,
+        "validation_windows": 5,
+        "value": 23,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "食堂与生活服务",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 15,
+        "end": 1792763849,
+        "previous": 12,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": 3
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 9,
+        "mae": 4.2,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 25,
+        "validation_windows": 5,
+        "value": 17,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "宿舍生活",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 4,
+        "end": 1792763849,
+        "previous": 7,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -3
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 1,
+        "mae": 2.4,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 11,
+        "validation_windows": 5,
+        "value": 6,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "社交与同伴",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 23,
+        "end": 1792763849,
+        "previous": 17,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": 6
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 10,
+        "mae": 4.9,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 28,
+        "validation_windows": 5,
+        "value": 19,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "恋爱情感",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 1,
+        "end": 1792763849,
+        "previous": 1,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": 0
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 0,
+        "mae": 0.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 2,
+        "validation_windows": 5,
+        "value": 1,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "身心与情绪",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 4,
+        "end": 1792763849,
+        "previous": 5,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -1
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 2,
+        "mae": 1.6,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 8,
+        "validation_windows": 5,
+        "value": 5,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "文体与实践",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 22,
+        "end": 1792763849,
+        "previous": 49,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -27
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 3,
+        "mae": 15.1,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 57,
+        "validation_windows": 5,
+        "value": 30,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "交易与互助",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 10,
+        "end": 1792763849,
+        "previous": 20,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -10
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 11,
+        "mae": 2.8,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 21,
+        "validation_windows": 5,
+        "value": 16,
+        "windows": 8
+      }
+    },
+    {
+      "theme": "其他校园讨论",
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 29,
+        "end": 1792763849,
+        "previous": 39,
+        "previous_start": 1792591049,
+        "start": 1792677449,
+        "value": -10
+      },
+      "reference": {
+        "as_of": 1792763849,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 0,
+        "mae": 13.8,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023049,
+        "upper": 41,
+        "validation_windows": 5,
+        "value": 17,
+        "windows": 8
+      }
+    }
+  ],
+  "comparison_available": 12,
+  "reference_available": 12,
+  "hot_xiaohongshu_candidates": 20,
+  "hot_xiaohongshu_cards": 10,
+  "hot_pool_hours": 24,
+  "hot_cache_seconds": 1800,
+  "school_queries": [
+    {
+      "query": "华东理工大学",
+      "include": "xiaohongshu.com",
+      "count": 50
+    },
+    {
+      "query": "华理 奉贤",
+      "include": "xiaohongshu.com",
+      "count": 50
+    },
+    {
+      "query": "华理 徐汇",
+      "include": "xiaohongshu.com",
+      "count": 50
+    },
+    {
+      "query": "华东理工大学 小红书 笔记",
+      "include": null,
+      "count": 50
+    }
+  ],
+  "ledger_xiaohongshu": [
+    {
+      "latest_count": 20,
+      "observations": 80,
+      "source": "xiaohongshu",
+      "unique": 20
+    },
+    {
+      "latest_count": null,
+      "observations": 0,
+      "source": "xiaohongshu-school",
+      "unique": 0
+    }
+  ],
+  "latest_batch": {
+    "ts": 1792936611,
+    "status": "complete",
+    "stats": {
+      "items": 521,
+      "errors": {
+        "xiaohongshu-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论",
+        "douyin-school": "公开搜索索引未返回可核查的华理原帖；不代表平台没有讨论"
+      },
+      "by_source": {
+        "baidu": 30,
+        "bilibili-hot-search": 30,
+        "bilibili-popular": 150,
+        "douyin": 30,
+        "huyou-national": 20,
+        "huyou-school": 51,
+        "thepaper": 20,
+        "tieba": 30,
+        "tieba-school": 60,
+        "toutiao": 30,
+        "weibo": 30,
+        "xiaohongshu": 20,
+        "zhihu": 20
+      },
+      "enriched": true
+    }
+  },
+  "served_js_sha256": "ee05efbc535f5d0c9621005bb8503f84a33a13fc769f0a5bd9d05ebc72831632",
+  "reference_chart_served": true,
+  "window_styles_served": true
+}

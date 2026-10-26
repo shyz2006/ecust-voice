@@ -124,7 +124,7 @@ def revision_source_posts():
     for r in rows:
         url=(r.get('extra') or {}).get('link') or r.get('url')
         key=url or r['title']
-        seen[key]={'source':source,'content':r['title'],'link':revision.source_link(url),'published':r['batch_ts'],'time_basis':'first_observed'}
+        seen[key]={'source':source,'content':r['title'],'link':revision.source_link(url),'published':r['batch_ts'],'time_basis':'first_observed','link_kind':(r.get('extra') or {}).get('link_kind')}
     posts=sorted(seen.values(),key=lambda p:-p['published'])
     return jsonify(success=True,posts=posts,total=len(posts))
 
@@ -134,7 +134,8 @@ def revision_ledger():
     from . import telemetry,revision
     data=telemetry.dashboard()
     allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)
-    sources=[s for s in data.get('sources',[]) if s['source'] in allowed]
+    by_source={s['source']:s for s in data.get('sources',[]) if s['source'] in allowed}
+    sources=[by_source.get(name,{'source':name,'unique':0,'observations':0,'latest_count':None}) for name in sorted(allowed)]
     # Cost, vendor and legacy national-comparison values are excluded from this presentation API.
     from datetime import datetime,timedelta,timezone
     today=datetime.now(timezone(timedelta(hours=8))).date()

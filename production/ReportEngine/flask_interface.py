@@ -720,6 +720,14 @@ def generate_report():
         # 显式 regenerate=true（重新运行 / 自定义模板）时才重新生成。
         if not data.get('regenerate') and not custom_template:
             existing = _latest_report_task_for_research(research_task_id)
+            if existing and existing.status == 'completed' and research_task_id:
+                from utils.task_runtime import read_task_metadata
+                if read_task_metadata(research_task_id).get('pulse_revision') == 2:
+                    try:
+                        from CampusPulse.research import report_html
+                        report_html(research_task_id)
+                    except (ValueError, OSError):
+                        existing = None
             if existing and existing.status == 'completed':
                 return jsonify({
                     'success': True,

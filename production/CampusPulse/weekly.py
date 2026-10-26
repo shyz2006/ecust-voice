@@ -187,7 +187,44 @@ def validate_insights(value,data):
     value['follow_up']=follow
     return value
 
-def summarize(data):
+def parse_model_json(raw):
+    """Repair syntax in a complete JSON envelope, never complete truncated content."""
+    try:return json.loads(raw,strict=False)
+    except json.JSONDecodeError:
+        if not raw.rstrip().endswith(('}',']')):raise
+        from .llm import parse_json
+        return parse_json(raw)
+
+
+def select_insights(value,data):
+    """Select at most five grounded observations when a model exceeds the display limit."""
+    if not isinstance(value,dict):return value
+    signals=value.get('signals')
+    if isinstance(signals,list) and len(signals)>5:
+        accepted=[];seen=set()
+        for signal in signals[:24]:
+            try:
+                checked=validate_insights({'headline':value.get('headline'),'signals':[signal],'follow_up':[]},data)['signals'][0]
+            except ValueError:continue
+            identity=(checked['title'].strip(),checked['observation'].strip())
+            if identity in seen:continue
+            seen.add(identity);accepted.append(checked)
+            if len(accepted)==5:break
+        value={**value,'signals':accepted}
+    if isinstance(value.get('follow_up'),list):value={**value,'follow_up':value['follow_up'][:4]}
+    return value
+
+
+def summary_material(data):
+    # Keep every theme, but avoid asking the model to summarize each of 108 excerpts.
+    material={k:v for k,v in data.items() if k not in ('insights','report','report_chapters','model')}
+    grouped=defaultdict(list)
+    for item in data['evidence']:grouped[(item.get('period'),item.get('theme'))].append(item)
+    material['evidence']=[item for (period,_),rows in grouped.items() for item in rows[:2 if period=='current' else 1]]
+    return material
+
+
+def summarize(data,feedback=""):
     from config import reload_settings
     from openai import OpenAI
     from . import telemetry,model_connection
@@ -196,14 +233,17 @@ def summarize(data):
     started=time.time();recorded=False;tracked=getattr(client.chat.completions.create,'_bf_usage_ledger',False)
     try:
         response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,
-            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps(data,ensure_ascii=False)}],
+            messages=[{'role':'system','content':PROMPT},{'role':'user','content':json.dumps(summary_material(data),ensure_ascii=False)+('\n上次检查反馈：'+feedback+'。请修正后返回完整JSON。' if feedback else '')}],
             temperature=.25,timeout=180,max_tokens=16000,reasoning_effort='low')
         if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
         recorded=True
-        if response.choices[0].finish_reason=='length':raise ValueError('周报生成未完成，请重试')
         raw=response.choices[0].message.content or ''
         raw=re.sub(r'^```(?:json)?\s*|\s*```$','',raw.strip())
-        return validate_insights(json.loads(raw),data),settings.REPORT_ENGINE_MODEL_NAME
+        try:value=parse_model_json(raw)
+        except json.JSONDecodeError:
+            if response.choices[0].finish_reason=='length':raise ValueError('周报输出被截断，未形成完整摘要，请重试') from None
+            raise
+        return validate_insights(select_insights(value,data),data),settings.REPORT_ENGINE_MODEL_NAME
     except Exception:
         if not tracked and not recorded:telemetry.record_response(None,time.time()-started,success=False,engine='校园周报')
         raise
@@ -220,23 +260,51 @@ def recent():
     initialize()
     with storage.connect() as conn:return [dict(r) for r in conn.execute('SELECT id,cutoff,kind,created,status,error,send_state,sent_at,email_id FROM pulse_weekly ORDER BY cutoff DESC LIMIT 20')]
 
+def generation_error(exc):
+    from . import model_connection,report_contract
+    if isinstance(exc,json.JSONDecodeError):return '模型返回的JSON格式未通过检查，请重试'
+    if isinstance(exc,report_contract.ReportInvalid):return str(exc)
+    if isinstance(exc,ValueError) and str(exc).startswith(('周报','本周','报告','证据')):return str(exc)
+    return model_connection.safe_error(exc)
+
+
 def generate(report_id):
     if not lease('generate:'+report_id,3600):return
+    stage='读取资料'
     try:
         row=get(report_id)
         if row['status']=='ready':return
-        with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='generating',generation_attempts=generation_attempts+1 WHERE id=?",(report_id,))
+        with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='generating',error=NULL,generation_attempts=generation_attempts+1 WHERE id=?",(report_id,))
         data=row.get('data') or packet(row['cutoff'])
-        with storage.connect() as conn:conn.execute('UPDATE pulse_weekly SET data=? WHERE id=?',(json.dumps(data,ensure_ascii=False),report_id))
+        def persist():
+            with storage.connect() as conn:conn.execute('UPDATE pulse_weekly SET data=? WHERE id=?',(json.dumps(data,ensure_ascii=False),report_id))
+        persist()
         if data['current_total']<5:raise ValueError('本周有效帖子少于5条，暂缓生成周报')
-        insights,model=summarize(data);data.update(insights=insights,model=model)
+        stage='摘要提炼'
+        if data.get('insights'):
+            try:validate_insights(data['insights'],data)
+            except ValueError:data.pop('insights',None)
+        if not data.get('insights'):
+            feedback=''
+            for attempt in range(2):
+                try:
+                    insights,model=summarize(data,feedback)
+                    data.update(insights=insights,model=model);persist();break
+                except (ValueError,json.JSONDecodeError) as exc:
+                    if attempt:raise
+                    feedback=generation_error(exc)
+        stage='长报告生成'
         from . import report_contract
-        data['report']=report_contract.generate('校园每周社会公共热点观察', data['evidence'],writer=report_chapter)
+        def checkpoint(chapters):
+            data['report_chapters']=chapters;persist()
+        data['report']=report_contract.generate('校园每周社会公共热点观察',data['evidence'],writer=report_chapter,
+            resume=data.get('report_chapters'),checkpoint=checkpoint)
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='ready',data=?,error=NULL WHERE id=?",(json.dumps(data,ensure_ascii=False),report_id))
     except Exception as exc:
-        message=str(exc) if isinstance(exc,ValueError) else '周报模型或数据读取未完成，请检查报告模型后重试'
+        message=stage+'：'+generation_error(exc)
         with storage.connect() as conn:conn.execute("UPDATE pulse_weekly SET status='failed',error=?,generation_retry=? WHERE id=?",(message[:200],int(time.time())+180,report_id))
     finally:release('generate:'+report_id)
+
 
 def start(cutoff=None,scheduled=False,send_at=None):
     initialize();cutoff=int(cutoff or time.time())
@@ -263,12 +331,18 @@ def report_html(row):
         parts.append('<section><h2>'+e(signal['title'])+'</h2><p>'+e(signal['observation'])+'</p>'+
             ('<p><b>同期观察：</b>'+e(signal['comparison'])+'</p>' if signal.get('comparison') else '')+'<p>'+''.join(refs)+'</p></section>')
     table=''.join('<tr><td>'+e(name)+'</td><td>'+str(n[0])+'</td><td>'+str(n[1])+'</td><td>'+('+' if n[0]>n[1] else '')+str(n[0]-n[1])+'</td></tr>' for name,n in data['categories'].items())
+    for chapter in (data.get('report') or {}).get('chapters',[]):
+        for section in chapter.get('sections',[]):
+            for key in section.get('evidence',[]):
+                if key in by_id and key not in used:used.append(key)
+    def report_text(content):
+        return re.sub(r'\[([A-Z]\d+)\]',lambda m:'<a href="#'+e(m[1])+'">['+e(m[1])+']</a>' if m[1] in by_id else m[0],e(content))
     sources=[]
     for key in used:
         item=by_id[key];url=revision.source_link(item.get('url'))
         sources.append('<p id="'+e(key)+'"><b>['+key+'] '+('本周' if item['period']=='current' else '上周')+'</b> · '+date(item['published'])+'<br>'+e(item['text'])+
             (' <a href="'+e(url,quote=True)+'" target="_blank" rel="noopener">查看原帖</a>' if url else ' · 原帖地址待补充')+'</p>')
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px;border-radius:12px}.sources p{font-size:12px;padding:12px;background:#f4f1ed}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media print{main{padding:0}h2{break-after:avoid}tr,.sources p{break-inside:avoid}}</style><main><span>华理 · 校园周报</span><h1>'''+e(data['insights']['headline'])+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><div class="scope"><p>本周采集 '+str(data['current_total'])+' 篇，同期 '+str(data['previous_total'])+' 篇；完整观测日窗 '+str(data['observed_days'])+'/7，同期 '+str(data['previous_observed_days'])+'/7。观察范围为已采集的公开校内讨论，供结合原帖理解。</p></div>'+(''.join('<section><h2>'+e(c['title'])+'</h2>'+''.join('<h3>'+e(s['title'])+'</h3><p>'+e(s['content'])+'</p>' for s in c['sections'])+'</section>' for c in data['report']['chapters']) if data.get('report') else ''.join(parts))+'<h2>接下来可以了解什么</h2><ul>'+''.join('<li>'+e(x)+'</li>' for x in data['insights']['follow_up'])+'</ul><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><h2>观察依据</h2><div class="sources">'+''.join(sources)+'</div><footer>数量由程序统计；文字由报告模型基于上述摘录归纳，供教师审阅。危机线索在关怀入口单独核查。'+e(data['method'])+'</footer></main></html>'
+    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px;border-radius:12px}.sources p{font-size:12px;padding:12px;background:#f4f1ed}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media print{main{padding:0}h2{break-after:avoid}tr,.sources p{break-inside:avoid}}</style><main><span>华理 · 校园周报</span><h1>'''+e(data['insights']['headline'])+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><div class="scope"><p>本周采集 '+str(data['current_total'])+' 篇，同期 '+str(data['previous_total'])+' 篇；完整观测日窗 '+str(data['observed_days'])+'/7，同期 '+str(data['previous_observed_days'])+'/7。观察范围为已采集的公开校内讨论，供结合原帖理解。</p></div>'+(''.join('<section><h2>'+e(c['title'])+'</h2>'+''.join('<h3>'+e(s['title'])+'</h3><p>'+report_text(s['content'])+'</p>' for s in c['sections'])+'</section>' for c in data['report']['chapters']) if data.get('report') else ''.join(parts))+'<h2>接下来可以了解什么</h2><ul>'+''.join('<li>'+e(x)+'</li>' for x in data['insights']['follow_up'])+'</ul><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><h2>观察依据</h2><div class="sources">'+''.join(sources)+'</div><footer>数量由程序统计；文字由报告模型基于上述摘录归纳，供教师审阅。危机线索在关怀入口单独核查。'+e(data['method'])+'</footer></main></html>'
 
 def resend(payload,key,api_key):
     request=Request('https://api.resend.com/emails',data=json.dumps(payload,ensure_ascii=False).encode(),
@@ -364,9 +438,8 @@ def report_chapter(system,user,**kwargs):
         response=model_connection.completion(client,model=settings.REPORT_ENGINE_MODEL_NAME,messages=[{'role':'system','content':system},{'role':'user','content':user}],temperature=.25,timeout=180,max_tokens=kwargs.get('max_tokens',6500),reasoning_effort='low')
         if not tracked:telemetry.record_response(getattr(response,'usage',None),time.time()-started,engine='校园周报')
         recorded=True
-        if response.choices[0].finish_reason=='length':raise ValueError('报告章节被截断，请重试')
         raw=re.sub(r'^```(?:json)?\s*|\s*```$','',(response.choices[0].message.content or '').strip())
-        return json.loads(raw)
+        return parse_model_json(raw)
     except Exception:
         if not tracked and not recorded:telemetry.record_response(None,time.time()-started,success=False,engine='校园周报')
         raise

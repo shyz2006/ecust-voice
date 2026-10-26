@@ -1,0 +1,81 @@
+{
+  "name": "xiaohongshu-hot-20261025-r2",
+  "stage": "/home/ubuntu/bettafish/deploy/xiaohongshu-hot-20261025-r2",
+  "base_image_id": "sha256:75ff51e80c1e3f7ab3fcd783d1d9d37c26bf29539405343ada7ae4aa8f71684e",
+  "base_image": "bettafish:base-xiaohongshu-hot-20261025-r2",
+  "candidate_image": "bettafish:candidate-xiaohongshu-hot-20261025-r2",
+  "candidate_image_id": "sha256:da867f3946955f8f9de429fb9a6d9a8364d5a561c90b395e9efa960d2c397d27",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "bb6c3c40d6d36f2a12607506e8f110da98ce3f94728961818a415770de161979",
+      "expected_before": "bb6c3c40d6d36f2a12607506e8f110da98ce3f94728961818a415770de161979",
+      "before_sha256": "bb6c3c40d6d36f2a12607506e8f110da98ce3f94728961818a415770de161979",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "f3e60cc3a03c596ab6b74a4210d71a349fad931e9b4ab6486b0b7d9a2e670fb7",
+      "expected_before": "f3e60cc3a03c596ab6b74a4210d71a349fad931e9b4ab6486b0b7d9a2e670fb7",
+      "before_sha256": "f3e60cc3a03c596ab6b74a4210d71a349fad931e9b4ab6486b0b7d9a2e670fb7",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "97c692c3af73254238e51cd734580ca8640c3f09db27032b87400a4080830ee2",
+      "expected_before": "97c692c3af73254238e51cd734580ca8640c3f09db27032b87400a4080830ee2",
+      "before_sha256": "97c692c3af73254238e51cd734580ca8640c3f09db27032b87400a4080830ee2",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/config.py",
+      "candidate_sha256": "742019a13ceacebdc137d3f931bde8ce5df89a740976e765bacbe06e8a273232",
+      "expected_before": "742019a13ceacebdc137d3f931bde8ce5df89a740976e765bacbe06e8a273232",
+      "before_sha256": "742019a13ceacebdc137d3f931bde8ce5df89a740976e765bacbe06e8a273232",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/collectors.py",
+      "candidate_sha256": "3a2ef93e526247ec937a535e8e2e7b454ac8328ce6a92e89edc87605f3f60935",
+      "expected_before": "3a2ef93e526247ec937a535e8e2e7b454ac8328ce6a92e89edc87605f3f60935",
+      "before_sha256": "3a2ef93e526247ec937a535e8e2e7b454ac8328ce6a92e89edc87605f3f60935",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "candidate_sha256": "89b89d58b5c70cc1cbee53984698018195c4723baf7ce1c5b48ec92a7260707b",
+      "expected_before": "89b89d58b5c70cc1cbee53984698018195c4723baf7ce1c5b48ec92a7260707b",
+      "before_sha256": "89b89d58b5c70cc1cbee53984698018195c4723baf7ce1c5b48ec92a7260707b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "86259a25021b2fdeb2d48911da359df40b093bdac463890828c53dab8754e3cb",
+      "expected_before": "86259a25021b2fdeb2d48911da359df40b093bdac463890828c53dab8754e3cb",
+      "before_sha256": "86259a25021b2fdeb2d48911da359df40b093bdac463890828c53dab8754e3cb",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/sources/xiaohongshu_hot.py",
+      "candidate_sha256": "8f6d357f2cba8f620801e679da5ac30045909c25412ecb998f6ae013ddcd5b8b",
+      "expected_before": "273d9ff2399f1b92b87054ffe997125da965946b7ccefea3e52a13f3564bdaa0",
+      "before_sha256": "273d9ff2399f1b92b87054ffe997125da965946b7ccefea3e52a13f3564bdaa0",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_collection_recovery.py",
+      "candidate_sha256": "92d435e8cf16973fda170f2a8609c1a87da11f924ff47460f418d2008795b4bd",
+      "expected_before": "92d435e8cf16973fda170f2a8609c1a87da11f924ff47460f418d2008795b4bd",
+      "before_sha256": "92d435e8cf16973fda170f2a8609c1a87da11f924ff47460f418d2008795b4bd",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_xiaohongshu_hotlist.py",
+      "candidate_sha256": "312efefbc2023b791634cd8f42dd315832c89715808b7ed41afc4f525b753df5",
+      "expected_before": "b66e72ed0b05f07d2390b2f2793a30b7d844df1dd819c382b65db52eabc2d93f",
+      "before_sha256": "b66e72ed0b05f07d2390b2f2793a30b7d844df1dd819c382b65db52eabc2d93f",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

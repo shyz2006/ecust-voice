@@ -1,0 +1,102 @@
+{
+  "name": "report-weekly-ledger-20261025",
+  "stage": "/home/ubuntu/bettafish/deploy/report-weekly-ledger-20261025",
+  "base_image_id": "sha256:ff6631330c6e2f3ed258b1dbfb99e5ec22cf6bd6f0bb384a5500ba5fa34d98d7",
+  "base_image": "bettafish:base-report-weekly-ledger-20261025",
+  "candidate_image": "bettafish:candidate-report-weekly-ledger-20261025",
+  "candidate_image_id": "sha256:51b45351dbde86b551fb0b1aeb8bd65561bfdd17f5d8a23f76e15d7aa6f8b141",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "a8a738beaa251fc20a2ff59b3495a347d7160809b89cfcd49fcdcb08d693e390",
+      "expected_before": "6c44f194bc964f16969c8c1b23bae27775ef862757dc8263862ed30b7af48a6d",
+      "before_sha256": "6c44f194bc964f16969c8c1b23bae27775ef862757dc8263862ed30b7af48a6d",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "b24f2b3a53ed5c0c1e7bdc12b3de5c640b3e4900c811950876c7da961ccfc297",
+      "expected_before": "9fe0449bb47dd50d8c06356c8c9e6ac5b51df0eb80b7e7f2cde094e22c8f8413",
+      "before_sha256": "9fe0449bb47dd50d8c06356c8c9e6ac5b51df0eb80b7e7f2cde094e22c8f8413",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "f139f59c660312058fc43d8eea7954b4b5fbf8981028e644586652d4d56e89de",
+      "expected_before": "018c9ec98af5be0308422552bb90ac6d21ba5522bca64613e11fea4eb0439a37",
+      "before_sha256": "018c9ec98af5be0308422552bb90ac6d21ba5522bca64613e11fea4eb0439a37",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "4cea4593bc5337171ff91fe7a7f2a56551ff9656c53d06b422ff16b439270e83",
+      "expected_before": "d76514c3c1f2773f5ec5ffb6a97db0dbb049d7cac6c60cd096cac84a64d5d684",
+      "before_sha256": "d76514c3c1f2773f5ec5ffb6a97db0dbb049d7cac6c60cd096cac84a64d5d684",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "a6917c29b0f8141293e236ee628eeaf28fc6a3515ad95434099a172069b67058",
+      "expected_before": "9c0e9ae1583aee7ccf94369bf31af39c9d433009c3059919ba1c9560a94c4034",
+      "before_sha256": "9c0e9ae1583aee7ccf94369bf31af39c9d433009c3059919ba1c9560a94c4034",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "35729961fa805720677cfb15476697c802c7e3df994c409d9c735a7b528ab760",
+      "expected_before": "6867f6e6a2712f5d1a044862188fed2e80cc82f6df1ca09d45d77765f63891b2",
+      "before_sha256": "6867f6e6a2712f5d1a044862188fed2e80cc82f6df1ca09d45d77765f63891b2",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_contract.py",
+      "candidate_sha256": "16095c671bb69a8afab04db8a7fc13cd13f4ffc1688f767007ce15f52a08740d",
+      "expected_before": "9e85dba6d30f7883e059a97525b89aeb810117aa18721916beb307056a8b82b6",
+      "before_sha256": "9e85dba6d30f7883e059a97525b89aeb810117aa18721916beb307056a8b82b6",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "cda299ee39a046fccadba68455d18f46f460622d9f507d0469f8110ede1966e3",
+      "expected_before": "f2e37c953e748402cd6341fc72188c876eec6cbac9bfd0d9d29dd89f9ac17333",
+      "before_sha256": "f2e37c953e748402cd6341fc72188c876eec6cbac9bfd0d9d29dd89f9ac17333",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/agents/orchestrator.py",
+      "candidate_sha256": "5f3c847ba3b9f4b18833377e9774867870cbee610fba8cefba0a0bcb992b303b",
+      "expected_before": "81c3be81141ce827758ca299c50c88090731479014051b5bc765e66df49883e7",
+      "before_sha256": "81c3be81141ce827758ca299c50c88090731479014051b5bc765e66df49883e7",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "ff461106ee7acf55326aa205fad254611072a490a7cfea14b5fc3225bbb415ea",
+      "expected_before": "5c5ffa72526cf1a616f9a080ac1d799adc858ff66c5dfcd6ea2c66d449a8e9f9",
+      "before_sha256": "5c5ffa72526cf1a616f9a080ac1d799adc858ff66c5dfcd6ea2c66d449a8e9f9",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "expected_before": "5325c4ea2f044b8341c3aec24b0bcdf596051c5247d8e9a48262793a9eeb2b48",
+      "before_sha256": "5325c4ea2f044b8341c3aec24b0bcdf596051c5247d8e9a48262793a9eeb2b48",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_contract.py",
+      "candidate_sha256": "d29686be49efe2687e30bb9834c8dced57da411400dcf3e4d3cec1976e3f4e5f",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "08d6494377ff85b0b6fbe41b8e2703ca80456640df6b69c296f6bdc1eb711903",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "activated": false
+}

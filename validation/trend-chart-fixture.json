@@ -1,0 +1,96 @@
+{
+  "generated_at": 1792937142,
+  "themes": [
+    {
+      "theme": "学业课程",
+      "color": "#6fa8dc",
+      "posts": 323,
+      "posts_24h": 7,
+      "delta": null,
+      "comparison": {
+        "basis": "latest_complete",
+        "current": 29,
+        "end": 1792764342,
+        "previous": 35,
+        "previous_start": 1792591542,
+        "start": 1792677942,
+        "value": -6
+      },
+      "reference": {
+        "as_of": 1792764342,
+        "hours": 24,
+        "lag_windows": 2,
+        "lower": 25,
+        "mae": 7.8,
+        "method": "最近十日完整24小时窗口新增帖数的算术平均，四舍五入为整数篇；历史误差使用未取整均值计算",
+        "target_end": 1793023542,
+        "upper": 53,
+        "validation_windows": 5,
+        "value": 39,
+        "windows": 8
+      },
+      "timeline": [
+        {
+          "new_posts": 50,
+          "observed": true,
+          "posts": 50,
+          "ts": 1792073142
+        },
+        {
+          "new_posts": 37,
+          "observed": true,
+          "posts": 37,
+          "ts": 1792159542
+        },
+        {
+          "new_posts": 25,
+          "observed": true,
+          "posts": 25,
+          "ts": 1792245942
+        },
+        {
+          "new_posts": 50,
+          "observed": true,
+          "posts": 50,
+          "ts": 1792332342
+        },
+        {
+          "new_posts": 42,
+          "observed": true,
+          "posts": 42,
+          "ts": 1792418742
+        },
+        {
+          "new_posts": 47,
+          "observed": true,
+          "posts": 47,
+          "ts": 1792505142
+        },
+        {
+          "new_posts": 35,
+          "observed": true,
+          "posts": 35,
+          "ts": 1792591542
+        },
+        {
+          "new_posts": 29,
+          "observed": true,
+          "posts": 29,
+          "ts": 1792677942
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 1,
+          "ts": 1792764342
+        },
+        {
+          "new_posts": null,
+          "observed": false,
+          "posts": 7,
+          "ts": 1792850742
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "dated_fallback_comparison": true,
+  "partial_collection_notice": true,
+  "zero_reference_visible": true,
+  "separate_reference_card_and_range": true,
+  "gap_counts_not_filled_as_complete": true,
+  "templates_updated": 2
+}

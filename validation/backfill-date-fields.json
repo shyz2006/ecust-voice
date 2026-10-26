@@ -1,0 +1,20 @@
+{
+  "last_before_yesterday": 1792762633,
+  "checked_circles": 2,
+  "sources": [
+    {
+      "feed_count": 23,
+      "date_fields": {
+        "publishSource": 23,
+        "score": 23
+      }
+    },
+    {
+      "feed_count": 21,
+      "date_fields": {
+        "publishSource": 21,
+        "score": 21
+      }
+    }
+  ]
+}

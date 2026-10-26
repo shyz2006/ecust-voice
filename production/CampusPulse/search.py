@@ -8,7 +8,7 @@ BOCHA_WEB_SEARCH_API_KEY + BOCHA_BASE_URL。兼容两种接口返回格式：
 """
 
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from loguru import logger
@@ -40,11 +40,11 @@ def _parse_web_search(payload: Dict) -> List[Dict]:
     return ((data.get("webPages") or {}).get("value")) or []
 
 
-def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain: bool = False) -> List[Dict]:
+def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain: bool = False, include: Optional[str] = None) -> List[Dict]:
     if not settings.search_ready:
         raise SearchUnavailable("未配置 BOCHA_WEB_SEARCH_API_KEY")
     url = settings.bocha_base_url
-    if plain and url.rstrip("/").endswith("/ai-search"):
+    if (plain or include) and url.rstrip("/").endswith("/ai-search"):
         url = url.rstrip("/")[:-len("ai-search")] + "web-search"
     body = {"query": query, "freshness": freshness, "count": count, "answer": False, "stream": False}
     if "web-search" in url:

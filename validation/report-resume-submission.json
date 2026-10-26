@@ -1,0 +1,16 @@
+{
+  "research_task_id": "task_60222aa862abab486d14708fe7679dd3",
+  "submission_seconds": 0.01,
+  "result": {
+    "success": true,
+    "task_id": "report_3dd07fc4ade143d29a23788db515c90a",
+    "status": null,
+    "existing": null
+  },
+  "engine_outputs_unchanged": true,
+  "input_files": {
+    "query": 3,
+    "media": 3,
+    "insight": 2
+  }
+}

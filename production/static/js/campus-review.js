@@ -29,7 +29,7 @@ async function activate(tab){
 }
 function renderCampus(){
  const data=state.overview;if(!data)return;
- $('homeSample').textContent=num(data.total_7d);$('campusUpdated').textContent='更新于 '+date(data.generated_at);$('practicePosts').querySelector('strong').textContent=num(data.practice_count);
+ $('homeSample').textContent=num(data.total_7d);$('campusUpdated').textContent=data.observed_at?'采集于 '+date(data.observed_at)+(data.collection_health==='delayed'?' · 采集延迟':''):'等待首次采集';$('campusUpdated').classList.toggle('error',data.collection_health==='delayed');$('practicePosts').querySelector('strong').textContent=num(data.practice_count);
  const count=Object.values(data.emotion||{}).reduce((s,v)=>s+v,0),negative=(data.emotion?.消极||0)/(count||1);
  const weather=!count?['○','等待样本','新采集的讨论将显示在这里。']:negative<.2?['☀','晴朗','多数表达平稳，关注同学的日常与收获。']:negative<.4?['☀','晴间多云','日常讨论中伴有一些困扰，值得倾听。']:['☁','多云','近期困扰表达较多，留意具体诉求。'];
  $('weather').innerHTML='<span class="weather-symbol" aria-hidden="true">'+weather[0]+'</span><div><div class="weather-title">校园心情 · '+weather[1]+'</div><p class="weather-caption">'+weather[2]+'</p></div><button class="text-button" style="margin-left:auto;font-size:11px;white-space:nowrap" data-method="emotion">计算口径 ↗</button>';
@@ -38,16 +38,25 @@ function renderCampus(){
  $('campusCategories').innerHTML=data.themes.map(t=>'<button data-theme="'+esc(t.theme)+'"><span><i style="background:'+t.color+'"></i>'+esc(t.theme)+'</span><small>'+num(t.posts_7d)+' 篇 ↗</small></button>').join('');
 }
 function metric(label,value){return '<div class="metric"><span>'+esc(label)+'</span><strong>'+num(value)+'</strong></div>';}
+function comparisonMarkup(t){
+ const c=t.comparison||{value:t.delta,basis:'current'};if(c.value==null)return '<span class="muted">等待连续完整日窗</span>';
+ const value=(c.value>0?'+':'')+num(c.value);
+ return value+(c.basis==='latest_complete'?'<small class="window-note" title="'+esc('该窗 '+c.current+' 篇，前窗 '+c.previous+' 篇')+'">最近完整窗<br>'+shortDate(c.start)+'—'+shortDate(c.end)+'</small>':'');
+}
+function referenceMarkup(r){return r.value==null?'<span class="muted">积累至3个完整日窗</span>':'约 '+num(Math.round(r.value))+' 篇<small class="window-note">'+(r.lag_windows?'历史基线 · ':'')+r.windows+' 个完整日窗</small>';}
 function spark(points,color,width=160,height=35){
  const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(1,...valid),step=(width-8)/Math.max(1,points.length-1);let path='',pen=false;
  points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(4+i*step).toFixed(1)+','+(height-5-p.new_posts/max*(height-10)).toFixed(1);pen=true;});
- return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="完整日窗新增帖走势"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="1.8"/>'+points.map((p,i)=>p.new_posts==null?'<circle cx="'+(4+i*step)+'" cy="'+(height-5)+'" r="1.7" fill="#bac1b7"/>':'').join('')+'</svg>';
+ const gaps=points.map((p,i)=>p.new_posts==null?'<rect x="'+Math.max(1,4+(i-.45)*step)+'" y="2" width="'+Math.min(step*.9,width-5-Math.max(1,4+(i-.45)*step))+'" height="'+(height-5)+'" rx="2" fill="#e9e5dd"><title>'+shortDate(p.ts+DAY)+' 采集间断</title></rect>':'').join('');
+ return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="十日完整日窗走势，灰色为采集间断">'+gaps+'<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="1.8"/></svg>';
 }
 function renderTrends(){
  const d=state.overview;if(!d)return;const latest=d.themes.reduce((s,t)=>s+t.posts_24h,0);
  $('trendMetrics').innerHTML=metric('十日独立帖子',d.total)+metric('近24小时新增帖',latest)+metric('统一议题分类',d.themes.length)+metric('完整观测日窗',d.coverage.filter(c=>c.ready).length);
  $('trendScope').textContent=shortDate(d.window_start)+'—'+shortDate(d.generated_at);
- $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color)+'</td><td>'+num(t.posts_24h)+' 篇</td><td>'+(t.delta==null?'待完整采集':(t.delta>0?'+':'')+num(t.delta))+'</td><td>'+(t.reference.value==null?'资料待补齐':'约 '+num(Math.round(t.reference.value))+' 篇')+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
+ const partial=!d.coverage.slice(-2).every(c=>c.ready),pair=d.themes[0]?.comparison;
+ $('trendStatus').hidden=!partial;$('trendStatus').textContent=partial?'最近两日采集有间断，近24h显示已采集数量。'+(pair?.basis==='latest_complete'?'较前窗取最近连续完整日窗（'+shortDate(pair.start)+'—'+shortDate(pair.end)+'）的对比。':'连续完整日窗积累后显示对比。')+'次日参考依据历史完整日窗计算。':'';
+ $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color)+'</td><td>'+num(t.posts_24h)+' 篇'+(!d.coverage.at(-1)?.ready?'<small class="window-note">已采集</small>':'')+'</td><td>'+comparisonMarkup(t)+'</td><td>'+referenceMarkup(t.reference)+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
  // 贴纸墙：大小随独立帖数，倾斜角由词本身决定（刷新不乱跳），热门词排在中间
  const words=d.wordcloud.slice(0,35),max=Math.max(1,...words.map(w=>w.df)),min=Math.min(max,...words.map(w=>w.df)),tones=['sun','lilac','peach','mint','sky','paper'];
  const scale=df=>max===min?0.5:Math.pow((df-min)/(max-min),0.75);
@@ -58,16 +67,37 @@ function renderTrends(){
 function showDialog(title){
  const dialog=$('detailDialog');state.modalVersion++;$('detailTitle').textContent=title;$('detailBody').innerHTML=empty('正在读取…');if(!dialog.open)dialog.showModal();$('detailBody').scrollTop=0;return state.modalVersion;
 }
-function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url)+'</article>').join('')||empty('当前范围暂无对应帖子');}
+function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url,p.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开原帖 ↗')+'</article>').join('')||empty('当前范围暂无对应帖子');}
 async function openPosts(params,title){const version=showDialog(title);try{const d=await api('/pulse/api/revision/posts?'+qs(params));if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="muted">'+num(d.total)+' 条 · 按发布时间倒序</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 function fullChart(t){
- const points=t.timeline,width=780,height=260,left=36,right=20,top=20,bottom=40,valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(4,...valid),nice=Math.ceil(max/4)*4,dx=(width-left-right)/9,y=v=>height-bottom-v/nice*(height-top-bottom);let path='',pen=false;
+ const r=t.reference||{};
+ function plot(mobile){
+ const points=t.timeline,width=mobile?360:720,height=mobile?240:255,left=40,right=mobile?14:20,top=30,bottom=36;
+ const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(4,...valid),nice=Math.ceil(max/4)*4,dx=(width-left-right)/Math.max(1,points.length-1),y=v=>height-bottom-v/nice*(height-top-bottom);let path='',pen=false;
  points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(left+i*dx)+','+y(p.new_posts);pen=true;});
- return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart" role="img" aria-label="'+esc(t.theme)+'十日新增帖走势">'+[0,1,2,3,4].map(i=>'<line x1="'+left+'" x2="'+(width-right)+'" y1="'+y(i*nice/4)+'" y2="'+y(i*nice/4)+'" stroke="#dde2d8"/><text x="'+(left-8)+'" y="'+(y(i*nice/4)+4)+'" text-anchor="end" fill="#78877c" font-size="11">'+i*nice/4+'</text>').join('')+'<path d="'+path+'" fill="none" stroke="'+t.color+'" stroke-width="2.5"/>'+points.map((p,i)=>'<g><text x="'+(left+i*dx)+'" y="'+(height-12)+'" text-anchor="middle" fill="#78877c" font-size="11">'+shortDate(p.ts+DAY)+'</text>'+(p.new_posts==null?'<text x="'+(left+i*dx)+'" y="'+(height-bottom-8)+'" text-anchor="middle" fill="#89968b" font-size="10">缺测</text>':'<circle cx="'+(left+i*dx)+'" cy="'+y(p.new_posts)+'" r="4" fill="'+t.color+'"><title>'+shortDate(p.ts)+' '+p.new_posts+' 篇</title></circle>')+'</g>').join('')+'</svg>';
+ const gaps=[];for(let i=0;i<points.length;i++){if(points[i].new_posts!=null)continue;let j=i;while(j+1<points.length&&points[j+1].new_posts==null)j++;const x=Math.max(left,left+(i-.45)*dx),end=Math.min(width-right,left+(j+.45)*dx);gaps.push('<g class="collection-gap"><rect x="'+x+'" y="'+top+'" width="'+(end-x)+'" height="'+(height-bottom-top)+'" rx="6" fill="#ece8df" opacity=".7"/><text x="'+((x+end)/2)+'" y="'+(top+22)+'" text-anchor="middle" fill="#81796f" font-size="'+(mobile?10:12)+'">'+(end-x>(mobile?40:90)?'采集间断':'缺测')+'</text></g>');i=j;}
+ const grid=[0,1,2,3,4].map(i=>'<line x1="'+left+'" x2="'+(width-right)+'" y1="'+y(i*nice/4)+'" y2="'+y(i*nice/4)+'" stroke="#e8e4dd"/><text x="'+(left-9)+'" y="'+(y(i*nice/4)+4)+'" text-anchor="end" fill="#8a818c" font-size="12">'+i*nice/4+'</text>').join('');
+ const last=points.findLastIndex(p=>p.new_posts!=null),n=points.length-1;
+ const tickCandidates=[0,Math.round(n*.25),Math.round(n*.5),last>=0&&last<n?last:Math.round(n*.75),n].filter((v,i,all)=>all.indexOf(v)===i).sort((a,b)=>a-b);
+ const ticks=new Set(tickCandidates.filter((v,i)=>i===tickCandidates.length-1||tickCandidates[i+1]-v>=2));
+ const dates=points.map((p,i)=>mobile&&!ticks.has(i)?'':'<text class="trend-date-label" x="'+(left+i*dx)+'" y="'+(height-10)+'" text-anchor="middle" fill="#8a818c" font-size="12">'+shortDate(p.ts+DAY)+'</text>').join('');
+ const dots=points.map((p,i)=>p.new_posts==null?'':'<circle class="observed-point" cx="'+(left+i*dx)+'" cy="'+y(p.new_posts)+'" r="'+(i===last?4.5:3.5)+'" fill="'+t.color+'"><title>'+shortDate(p.ts+DAY)+'：'+p.new_posts+' 篇</title></circle>'+(i===last?'<text x="'+(left+i*dx)+'" y="'+Math.max(18,y(p.new_posts)-12)+'" text-anchor="middle" fill="'+t.color+'" font-size="13" font-weight="700">'+p.new_posts+' 篇</text>':'')).join('');
+ return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart '+(mobile?'trend-chart-mobile':'trend-chart-desktop')+'" role="img" aria-label="'+esc(t.theme)+'十日完整日窗新增帖走势">'+gaps.join('')+grid+'<path class="observed-series" d="'+path+'" fill="none" stroke="'+t.color+'" stroke-width="2.5" stroke-linejoin="round"/>'+dots+dates+'</svg>';
+ }
+ const svg=plot(false)+plot(true);
+ const reference='<aside class="trend-reference-card" aria-label="次日参考"><div class="trend-reference-heading"><span>次日参考</span><time>'+ (r.target_end?shortDate(r.target_end):'')+'</time></div><div class="trend-reference-number">'+(r.value==null?'—':'<small>约</small> '+num(r.value)+'<small>篇</small>')+'</div><p>'+(r.value==null?'积累3个完整日窗后生成':'按 '+num(r.windows)+' 个完整日窗的平均值')+'</p>'+(r.lower!=null?'<dl><dt>参考范围</dt><dd>'+num(r.lower)+'—'+num(r.upper)+' 篇</dd></dl>':'')+(r.as_of?'<p class="trend-reference-date">最近完整数据 · '+shortDate(r.as_of)+'</p>':'')+'</aside>';
+ return '<div class="trend-detail-layout"><section class="trend-plot-panel"><div class="trend-plot-heading"><strong>近十日新增讨论</strong><span><i style="background:'+t.color+'"></i>完整日窗</span></div><div class="trend-plot-scroll">'+svg+'</div></section>'+reference+'</div>';
+}
+function trendDetail(t){
+ const c=t.comparison||{},partial=t.timeline.at(-1)?.new_posts==null,change=c.value==null?'—':(c.value>0?'+':'')+num(c.value),missing=t.timeline.filter(p=>p.new_posts==null);
+ const summary='<div class="trend-detail-metrics"><div><span>十日采集</span><strong>'+num(t.posts)+'<small>篇</small></strong></div><div><span>近24h'+(partial?' · 已采集':'新增')+'</span><strong>'+num(t.posts_24h)+'<small>篇</small></strong></div><div><span>'+(c.basis==='latest_complete'?'最近完整日窗变化':'较前窗')+'</span><strong>'+change+(c.value==null?'':'<small>篇</small>')+'</strong><small>'+(c.start?shortDate(c.start)+'—'+shortDate(c.end):'待连续完整日窗')+'</small></div></div>';
+ const gapNote=missing.length?'<p class="trend-gap-note"><span>间断期已采集</span>'+missing.map(p=>shortDate(p.ts+DAY)+'：'+num(p.posts||0)+' 篇').join(' · ')+'</p>':'';
+ const r=t.reference,method='<details class="trend-method"><summary>统计与参考依据</summary><p>横轴为向前滚动的24小时日窗，实线连接完整采集的窗口，阴影标出采集间断。间断期的已采集数量列在图下。</p><p>次日参考取最近十日完整日窗的平均新增帖数，共 '+num(r.windows)+' 个有效窗口。'+(r.mae!=null?'历史平均绝对误差 '+num(r.mae)+' 篇；参考范围按缺测间隔扩宽。':'历史误差随完整窗口积累。')+'参考范围用于展示历史误差。</p></details>';
+ return summary+fullChart(t)+gapNote+method;
 }
 async function openTrend(name){
  const version=showDialog(name+' · 走势与原帖');try{const d=await overview(),t=d.themes.find(x=>x.theme===name);if(!t)throw Error('议题不存在');const posts=await api('/pulse/api/revision/posts?'+qs({theme:name}));if(version!==state.modalVersion)return;
- $('detailBody').innerHTML='<div class="trend-summary"><span>十日 '+num(t.posts)+' 篇</span><span>近24h '+num(t.posts_24h)+' 篇</span><span>次日参考 '+(t.reference.value==null?'资料待补齐':'约 '+num(Math.round(t.reference.value))+' 篇')+'</span></div>'+fullChart(t)+'<p class="data-note">'+esc(t.reference.method)+'；'+t.reference.windows+' 个完整日窗。'+(t.reference.mae!=null?'历史滚动平均绝对误差 '+num(t.reference.mae)+' 篇（'+t.reference.validation_windows+' 窗）。':'历史误差待积累。')+'</p><h3 class="post-group-title">对应原帖 · '+num(posts.total)+' 条</h3>'+renderPosts(posts.posts);
+ $('detailBody').innerHTML=trendDetail(t)+'<h3 class="post-group-title">对应原帖 · '+num(posts.total)+' 条</h3>'+renderPosts(posts.posts);
  }catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}
 }
 async function loadCare(){
@@ -80,7 +110,8 @@ async function loadFeed(kind,force=false){
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);
- $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2>${signalPill(x.signal)}<div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty(current==='小红书'?'当前小红书热榜源未返回有效榜单，暂无可展示数据。':'这个平台暂无可展示内容。');
+ $('hotScope').hidden=current!=='小红书';$('hotScope').textContent=current==='小红书'?'近24小时已发现 '+num(d.candidate_counts?.小红书??items.length)+' 个话题 · 每半小时核对热榜 · 当前展示 '+items.length+' 条':'';
+ $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2>${x.recent_topic?'<p class="muted">近24小时曾上榜</p>':signalPill(x.signal)}<div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,x.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty(current==='小红书'?'当前小红书热榜源未返回有效榜单，暂无可展示数据。':'这个平台暂无可展示内容。');
 }
 
 function signalPill(signal){
@@ -132,7 +163,7 @@ async function loadLedger(force=false){
  const d=await overview(force);if(!state.ledger||force)state.ledger=await api('/pulse/api/revision/ledger');const l=state.ledger;
  const hotSources=['xiaohongshu','douyin','thepaper','bilibili-hot-search','bilibili-popular','toutiao'],memeSources=['douyin','bilibili-hot-search','bilibili-popular','weibo','baidu'];
  $('ledgerMetrics').innerHTML=metric('累计校内独立帖',l.unique_school_posts)+metric('青年热点来源记录',l.sources.filter(s=>hotSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('梗文化来源记录',l.sources.filter(s=>memeSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('已完成研究报告',l.reports_completed);
- const themeRows=d.themes.map(t=>({label:t.theme,value:t.posts,color:t.color})),sourceRows=l.sources.map((s,i)=>({label:NAMES[s.source]||s.source,key:s.source,value:s.unique,color:d.themes[i%d.themes.length].color}));
+ const themeRows=d.themes.map(t=>({label:t.theme,value:t.posts,color:t.color})),sourceRows=l.sources.filter(s=>!s.source.endsWith('-school')||s.unique>0).map((s,i)=>({label:NAMES[s.source]||s.source,key:s.source,value:s.unique,color:d.themes[i%d.themes.length].color}));
  const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#5fb98f','#a9b8cc','#f28f6b'][i]}));
  $('ledgerDonuts').innerHTML=donut('校内议题分布 · 十日',themeRows,d.total,r=>'data-theme-trend="'+esc(r.label)+'"')+donut('文本表达倾向 · 七日',emotions,emotions.reduce((n,x)=>n+x.value,0),r=>'data-emotion="'+r.label+'"')+donut('累计采集来源',sourceRows,l.unique_items,r=>'data-source="'+r.key+'"','条');
  $('themeBars').innerHTML=bars(themeRows,r=>'data-theme-trend="'+esc(r.label)+'"');$('sourceBars').innerHTML=bars(sourceRows,r=>'data-source="'+r.key+'"');
@@ -231,17 +262,16 @@ async function config(tab='llm'){
   if(tab==='mail'){await window.CampusWeekly.fill();return;}
   if(tab==='accounts'){await window.CampusAccounts.fill();return;}
   if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
-  const c={...serviceConfig,...serviceDraft};
-  $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型。密钥留空时沿用已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';
-  const engines=[['QUERY','查询模型','查找事件材料'],['MEDIA','媒体模型','分析媒体内容'],['INSIGHT','洞察模型','分析讨论材料'],['REPORT','报告模型','事件报告、校园周报与新梗发现'],['FORUM_HOST','讨论汇总模型','整合研究观点']];
-  $('configFields').innerHTML=tab==='search'?'<section class="config-engine"><h3>博查 Bocha</h3><label>检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="'+(serviceConfig.BOCHA_WEB_SEARCH_API_KEY?'已配置，留空沿用':'填写博查 API Key')+'"></label></section>':engines.map(([id,label,role],i)=>{const prefix=id==='FORUM_HOST'?id:id+'_ENGINE';return '<details class="config-engine" '+(i===3?'open':'')+'><summary><strong>'+label+'</strong><span>'+role+'</span></summary>'+[['BASE_URL','接口地址'],['MODEL_NAME','模型名称'],['API_KEY','密钥']].map(([suffix,name])=>{const key=prefix+'_'+suffix;return '<label>'+name+'<input name="'+key+'" type="'+(suffix==='API_KEY'?'password':'text')+'" value="'+esc(suffix==='API_KEY'?(serviceDraft[key]||''):(c[key]||''))+'" autocomplete="off" placeholder="'+(suffix==='API_KEY'?(serviceConfig[key]?'已配置，留空沿用':'填写 API Key'):'')+'"></label>';}).join('')+'</details>';}).join('');
+  $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型，检索词优化为可选配置。密钥留空时沿用同一接口的已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';
+  if(tab==='search')$('configFields').innerHTML='<section class="config-engine"><h3>博查 Bocha</h3><label>检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="'+(serviceConfig.BOCHA_WEB_SEARCH_API_KEY?'已配置，留空沿用':'填写博查 API Key')+'"></label></section>';
+  else window.CampusModelSettings.mount($('configFields'),{config:serviceConfig,draft:serviceDraft,api,esc});
   if(tab==='search')$('configForm').elements.BOCHA_WEB_SEARCH_API_KEY.value=serviceDraft.BOCHA_WEB_SEARCH_API_KEY||'';
  }catch(e){notice(e.message);}
 }
 window.CampusSettings={open:config};
 $('configButton').onclick=()=>config('llm');
 document.querySelectorAll('[data-service]').forEach(b=>b.onclick=()=>config(b.dataset.service));
-$('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromEntries(Object.entries(Object.fromEntries(new FormData(e.target).entries())).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));const b=e.target.querySelector('button.primary');b.disabled=true;try{const d=await api('/api/config',{method:'POST',body:JSON.stringify(updates)});serviceConfig=d.config;for(const key of Object.keys(updates))delete serviceDraft[key];e.target.querySelectorAll('input[type=password]').forEach(x=>x.value='');$('configStatus').textContent='当前服务配置已保存';}catch(error){$('configStatus').textContent=error.message;}finally{b.disabled=false;}};
+$('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromEntries(Object.entries(Object.fromEntries(Array.from(new FormData(e.target).entries(),([k,v])=>[k,typeof v==='string'?v.trim():v]))).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));const b=e.target.querySelector('button.primary');b.disabled=true;try{const d=await api('/api/config',{method:'POST',body:JSON.stringify(updates)});serviceConfig=d.config;for(const key of Object.keys(updates))delete serviceDraft[key];e.target.querySelectorAll('input[type=password]').forEach(x=>{x.value='';x.removeAttribute('value');x.placeholder=serviceConfig[x.name]?'已配置，留空沿用':'填写该服务的密钥';});if(service==='llm')window.CampusModelSettings.sync($('configFields'),serviceConfig);$('configStatus').textContent='当前服务配置已保存';}catch(error){$('configStatus').textContent=error.message;}finally{b.disabled=false;}};
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[role="button"]');if(!b)return;
  if(b.classList.contains('close-dialog')){b.closest('dialog').close();return;}

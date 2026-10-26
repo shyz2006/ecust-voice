@@ -1,0 +1,45 @@
+{
+  "archives": [
+    {
+      "path": "data/campus_index.sqlite3",
+      "bytes": 173998080,
+      "modified_utc": "2026-10-25T14:16:22.411549+00:00"
+    },
+    {
+      "path": "data/campus_pulse.db",
+      "bytes": 764911616,
+      "modified_utc": "2026-10-25T14:30:38.456648+00:00"
+    },
+    {
+      "path": "data/search_gateway.sqlite3",
+      "bytes": 6680576,
+      "modified_utc": "2026-10-25T13:44:55.678653+00:00"
+    },
+    {
+      "path": "deploy/campus-polish-20261020/validation-runtime/task_7076385147e441a28f99f3835b173086/forum.sqlite3",
+      "bytes": 24576,
+      "modified_utc": "2026-10-20T06:46:25.503609+00:00"
+    },
+    {
+      "path": "deploy/campus-polish-20261020/validation-runtime/task_87340ee721c34fbd87d6b244532a1473/forum.sqlite3",
+      "bytes": 24576,
+      "modified_utc": "2026-10-20T06:46:25.503609+00:00"
+    },
+    {
+      "path": "deploy/campus-polish-20261020/validation-runtime/task_30697c6ad83d481ea2eb9067de6c6ced/forum.sqlite3",
+      "bytes": 24576,
+      "modified_utc": "2026-10-20T06:46:25.503609+00:00"
+    },
+    {
+      "path": "deploy/teacher-feedback-20261020/validation-runtime/task_baf9dc13aed0d1fb4ab459ab81d18e96/forum.sqlite3",
+      "bytes": 372736,
+      "modified_utc": "2026-10-20T01:00:10+00:00"
+    },
+    {
+      "path": "deploy/teacher-feedback-20261020/validation-evidence-backup/task_baf9dc13aed0d1fb4ab459ab81d18e96/forum.sqlite3",
+      "bytes": 372736,
+      "modified_utc": "2026-10-20T01:00:10+00:00"
+    }
+  ],
+  "count": 8
+}

@@ -1,0 +1,67 @@
+{
+  "name": "collection-audit-20261025-r2",
+  "stage": "/home/ubuntu/bettafish/deploy/collection-audit-20261025-r2",
+  "base_image_id": "sha256:298afb85062c489741121248a0297044d19d8b9b64ce12f292067919f4dfa050",
+  "base_image": "bettafish:base-collection-audit-20261025-r2",
+  "candidate_image": "bettafish:candidate-collection-audit-20261025-r2",
+  "candidate_image_id": "sha256:5afb8ca2ed1e1a1c2944c4c2c5a5557e261e203aeeea1d7c1f1f87c95dd288e7",
+  "files": [
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "ff43c9f76e8b0c85771df0c8b8d98a8501f604b49f563a5eb663c33bbdd1276b",
+      "expected_before": "ff43c9f76e8b0c85771df0c8b8d98a8501f604b49f563a5eb663c33bbdd1276b",
+      "before_sha256": "ff43c9f76e8b0c85771df0c8b8d98a8501f604b49f563a5eb663c33bbdd1276b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "9f4d37f631b0767c732c31867e6df5e243b4ca0f3cc7c5f99be76f21c8333e8d",
+      "expected_before": "9f4d37f631b0767c732c31867e6df5e243b4ca0f3cc7c5f99be76f21c8333e8d",
+      "before_sha256": "9f4d37f631b0767c732c31867e6df5e243b4ca0f3cc7c5f99be76f21c8333e8d",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "346fd9ef57281c32228193e4c76f6a0b7c81a2b70e0e18ede8e7e5438471eafa",
+      "expected_before": "346fd9ef57281c32228193e4c76f6a0b7c81a2b70e0e18ede8e7e5438471eafa",
+      "before_sha256": "346fd9ef57281c32228193e4c76f6a0b7c81a2b70e0e18ede8e7e5438471eafa",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/pipeline.py",
+      "candidate_sha256": "c611e8cc7378a992e9524e536f4fcc913b545e47c3c759649eddff459a8316a4",
+      "expected_before": "3443bf12a826cf9598ab74a236484878296e8d42154daa078321bd3e3412cc1d",
+      "before_sha256": "3443bf12a826cf9598ab74a236484878296e8d42154daa078321bd3e3412cc1d",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/storage.py",
+      "candidate_sha256": "b8b6ef5d2f312cfa172c22b7461454c02b479f0ef23f5a3a8d3d59aae818262a",
+      "expected_before": "b8b6ef5d2f312cfa172c22b7461454c02b479f0ef23f5a3a8d3d59aae818262a",
+      "before_sha256": "b8b6ef5d2f312cfa172c22b7461454c02b479f0ef23f5a3a8d3d59aae818262a",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "candidate_sha256": "2535c24be69c45c2f8c69bbf6d20b173877d34e4d4f0679bf799d6da4bacc648",
+      "expected_before": "2535c24be69c45c2f8c69bbf6d20b173877d34e4d4f0679bf799d6da4bacc648",
+      "before_sha256": "2535c24be69c45c2f8c69bbf6d20b173877d34e4d4f0679bf799d6da4bacc648",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_collection_recovery.py",
+      "candidate_sha256": "fc296edab3c1533b980605bacee16847c8a3d1a51b21fe983eb587c03c613d06",
+      "expected_before": "fc296edab3c1533b980605bacee16847c8a3d1a51b21fe983eb587c03c613d06",
+      "before_sha256": "fc296edab3c1533b980605bacee16847c8a3d1a51b21fe983eb587c03c613d06",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_collection_audit.py",
+      "candidate_sha256": "15463ac1fd7906e58dbe2b8815fe3242ea629901e36d8f0d1b9b4b5e16d52b53",
+      "expected_before": "155ed6d9fa6a93365cbed13f6c1702032862497e5f7a9640efeb5ff5c090975f",
+      "before_sha256": "155ed6d9fa6a93365cbed13f6c1702032862497e5f7a9640efeb5ff5c090975f",
+      "host_existed": true
+    }
+  ],
+  "activated": false
+}

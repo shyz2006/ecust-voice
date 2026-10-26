@@ -141,12 +141,13 @@ class Orchestrator:
                 self._step("WebResearcher", f"第{rounds}轮补充检索", **info)
             try:
                 revised = workers.reviser(query, draft, verdict["issues"], pool, self.meter, self.budget, profile=p)
+                revised_report = report_contract.generate(query, pool.as_list(), self.meter, feedback=verdict['issues'])
             except Exception as exc:
                 self._step("Reviser", "修订失败", note=str(exc))
                 break
             revised = schema.normalize_output(revised)
-            revised['report'] = report
-            revised['topics'] = report_contract.as_topics(report)
+            revised['report'] = revised_report
+            revised['topics'] = report_contract.as_topics(revised_report)
             new_verdict = verifier.verify(query, profile.intent, revised, pool, self.trace,
                                           use_judge=wf.verification == "rule+judge", meter=self.meter)
             self._step("Verifier", f"第{rounds}轮复核", score=new_verdict["score"],
@@ -155,7 +156,7 @@ class Orchestrator:
                 # 进度账本：没有进展 → 保留较好的版本并停止，避免空转（MAST FM-1.5）
                 self._step("Orchestrator", "检测到停滞，停止修订", note="复核分数未提升")
                 break
-            draft, verdict = revised, new_verdict
+            draft, verdict, report = revised, new_verdict, revised_report
 
         return self._finish(query, profile, wf, pick_reason, ledger, pool, draft, verdict)
 
