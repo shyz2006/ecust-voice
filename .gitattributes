@@ -47,3 +47,7 @@ validation/trend_chart*.cjs text eol=lf
 validation/backfill-*.json text eol=lf
 validation/backfill_*.py text eol=lf
 采集中断排查与历史补查_20261025.md text eol=lf
+validation/model-settings-*.json text eol=lf
+validation/model_settings*.py text eol=lf
+validation/model_settings*.cjs text eol=lf
+模型配置恢复说明_20261026.md text eol=lf

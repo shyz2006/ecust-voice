@@ -262,17 +262,16 @@ async function config(tab='llm'){
   if(tab==='mail'){await window.CampusWeekly.fill();return;}
   if(tab==='accounts'){await window.CampusAccounts.fill();return;}
   if(!serviceConfig){const d=await api('/api/config');serviceConfig=d.config;}
-  const c={...serviceConfig,...serviceDraft};
-  $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型。密钥留空时沿用已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';
-  const engines=[['QUERY','查询模型','查找事件材料'],['MEDIA','媒体模型','分析媒体内容'],['INSIGHT','洞察模型','分析讨论材料'],['REPORT','报告模型','事件报告、校园周报与新梗发现'],['FORUM_HOST','讨论汇总模型','整合研究观点']];
-  $('configFields').innerHTML=tab==='search'?'<section class="config-engine"><h3>博查 Bocha</h3><label>检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="'+(serviceConfig.BOCHA_WEB_SEARCH_API_KEY?'已配置，留空沿用':'填写博查 API Key')+'"></label></section>':engines.map(([id,label,role],i)=>{const prefix=id==='FORUM_HOST'?id:id+'_ENGINE';return '<details class="config-engine" '+(i===3?'open':'')+'><summary><strong>'+label+'</strong><span>'+role+'</span></summary>'+[['BASE_URL','接口地址'],['MODEL_NAME','模型名称'],['API_KEY','密钥']].map(([suffix,name])=>{const key=prefix+'_'+suffix;return '<label>'+name+'<input name="'+key+'" type="'+(suffix==='API_KEY'?'password':'text')+'" value="'+esc(suffix==='API_KEY'?(serviceDraft[key]||''):(c[key]||''))+'" autocomplete="off" placeholder="'+(suffix==='API_KEY'?(serviceConfig[key]?'已配置，留空沿用':'填写 API Key'):'')+'"></label>';}).join('')+'</details>';}).join('');
+  $('serviceIntro').textContent=tab==='llm'?'五个研究环节可分别选择模型，检索词优化为可选配置。密钥留空时沿用同一接口的已保存值。':'博查为事件研究和新梗核对提供网页资料。密钥留空时沿用已保存值。';
+  if(tab==='search')$('configFields').innerHTML='<section class="config-engine"><h3>博查 Bocha</h3><label>检索密钥<input name="BOCHA_WEB_SEARCH_API_KEY" type="password" autocomplete="off" placeholder="'+(serviceConfig.BOCHA_WEB_SEARCH_API_KEY?'已配置，留空沿用':'填写博查 API Key')+'"></label></section>';
+  else window.CampusModelSettings.mount($('configFields'),{config:serviceConfig,draft:serviceDraft,api,esc});
   if(tab==='search')$('configForm').elements.BOCHA_WEB_SEARCH_API_KEY.value=serviceDraft.BOCHA_WEB_SEARCH_API_KEY||'';
  }catch(e){notice(e.message);}
 }
 window.CampusSettings={open:config};
 $('configButton').onclick=()=>config('llm');
 document.querySelectorAll('[data-service]').forEach(b=>b.onclick=()=>config(b.dataset.service));
-$('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromEntries(Object.entries(Object.fromEntries(new FormData(e.target).entries())).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));const b=e.target.querySelector('button.primary');b.disabled=true;try{const d=await api('/api/config',{method:'POST',body:JSON.stringify(updates)});serviceConfig=d.config;for(const key of Object.keys(updates))delete serviceDraft[key];e.target.querySelectorAll('input[type=password]').forEach(x=>x.value='');$('configStatus').textContent='当前服务配置已保存';}catch(error){$('configStatus').textContent=error.message;}finally{b.disabled=false;}};
+$('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromEntries(Object.entries(Object.fromEntries(Array.from(new FormData(e.target).entries(),([k,v])=>[k,typeof v==='string'?v.trim():v]))).filter(([k,v])=>!k.endsWith('API_KEY')||v.trim()));const b=e.target.querySelector('button.primary');b.disabled=true;try{const d=await api('/api/config',{method:'POST',body:JSON.stringify(updates)});serviceConfig=d.config;for(const key of Object.keys(updates))delete serviceDraft[key];e.target.querySelectorAll('input[type=password]').forEach(x=>{x.value='';x.removeAttribute('value');x.placeholder=serviceConfig[x.name]?'已配置，留空沿用':'填写该服务的密钥';});if(service==='llm')window.CampusModelSettings.sync($('configFields'),serviceConfig);$('configStatus').textContent='当前服务配置已保存';}catch(error){$('configStatus').textContent=error.message;}finally{b.disabled=false;}};
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[role="button"]');if(!b)return;
  if(b.classList.contains('close-dialog')){b.closest('dialog').close();return;}

@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "path": "static/js/campus-review.js",
+      "http": 200,
+      "sha256": "549582f47449cd7ee7915fd9c8f271ce5f226b983e9a81712b8d17c59e0b78d6"
+    },
+    {
+      "path": "static/js/campus-model-settings.js",
+      "http": 200,
+      "sha256": "5398965c31a8aaea24fba532ffa99104a269bad037d8d3854b7032156c6d2573"
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "http": 200,
+      "sha256": "d9e129bdca0e0706bc6ce04b96c2b12818a3f3bab3cf123932a0b3e5e6e1173b"
+    }
+  ],
+  "saved_secrets_masked": true,
+  "negative_connection_checks": [
+    {
+      "endpoint": "/api/test_model",
+      "http": 400,
+      "message": "请选择有效的研究环节"
+    },
+    {
+      "endpoint": "/api/fetch_models",
+      "http": 400,
+      "message": "请选择有效的研究环节"
+    },
+    {
+      "endpoint": "/api/test_model",
+      "http": 400,
+      "message": "接口地址已变更，请填写该服务的密钥"
+    }
+  ],
+  "provider_calls": 0
+}

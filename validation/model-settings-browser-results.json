@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "engines": 6,
+      "domestic_presets": 10,
+      "relay_custom_path": true,
+      "stored_key_not_exposed": true,
+      "preset_change_clears_key": true,
+      "draft_survives_tabs": true,
+      "models_and_actual_test_actions": true,
+      "test_does_not_save": true,
+      "save_does_not_overwrite_blank_keys": true,
+      "overflow": false
+    },
+    {
+      "viewport": "mobile",
+      "engines": 6,
+      "domestic_presets": 10,
+      "relay_custom_path": true,
+      "stored_key_not_exposed": true,
+      "preset_change_clears_key": true,
+      "draft_survives_tabs": true,
+      "models_and_actual_test_actions": true,
+      "test_does_not_save": true,
+      "save_does_not_overwrite_blank_keys": true,
+      "overflow": false
+    }
+  ]
+}

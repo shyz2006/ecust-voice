@@ -1587,12 +1587,11 @@ def fetch_models():
     payload = request.get_json(silent=True) or {}
     if not isinstance(payload, dict):
         return jsonify(success=False,message='配置参数格式不正确'),400
-    from CampusPulse.model_connection import normalize_base_url
+    from CampusPulse.model_connection import resolve_connection
     try:
-        base_url = normalize_base_url(payload.get('base_url')) or ''
+        api_key,base_url,_ = resolve_connection(payload,read_config_values)
     except ValueError as exc:
         return jsonify(success=False,message=str(exc)),400
-    api_key = (payload.get('api_key') or '').strip()
 
     if not base_url:
         return jsonify({'success': False, 'message': '请先选择或填写 Base URL'}), 400
@@ -1667,11 +1666,15 @@ def fetch_models():
 
 @app.route('/api/test_model', methods=['POST'])
 def test_model_connection():
-    from CampusPulse.model_connection import probe
+    from CampusPulse.model_connection import probe,resolve_connection
     payload=request.get_json(silent=True) or {}
     if not isinstance(payload,dict):
         return jsonify(success=False,message='配置参数格式不正确'),400
-    result=probe(str(payload.get('api_key') or '').strip(),str(payload.get('base_url') or '').strip(),str(payload.get('model') or '').strip())
+    try:
+        api_key,base_url,model=resolve_connection(payload,read_config_values)
+    except ValueError as exc:
+        return jsonify(success=False,message=str(exc)),400
+    result=probe(api_key,base_url,model)
     return jsonify(result),200 if result['success'] else 400
 
 
@@ -1719,6 +1722,12 @@ def update_config():
 
     if not updates:
         return jsonify({'success': False, 'message': '没有可更新的配置项'}), 400
+
+    from CampusPulse.model_connection import validate_model_updates
+    try:
+        updates=validate_model_updates(updates,read_config_values)
+    except ValueError as exc:
+        return jsonify(success=False,message=str(exc)),400
 
     try:
         write_config_values(updates)

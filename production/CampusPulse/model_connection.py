@@ -2,6 +2,42 @@
 from urllib.parse import urlsplit, urlunsplit
 import time
 
+ENGINE_PREFIXES=('QUERY_ENGINE','MEDIA_ENGINE','INSIGHT_ENGINE','REPORT_ENGINE','FORUM_HOST','KEYWORD_OPTIMIZER')
+
+
+def resolve_connection(payload,load_config):
+    """Use a stored secret only for the same engine and exact normalized endpoint."""
+    prefix=payload.get('engine') or ''
+    if prefix and prefix not in ENGINE_PREFIXES:raise ValueError('请选择有效的研究环节')
+    base=normalize_base_url(payload.get('base_url'))
+    if not base:raise ValueError('请填写接口基础地址')
+    key=str(payload.get('api_key') or '').strip()
+    if key=='********':key=''
+    if not key:
+        if not prefix:raise ValueError('请填写该服务的 API Key')
+        saved=load_config()
+        if base!=normalize_base_url(saved.get(prefix+'_BASE_URL')):
+            raise ValueError('接口地址已变更，请填写该服务的密钥')
+        key=str(saved.get(prefix+'_API_KEY') or '').strip()
+    if not key:raise ValueError('请填写该服务的 API Key')
+    return key,base,str(payload.get('model') or '').strip()
+
+
+def validate_model_updates(updates,load_config):
+    clean=dict(updates);saved=None
+    for prefix in ENGINE_PREFIXES:
+        field=prefix+'_BASE_URL'
+        if field not in clean:continue
+        if saved is None:saved=load_config()
+        base=normalize_base_url(clean[field])
+        key=str(clean.get(prefix+'_API_KEY') or '').strip()
+        old_key=saved.get(prefix+'_API_KEY') or ''
+        if (key or old_key) and not base:raise ValueError('请为已配置的模型填写接口基础地址')
+        if old_key and not key and base!=normalize_base_url(saved.get(field)):
+            raise ValueError('接口地址已变更，请填写该服务的密钥后保存')
+        clean[field]=base or ''
+    return clean
+
 
 def normalize_base_url(value):
     value = str(value or '').strip().rstrip('/')
@@ -38,7 +74,8 @@ def safe_error(exc):
         return '该模型已下线或免费预览已结束（HTTP 403）。请在配置中选择其他可用模型，并测试实际调用。'
     messages = {
         401: '模型服务认证失败（HTTP 401）。请核对此接口的API Key。',
-        403: '模型服务拒绝访问（HTTP 403）。请核对密钥的模型权限、服务商限制及接口地址；这不是前端按钮故障。',
+        402: '模型服务额度不足或套餐已到期（HTTP 402）。请检查服务商账户状态。',
+        403: '模型服务拒绝访问（HTTP 403）。请检查套餐有效期、模型权限和接口地址。',
         404: '模型或接口不存在（HTTP 404）。请使用服务商的OpenAI兼容基础地址和准确模型ID。',
         429: '模型服务限流或额度不足（HTTP 429）。请检查服务商额度或稍后重试。',
         400: '模型服务不接受当前参数（HTTP 400）。请检查模型ID及接口协议。',
@@ -91,7 +128,7 @@ def probe(api_key, base_url, model):
             kwargs['base_url'] = normalized
         client = OpenAI(**kwargs)
         tracked = getattr(client.chat.completions.create, '_bf_usage_ledger', False)
-        response = completion(client, model=model, messages=[{'role':'user','content':'请只回复OK。'}], max_tokens=24, temperature=0, timeout=25)
+        response = completion(client, model=model, messages=[{'role':'user','content':'请只回复OK。'}], max_tokens=512, temperature=0, timeout=25)
         from . import telemetry
         if not tracked:
             telemetry.record_response(getattr(response,'usage',None),time.monotonic()-started,engine='ConnectionTest')
