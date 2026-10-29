@@ -14,28 +14,31 @@ class SearchParameterTests(unittest.TestCase):
     def test_normal_search_does_not_require_an_include_variable(self):
         result,call=self.call();self.assertEqual(len(result),1);self.assertNotIn('include',call.kwargs['json'])
     def test_include_is_supported_and_uses_web_search_endpoint(self):
-        result,call=self.call(include='xiaohongshu.com')
-        self.assertTrue(call.args[0].endswith('/web-search'));self.assertEqual(call.kwargs['json']['include'],'xiaohongshu.com')
+        result,call=self.call(include='douyin.com')
+        self.assertTrue(call.args[0].endswith('/web-search'));self.assertEqual(call.kwargs['json']['include'],'douyin.com')
         self.assertEqual(result[0]['url'],'https://example.invalid/post')
 
 class CollectionIsolationTests(unittest.TestCase):
+    def setUp(self):
+        self.news=patch.object(pipeline.ecust_news,"collect",return_value={"items":[],"errors":{}});self.news.start()
+    def tearDown(self):self.news.stop()
     def test_new_adapter_failure_keeps_hotlists(self):
         batch={'batch_ts':123,'items':[{'source':'weibo','title':'热榜'}],'errors':{}}
         with patch.object(pipeline.collectors,'collect_hotlists',return_value=batch),patch.object(pipeline.settings,'huyou_enabled',False),patch.object(pipeline.settings,'bilibili_enabled',False),patch.object(pipeline,'get_forums',return_value=[]),patch.object(pipeline.campus_social,'collect',side_effect=TypeError('invalid signature')):
             result=pipeline._fetch_all()
-        self.assertEqual(result['items'],batch['items']);self.assertIn('xiaohongshu-school',result['errors']);self.assertIn('douyin-school',result['errors'])
-    def test_one_school_adapter_does_not_cancel_the_other(self):
+        self.assertEqual(result['items'],batch['items']);self.assertIn('douyin-school',result['errors'])
+    def test_remaining_school_adapter_returns_douyin_rows(self):
         rows=[{'title':'华东理工大学校园讨论','snippet':'活动','url':'https://www.douyin.com/video/12345'}]
         def search_call(query,**kwargs):
             if kwargs.get('include')=='douyin.com':return rows
             raise TypeError('bad')
         with patch.object(campus_social.storage,'kv_get',return_value=None),patch.object(campus_social.storage,'kv_set'),patch.object(campus_social.search,'web_search',side_effect=search_call):
             result=campus_social.collect()
-        self.assertIn('xiaohongshu-school',result['errors']);self.assertEqual(result['items'][0]['source'],'douyin-school')
+        self.assertFalse(result['errors']);self.assertEqual(result['items'][0]['source'],'douyin-school')
     def test_malformed_cache_does_not_stop_school_searches(self):
         with patch.object(campus_social.storage,'kv_get',return_value=b'[]'),patch.object(campus_social.storage,'kv_set'),patch.object(campus_social.search,'web_search',return_value=[]) as search_call:
             result=campus_social.collect()
-        self.assertEqual(search_call.call_count,6);self.assertEqual(len(result['errors']),2)
+        self.assertEqual(search_call.call_count,2);self.assertEqual(len(result['errors']),1)
     def test_bad_hotlist_response_shape_becomes_source_error(self):
         response=Mock();response.json.return_value=['unexpected']
         with patch.object(collectors.requests,'get',return_value=response):source,items,error=collectors._fetch_source('weibo')
@@ -57,12 +60,12 @@ class CollectionIsolationTests(unittest.TestCase):
         def get(url,**kwargs):
             if 'id=douyin&' in url:raise failure
             return response
-        with patch.object(collectors.requests,'get',side_effect=get),patch('CampusPulse.sources.xiaohongshu_hot.fetch',return_value=('xiaohongshu',[],'')):
+        with patch.object(collectors.requests,'get',side_effect=get):
             result=collectors.collect_hotlists(['weibo','douyin'])
         self.assertEqual(len(result['items']),1);self.assertIn('500',result['errors']['douyin'])
     def test_successful_healthy_items_reach_persistence(self):
-        batch={'batch_ts':123,'items':[{'source':'weibo','title':'条目'}],'errors':{'xiaohongshu':'HTTP500'},'meta':{}}
+        batch={'batch_ts':123,'items':[{'source':'weibo','title':'条目'}],'errors':{'douyin':'HTTP500'},'meta':{}}
         with patch.object(pipeline,'_fetch_all',return_value=batch),patch.object(pipeline.storage,'record_fetch') as save,patch.object(pipeline.storage,'record_collection_attempt'),patch.object(pipeline,'analyze_batch',return_value={'complete':True}):result=pipeline.run_once(use_llm=False)
-        save.assert_called_once();self.assertTrue(result['complete']);self.assertIn('xiaohongshu',result['errors'])
+        save.assert_called_once();self.assertTrue(result['complete']);self.assertIn('douyin',result['errors'])
 
 if __name__=='__main__':unittest.main()

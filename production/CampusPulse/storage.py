@@ -320,6 +320,9 @@ def previous_batch_titles(before_ts: int) -> Dict[str, int]:
 
 def recent_items(sources: List[str], since_ts: int) -> List[Dict[str, Any]]:
     """最近一段时间内指定来源的快照条目（extra 已解析）。"""
+    from .source_policy import active
+    sources = [source for source in sources if active(source)]
+    if not sources:return []
     marks = ",".join("?" for _ in sources)
     with connect() as conn:
         rows = conn.execute(
@@ -347,6 +350,9 @@ def recent_unique_items(sources: List[str], since_ts: int) -> List[Dict[str, Any
 
 
 def latest_source_batches(sources: List[str], since_ts: int) -> Dict[str,int]:
+    from .source_policy import active
+    sources = [source for source in sources if active(source)]
+    if not sources:return {}
     marks=','.join('?' for _ in sources)
     with connect() as conn:
         rows=conn.execute(f'SELECT source,MAX(batch_ts) AS stamp FROM snapshots WHERE source IN ({marks}) AND batch_ts>=? GROUP BY source',[*sources,since_ts]).fetchall()
@@ -468,8 +474,11 @@ def latest_topics(scope: str = "public") -> Dict[str, Any]:
         t = json.loads(r["payload"])
         if t.get("scope", "public") != scope:
             continue
-        t["id"] = r["id"]
-        topics.append(t)
+        from .source_policy import public_payload
+        t = public_payload(t)
+        if t is not None:
+            t["id"] = r["id"]
+            topics.append(t)
     return {"batch_ts": row["ts"], "topics": topics}
 
 

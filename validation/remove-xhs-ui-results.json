@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "passed": true
+    },
+    {
+      "viewport": "mobile",
+      "passed": true
+    }
+  ]
+}

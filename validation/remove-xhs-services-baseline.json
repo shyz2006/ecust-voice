@@ -1,0 +1,14 @@
+{
+  "bettafish": {
+    "image": "bettafish:local",
+    "build": "Dockerfile.local"
+  },
+  "collection-api": {
+    "image": "bettafish:local",
+    "build": null
+  },
+  "collection-worker": {
+    "image": "bettafish:local",
+    "build": null
+  }
+}

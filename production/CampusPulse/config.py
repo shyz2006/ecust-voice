@@ -70,12 +70,9 @@ class PulseSettings:
     newsnow_base_url: str = field(
         default_factory=lambda: _env("PULSE_NEWSNOW_BASE_URL", "https://newsnow.busiyi.world")
     )
-    xiaohongshu_hot_url: str = field(
-        default_factory=lambda: _env("PULSE_XIAOHONGSHU_HOT_URL", "https://60s.viki.moe/v2/rednote")
-    )
     sources: List[str] = field(
         default_factory=lambda: [
-            s.strip() for s in _env("PULSE_SOURCES", ",".join(DEFAULT_SOURCES)).split(",") if s.strip()
+            s.strip() for s in _env("PULSE_SOURCES", ",".join(DEFAULT_SOURCES)).split(",") if s.strip() and s.strip() not in ("xiaohongshu", "xiaohongshu-school")
         ]
     )
 

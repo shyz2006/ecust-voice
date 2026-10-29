@@ -82,3 +82,7 @@ validation/xhs_helper*.py text eol=lf
 
 validation/xhs-*.json text eol=lf
 validation/xhs_card*.py text eol=lf
+
+validation/remove-xhs*.json text eol=lf
+validation/remove_xhs* text eol=lf
+小红书功能移除说明_20261029.md text eol=lf

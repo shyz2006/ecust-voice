@@ -21,7 +21,6 @@ SOURCE_NAMES = {
     "baidu": "百度热搜",
     "thepaper": "澎湃新闻",
     "kuaishou": "快手热榜",
-    "xiaohongshu": "小红书",
 }
 
 _HEADERS = {
@@ -35,11 +34,8 @@ _HEADERS = {
 
 
 def _fetch_source(source: str) -> Tuple[str, List[Dict[str, Any]], str]:
-    if source == 'xiaohongshu':
-        try:
-            from .sources.xiaohongshu_hot import fetch
-            return fetch()
-        except Exception:return source,[],"小红书热点读取暂未完成"
+    from .source_policy import active
+    if not active(source):return source,[],''
     url = f"{settings.newsnow_base_url}/api/s?id={source}&latest"
     for attempt in range(2):
         try:
@@ -73,7 +69,8 @@ def _fetch_source(source: str) -> Tuple[str, List[Dict[str, Any]], str]:
 
 def collect_hotlists(sources: List[str] = None) -> Dict[str, Any]:
     """并发拉取所有热榜源，返回 {batch_ts, items, errors}。"""
-    sources = list(dict.fromkeys([*(sources if sources is not None else settings.sources), "xiaohongshu"]))
+    from .source_policy import active
+    sources = [s for s in dict.fromkeys(sources if sources is not None else settings.sources) if active(s)]
     batch_ts = int(time.time())
     all_items: List[Dict[str, Any]] = []
     errors: Dict[str, str] = {}

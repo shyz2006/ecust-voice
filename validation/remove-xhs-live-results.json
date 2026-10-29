@@ -1,0 +1,13 @@
+{
+  "overview": true,
+  "hot": true,
+  "ledger": true,
+  "posts": true,
+  "official_news": true,
+  "status": true,
+  "/pulse/api/xhs-browser/status": 410,
+  "/pulse/api/xhs-browser/push": 410,
+  "/static/js/campus-xhs-sync.js": 404,
+  "/static/downloads/ecust-xhs-browser-helper.zip": 404,
+  "collection_worker_alive": true
+}

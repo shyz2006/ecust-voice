@@ -90,6 +90,8 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain
     raw = _parse_ai_search(payload) or _parse_web_search(payload)
     results = []
     for page in raw[:count]:
+        from .source_policy import retired_url
+        if retired_url(page.get('url')):continue
         snippet = page.get("summary") or page.get("snippet") or ""
         results.append(
             {
