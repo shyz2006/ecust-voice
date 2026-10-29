@@ -146,12 +146,12 @@ if __name__=='__main__':unittest.main()
 
 
 class ReportTemplateAndRecoveryTests(unittest.TestCase):
-    def test_real_public_event_template_preserves_full_report_structure(self):
+    def test_real_public_event_template_has_five_chapters_and_twelve_subsections(self):
         from ReportEngine.core.template_parser import parse_template_sections
         template=Path('ReportEngine/report_template/社会公共热点事件分析报告模板.md').read_text(encoding='utf-8')
         chapters=parse_template_sections(template)
-        self.assertGreaterEqual(len(chapters),5)
-        self.assertGreaterEqual(sum(len(c.outline) for c in chapters),12)
+        self.assertEqual(len(chapters),5)
+        self.assertEqual(sum(len(c.outline) for c in chapters),12)
         self.assertEqual(chapters[0].number,'1.0')
     def test_single_level_markdown_chapters_are_preserved(self):
         from ReportEngine.core.template_parser import parse_template_sections

@@ -255,11 +255,14 @@ def revision_research_report(task_id):
     except ValueError:allowed=False
     if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
     try:
-        if request.args.get('format')=='pdf':
+        if request.args.get('format')=='md':
+            import io
+            response=send_file(io.BytesIO(research.markdown(task_id).encode('utf-8')),mimetype='text/markdown; charset=utf-8',as_attachment=True,download_name='事件分析报告.md')
+        elif request.args.get('format')=='pdf':
             response=send_file(research.pdf(task_id),mimetype='application/pdf',as_attachment=True,download_name='事件分析报告.pdf')
         else:
             response=Response(research.report_html(task_id),mimetype='text/html')
-            response.headers['Content-Security-Policy']="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'"
+            response.headers['Content-Security-Policy']="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src https: data:; font-src 'self'"
         response.headers['Cache-Control']='no-store'
         return response
     except ValueError as exc:return jsonify(success=False,message=str(exc)),409

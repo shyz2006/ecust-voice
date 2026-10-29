@@ -29,7 +29,7 @@ def start(query,username,request_id='',brief=None):
         return {'task_id':task_id,'status':status(task_id)['status'],'reused':True}
     ensure_task(task_id,query=query);register_task_account(task_id,username)
     path=task_metadata_path(task_id);meta=json.loads(path.read_text())
-    meta.update(report_template=TEMPLATE,report_style='public_event',pulse_revision=2)
+    meta.update(report_template=TEMPLATE,report_style='public_event',pulse_revision=2,auto_report=True)
     if brief:meta['research_brief']=brief
     temp=path.with_suffix('.revision.tmp');temp.write_text(json.dumps(meta,ensure_ascii=False),encoding='utf-8');os.replace(temp,path)
     from ForumEngine.task_store import initialize_task_forum
@@ -42,7 +42,7 @@ def authorize(task_id,username):
     validate_runtime_id(task_id)
     return bool(username and task_has_account(task_id,username) and read_task_metadata(task_id).get('pulse_revision')==2)
 
-def status(task_id):
+def status(task_id, auto=True):
     from utils.task_runtime import task_summary,task_output_dir
     from ReportEngine import flask_interface
     result=task_summary(task_id)
@@ -53,7 +53,7 @@ def status(task_id):
     report=current[-1] if current else None
     if reports:
         try:
-            report_html(task_id)
+            report_document(task_id)
             result.update(status='completed',report_url=f'/pulse/api/revision/research/{task_id}/report')
         except (ValueError,OSError):
             if report and report.status in ('pending','running'):
@@ -69,7 +69,8 @@ def status(task_id):
         message = ('报告模板章节未通过检查，请更新服务后继续生成。' if '必须包含五章' in reason else
                    '报告正文未通过篇幅或小节检查，可继续生成最终报告。' if any(x in reason for x in ('篇幅','小节','字数','正文须')) else
                    '报告汇总未完成，研究材料已保留，可继续生成最终报告。')
-        result.update(status='failed',error=message,can_resume_report=True)
+        from .report_automation import _permanent
+        result.update(status='failed',error=message,can_resume_report=True,automatic_retry_allowed=report.status!='cancelled' and not _permanent({'error':reason}))
     elif all(v=='completed' for v in result['engines'].values()):
         if report and report.status in ('pending','running'):
             result.update(status='reporting',progress=getattr(report,'progress',0))
@@ -82,6 +83,10 @@ def status(task_id):
         result.update(status='reporting',can_resume_report=False,error=None,message='正在启动报告汇总，研究材料已保留。')
     elif recovery.get('error') and result.get('status') not in ('completed','reporting'):
         result.update(status='failed',can_resume_report=True,error=recovery['error'])
+    if auto and result.get('status') not in ('completed','running','queued','reporting'):
+        from .report_automation import waiting_message
+        message=waiting_message(task_id,result)
+        if message:result.update(status='reporting',can_resume_report=False,error=None,message=message)
     return result
 
 def history(username):
@@ -113,6 +118,8 @@ def _text_blocks(block):
                 url=mark.get('href') or (mark.get('value') if mark.get('type')=='link' else None)
                 if isinstance(url,str) and url.startswith(('http://','https://')):links.append(url)
         return [('p',content,links)] if content or links else []
+    if kind in ('markdown','text') or (kind=='code' and str(block.get('lang','')).lower() in ('md','markdown')):
+        return [('p',str(block.get('content') or block.get('text') or ''),[])]
     if kind=='heading':return [('h3',str(block.get('text','')),[])]
     out=[]
     for key in ('blocks','children','items','rows','cells','content','body'):
@@ -124,9 +131,9 @@ def _text_blocks(block):
         if isinstance(caption,str):out=[('p',caption,[])]
     return out
 
-def report_html(task_id):
+def report_document(task_id):
     from utils.task_runtime import task_output_dir,read_task_metadata
-    from ReportEngine.evidence import validate_sources,source_evidence
+    from ReportEngine.evidence import validate_sources
     directory=task_output_dir(task_id,'report')
     files=list((directory/'ir').glob('*.json'))
     if not files:raise ValueError('报告正文尚未就绪')
@@ -139,33 +146,46 @@ def report_html(task_id):
         from .report_contract import validate_ir
         validate_ir(doc)
     validate_sources(doc,task_id)
+    return doc
+
+
+def report_html(task_id):
+    from utils.task_runtime import read_task_metadata
+    from ReportEngine.evidence import source_evidence
+    doc=report_document(task_id)
     query=str(read_task_metadata(task_id).get('query') or (doc.get('metadata') or {}).get('title') or '事件分析报告')
-    title=html.escape(query)
     catalogue={x['url']:x for x in source_evidence(task_id)}
-    sections=[]
+    return render_document(doc,query,catalogue)
+
+
+def render_document(doc,query,catalogue):
+    from .report_rendering import ReportRenderer,STYLE,esc,safe_url
+    chapters=doc.get('chapters') or []
+    renderer=ReportRenderer();sections=[]
     for ch in chapters:
-        blocks=_text_blocks(ch.get('blocks',[]));sources=[];body=[]
-        for tag,text,links in blocks:
-            refs=[]
-            for url in dict.fromkeys(links):
-                if url not in sources:sources.append(url)
-                refs.append('<a href="'+html.escape(url,quote=True)+'" target="_blank" rel="noopener">['+str(sources.index(url)+1)+']</a>')
-            body.append(f'<{tag}>'+html.escape(text)+(('<sup>'+''.join(refs)+'</sup>') if refs else '')+f'</{tag}>')
-        for footnote in ch.get('footnotes',[]):
+        renderer.sources=[]
+        renderer.chapter_data=ch.get('data') or {}
+        body=renderer.blocks(ch.get('blocks') or [])
+        if not body:raise ValueError('报告章节正文为空，暂不能导出')
+        for footnote in ch.get('footnotes') or []:
             if not isinstance(footnote,dict):continue
             text=footnote.get('text') or footnote.get('content')
-            if isinstance(text,str):body.append('<p class="source">'+html.escape(text)+'</p>')
-            url=footnote.get('href')
-            if url in catalogue and url not in sources:sources.append(url)
-        if not body:raise ValueError('报告章节正文为空，暂不能导出')
-        for number,url in enumerate(sources,1):
+            if isinstance(text,str):body+='<p class="source">'+esc(text)+'</p>'
+            url=safe_url(footnote.get('href'))
+            if url in catalogue and url not in renderer.sources:renderer.sources.append(url)
+        for number,url in enumerate(renderer.sources,1):
             label=catalogue.get(url,{}).get('title') or urlsplit(url).hostname or '原始资料'
-            display=label if len(label)<=100 else label[:100]+'…'
-            body.append('<p class="source"><a href="'+html.escape(url,quote=True)+'" title="'+html.escape(label,quote=True)+'" target="_blank" rel="noopener">['+str(number)+'] '+html.escape(display)+'</a></p>')
-        sections.append('<section class="report-chapter"><h2>'+html.escape(ch.get('title',''))+'</h2><article>'+''.join(body)+'</article></section>')
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>事件分析报告</title><style>
-    *{box-sizing:border-box}body{margin:0;color:#24322e;background:#ebece7;font-family:"Noto Sans CJK SC","Noto Sans SC",sans-serif}.report{max-width:900px;padding:40px 48px;margin:24px auto;background:white}header{font-size:11px;color:#68766f;border-bottom:1px solid #bdcbc0;padding-bottom:12px}h1{font-size:26px;line-height:1.5;margin:22px 0 28px;overflow-wrap:anywhere}h2{font-size:20px;color:#285344;margin:28px 0 15px;break-after:avoid}h3{font-size:16px;break-after:avoid}article{font-size:15px;line-height:1.95;overflow-wrap:anywhere}p{margin:0 0 14px;white-space:pre-wrap;orphans:3;widows:3}.source{font-size:11px;color:#566b61;margin:7px 0;break-inside:avoid}a{color:inherit;text-underline-offset:3px}sup{margin-left:4px;font-size:10px}footer{margin-top:28px;padding-top:12px;border-top:1px solid #bdcbc0;font-size:10px;color:#68766f}@page{size:A4;margin:18mm 16mm 20mm}@media(max-width:640px){.report{margin:0;padding:24px 20px}h1{font-size:23px}}@media print{body{background:white}.report{max-width:none;padding:0;margin:0}article{font-size:11pt;line-height:1.8}h1{font-size:21pt}h2{font-size:15pt}p{break-inside:avoid}.source{font-size:8pt}}
-    </style><body><main class="report"><header>校园与青年事件研究</header><h1>'''+title+'''</h1>'''+''.join(sections)+'''<footer>微舆三引擎研究 · 文中编号链接对应本章来源</footer></main></body></html>'''
+            body+='<p class="source"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">['+str(number)+'] '+esc(label)+'</a></p>'
+        sections.append('<section class="report-chapter"><h2>'+esc(ch.get('title',''))+'</h2><article>'+body+'</article></section>')
+    return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(query)+'</title><style>'+STYLE+'</style></head><body><main class="report"><header>校园与青年事件研究</header><h1>'+esc(query)+'</h1>'+''.join(sections)+'<footer>微舆三引擎研究 · 文中链接对应研究来源</footer></main>'+renderer.scripts()+'</body></html>'
+
+
+def markdown(task_id):
+    from utils.task_runtime import read_task_metadata
+    from ReportEngine.renderers.markdown_renderer import MarkdownRenderer
+    doc=report_document(task_id)
+    doc['metadata']=dict(doc.get('metadata') or {},title=read_task_metadata(task_id).get('query') or '事件分析报告')
+    return MarkdownRenderer().render(doc,review_charts=False)
 
 
 def pdf(task_id):
@@ -178,7 +198,8 @@ def pdf(task_id):
             browser=p.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
             try:
                 page=browser.new_page();page.set_content(content,wait_until='load')
-                page.evaluate('document.fonts.ready')
+                page.evaluate('window.reportReady || document.fonts.ready')
+                page.wait_for_function('window.reportRenderComplete === true',timeout=30000)
                 page.pdf(path=str(path),format='A4',print_background=True,prefer_css_page_size=True,
                          display_header_footer=True,header_template='<span></span>',
                          footer_template='<div style="width:100%;text-align:center;font-size:9px;color:#777"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
@@ -201,11 +222,14 @@ def _submit_report(task_id):
     return {'task_id':task_id,'status':'completed' if value.get('existing') else 'reporting'}
 
 
-def resume_report(task_id):
+def resume_report(task_id, automatic=False):
     """Accept recovery promptly; polling follows the background submission and generation."""
     from utils.research_runner import all_engines_completed
     if not all_engines_completed(task_id):
         raise ValueError('请等待三个研究引擎完成')
+    if not automatic:
+        from .report_automation import enable
+        enable(task_id)
     with _resume_lock:
         if (_resume_jobs.get(task_id) or {}).get('pending'):
             return {'task_id':task_id,'status':'reporting','reused':True}

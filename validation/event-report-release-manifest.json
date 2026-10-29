@@ -1,0 +1,173 @@
+{
+  "name": "event-report-20261030-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/event-report-20261030-r1",
+  "base_image_id": "sha256:29344220765830df244cc7549cb2c3f78049973128fa1da65cc1ce2722c1935e",
+  "base_image": "bettafish:base-event-report-20261030-r1",
+  "candidate_image": "bettafish:candidate-event-report-20261030-r1",
+  "candidate_image_id": "sha256:b758c2a4de295c62d9ab8377fdaa9ff92cc85813207c414e5ad26425f8fce21e",
+  "files": [
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "9e63e9283018408b49b16e02b30a00e7808dbdc60e5bc4187419bc3b28aa181e",
+      "expected_before": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488",
+      "host_expected": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488",
+      "before_sha256": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "99dc7f320cdfdb1734697fe1aa7df1bb7dde74116a58de5214fac0d540cc4dd1",
+      "expected_before": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f",
+      "host_expected": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f",
+      "before_sha256": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "98c09f9c5372b2574a7b63ae988f3f55b999c0f443a027e4f336dd9cfb2ef708",
+      "expected_before": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da",
+      "host_expected": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da",
+      "before_sha256": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "81d9b0875e530ca7539ccb6b4cff9ee79efdaf1f5974bc7fce64cc713831aebd",
+      "expected_before": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "host_expected": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "before_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/renderers/markdown_renderer.py",
+      "candidate_sha256": "4650f427a257b80f0ac080cfbdbb1be83374fa6d0c6eb10814385bac202a8127",
+      "expected_before": "b82f3f5394b95f992a45112b9f3ba6b9e1c2461f943296ae802d91bebeeb2766",
+      "host_expected": null,
+      "before_sha256": "b82f3f5394b95f992a45112b9f3ba6b9e1c2461f943296ae802d91bebeeb2766",
+      "host_existed": false
+    },
+    {
+      "path": "requirements.txt",
+      "candidate_sha256": "b0fcf7de2832863cfb8f81c1b66548dcb688e324eea3ca6aedde52576f2960e7",
+      "expected_before": "de830c2bd1c1da75c2aef2e73a7a46e3ce539b1ad5bfe9f1da7a75717f320c12",
+      "host_expected": null,
+      "before_sha256": "de830c2bd1c1da75c2aef2e73a7a46e3ce539b1ad5bfe9f1da7a75717f320c12",
+      "host_existed": false
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "542583282f4c7e58b2838f683508c7798ef2f9aba3504c57abc6dc8ab46b0d9e",
+      "expected_before": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a",
+      "host_expected": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a",
+      "before_sha256": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a",
+      "host_existed": true
+    },
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "2ac078504c8ebae8a717771c000c393ea41aced0006a3b9d7ec522f47ca807a4",
+      "expected_before": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6",
+      "host_expected": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6",
+      "before_sha256": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "acefc378a17a8218df905005e56651e561f83020bf1985a90d0afb6ba967de4c",
+      "expected_before": "b11d4a4edd1e12e1416756fd1a613e3a0b946cdb951e908dbf75ea897086bcff",
+      "host_expected": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471",
+      "before_sha256": "b11d4a4edd1e12e1416756fd1a613e3a0b946cdb951e908dbf75ea897086bcff",
+      "host_existed": false
+    },
+    {
+      "path": "utils/research_runner.py",
+      "candidate_sha256": "fd2aa7b29402623a60da9968b5907160d9972509e178d0c9de07ce214cdca329",
+      "expected_before": "6e9f9a2627e42cf57da4cb4e3cf354221e4f8fd5ce984a719c981858df4aa9dc",
+      "host_expected": "6e9f9a2627e42cf57da4cb4e3cf354221e4f8fd5ce984a719c981858df4aa9dc",
+      "before_sha256": "6e9f9a2627e42cf57da4cb4e3cf354221e4f8fd5ce984a719c981858df4aa9dc",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/core/template_parser.py",
+      "candidate_sha256": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc",
+      "expected_before": "1f1e3eea88d1b6f89dea1f16fa11f2d2c2718c8255d541c001eea0866052d5b6",
+      "host_expected": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc",
+      "before_sha256": "1f1e3eea88d1b6f89dea1f16fa11f2d2c2718c8255d541c001eea0866052d5b6",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_automation.py",
+      "candidate_sha256": "b9c444ace34e6e9047fd7f19acb3259b5028c58c20e529fc441b612c23112303",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/report_rendering.py",
+      "candidate_sha256": "37a6538a50a6fa60e45c615ab2d78169ca93d3e6d331ce7eba8dba2028401fce",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "ReportEngine/renderers/libs/mermaid-10.9.3.min.js",
+      "candidate_sha256": "5a8ec91820bd55afef049068489369910e5d6ce70c8103952f27e29d3e76e8bc",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "ReportEngine/renderers/libs/mermaid-LICENSE",
+      "candidate_sha256": "ec9fb67dcb25eccc416ed56e1aab819222c805a2a4bfe4cb19e7556bf2ffde80",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_event_report_completion.py",
+      "candidate_sha256": "53e598679f3b72dabdd0b7ba9e009aadcbc5817abf9d77c3ab5a30b0e8a9b9cf",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "ReportEngine/report_template/社会公共热点事件分析报告模板.md",
+      "candidate_sha256": "3c2c36c9fbf1bb9c157f3113b6153f394462ba73e7d2fbf83ecfb5d7d4b4a028",
+      "expected_before": "7e3ebc2f5c4c92f6a0ee8f536fde248891190ec773b0f443019caa327a4c4c40",
+      "host_expected": "21d800ac97eb2b999fac2b6e10ad8ae13d8715b37ca6038bb48e72df6bcccc3d",
+      "before_sha256": "7e3ebc2f5c4c92f6a0ee8f536fde248891190ec773b0f443019caa327a4c4c40",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "16a49145b65bf0386caab8da1deb292b2a12b538ac8ab17b326626ce2d846cba",
+      "expected_before": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b",
+      "host_expected": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b",
+      "before_sha256": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_checkpoints.py",
+      "candidate_sha256": "29d4571402f277b885c0255dccaabe4643fa8391ae0ee65cbe365af416aefee0",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "companions": {
+    "collection-api": {
+      "image_id": "sha256:29344220765830df244cc7549cb2c3f78049973128fa1da65cc1ce2722c1935e",
+      "base_image": "bettafish:base-event-report-20261030-r1-collection-api"
+    },
+    "collection-worker": {
+      "image_id": "sha256:29344220765830df244cc7549cb2c3f78049973128fa1da65cc1ce2722c1935e",
+      "base_image": "bettafish:base-event-report-20261030-r1-collection-worker"
+    }
+  },
+  "activated": false
+}

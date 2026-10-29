@@ -86,3 +86,9 @@ validation/xhs_card*.py text eol=lf
 validation/remove-xhs*.json text eol=lf
 validation/remove_xhs* text eol=lf
 小红书功能移除说明_20261029.md text eol=lf
+
+validation/event-report*.json text eol=lf
+validation/event_report* text eol=lf
+production/ReportEngine/renderers/libs/mermaid-* text eol=lf
+事件研究报告修复说明_20261030.md text eol=lf
+production/ReportEngine/renderers/libs/mermaid-10.9.3.min.js text eol=lf -whitespace

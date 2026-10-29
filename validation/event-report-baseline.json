@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488",
+      "host_sha256": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488"
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f",
+      "host_sha256": "402bd3f828a6d3d10430cdf5f5770089f3b5fab4ffb75a05549d0d3ac0be955f"
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da",
+      "host_sha256": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da"
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6",
+      "host_sha256": "40dba1ba7e53fafb7e09d0a755c230bdd87902d7ef724310967dc36ea8b4d1b6"
+    },
+    {
+      "path": "ReportEngine/renderers/markdown_renderer.py",
+      "candidate_sha256": "b82f3f5394b95f992a45112b9f3ba6b9e1c2461f943296ae802d91bebeeb2766",
+      "host_sha256": null
+    },
+    {
+      "path": "requirements.txt",
+      "candidate_sha256": "de830c2bd1c1da75c2aef2e73a7a46e3ce539b1ad5bfe9f1da7a75717f320c12",
+      "host_sha256": null
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a",
+      "host_sha256": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a"
+    },
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6",
+      "host_sha256": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6"
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "b11d4a4edd1e12e1416756fd1a613e3a0b946cdb951e908dbf75ea897086bcff",
+      "host_sha256": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471"
+    },
+    {
+      "path": "utils/research_runner.py",
+      "candidate_sha256": "6e9f9a2627e42cf57da4cb4e3cf354221e4f8fd5ce984a719c981858df4aa9dc",
+      "host_sha256": "6e9f9a2627e42cf57da4cb4e3cf354221e4f8fd5ce984a719c981858df4aa9dc"
+    },
+    {
+      "path": "ReportEngine/core/template_parser.py",
+      "candidate_sha256": "1f1e3eea88d1b6f89dea1f16fa11f2d2c2718c8255d541c001eea0866052d5b6",
+      "host_sha256": "f6cc5a8cfeebb45b0971e3afa1f1c31aaff287d8c608aa48a90c3739532689dc"
+    },
+    {
+      "path": "CampusPulse/report_automation.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "CampusPulse/report_rendering.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "ReportEngine/renderers/libs/mermaid-10.9.3.min.js",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "ReportEngine/renderers/libs/mermaid-LICENSE",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "tests/test_event_report_completion.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "candidate_sha256": "7e3ebc2f5c4c92f6a0ee8f536fde248891190ec773b0f443019caa327a4c4c40",
+      "host_sha256": "21d800ac97eb2b999fac2b6e10ad8ae13d8715b37ca6038bb48e72df6bcccc3d",
+      "path": "ReportEngine/report_template/\u793e\u4f1a\u516c\u5171\u70ed\u70b9\u4e8b\u4ef6\u5206\u6790\u62a5\u544a\u6a21\u677f.md"
+    },
+    {
+      "path": "ReportEngine/agent.py",
+      "candidate_sha256": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b",
+      "host_sha256": "f61ee5250382d3475b9d88fc430ba050ad9accc8b41c69cecfeaf6d12be74c2b"
+    },
+    {
+      "path": "CampusPulse/report_checkpoints.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    }
+  ]
+}

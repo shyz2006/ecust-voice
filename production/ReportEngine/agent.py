@@ -638,8 +638,11 @@ class ReportAgent:
             self.chapter_generation_node._ensure_run_state(run_dir.name)
             chapter_results: Dict[str, Any] = {}
 
+            checkpoints=None
             if self._task_report_meta.get('report_style')=='public_event':
                 generation_context['max_tokens']=10000
+                from CampusPulse.report_checkpoints import ChapterCheckpoints
+                checkpoints=ChapterCheckpoints(research_task_id,query,reports,forum_logs,[(sec.title,sec.outline) for sec in sections])
             def _gen_section(section):
                 nonlocal completed_chapters
                 logger.info(f"生成章节: {section.title}")
@@ -670,7 +673,13 @@ class ReportAgent:
                 best_sparse_score = -1
                 fallback_used = False
                 section_context = dict(generation_context)
-                while attempt <= chapter_max_attempts:
+                if checkpoints:
+                    from CampusPulse.report_contract import CHAPTERS
+                    chapter_payload=checkpoints.load(section.chapter_id,CHAPTERS[sections.index(section)][1])
+                    if chapter_payload is not None:
+                        self.chapter_storage.persist_chapter(run_dir,{'chapterId':section.chapter_id,'slug':section.slug,'title':section.title,'order':section.order},chapter_payload)
+                        emit('stage',{'stage':'chapter_resumed','message':'继续使用已核验章节','chapterId':section.chapter_id})
+                while chapter_payload is None and attempt <= chapter_max_attempts:
                     try:
                         chapter_payload = self.chapter_generation_node.run(
                             section,
@@ -753,6 +762,7 @@ class ReportAgent:
                             break
                         if attempt >= chapter_max_attempts:
                             raise
+                        chapter_payload = None
                         attempt += 1
                         continue
                     except (AttributeError, TypeError, KeyError, IndexError, ValueError, json.JSONDecodeError) as structure_error:
@@ -787,6 +797,7 @@ class ReportAgent:
                             raise ChapterJsonParseError(
                                 f"{section.title} 章节因 {error_type} 在 {chapter_max_attempts} 次尝试后仍无法生成: {structure_error}"
                             ) from structure_error
+                        chapter_payload = None
                         attempt += 1
                         continue
                     except Exception as chapter_error:
@@ -809,12 +820,15 @@ class ReportAgent:
                         })
                         if attempt >= chapter_max_attempts:
                             raise
+                        chapter_payload = None
                         attempt += 1
                         continue
                 if chapter_payload is None:
                     raise ChapterJsonParseError(
                         f"{section.title} 章节JSON在 {chapter_max_attempts} 次尝试后仍无法解析"
                     )
+                if checkpoints:
+                    checkpoints.save(section.chapter_id,chapter_payload,CHAPTERS[sections.index(section)][1])
                 with _chapter_lock:
                     chapter_results[section.chapter_id] = chapter_payload
                     completed_chapters += 1  # 更新已完成章节数
@@ -863,7 +877,12 @@ class ReportAgent:
                 from CampusPulse.report_contract import validate_ir
                 validate_ir(document_ir)
             emit('stage', {'stage': 'chapters_compiled', 'chapter_count': len(chapters)})
-            html_report = self.renderer.render(document_ir)
+            if self._task_report_meta.get('report_style')=='public_event':
+                from CampusPulse.research import render_document
+                from .evidence import source_evidence
+                html_report=render_document(document_ir,query,{item['url']:item for item in source_evidence(research_task_id)})
+            else:
+                html_report = self.renderer.render(document_ir)
             emit('stage', {'stage': 'html_rendered', 'html_length': len(html_report)})
 
             self.state.html_content = html_report

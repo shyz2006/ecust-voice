@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "viewport": "desktop",
+      "charts": 2,
+      "mermaid": 1,
+      "markdown": true,
+      "offline": true
+    },
+    {
+      "viewport": "mobile",
+      "charts": 2,
+      "mermaid": 1,
+      "markdown": true,
+      "offline": true
+    }
+  ],
+  "pdf": true
+}

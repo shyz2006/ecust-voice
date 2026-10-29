@@ -78,3 +78,9 @@ COPY static/js/campus-weekly.js static/js/campus-weekly.js
 
 
 COPY static/js/campus-model-settings.js static/js/campus-model-settings.js
+
+COPY ReportEngine/core/template_parser.py ReportEngine/core/template_parser.py
+COPY ReportEngine/renderers/markdown_renderer.py ReportEngine/renderers/markdown_renderer.py
+COPY ReportEngine/renderers/libs/mermaid-10.9.3.min.js ReportEngine/renderers/libs/mermaid-10.9.3.min.js
+COPY ReportEngine/renderers/libs/mermaid-LICENSE ReportEngine/renderers/libs/mermaid-LICENSE
+COPY ReportEngine/report_template/社会公共热点事件分析报告模板.md ReportEngine/report_template/社会公共热点事件分析报告模板.md

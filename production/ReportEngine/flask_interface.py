@@ -587,17 +587,6 @@ def _run_report_generation(task: ReportTask, query: str, custom_template: str = 
                             research_task_id=research_task_id,
                         )
                         break
-                    except ChapterJsonParseError as err:
-                        hint_message = "尝试将Report Engine的API更换为算力更强、上下文更长的LLM"
-                        task.publish_event('warning', {
-                            'message': hint_message,
-                            'stage': 'agent_running',
-                            'attempt': attempt,
-                            'reason': 'chapter_json_parse',
-                            'error': str(err),
-                            'task': task.to_dict(),
-                        })
-                        raise ChapterJsonParseError(hint_message) from err
                     except Exception as err:
                         task.publish_event('warning', {
                             'message': f'ReportAgent执行失败: {err}',
@@ -724,8 +713,8 @@ def generate_report():
                 from utils.task_runtime import read_task_metadata
                 if read_task_metadata(research_task_id).get('pulse_revision') == 2:
                     try:
-                        from CampusPulse.research import report_html
-                        report_html(research_task_id)
+                        from CampusPulse.research import report_document
+                        report_document(research_task_id)
                     except (ValueError, OSError):
                         existing = None
             if existing and existing.status == 'completed':

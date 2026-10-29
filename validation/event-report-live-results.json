@@ -1,0 +1,13 @@
+{
+  "template_chapters": 5,
+  "template_subsections": 12,
+  "historical_report": {
+    "html": true,
+    "markdown": true,
+    "chapters": 5
+  },
+  "login": 200,
+  "collection_status": true,
+  "model_calls": 0,
+  "emails_sent": 0
+}
