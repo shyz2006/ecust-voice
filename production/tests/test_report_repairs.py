@@ -114,7 +114,8 @@ class WeeklyCheckpointTests(unittest.TestCase):
         data['evidence']=[{'id':'S1','period':'current','text':'第一条','published':1,'url':'https://example.invalid/1'},
                           {'id':'S2','period':'current','text':'第二条','published':1,'url':'https://example.invalid/2'}]
         html=weekly.report_html({'status':'ready','data':data})
-        self.assertIn('id="S2"',html);self.assertIn('href="#S2"',html)
+        self.assertIn('id="S2"',html);self.assertNotIn('href="#S2"',html)
+        self.assertNotIn('href=',html.split('class="report-references"')[0])
         self.assertIn('&lt;script&gt;',html);self.assertNotIn('<script>',html)
     def test_excess_observations_are_selected_only_after_evidence_checks(self):
         data=weekly.get('test')['data']

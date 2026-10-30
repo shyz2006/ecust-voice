@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "kind": "event",
+      "viewport": "desktop",
+      "body_links": 0,
+      "final_appendix": true,
+      "weekly_summary": false
+    },
+    {
+      "kind": "event",
+      "viewport": "mobile",
+      "body_links": 0,
+      "final_appendix": true,
+      "weekly_summary": false
+    },
+    {
+      "kind": "weekly",
+      "viewport": "desktop",
+      "body_links": 0,
+      "final_appendix": true,
+      "weekly_summary": true
+    },
+    {
+      "kind": "weekly",
+      "viewport": "mobile",
+      "body_links": 0,
+      "final_appendix": true,
+      "weekly_summary": true
+    }
+  ],
+  "pdf": true
+}

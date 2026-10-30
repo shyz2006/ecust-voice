@@ -92,3 +92,8 @@ validation/event_report* text eol=lf
 production/ReportEngine/renderers/libs/mermaid-* text eol=lf
 事件研究报告修复说明_20261030.md text eol=lf
 production/ReportEngine/renderers/libs/mermaid-10.9.3.min.js text eol=lf -whitespace
+
+validation/references-*.json text eol=lf
+validation/references_*.py text eol=lf
+validation/references_*.cjs text eol=lf
+报告引用与周报开篇调整_20261030.md text eol=lf

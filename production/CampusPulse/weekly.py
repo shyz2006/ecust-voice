@@ -318,31 +318,60 @@ def start(cutoff=None,scheduled=False,send_at=None):
     threading.Thread(target=generate,args=(report_id,),daemon=True,name='campus-weekly-generate').start()
     return report_id
 
+def data_summary(data):
+    """Describe the persisted weekly counts, without model inference."""
+    current=int(data.get('current_total') or 0)
+    counts=sorted([(name,int(values[0])) for name,values in (data.get('categories') or {}).items() if values and int(values[0])>0],key=lambda item:-item[1])
+    text='本周采集并去重校内帖子 '+str(current)+' 篇'
+    if counts:
+        text+='，涉及 '+str(len(counts))+' 类议题。讨论量较多的是'+ '、'.join(name+'（'+str(count)+'篇）' for name,count in counts[:3])+'。'
+    else:text+='。'
+    if data.get('observed_days',0)>=7 and data.get('previous_observed_days',0)>=7:
+        delta=current-int(data.get('previous_total') or 0)
+        text+='采集帖量较上周'+('增加 '+str(delta)+' 篇。' if delta>0 else '减少 '+str(-delta)+' 篇。' if delta<0 else '持平。')
+    text+='本周完整观测 '+str(data.get('observed_days',0))+'/7 个日窗。'
+    return text
+
+
 def report_html(row):
     data=row.get('data')
     if row['status']!='ready' or not data:raise ValueError('周报正文尚未完成')
+    from .report_references import References
+    from .report_rendering import ReportRenderer,safe_url
     e=html.escape;date=lambda ts:datetime.fromtimestamp(ts,TZ).strftime('%m/%d %H:%M')
-    by_id={x['id']:x for x in data['evidence']};used=[];parts=[]
+    by_id={x['id']:x for x in data['evidence']};used=[]
+    catalogue={}
+    for key,item in by_id.items():
+        url=safe_url(revision.source_link(item.get('url')))
+        if url:catalogue[url]={'id':key,'title':'['+key+'] '+('本周' if item.get('period')=='current' else '上周')+' · '+date(item['published'])+' · '+item['text']}
+    references=References(catalogue);renderer=ReportRenderer(references=references)
+    def content(value):
+        for key in re.findall(r'\[([A-Z]\d+)\]',str(value)):
+            if key in by_id and key not in used:used.append(key)
+        return renderer.text(value)
+    parts=[]
     for signal in data['insights']['signals']:
-        refs=[]
         for key in signal['evidence']:
-            if key not in used:used.append(key)
-            refs.append('<a href="#'+e(key)+'">['+e(key)+']</a>')
-        parts.append('<section><h2>'+e(signal['title'])+'</h2><p>'+e(signal['observation'])+'</p>'+
-            ('<p><b>同期观察：</b>'+e(signal['comparison'])+'</p>' if signal.get('comparison') else '')+'<p>'+''.join(refs)+'</p></section>')
-    table=''.join('<tr><td>'+e(name)+'</td><td>'+str(n[0])+'</td><td>'+str(n[1])+'</td><td>'+('+' if n[0]>n[1] else '')+str(n[0]-n[1])+'</td></tr>' for name,n in data['categories'].items())
-    for chapter in (data.get('report') or {}).get('chapters',[]):
-        for section in chapter.get('sections',[]):
-            for key in section.get('evidence',[]):
-                if key in by_id and key not in used:used.append(key)
-    def report_text(content):
-        return re.sub(r'\[([A-Z]\d+)\]',lambda m:'<a href="#'+e(m[1])+'">['+e(m[1])+']</a>' if m[1] in by_id else m[0],e(content))
-    sources=[]
+            if key in by_id and key not in used:used.append(key)
+        parts.append('<section><h2>'+e(references.clean(signal['title']))+'</h2>'+content(signal['observation'])+(content('同期观察：'+signal['comparison']) if signal.get('comparison') else '')+'</section>')
+    if data.get('report'):
+        parts=[]
+        for chapter in data['report']['chapters']:
+            sections=[]
+            for section in chapter['sections']:
+                for key in section.get('evidence',[]):
+                    if key in by_id and key not in used:used.append(key)
+                sections.append('<h3>'+e(references.clean(section['title']))+'</h3>'+content(section['content']))
+            parts.append('<section><h2>'+e(references.clean(chapter['title']))+'</h2>'+''.join(sections)+'</section>')
+    follow_up=''.join('<li>'+content(item)+'</li>' for item in data['insights']['follow_up'])
     for key in used:
-        item=by_id[key];url=revision.source_link(item.get('url'))
-        sources.append('<p id="'+e(key)+'"><b>['+key+'] '+('本周' if item['period']=='current' else '上周')+'</b> · '+date(item['published'])+'<br>'+e(item['text'])+
-            (' <a href="'+e(url,quote=True)+'" target="_blank" rel="noopener">查看原帖</a>' if url else ' · 原帖地址待补充')+'</p>')
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px;border-radius:12px}.sources p{font-size:12px;padding:12px;background:#f4f1ed}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media print{main{padding:0}h2{break-after:avoid}tr,.sources p{break-inside:avoid}}</style><main><span>华理 · 校园周报</span><h1>'''+e(data['insights']['headline'])+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><div class="scope"><p>本周采集 '+str(data['current_total'])+' 篇，同期 '+str(data['previous_total'])+' 篇；完整观测日窗 '+str(data['observed_days'])+'/7，同期 '+str(data['previous_observed_days'])+'/7。观察范围为已采集的公开校内讨论，供结合原帖理解。</p></div>'+(''.join('<section><h2>'+e(c['title'])+'</h2>'+''.join('<h3>'+e(s['title'])+'</h3><p>'+report_text(s['content'])+'</p>' for s in c['sections'])+'</section>' for c in data['report']['chapters']) if data.get('report') else ''.join(parts))+'<h2>接下来可以了解什么</h2><ul>'+''.join('<li>'+e(x)+'</li>' for x in data['insights']['follow_up'])+'</ul><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><h2>观察依据</h2><div class="sources">'+''.join(sources)+'</div><footer>数量由程序统计；文字由报告模型基于上述摘录归纳，供教师审阅。危机线索在关怀入口单独核查。'+e(data['method'])+'</footer></main></html>'
+        item=by_id[key];url=safe_url(revision.source_link(item.get('url')))
+        if url:references.add(url)
+        else:references.note('['+key+'] '+item['text'])
+    table=''.join('<tr><td>'+e(name)+'</td><td>'+str(n[0])+'</td><td>'+str(n[1])+'</td><td>'+('+' if n[0]>n[1] else '')+str(n[0]-n[1])+'</td></tr>' for name,n in data['categories'].items())
+    style='''body{font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif;color:#343039;background:#faf8f2;margin:0}main{max-width:850px;margin:auto;padding:35px 30px;background:#fffefa}h1{font-size:27px;line-height:1.6}h2{font-size:20px;margin-top:30px;color:#7155a4}p,li{font-size:14px;line-height:1.9;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e0d9e5}a{color:#7155a4}.scope{background:#eee7f7;padding:15px 20px;border-radius:12px}.scope h2{margin:0 0 10px;font-size:18px}.scope p{margin:0}.report-references{margin-top:32px;border-top:1px solid #e0d9e5}.report-references li,.report-references blockquote{font-size:12px;padding:12px;background:#f4f1ed;margin:12px 0}.report-references p{font-size:12px;margin:0 0 6px}footer{font-size:11px;color:#827789;margin-top:30px}@page{size:A4;margin:18mm}@media(max-width:640px){main{padding:24px 18px}table{font-size:12px}td,th{padding:8px 5px}}@media print{main{padding:0}h2{break-after:avoid}tr,.report-references li{break-inside:avoid}}'''
+    return '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>校园周报</title><style>'+style+'</style><main><span>华理 · 校园周报</span><h1>'+e(references.clean(data['insights']['headline']))+'</h1><p>'+date(data['start'])+'—'+date(data['cutoff'])+' · 北京时间</p><section class="scope"><h2>本周数据概览</h2><p>'+e(data_summary(data))+'</p></section><div class="report-body">'+''.join(parts)+'<h2>接下来可以了解什么</h2><ul>'+follow_up+'</ul></div><h2>十二类议题 · 采集帖量对照</h2><table><tr><th>议题</th><th>本周</th><th>上周</th><th>增减</th></tr>'+table+'</table><p style="font-size:11px;color:#827789">统计口径：'+e(data['method'])+'</p>'+references.html()+'<footer>数量由程序统计；文字由报告模型基于采集材料归纳，供教师审阅。</footer></main></html>'
+
 
 def resend(payload,key,api_key):
     request=Request('https://api.resend.com/emails',data=json.dumps(payload,ensure_ascii=False).encode(),

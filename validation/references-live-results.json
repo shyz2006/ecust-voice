@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "kind": "event",
+      "body_links": 0,
+      "appendix_links": 7,
+      "markdown": true
+    },
+    {
+      "kind": "event",
+      "body_links": 0,
+      "appendix_links": 13,
+      "markdown": true
+    },
+    {
+      "kind": "weekly",
+      "body_links": 0,
+      "appendix_links": 79,
+      "objective_summary": true
+    }
+  ],
+  "model_calls": 0,
+  "emails_sent": 0
+}

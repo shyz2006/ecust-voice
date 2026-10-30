@@ -27,7 +27,8 @@ def esc(value):
 
 
 class ReportRenderer:
-    def __init__(self):
+    def __init__(self, references=None):
+        self.references=references
         self.markdown = MarkdownIt('commonmark', {'html': False, 'breaks': True}).enable(['table', 'strikethrough'])
         self.markdown.validateLink = lambda url: bool(safe_url(url)) or url.startswith('#')
         self.charts = []
@@ -51,7 +52,8 @@ class ReportRenderer:
         return '<pre><code>'+esc(token.content)+'</code></pre>'
 
     def text(self, value):
-        return self.markdown.render(str(value or ''))
+        value=self.references.clean(value) if self.references else str(value or '')
+        return self.markdown.render(value)
 
     def inlines(self, runs):
         if not any(run.get('marks') for run in runs if isinstance(run, dict)):
@@ -74,7 +76,11 @@ class ReportRenderer:
                         if url not in self.sources:
                             self.sources.append(url)
                         url=url.replace('>', '%3E').replace('<', '%3C').replace('\n','').replace('\r','')
-                        value = '['+value.replace(']', '\\]')+'](<'+url+'>)'
+                        if self.references:
+                            self.references.add(url, str(run.get('text','')))
+                            value=self.references.label(value)
+                        else:
+                            value = '['+value.replace(']', '\\]')+'](<'+url+'>)'
             parts.append(value)
         return self.text(''.join(parts))
 
@@ -100,7 +106,8 @@ class ReportRenderer:
                 level = min(6, max(3, int(block.get('level', 3))))
             except (ValueError, TypeError):
                 level = 3
-            return '<h'+str(level)+'>'+self.markdown.renderInline(str(block.get('text', '')))+'</h'+str(level)+'>'
+            text=self.references.clean(block.get('text','')) if self.references else str(block.get('text',''))
+            return '<h'+str(level)+'>'+self.markdown.renderInline(text)+'</h'+str(level)+'>'
         if kind in ('markdown', 'text'):
             return self.text(block.get('content') or block.get('text'))
         if kind == 'code':
@@ -132,6 +139,9 @@ class ReportRenderer:
             image = block.get('img') or {}
             src = safe_url(image.get('src'), image=True)
             return '<figure>'+('<img src="'+esc(src)+'" alt="'+esc(image.get('alt'))+'">' if src else '')+self.caption(block)+'</figure>'
+        if kind=='blockquote' and self.references:
+            self.references.note(block)
+            return ''
         if kind in ('blockquote', 'callout'):
             return '<aside>'+self.blocks(block.get('blocks') or block.get('content') or block.get('text', ''))+'</aside>'
         if kind == 'math':
@@ -139,8 +149,9 @@ class ReportRenderer:
         children = ''.join(self.blocks(block[key]) for key in ('blocks', 'children', 'items', 'content', 'body') if isinstance(block.get(key), (list, dict, str)))
         return children or self.text(block.get('text') or block.get('caption') or '')
 
-    @staticmethod
-    def caption(block):
+    def caption(self,block):
+        if self.references:
+            block=dict(block,caption=self.references.clean(block.get('caption') or block.get('title') or ''))
         return '<figcaption>'+esc(block.get('caption') or block.get('title'))+'</figcaption>' if block.get('caption') or block.get('title') else ''
 
     def widget(self, block):
@@ -153,6 +164,7 @@ class ReportRenderer:
             return '<pre>'+esc(json.dumps(data, ensure_ascii=False))+'</pre>'
         props = block.get('props') or {}
         title = props.get('title') or block.get('title') or '图表'
+        if self.references:title=self.references.clean(title)
         labels = data.get('labels') or []
         datasets = data.get('datasets') or []
         if not datasets and isinstance(data.get('values'), list):
@@ -196,5 +208,5 @@ await document.fonts.ready;window.reportRenderComplete=true;})();'''.replace('CH
 
 
 STYLE = '''
-*{box-sizing:border-box}body{margin:0;color:#292b32;background:#f3f0ea;font-family:"Noto Sans CJK SC","Noto Sans SC",sans-serif}.report{max-width:1000px;padding:40px 48px;margin:24px auto;background:#fffefa;border:1px solid #e5dfeb;border-radius:18px}header{font-size:12px;color:#787080;border-bottom:1px solid #e5dfeb;padding-bottom:12px}h1{font-size:27px;line-height:1.5;margin:22px 0 28px;overflow-wrap:anywhere}h2{font-size:21px;color:#56446b;margin:32px 0 18px;break-after:avoid}h3,h4{break-after:avoid}h3{font-size:17px}article{font-size:15px;line-height:1.9;overflow-wrap:anywhere}p{margin:0 0 14px;orphans:3;widows:3}.source{font-size:11px;color:#68616f;margin:7px 0}a{color:#66508b;text-underline-offset:3px}li p{margin:0}li{margin:5px 0}aside{padding:14px 18px;border-left:3px solid #a38bc6;background:#f4eff9;margin:18px 0}figure{margin:22px 0}figcaption{font-size:14px;font-weight:600;margin:8px 0 12px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.65}td,th{border:1px solid #ddd7e5;padding:9px 12px;vertical-align:top;min-width:80px}th,thead{background:#eee8f5}td p{margin:0}tbody tr:nth-child(even){background:#faf8fc}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2eff5;padding:14px;border-radius:8px;font-size:12px;line-height:1.7}code{font-family:monospace;background:#f2eff5;padding:2px 4px}pre code{padding:0}img,svg{max-width:100%;height:auto}.chart-area{height:320px;position:relative}.chart,.diagram{border:1px solid #e5dfeb;border-radius:12px;padding:18px;break-inside:avoid}summary{font-size:12px;color:#787080;cursor:pointer;margin:12px 0}.mermaid{text-align:center}footer{margin-top:30px;padding-top:14px;border-top:1px solid #e5dfeb;font-size:11px;color:#787080}@page{size:A4;margin:18mm 16mm 20mm}@media(max-width:640px){.report{margin:0;padding:24px 18px;border:0;border-radius:0}h1{font-size:23px}.chart-area{height:270px}}@media print{body{background:white}.report{max-width:none;padding:0;margin:0;border:0;border-radius:0}article{font-size:10.5pt;line-height:1.8}h1{font-size:20pt}h2{font-size:15pt}h3{font-size:12pt}.source{font-size:8pt}thead{display:table-header-group}tr,figure{break-inside:avoid}.table-wrap{overflow:visible}.chart-area{height:76mm}details[open] summary{display:none}.diagram details,.chart details{display:none}}
+*{box-sizing:border-box}body{margin:0;color:#292b32;background:#f3f0ea;font-family:"Noto Sans CJK SC","Noto Sans SC",sans-serif}.report{max-width:1000px;padding:40px 48px;margin:24px auto;background:#fffefa;border:1px solid #e5dfeb;border-radius:18px}header{font-size:12px;color:#787080;border-bottom:1px solid #e5dfeb;padding-bottom:12px}h1{font-size:27px;line-height:1.5;margin:22px 0 28px;overflow-wrap:anywhere}h2{font-size:21px;color:#56446b;margin:32px 0 18px;break-after:avoid}h3,h4{break-after:avoid}h3{font-size:17px}article{font-size:15px;line-height:1.9;overflow-wrap:anywhere}p{margin:0 0 14px;orphans:3;widows:3}.report-references{margin-top:36px;padding-top:20px;border-top:1px solid #e5dfeb}.report-references li{font-size:12px;margin:16px 0;overflow-wrap:anywhere}.report-references p{margin:0 0 4px}.report-references blockquote{font-size:12px;background:#f5f1f7;padding:12px;margin:14px 0}.source{font-size:11px;color:#68616f;margin:7px 0}a{color:#66508b;text-underline-offset:3px}li p{margin:0}li{margin:5px 0}aside{padding:14px 18px;border-left:3px solid #a38bc6;background:#f4eff9;margin:18px 0}figure{margin:22px 0}figcaption{font-size:14px;font-weight:600;margin:8px 0 12px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.65}td,th{border:1px solid #ddd7e5;padding:9px 12px;vertical-align:top;min-width:80px}th,thead{background:#eee8f5}td p{margin:0}tbody tr:nth-child(even){background:#faf8fc}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2eff5;padding:14px;border-radius:8px;font-size:12px;line-height:1.7}code{font-family:monospace;background:#f2eff5;padding:2px 4px}pre code{padding:0}img,svg{max-width:100%;height:auto}.chart-area{height:320px;position:relative}.chart,.diagram{border:1px solid #e5dfeb;border-radius:12px;padding:18px;break-inside:avoid}summary{font-size:12px;color:#787080;cursor:pointer;margin:12px 0}.mermaid{text-align:center}footer{margin-top:30px;padding-top:14px;border-top:1px solid #e5dfeb;font-size:11px;color:#787080}@page{size:A4;margin:18mm 16mm 20mm}@media(max-width:640px){.report{margin:0;padding:24px 18px;border:0;border-radius:0}h1{font-size:23px}.chart-area{height:270px}}@media print{body{background:white}.report{max-width:none;padding:0;margin:0;border:0;border-radius:0}article{font-size:10.5pt;line-height:1.8}h1{font-size:20pt}h2{font-size:15pt}h3{font-size:12pt}.source{font-size:8pt}thead{display:table-header-group}tr,figure{break-inside:avoid}.table-wrap{overflow:visible}.chart-area{height:76mm}details[open] summary{display:none}.diagram details,.chart details{display:none}}
 '''

@@ -161,31 +161,30 @@ def report_html(task_id):
 def render_document(doc,query,catalogue):
     from .report_rendering import ReportRenderer,STYLE,esc,safe_url
     chapters=doc.get('chapters') or []
-    renderer=ReportRenderer();sections=[]
+    from .report_references import References
+    references=References(catalogue)
+    renderer=ReportRenderer(references=references);sections=[]
+    title=references.clean(query) or '事件分析报告'
     for ch in chapters:
-        renderer.sources=[]
         renderer.chapter_data=ch.get('data') or {}
         body=renderer.blocks(ch.get('blocks') or [])
-        if not body:raise ValueError('报告章节正文为空，暂不能导出')
+        if not body and not ch.get('footnotes'):raise ValueError('报告章节正文为空，暂不能导出')
         for footnote in ch.get('footnotes') or []:
-            if not isinstance(footnote,dict):continue
-            text=footnote.get('text') or footnote.get('content')
-            if isinstance(text,str):body+='<p class="source">'+esc(text)+'</p>'
-            url=safe_url(footnote.get('href'))
-            if url in catalogue and url not in renderer.sources:renderer.sources.append(url)
-        for number,url in enumerate(renderer.sources,1):
-            label=catalogue.get(url,{}).get('title') or urlsplit(url).hostname or '原始资料'
-            body+='<p class="source"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">['+str(number)+'] '+esc(label)+'</a></p>'
-        sections.append('<section class="report-chapter"><h2>'+esc(ch.get('title',''))+'</h2><article>'+body+'</article></section>')
-    return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(query)+'</title><style>'+STYLE+'</style></head><body><main class="report"><header>校园与青年事件研究</header><h1>'+esc(query)+'</h1>'+''.join(sections)+'<footer>微舆三引擎研究 · 文中链接对应研究来源</footer></main>'+renderer.scripts()+'</body></html>'
+            if isinstance(footnote,dict):references.note(footnote)
+        sections.append('<section class="report-chapter"><h2>'+esc(references.clean(ch.get('title','')))+'</h2><article>'+body+'</article></section>')
+    return '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>'+STYLE+'</style></head><body><main class="report"><header>校园与青年事件研究</header><h1>'+esc(title)+'</h1><div class="report-body">'+''.join(sections)+'</div>'+references.html()+'<footer>微舆三引擎研究 · 参考资料与原帖集中列于文末</footer></main>'+renderer.scripts()+'</body></html>'
 
 
 def markdown(task_id):
     from utils.task_runtime import read_task_metadata
     from ReportEngine.renderers.markdown_renderer import MarkdownRenderer
-    doc=report_document(task_id)
-    doc['metadata']=dict(doc.get('metadata') or {},title=read_task_metadata(task_id).get('query') or '事件分析报告')
-    return MarkdownRenderer().render(doc,review_charts=False)
+    from .report_references import References
+    from ReportEngine.evidence import source_evidence
+    references=References({x['url']:x for x in source_evidence(task_id)})
+    doc=references.document(report_document(task_id))
+    title=references.clean(read_task_metadata(task_id).get('query') or '事件分析报告')
+    doc['metadata']=dict(doc.get('metadata') or {},title=title)
+    return MarkdownRenderer().render(doc,review_charts=False)+references.markdown()
 
 
 def pdf(task_id):
