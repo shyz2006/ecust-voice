@@ -23,15 +23,36 @@ def entity_text(text):
 def anchor_present(anchor,text):return entity_text(anchor) in entity_text(text)
 
 
+def quote_context(query):
+    """Extract explicit identity context around a quotation, without inferring an event."""
+    outside=re.sub(r'[“「"]([^”」"]{2,120})[”」"]',' ',query)
+    schools=list(dict.fromkeys(re.findall(r'[\u4e00-\u9fff]{2,16}大学',outside)))
+    people=[]
+    for school in schools:
+        tail=outside.split(school,1)[1].strip()
+        match=re.match(r'(?:的)?(?:(?:教授|老师)\s*)?([\u4e00-\u9fff]{2,4}?)(?=\s*(?:老师|教授|在|说|称|谈|表示|提出|[，,：:]|$))',tail)
+        if match and match[1] not in ('学生','同学','老师','教授','研究生','计算机','计算机系'):
+            people.append(match[1])
+    return schools,people
+
+
 def subject(query):
     text=re.sub(r'^(?:请|帮我|关于|研究|分析|一下|的)+','',query.strip())
     core=re.sub(r'(?:事件|风波|争议|现象|分析|研究|报告|的影响|的发展)+$','',text).strip(' ：:，,的')
-    quoted=re.findall(r'[“「"]([^”」"]{2,25})[”」"]',query)
+    quoted=re.findall(r'[“「"]([^”」"]{2,120})[”」"]',query)
     strict=bool(quoted or (len(core)<=16 and text!=core) or re.search(r'阿姨$|叔叔$|公司$|大学$',core))
     if quoted:core=quoted[0]
     import jieba
     terms=list(dict.fromkeys(w.lower() for w in jieba.lcut(core) if len(w.strip())>=2 and w not in STOP))
-    return {'query':query,'core':core,'strict':strict,'terms':terms or [core.lower()]}
+    result={'query':query,'core':core,'strict':strict,'terms':terms or [core.lower()]}
+    if quoted:
+        schools,people=quote_context(query)
+        identities=people or schools
+        if identities:
+            generic={'没有','应该','立刻','立即','应当','必须','可以','不能','是否','一个','这样','在课上'}
+            terms=[word for word in terms if word not in generic]
+            result.update(strict=False,quote_identity=identities,quote_schools=schools,terms=terms or [core.lower()])
+    return result
 
 def task_subject(task_id):
     from utils.task_runtime import read_task_metadata
@@ -48,6 +69,9 @@ def relevant(text,topic):
     text=re.sub(r'\s+','',text or '').lower()
     if topic.get('anchors'):
         return all(anchor_present(a,text) for a in topic['anchors']) and any(entity_text(t) in entity_text(text) for t in topic['terms'])
+    if topic.get('quote_identity'):
+        matches=sum(entity_text(term) in entity_text(text) for term in topic['terms'])
+        return any(anchor_present(anchor,text) for anchor in topic['quote_identity']) and matches>=min(2,len(topic['terms']))
     if topic['strict']:return re.sub(r'\s+','',topic['core']).lower() in text
     terms=topic['terms'];matches=sum(t in text for t in terms)
     return matches>=min(2,len(terms))
@@ -57,6 +81,11 @@ def search_query(query,topic):
         parts=list(topic['anchors'])
         if not any(t.lower() in query.lower() for t in topic['terms']):parts+=topic['terms'][:3]
         return ' '.join(parts+[query])
+    if topic.get('quote_identity'):
+        parts=list(dict.fromkeys(topic.get('quote_schools',[])+topic['quote_identity']+topic['terms']))
+        if query!=topic['query']:
+            parts.append(re.sub(r'[“”「」"]',' ',query))
+        return ' '.join(parts)
     core=topic['core']
     return query if core.lower() in query.lower() else core+' '+query
 
@@ -93,6 +122,8 @@ def prepare_agent(agent,engine,query,task_id):
     agent.execute_search_tool=guarded
     seeds=[]
     if engine in ('query','media'):
+        gap_path=task_output_dir(task_id,engine)/'research_information_gap.json'
+        gap_path.unlink(missing_ok=True)
         brief=read_task_metadata(task_id).get('research_brief') or {}
         seeds=[dict(x,content=x.get('snippet','')) for x in brief.get('sources',[]) if relevant(x.get('title','')+' '+x.get('snippet',''),topic)]
         if not seeds:
@@ -100,8 +131,8 @@ def prepare_agent(agent,engine,query,task_id):
             seeds=[_record(item) for item in (getattr(response,'results',None) or getattr(response,'webpages',None) or [])]
         seeds=[x for x in seeds if x['url'] and x['content'] and urlsplit(x['url']).scheme in ('http','https')][:8]
         if not seeds:
-            message='本轮尚未找到能确认“'+topic['core']+'”的原始资料。研究问题与补充内容已保留，建议增加相关人物、时间或一条原文链接后再试。'
-            (task_output_dir(task_id,engine)/'research_information_gap.json').write_text(json.dumps({'message':message},ensure_ascii=False),encoding='utf-8')
+            message='本轮检索未获得可引用的相关资料，暂不能核实这句话的出处与上下文。研究问题与补充说明已保留，可补充原文链接后重试。'
+            gap_path.write_text(json.dumps({'message':message},ensure_ascii=False),encoding='utf-8')
             raise ValueError(message)
         (task_output_dir(task_id,engine)/'state_topic_seed.json').write_text(json.dumps({'subject':topic,'sources':seeds},ensure_ascii=False),encoding='utf-8')
     context=json.dumps(seeds,ensure_ascii=False)

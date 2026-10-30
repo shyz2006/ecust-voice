@@ -1,0 +1,13 @@
+{
+  "engines": {
+    "insight": "completed",
+    "media": "running",
+    "query": "queued"
+  },
+  "media_seed_count": 8,
+  "retained_identity": [
+    "蒋炎岩"
+  ],
+  "media_information_gap": false,
+  "current_attempt_errors": []
+}

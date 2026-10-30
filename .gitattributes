@@ -97,3 +97,7 @@ validation/references-*.json text eol=lf
 validation/references_*.py text eol=lf
 validation/references_*.cjs text eol=lf
 报告引用与周报开篇调整_20261030.md text eol=lf
+
+validation/quoted-topic-*.json text eol=lf
+validation/quoted_topic_*.py text eol=lf
+引号选题检索修复_20261030.md text eol=lf

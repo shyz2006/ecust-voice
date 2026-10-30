@@ -185,7 +185,7 @@ def local_search(query: str, limit: int = 10) -> Tuple[List[Dict], int]:
     # Short named subjects must be present, even when the local index scores generic words highly.
     from utils.topic_guard import subject,relevant
     topic=subject(query)
-    if topic['strict']:
+    if topic['strict'] or topic.get('quote_identity'):
         merged=[r for r in merged if relevant((r.get('title') or '')+' '+(r.get('snippet') or ''),topic)]
     return merged[:limit], hidden if merged else 0
 

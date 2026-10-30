@@ -63,7 +63,11 @@ def status(task_id, auto=True):
     elif any(v=='failed' or str(v).startswith('error') for v in result['engines'].values()):
         gaps=[task_output_dir(task_id,engine)/'research_information_gap.json' for engine in ('query','media')]
         messages=[json.loads(p.read_text(encoding='utf-8')).get('message') for p in gaps if p.exists()]
-        result.update(status='failed',error=next((m for m in messages if isinstance(m,str) and m),'部分研究引擎未完成，请检查模型与检索服务后重试。'),information_gap=bool(messages))
+        message=next((m for m in messages if isinstance(m,str) and m),'部分研究引擎未完成，请检查模型与检索服务后重试。')
+        if any(value in ('running','queued') for value in result['engines'].values()):
+            result.update(status='running',message='部分检索暂未完成，其余引擎仍在继续核查。',engine_warning=message)
+        else:
+            result.update(status='failed',error=message,information_gap=bool(messages))
     elif report and report.status in ('error','cancelled'):
         reason = str(getattr(report,'error_message','') or '')
         message = ('报告模板章节未通过检查，请更新服务后继续生成。' if '必须包含五章' in reason else

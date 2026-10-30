@@ -1,0 +1,11 @@
+{
+  "task_id": "task_7db33d7dec40dd51a8df8d22ff46c490",
+  "reused_sources": 8,
+  "restarted_engines": {
+    "query": "queued",
+    "media": "started"
+  },
+  "insight_unchanged": true,
+  "bocha_cap": 5,
+  "claim_verification": "pending"
+}
