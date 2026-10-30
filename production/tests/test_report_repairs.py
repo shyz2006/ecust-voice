@@ -93,6 +93,7 @@ class WeeklyCheckpointTests(unittest.TestCase):
         data={'current_total':5,'evidence':evidence,'observed_days':3,'previous_observed_days':3}
         with connect() as c:c.execute("INSERT INTO pulse_weekly(id,cutoff,kind,created,status,data) VALUES('test',1,'preview',1,'failed',?)",(json.dumps(data),))
         self.insights={'headline':'本周观察','signals':[{'title':'学习','observation':'关注学习体验','evidence':['S1']}],'follow_up':[]}
+        self.insights.update(schema_version=2,overview={'title':'综合研判','observation':'本周关注学习体验。','evidence':['S1']},psychology=[{'title':'确定感','observation':'期待更明确的信息。','evidence':['S1']}],outlook=[{'title':'下周关注','observation':'若信息持续更新，可观察诉求是否缓和。','evidence':['S1']}])
     def tearDown(self):self.patch.stop();self.temp.cleanup()
     def test_validated_summary_survives_weekly_composition_failure(self):
         from CampusPulse import weekly_report
@@ -101,7 +102,7 @@ class WeeklyCheckpointTests(unittest.TestCase):
             failed=weekly.get('test');self.assertEqual(failed['status'],'failed');self.assertIn('周报编排',failed['error']);self.assertIn('insights',failed['data'])
             weekly.generate('test')
             self.assertEqual(summarize.call_count,1);self.assertEqual(weekly.get('test')['status'],'ready')
-            self.assertEqual(weekly.get('test')['data']['report']['version'],'campus-weekly-v1')
+            self.assertEqual(weekly.get('test')['data']['report']['version'],'campus-weekly-v2')
     def test_complete_json_with_literal_newline_is_repaired_without_model(self):
         value=weekly.parse_model_json('{"content":"第一行\n第二行"}')
         self.assertEqual(value['content'],'第一行\n第二行')

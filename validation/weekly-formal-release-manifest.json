@@ -1,0 +1,61 @@
+{
+  "name": "weekly-formal-20261030-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/weekly-formal-20261030-r1",
+  "base_image_id": "sha256:b4d04a3900c5c7cdba081f0549633786954f69483d1242a09bc7c78729b10d22",
+  "base_image": "bettafish:base-weekly-formal-20261030-r1",
+  "candidate_image": "bettafish:candidate-weekly-formal-20261030-r1",
+  "candidate_image_id": "sha256:05e81db02ea57e84c3495bdf76c5cfdc776eb158637c2f7cf4d546c17e96277f",
+  "files": [
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "d615490eb892b292decc19d2f4dc50fd5e377fe44ceb36bed85ed18c364a1841",
+      "expected_before": "e68451ea1b8699f7bd4d5f32ee2b268004d72fce45f20a1c3fde00fb9a6bdf82",
+      "host_expected": "4b8a39ad7da06f8f3100dca66b8cce302851f4a4db0e26ef1a5d381b11d6314e",
+      "before_sha256": "4b8a39ad7da06f8f3100dca66b8cce302851f4a4db0e26ef1a5d381b11d6314e",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly_report.py",
+      "candidate_sha256": "32b153617d25564f8365b3121051fe24280b17598908a530f6c9d37a591c1549",
+      "expected_before": "8921576c9e0ce88a2d72df66c480b7b932a8644d5cd732678dbb432083a68372",
+      "host_expected": "debe0bc493c4293f52bddb9b2b24cbebb0bbf1a368974ccd089b2681da4f65c6",
+      "before_sha256": "debe0bc493c4293f52bddb9b2b24cbebb0bbf1a368974ccd089b2681da4f65c6",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/report_references.py",
+      "candidate_sha256": "4b81659a80eca499a76f7d04cdb964dac4e8f38dc00f8793b64fa40978effc94",
+      "expected_before": "a3aafdea95ead6549a1198116be4ed1d03d59bde56d470c2f2d05d6cfc4337ec",
+      "host_expected": "a13ef6229b211d2c6bb9f281f8bce9a7fb6026c9790d29e3f9bb6df57c5455a0",
+      "before_sha256": "a13ef6229b211d2c6bb9f281f8bce9a7fb6026c9790d29e3f9bb6df57c5455a0",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "911df769dddd3b3e71245071ec3b6697889dea9e8819a49fc3f68e41b070b263",
+      "expected_before": "acc4eb9971997e54486fb477a3802eaca0e3a4d7f6de9075dbc789e745cd85bb",
+      "host_expected": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471",
+      "before_sha256": "111ef2adcf1b3ab7606e2b7661e95e0a680d1b6d6c82fe9944a0381802e6617e",
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_weekly_progress.py",
+      "candidate_sha256": "a45aa590cb1f349beb7deb272034ce16199b71dafa5f4d52de50c962311e016a",
+      "expected_before": "cb4d78532e09933e99199cad5b446250b76ee736fa6c684c33065c85efd4702e",
+      "host_expected": null,
+      "before_sha256": "6ef8de9c2240e9a9fe7243ffc2b5d4cc3ab1ee99a022a8b45140ea9e19f38dd4",
+      "host_existed": false
+    }
+  ],
+  "companions": {
+    "collection-api": {
+      "image_id": "sha256:b4d04a3900c5c7cdba081f0549633786954f69483d1242a09bc7c78729b10d22",
+      "base_image": "bettafish:base-weekly-formal-20261030-r1-collection-api"
+    },
+    "collection-worker": {
+      "image_id": "sha256:b4d04a3900c5c7cdba081f0549633786954f69483d1242a09bc7c78729b10d22",
+      "base_image": "bettafish:base-weekly-formal-20261030-r1-collection-worker"
+    }
+  },
+  "activated": false
+}

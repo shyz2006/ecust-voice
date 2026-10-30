@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "path": "CampusPulse/weekly.py",
+      "live_sha256": "e68451ea1b8699f7bd4d5f32ee2b268004d72fce45f20a1c3fde00fb9a6bdf82",
+      "host_sha256": "4b8a39ad7da06f8f3100dca66b8cce302851f4a4db0e26ef1a5d381b11d6314e"
+    },
+    {
+      "path": "CampusPulse/weekly_report.py",
+      "live_sha256": "8921576c9e0ce88a2d72df66c480b7b932a8644d5cd732678dbb432083a68372",
+      "host_sha256": "debe0bc493c4293f52bddb9b2b24cbebb0bbf1a368974ccd089b2681da4f65c6"
+    },
+    {
+      "path": "CampusPulse/report_references.py",
+      "live_sha256": "a3aafdea95ead6549a1198116be4ed1d03d59bde56d470c2f2d05d6cfc4337ec",
+      "host_sha256": "a13ef6229b211d2c6bb9f281f8bce9a7fb6026c9790d29e3f9bb6df57c5455a0"
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "live_sha256": "acc4eb9971997e54486fb477a3802eaca0e3a4d7f6de9075dbc789e745cd85bb",
+      "host_sha256": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471"
+    },
+    {
+      "path": "tests/test_weekly_progress.py",
+      "live_sha256": "cb4d78532e09933e99199cad5b446250b76ee736fa6c684c33065c85efd4702e",
+      "host_sha256": null
+    }
+  ]
+}

@@ -105,3 +105,6 @@ validation/quoted_topic_*.py text eol=lf
 validation/weekly-progress-*.json text eol=lf
 validation/weekly_progress* text eol=lf
 周报结构与报告进度优化_20261030.md text eol=lf
+
+validation/weekly-formal-*.json text eol=lf
+validation/weekly_formal* text eol=lf

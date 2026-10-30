@@ -8,7 +8,7 @@ from .report_rendering import safe_url
 
 URL = re.compile(r'''https?://[^\s<>"'，。；！？、（）\u4e00-\u9fff]+''')
 LINK = re.compile(r'(?<!!)\[([^\]\n]*)\]\(\s*<?(https?://(?:[^()\s]|\([^()\s]*\))+)\s*(?:"[^"]*")?\)')
-CITATION = re.compile(r'\[(?:[A-Z]\d+|\^?\d{1,3})\]')
+CITATION = re.compile(r'[\[【](?:[A-Z]\d+|\^?\d{1,3})(?:\s*[,，、;；]\s*(?:[A-Z]\d+|\^?\d{1,3}))*[\]】]')
 
 
 def plain_text(value):
