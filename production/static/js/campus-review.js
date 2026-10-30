@@ -176,8 +176,10 @@ async function loadFeed(kind,force=false){
  const pending=requestFeed(kind);if(cached){pending.catch(()=>{});return cached;}
  return pending;
 }
+let hotFocusPoll;
 function renderFeed(kind,d){
  const current=state.hotPlatform;
+ if(kind==='hot'){clearTimeout(hotFocusPoll);if(d.focus_pending)hotFocusPoll=setTimeout(()=>{if(state.tab==='hot')loadFeed('hot',true).catch(()=>{});},15000);}
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);

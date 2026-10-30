@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "CampusPulse/weekly.py",
+      "live_sha256": "93a655330de05ffa73b1649e98c80224910a9edd130fe2afdf0bac0acb910abd",
+      "host_sha256": "068bd374565632ace29ff29dad294c27eaf6765f3bb11cd293215fbbd51bd124"
+    },
+    {
+      "path": "CampusPulse/hot_focus.py",
+      "live_sha256": "ce1164364cce2a1087af40e1818874a39b2e981247762296ff56770d8f11d51d",
+      "host_sha256": "44b580461f7a46d724cab67cb91d273fc2b04c9f89da654b254017e666bd0e2f"
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "live_sha256": "9785d3f8093c7d3badbfeaa280fd6bf28185573e11a54e4c9ac343893f7f2d85",
+      "host_sha256": "578a025018314684854b0fc84c589c5c4bf8a2dbda59e85516ca7b7e7e839bf4"
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "live_sha256": "a11cd2ba8bd723e7dbb510b8fbc5a01d763cf691feada04ad9db327552f64c02",
+      "host_sha256": "34482a525e07c5d3b7350e8d6d722761db56e96ebbea3522b3aecdafd1e4f130"
+    },
+    {
+      "path": "templates/index.html",
+      "live_sha256": "d75dd4bb1fae9847bfdbf0dfd37750c81cf7bde9ed790f6df7f5f6497203244f",
+      "host_sha256": "1e0dc15e50ff891be25fdf315c0ce67c60e320b7d28014dfe0db8f530581806c"
+    },
+    {
+      "path": "tests/test_hot_focus.py",
+      "live_sha256": "f82353854e5ac45a306ec7a72569d180b015aeb5de8f690cb6f06c76f2aa436b",
+      "host_sha256": null
+    }
+  ]
+}

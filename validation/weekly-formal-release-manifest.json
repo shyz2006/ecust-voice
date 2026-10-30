@@ -57,5 +57,5 @@
       "base_image": "bettafish:base-weekly-formal-20261030-r1-collection-worker"
     }
   },
-  "activated": false
+  "activated": true
 }
