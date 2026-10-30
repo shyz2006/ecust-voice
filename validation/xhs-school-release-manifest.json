@@ -1,0 +1,46 @@
+{
+  "name": "xhs-school-20261026-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/xhs-school-20261026-r1",
+  "base_image_id": "sha256:fe095293b2bb2a3c0ed6f59233f3c03c691b97185925ebe6d98eec62a8e1e51b",
+  "base_image": "bettafish:base-xhs-school-20261026-r1",
+  "candidate_image": "bettafish:candidate-xhs-school-20261026-r1",
+  "candidate_image_id": "sha256:a647bf68a535392284003ef5cb40d5365a1f29825c54f9cd4d10b6bb5ca11aae",
+  "files": [
+    {
+      "path": "CampusPulse/sources/campus_social.py",
+      "candidate_sha256": "2ae60a6a1e140ecc4499e40327bd18461cfa9b3f519081b9371feb25fe6ad04c",
+      "expected_before": "15b47298dcd944a5d3b44ea34a1ab6f629f2ec9ca8d2b2868e1242cd76eaaff6",
+      "before_sha256": "15b47298dcd944a5d3b44ea34a1ab6f629f2ec9ca8d2b2868e1242cd76eaaff6",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/search.py",
+      "candidate_sha256": "e041c76fbbab20467bed079a5dda74099b304033dc2250572e6fbe5e2fa109ed",
+      "expected_before": "a10b7a83b50433435f09260c313352c0e3a765d9f0da51e577ebca26cfdbdf5f",
+      "before_sha256": "a10b7a83b50433435f09260c313352c0e3a765d9f0da51e577ebca26cfdbdf5f",
+      "host_existed": true
+    },
+    {
+      "path": "utils/search_gateway.py",
+      "candidate_sha256": "da52e03b5b3eea6f9e1266c4bae8c73227765667119cb4c043c7dbbb43bd9cd5",
+      "expected_before": "bb70a7a1872f712abe30c79b82abde8b96dc9d6fb94c720167a8e7f97c1c0912",
+      "before_sha256": "bb70a7a1872f712abe30c79b82abde8b96dc9d6fb94c720167a8e7f97c1c0912",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_trends_search_expansion.py",
+      "candidate_sha256": "a37b48e182c190f6e235c8589b73bcb74d679b97a456febf1fb3d8fe704ba650",
+      "expected_before": "afe0356ba75b28a85df5f17214fae0b1f40cfae113eda1f2abb9c412dccdeeb4",
+      "before_sha256": "afe0356ba75b28a85df5f17214fae0b1f40cfae113eda1f2abb9c412dccdeeb4",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_xhs_school_discovery.py",
+      "candidate_sha256": "3fb46baaf0e58be95ef4e8d876980a061a712f56500a0f1f76e31568d90ccb71",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "activated": false
+}

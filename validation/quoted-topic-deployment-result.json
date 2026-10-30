@@ -1,0 +1,8 @@
+{
+  "activated": true,
+  "image_id": "sha256:54920174c9e045c85ab7ea925505673cc0cf5e34cfe2d4a188c17ed6ff35527d",
+  "database_unchanged": true,
+  "mounts_unchanged": true,
+  "files_verified": 5,
+  "result_recovered_after_ssh_disconnect": true
+}

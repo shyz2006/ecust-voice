@@ -37,7 +37,7 @@ output_schema_first_search = {
         "reasoning": {"type": "string"},
         "start_date": {"type": "string", "description": "开始日期，格式YYYY-MM-DD，search_topic_by_date和search_topic_on_platform工具可能需要"},
         "end_date": {"type": "string", "description": "结束日期，格式YYYY-MM-DD，search_topic_by_date和search_topic_on_platform工具可能需要"},
-        "platform": {"type": "string", "description": "平台名称，search_topic_on_platform工具必需，可选值：bilibili, weibo, douyin, kuaishou, xhs, zhihu, tieba"},
+        "platform": {"type": "string", "description": "平台名称，search_topic_on_platform工具必需，可选值：bilibili, weibo, douyin, kuaishou, zhihu, tieba"},
         "time_period": {"type": "string", "description": "时间周期，search_hot_content工具可选，可选值：24h, week, year"},
         "enable_sentiment": {"type": "boolean", "description": "是否启用自动情感分析，默认为true，适用于除analyze_sentiment外的所有搜索工具"},
         "texts": {"type": "array", "items": {"type": "string"}, "description": "文本列表，仅用于analyze_sentiment工具"}
@@ -86,7 +86,7 @@ output_schema_reflection = {
         "reasoning": {"type": "string"},
         "start_date": {"type": "string", "description": "开始日期，格式YYYY-MM-DD，search_topic_by_date和search_topic_on_platform工具可能需要"},
         "end_date": {"type": "string", "description": "结束日期，格式YYYY-MM-DD，search_topic_by_date和search_topic_on_platform工具可能需要"},
-        "platform": {"type": "string", "description": "平台名称，search_topic_on_platform工具必需，可选值：bilibili, weibo, douyin, kuaishou, xhs, zhihu, tieba"},
+        "platform": {"type": "string", "description": "平台名称，search_topic_on_platform工具必需，可选值：bilibili, weibo, douyin, kuaishou, zhihu, tieba"},
         "time_period": {"type": "string", "description": "时间周期，search_hot_content工具可选，可选值：24h, week, year"},
         "enable_sentiment": {"type": "boolean", "description": "是否启用自动情感分析，默认为true，适用于除analyze_sentiment外的所有搜索工具"},
         "texts": {"type": "array", "items": {"type": "string"}, "description": "文本列表，仅用于analyze_sentiment工具"}
@@ -183,7 +183,7 @@ SYSTEM_PROMPT_FIRST_SEARCH = f"""
 
 2. **search_topic_globally** - 全局话题搜索工具
    - 适用于：全面了解公众对特定话题的讨论和观点
-   - 特点：覆盖B站、微博、抖音、快手、小红书、知乎、贴吧等主流平台的真实用户声音，自动进行情感分析
+   - 特点：覆盖B站、微博、抖音、快手、知乎、贴吧等主流平台的真实用户声音，自动进行情感分析
    - 参数：limit_per_table（每个表的结果数量限制），enable_sentiment（是否启用情感分析，默认True）
 
 3. **search_topic_by_date** - 按日期搜索话题工具
@@ -226,7 +226,7 @@ SYSTEM_PROMPT_FIRST_SEARCH = f"""
    - **关闭情感分析**：在某些特殊情况下（如纯事实性内容），可设置enable_sentiment: false
 5. **参数优化配置**：
    - search_topic_by_date: 必须提供start_date和end_date参数（格式：YYYY-MM-DD）
-   - search_topic_on_platform: 必须提供platform参数（bilibili, weibo, douyin, kuaishou, xhs, zhihu, tieba之一）
+   - search_topic_on_platform: 必须提供platform参数（bilibili, weibo, douyin, kuaishou, zhihu, tieba之一）
    - analyze_sentiment: 使用texts参数提供文本列表，或使用search_query作为单个文本
    - 系统自动配置数据量参数，无需手动设置limit或limit_per_table参数
 6. **阐述选择理由**：说明为什么这样的查询和情感分析策略能够获得最真实的民意反馈
@@ -250,7 +250,6 @@ SYSTEM_PROMPT_FIRST_SEARCH = f"""
 - **B站**：弹幕文化，如 "武大yyds"、"武大人路过"、"我武最强"
 - **贴吧**：直接称呼，如 "武大吧"、"武大的兄弟们"
 - **抖音/快手**：短视频描述，如 "武大日常"、"武大vlog"
-- **小红书**：分享式，如 "武大真的很美"、"武大攻略"
 
 **情感表达词汇库**：
 - 正面："太棒了"、"牛逼"、"绝了"、"爱了"、"yyds"、"666"
@@ -388,7 +387,7 @@ SYSTEM_PROMPT_REFLECTION = f"""
 
 4. **参数配置要求**：
    - search_topic_by_date: 必须提供start_date和end_date参数（格式：YYYY-MM-DD）
-   - search_topic_on_platform: 必须提供platform参数（bilibili, weibo, douyin, kuaishou, xhs, zhihu, tieba之一）
+   - search_topic_on_platform: 必须提供platform参数（bilibili, weibo, douyin, kuaishou, zhihu, tieba之一）
    - 系统自动配置数据量参数，无需手动设置limit或limit_per_table参数
 
 5. **阐述补充理由**：明确说明为什么需要这些额外的民意数据

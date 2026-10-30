@@ -24,7 +24,8 @@ class MarkdownRenderer:
     def render(
         self,
         document_ir: Dict[str, Any],
-        ir_file_path: str | None = None
+        ir_file_path: str | None = None,
+        review_charts: bool = True
     ) -> str:
         """
         入口：将IR转换为Markdown字符串。
@@ -41,13 +42,14 @@ class MarkdownRenderer:
         # 使用统一的 ChartReviewService 进行图表审查与修复
         # 虽然 Markdown 渲染时图表会降级为表格，但仍需确保数据有效
         # review_document 返回本次会话的统计信息（线程安全，此处不使用）
-        chart_service = get_chart_review_service()
-        _ = chart_service.review_document(
-            self.document,
-            ir_file_path=ir_file_path,
-            reset_stats=True,
-            save_on_repair=bool(ir_file_path)
-        )
+        if review_charts:
+            chart_service = get_chart_review_service()
+            _ = chart_service.review_document(
+                self.document,
+                ir_file_path=ir_file_path,
+                reset_stats=True,
+                save_on_repair=bool(ir_file_path)
+            )
 
         self.metadata = self.document.get("metadata", {}) or {}
 

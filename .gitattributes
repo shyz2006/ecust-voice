@@ -56,3 +56,58 @@ validation/report-resume-*.json text eol=lf
 validation/report_resume*.py text eol=lf
 validation/report_recover*.py text eol=lf
 报告汇总故障修复说明_20261026.md text eol=lf
+
+validation/trend-estimate-*.json text eol=lf
+validation/trend_estimate*.py text eol=lf
+validation/trend_estimate*.cjs text eol=lf
+趋势预估展示说明_20261026.md text eol=lf
+
+validation/xhs-school-*.json text eol=lf
+validation/xhs_school*.py text eol=lf
+华理小红书校园检索修复说明_20261026.md text eol=lf
+
+host-deployment/Dockerfile.local text eol=lf
+validation/xhs-browser-*.json text eol=lf
+validation/xhs-auto-*.json text eol=lf
+validation/xhs-extension-*.json text eol=lf
+validation/xhs_browser*.py text eol=lf
+validation/xhs_*.cjs text eol=lf
+browser-tools/** text eol=lf
+
+开发交接说明_20261026.md text eol=lf
+小红书本机定时同步说明_20261026.md text eol=lf
+
+validation/xhs-helper-*.json text eol=lf
+validation/xhs_helper*.py text eol=lf
+
+validation/xhs-*.json text eol=lf
+validation/xhs_card*.py text eol=lf
+
+validation/remove-xhs*.json text eol=lf
+validation/remove_xhs* text eol=lf
+小红书功能移除说明_20261029.md text eol=lf
+
+validation/event-report*.json text eol=lf
+validation/event_report* text eol=lf
+production/ReportEngine/renderers/libs/mermaid-* text eol=lf
+事件研究报告修复说明_20261030.md text eol=lf
+production/ReportEngine/renderers/libs/mermaid-10.9.3.min.js text eol=lf -whitespace
+
+validation/references-*.json text eol=lf
+validation/references_*.py text eol=lf
+validation/references_*.cjs text eol=lf
+报告引用与周报开篇调整_20261030.md text eol=lf
+
+validation/quoted-topic-*.json text eol=lf
+validation/quoted_topic_*.py text eol=lf
+引号选题检索修复_20261030.md text eol=lf
+
+validation/weekly-progress-*.json text eol=lf
+validation/weekly_progress* text eol=lf
+周报结构与报告进度优化_20261030.md text eol=lf
+
+validation/weekly-formal-*.json text eol=lf
+validation/weekly_formal* text eol=lf
+
+validation/hot-focus-*.json text eol=lf
+validation/hot_focus* text eol=lf

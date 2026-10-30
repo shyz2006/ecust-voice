@@ -39,6 +39,9 @@ def retire_activity_generation():
 def revision_cache_policy(response):
     if '/api/revision/' in request.path:
         response.headers['Cache-Control']='no-store'
+    if request.path.startswith('/pulse/api/') and response.is_json and response.status_code < 400:
+        from .source_policy import public_payload
+        response.set_data(json.dumps(public_payload(response.get_json()),ensure_ascii=False))
     return response
 
 
@@ -104,7 +107,23 @@ def revision_posts():
     if since>=until:return jsonify(success=False,message='时间窗口顺序有误'),400
     posts=[p for p in posts if since<=p['published']<until]
     posts=sorted(posts,key=lambda p:-p['published'])
-    return jsonify(success=True,posts=posts,total=len(posts),generated_at=data['generated_at'])
+    total=len(posts)
+    if 'limit' in request.args or 'offset' in request.args:
+        try:
+            limit=int(request.args.get('limit',30));offset=int(request.args.get('offset',0))
+        except (ValueError,TypeError):return jsonify(success=False,message='无效分页参数'),400
+        if not 1<=limit<=100 or offset<0:return jsonify(success=False,message='无效分页参数'),400
+        posts=posts[offset:offset+limit]
+        next_offset=offset+len(posts) if offset+len(posts)<total else None
+    else:
+        next_offset=None
+    return jsonify(success=True,posts=posts,total=total,next_offset=next_offset,generated_at=data['generated_at'])
+
+
+@pulse_bp.route('/api/revision/official-news')
+def revision_official_news():
+    from .sources import ecust_news
+    return jsonify(success=True, **ecust_news.feed())
 
 
 @pulse_bp.route('/api/revision/feed/<kind>')
@@ -133,7 +152,8 @@ def revision_source_posts():
 def revision_ledger():
     from . import telemetry,revision
     data=telemetry.dashboard()
-    allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)
+    from .sources import ecust_news
+    allowed=set(revision.HOT_PLATFORMS)|set(revision.MEME_PLATFORMS)|set(revision.observatory.SOURCES)|{ecust_news.SOURCE}
     by_source={s['source']:s for s in data.get('sources',[]) if s['source'] in allowed}
     sources=[by_source.get(name,{'source':name,'unique':0,'observations':0,'latest_count':None}) for name in sorted(allowed)]
     # Cost, vendor and legacy national-comparison values are excluded from this presentation API.
@@ -235,11 +255,14 @@ def revision_research_report(task_id):
     except ValueError:allowed=False
     if not allowed:return jsonify(success=False,message='研究任务不存在或无权访问'),404
     try:
-        if request.args.get('format')=='pdf':
+        if request.args.get('format')=='md':
+            import io
+            response=send_file(io.BytesIO(research.markdown(task_id).encode('utf-8')),mimetype='text/markdown; charset=utf-8',as_attachment=True,download_name='事件分析报告.md')
+        elif request.args.get('format')=='pdf':
             response=send_file(research.pdf(task_id),mimetype='application/pdf',as_attachment=True,download_name='事件分析报告.pdf')
         else:
             response=Response(research.report_html(task_id),mimetype='text/html')
-            response.headers['Content-Security-Policy']="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'"
+            response.headers['Content-Security-Policy']="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src https: data:; font-src 'self'"
         response.headers['Cache-Control']='no-store'
         return response
     except ValueError as exc:return jsonify(success=False,message=str(exc)),409
@@ -469,10 +492,15 @@ def api_topic_history(topic_id: int):
 
 @pulse_bp.route("/api/collect", methods=["POST"])
 def api_collect():
-    if pipeline.status()["running"]:
-        return jsonify({"success": False, "message": "采集正在进行中"})
-    threading.Thread(target=pipeline.run_once, daemon=True).start()
-    return jsonify({"success": True, "message": "已开始采集，约 30~90 秒后刷新"})
+    from . import collection_queue
+    if session.get('authenticated') is not True or not access.is_admin():
+        return jsonify({"success": False, "message": "仅管理员可提交采集任务"}), 403
+    try:
+        result = collection_queue.enqueue("manual")
+    except Exception:
+        return jsonify({"success": False, "message": "采集队列暂时不可用，请稍后重试"}), 503
+    message = "采集任务已排队，完成后可刷新页面查看" if result["created"] else "已有采集任务在排队或执行中"
+    return jsonify({"success": True, "message": message, **result})
 
 
 @pulse_bp.route("/api/route", methods=["POST"])

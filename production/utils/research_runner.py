@@ -106,6 +106,7 @@ def _spawn(task_id: str, engine: str, query: str, token: str) -> int:
 
 
 MAX_CONCURRENT_RESEARCH = int(os.environ.get("MAX_CONCURRENT_RESEARCH", "2") or 2)
+COMPACT_SEQUENTIAL_RESEARCH = os.environ.get("COMPACT_SEQUENTIAL_RESEARCH") == "1"
 
 
 def _admission_lock():
@@ -130,7 +131,27 @@ def _release(fh) -> None:
 
 
 def active_research_tasks() -> List[str]:
-    return [t for t in list_task_ids() if any(engine_run_status(t, e) == "running" for e in ENGINES)]
+    task_ids = list_task_ids()
+    active = [t for t in task_ids if any(engine_run_status(t, e) == "running" for e in ENGINES)]
+    if not COMPACT_SEQUENTIAL_RESEARCH:
+        return active
+    # Do not start the next memory-heavy research job while the final report
+    # is being submitted or generated in the same Flask process.
+    try:
+        from ReportEngine import flask_interface
+        with flask_interface.task_lock:
+            reporting = {task.research_task_id for task in flask_interface.tasks_registry.values()
+                         if task.status in ("pending", "running")}
+        active.extend(reporting)
+    except Exception as exc:
+        logger.warning(f"[ResearchRunner] 无法读取报告占用状态: {exc}")
+    for task_id in task_ids:
+        if task_id in active or not all_engines_completed(task_id) or _report_files(task_id):
+            continue
+        done_files = list(task_runs_dir(task_id).glob("*.done"))
+        if done_files and time.time() - max(path.stat().st_mtime for path in done_files) < 300:
+            active.append(task_id)
+    return list(dict.fromkeys(active))
 
 
 def queued_tasks() -> List[Dict[str, object]]:
@@ -168,7 +189,7 @@ def start_research(task_id: str, query: str, engines: Optional[Iterable[str]] = 
     try:
         entry = queued_entry(task_id)
         active = active_research_tasks()
-        if entry is not None or (task_id not in active and len(active) >= MAX_CONCURRENT_RESEARCH):
+        if entry is not None or (COMPACT_SEQUENTIAL_RESEARCH and active) or (task_id not in active and len(active) >= MAX_CONCURRENT_RESEARCH):
             merged = sorted(set((entry or {}).get("engines") or []) | set(wanted))
             payload = {"task_id": task_id, "query": query, "engines": merged,
                        "queued_at": (entry or {}).get("queued_at") or time.time()}
@@ -213,7 +234,19 @@ def dispatch_queue() -> List[str]:
 
 def _start_now(task_id: str, query: str, engines: Iterable[str]) -> Dict[str, str]:
     result: Dict[str, str] = {}
-    for engine in engines:
+    pending = list(dict.fromkeys(engines))
+    if COMPACT_SEQUENTIAL_RESEARCH and len(pending) > 1:
+        from utils.task_runtime import queue_dir
+        remaining = pending[1:]
+        path = queue_dir() / f"{task_id}.json"
+        payload = {"task_id": task_id, "query": query, "engines": remaining,
+                   "queued_at": time.time()}
+        tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        os.replace(tmp, path)
+        result.update({engine: "queued" for engine in remaining})
+        pending = pending[:1]
+    for engine in pending:
         token, status = claim_engine_run(task_id, engine)
         if status != "claimed":
             result[engine] = status
@@ -360,6 +393,8 @@ def start_reaper(interval: float = 120) -> None:
     if _reaper_started:
         return
     _reaper_started = True
+    from CampusPulse.report_automation import start_monitor
+    start_monitor()
 
     def dispatch_loop():
         time.sleep(15)

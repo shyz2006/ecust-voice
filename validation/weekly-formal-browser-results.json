@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "desktop": true,
+  "mobile": true,
+  "pdf": true,
+  "inline_links": 0,
+  "inline_citations": 0,
+  "appendix_links": 30
+}

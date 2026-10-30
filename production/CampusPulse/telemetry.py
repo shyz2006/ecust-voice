@@ -57,8 +57,10 @@ def _add(conn, key, amount):
 
 
 def record_rows(conn, rows):
+    from .source_policy import active
     for r in rows:
         src = r['source']
+        if not active(src):continue
         ex = r['extra'] if isinstance(r['extra'], dict) else json.loads(r['extra'] or '{}')
         from .post_identity import stable_value
         key = src+':'+hashlib.sha1(stable_value({'source':src,'title':r['title'],'url':r['url'] if 'url' in r.keys() else None,'extra':ex}).encode()).hexdigest()
@@ -67,13 +69,13 @@ def record_rows(conn, rows):
         seen_alias = old_key != key and conn.execute('SELECT 1 FROM pulse_seen_posts WHERE key=?',(old_key,)).fetchone()
         _add(conn, 'observations', 1)
         _add(conn, 'observations:'+src, 1)
-        if src in ('huyou-school', 'tieba-school', 'xiaohongshu-school', 'douyin-school'):
+        if src in ('huyou-school', 'tieba-school', 'douyin-school'):
             _add(conn, 'school_observations', 1)
         cur = conn.execute('INSERT OR IGNORE INTO pulse_seen_posts(key,source) VALUES (?,?)', (key, src))
         if cur.rowcount and not seen_alias:
             _add(conn, 'unique_items', 1)
             _add(conn, 'unique:'+src, 1)
-            if src in ('huyou-school','tieba-school','xiaohongshu-school','douyin-school'):
+            if src in ('huyou-school','tieba-school','douyin-school'):
                 _add(conn, 'unique_school_posts', 1)
 
 
@@ -107,6 +109,12 @@ def dashboard():
     with storage.connect() as conn:
         sync_main_reports(conn)
         ledger = dict(conn.execute('SELECT key,value FROM pulse_ledger').fetchall())
+        from .source_policy import RETIRED
+        for total, prefix in (('observations','observations:'), ('unique_items','unique:')):
+            ledger[total] = max(0,ledger.get(total,0)-sum(ledger.get(prefix+source,0) for source in RETIRED))
+        for total,prefix in (('school_observations','observations:'),('unique_school_posts','unique:')):
+            ledger[total] = max(0,ledger.get(total,0)-ledger.get(prefix+'xiaohongshu-school',0))
+        ledger = {key:value for key,value in ledger.items() if not any(key.endswith(':'+source) for source in RETIRED)}
         usage = dict(conn.execute('SELECT count(*) calls,coalesce(sum(success),0) successful_calls,'
                   'coalesce(sum(CASE WHEN success=1 AND usage_known=0 THEN 1 ELSE 0 END),0) unknown_usage_calls,'
                   'coalesce(sum(prompt_tokens),0) prompt_tokens,coalesce(sum(completion_tokens),0) completion_tokens FROM pulse_usage').fetchone())

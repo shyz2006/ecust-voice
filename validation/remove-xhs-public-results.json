@@ -1,0 +1,5 @@
+{
+  "/login": 200,
+  "/pulse/api/xhs-browser/status": 410,
+  "/pulse/api/xhs-browser/push": 410
+}

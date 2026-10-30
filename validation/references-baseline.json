@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "CampusPulse/report_rendering.py",
+      "candidate_sha256": "37a6538a50a6fa60e45c615ab2d78169ca93d3e6d331ce7eba8dba2028401fce",
+      "host_sha256": "37a6538a50a6fa60e45c615ab2d78169ca93d3e6d331ce7eba8dba2028401fce"
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "99dc7f320cdfdb1734697fe1aa7df1bb7dde74116a58de5214fac0d540cc4dd1",
+      "host_sha256": "99dc7f320cdfdb1734697fe1aa7df1bb7dde74116a58de5214fac0d540cc4dd1"
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "9d4983ffa79751287d939829ed23a8bb59689e9e4f9d8a373b8ec72549fda870",
+      "host_sha256": "9d4983ffa79751287d939829ed23a8bb59689e9e4f9d8a373b8ec72549fda870"
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "acefc378a17a8218df905005e56651e561f83020bf1985a90d0afb6ba967de4c",
+      "host_sha256": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471"
+    },
+    {
+      "path": "CampusPulse/report_references.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "tests/test_report_references.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    }
+  ]
+}

@@ -241,7 +241,6 @@ class KeywordManager:
         """
         # 平台特性关键词映射（可以根据需要调整）
         platform_preferences = {
-            'xhs': ['美妆', '时尚', '生活', '美食', '旅游', '购物', '健康', '养生'],
             'dy': ['娱乐', '音乐', '舞蹈', '搞笑', '美食', '生活', '科技', '教育'],
             'ks': ['生活', '搞笑', '农村', '美食', '手工', '音乐', '娱乐'],
             'bili': ['科技', '游戏', '动漫', '学习', '编程', '数码', '科普'],
@@ -323,7 +322,7 @@ if __name__ == "__main__":
         logger.info(f"获取到的关键词: {keywords}")
         
         # 测试平台分配
-        platforms = ['xhs', 'dy', 'bili']
+        platforms = ['dy', 'bili']
         distribution = km.distribute_keywords_by_platform(keywords, platforms)
         for platform, kws in distribution.items():
             logger.info(f"{platform}: {kws}")

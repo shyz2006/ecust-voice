@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=value=>value==null?'—':Number(value).toLocaleString('zh-CN'),date=ts=>ts?new Date(ts*1000).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
 const shortDate=ts=>new Date(ts*1000).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric'});
-const DAY=86400,NAMES={'xiaohongshu-school':'小红书华理讨论（搜索摘要）','douyin-school':'抖音华理讨论（搜索摘要）','xiaohongshu':'小红书','huyou-school':'狐友华理圈','tieba-school':'华理贴吧','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站热搜','bilibili-popular':'B站热门','toutiao':'头条','weibo':'微博','baidu':'百度'};
+const DAY=86400,NAMES={'ecust-news':'华理新闻网（官方报道）','douyin-school':'抖音华理讨论（搜索摘要）','huyou-school':'狐友华理圈','tieba-school':'华理贴吧','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站热搜','bilibili-popular':'B站热门','toutiao':'头条','weibo':'微博','baidu':'百度'};
 const state={tab:'campus',overview:null,hot:null,memes:null,hotPlatform:'抖音',ledger:null,modalVersion:0,task:null,poll:null,overviewPromise:null};
 let noticeTimer;
 function notice(message){$('notice').textContent=message;$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,6500);}
@@ -36,6 +36,7 @@ function renderCampus(){
  const sorted=[...data.themes].sort((a,b)=>a.delta==null&&b.delta!=null?1:a.delta!=null&&b.delta==null?-1:a.delta!=null&&b.delta!=null?b.delta-a.delta||b.posts_24h-a.posts_24h:b.posts_24h-a.posts_24h).filter(t=>t.posts_24h>0).slice(0,3);
  $('campusTopics').innerHTML=sorted.map((t,i)=>'<article class="discussion"><span class="discussion-number">'+String(i+1).padStart(2,'0')+'</span><div><div class="discussion-head"><button data-theme="'+esc(t.theme)+'">'+esc(t.theme)+' ↗</button><span class="discussion-count">'+num(t.posts_24h)+' 篇新增帖 <span class="change">'+(t.delta==null?'':t.delta===0?'与前窗持平':(t.delta>0?'+':'')+num(t.delta)+' 较前窗')+'</span></span></div>'+(t.examples||[]).slice(0,3).map(p=>'<div class="discussion-excerpt">'+sourceLink(p.link,p.content.slice(0,95)+(p.content.length>95?'…':'')+' ↗')+'</div>').join('')+'</div></article>').join('')||empty('近24小时暂无新增讨论');
  $('campusCategories').innerHTML=data.themes.map(t=>'<button data-theme="'+esc(t.theme)+'"><span><i style="background:'+t.color+'"></i>'+esc(t.theme)+'</span><small>'+num(t.posts_7d)+' 篇 ↗</small></button>').join('');
+ loadOfficialNewsPreview();
 }
 function metric(label,value){return '<div class="metric"><span>'+esc(label)+'</span><strong>'+num(value)+'</strong></div>';}
 function comparisonMarkup(t){
@@ -44,18 +45,38 @@ function comparisonMarkup(t){
  return value+(c.basis==='latest_complete'?'<small class="window-note" title="'+esc('该窗 '+c.current+' 篇，前窗 '+c.previous+' 篇')+'">最近完整窗<br>'+shortDate(c.start)+'—'+shortDate(c.end)+'</small>':'');
 }
 function referenceMarkup(r){return r.value==null?'<span class="muted">积累至3个完整日窗</span>':'约 '+num(Math.round(r.value))+' 篇<small class="window-note">'+(r.lag_windows?'历史基线 · ':'')+r.windows+' 个完整日窗</small>';}
+function trendDisplayPoints(points){
+ const complete=points.map((p,i)=>({p,i})).filter(x=>Number.isFinite(x.p.new_posts));
+ return points.map((p,i)=>{
+  if(Number.isFinite(p.new_posts))return {...p,value:p.new_posts,estimated:false};
+  if(complete.length<3)return {...p,value:null,estimated:false};
+  const before=complete.filter(x=>x.i<i),after=complete.filter(x=>x.i>i);let value;
+  if(before.length&&after.length){const l=before.at(-1),r=after[0];value=l.p.new_posts+(r.p.new_posts-l.p.new_posts)*(i-l.i)/(r.i-l.i);}
+  else {const near=(before.length?before.slice(-3):after.slice(0,3).reverse());value=near.reduce((sum,x,j)=>sum+x.p.new_posts*(j+1),0)/near.reduce((sum,x,j)=>sum+j+1,0);}
+  return {...p,value:Math.max(0,Math.round(value),Number.isFinite(p.posts)?p.posts:0),estimated:true};
+ });
+}
+function trendPaths(points,x,y){
+ let observed='',estimated='';
+ points.forEach((p,i)=>{
+  if(p.value==null)return;
+  const prev=points[i-1],coord=x(i)+','+y(p.value);
+  if(!prev||prev.value==null){if(!p.estimated)observed+=' M'+coord;return;}
+  if(p.estimated||prev.estimated)estimated+=' M'+x(i-1)+','+y(prev.value)+' L'+coord;
+  else observed+=' M'+x(i-1)+','+y(prev.value)+' L'+coord;
+ });
+ return {observed,estimated};
+}
 function spark(points,color,width=160,height=35){
- const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(1,...valid),step=(width-8)/Math.max(1,points.length-1);let path='',pen=false;
- points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(4+i*step).toFixed(1)+','+(height-5-p.new_posts/max*(height-10)).toFixed(1);pen=true;});
- const gaps=points.map((p,i)=>p.new_posts==null?'<rect x="'+Math.max(1,4+(i-.45)*step)+'" y="2" width="'+Math.min(step*.9,width-5-Math.max(1,4+(i-.45)*step))+'" height="'+(height-5)+'" rx="2" fill="#e9e5dd"><title>'+shortDate(p.ts+DAY)+' 采集间断</title></rect>':'').join('');
- return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="十日完整日窗走势，灰色为采集间断">'+gaps+'<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="1.8"/></svg>';
+ const display=trendDisplayPoints(points),max=Math.max(1,...display.map(p=>p.value||0)),step=(width-8)/Math.max(1,points.length-1),paths=trendPaths(display,i=>(4+i*step).toFixed(1),v=>(height-5-v/max*(height-10)).toFixed(1));
+ return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" aria-label="十日讨论走势，虚线为预估"><title>实线为实测，虚线为预估</title><path d="'+paths.observed+'" fill="none" stroke="'+color+'" stroke-width="1.8"/><path class="estimated-series" d="'+paths.estimated+'" fill="none" stroke="'+color+'" stroke-width="1.8" stroke-dasharray="4 3"/></svg>';
 }
 function renderTrends(){
  const d=state.overview;if(!d)return;const latest=d.themes.reduce((s,t)=>s+t.posts_24h,0);
  $('trendMetrics').innerHTML=metric('十日独立帖子',d.total)+metric('近24小时新增帖',latest)+metric('统一议题分类',d.themes.length)+metric('完整观测日窗',d.coverage.filter(c=>c.ready).length);
  $('trendScope').textContent=shortDate(d.window_start)+'—'+shortDate(d.generated_at);
- const partial=!d.coverage.slice(-2).every(c=>c.ready),pair=d.themes[0]?.comparison;
- $('trendStatus').hidden=!partial;$('trendStatus').textContent=partial?'最近两日采集有间断，近24h显示已采集数量。'+(pair?.basis==='latest_complete'?'较前窗取最近连续完整日窗（'+shortDate(pair.start)+'—'+shortDate(pair.end)+'）的对比。':'连续完整日窗积累后显示对比。')+'次日参考依据历史完整日窗计算。':'';
+ const partial=!d.coverage.slice(-2).every(c=>c.ready),pair=d.themes[0]?.comparison,hasEstimates=d.themes.some(t=>trendDisplayPoints(t.timeline).some(p=>p.estimated));
+ $('trendStatus').hidden=!partial&&!hasEstimates;$('trendStatus').textContent=partial?'走势图虚线为预估，近24h和原帖列表保留已收录数量。'+(pair?.basis==='latest_complete'?'较前窗取最近连续完整日窗（'+shortDate(pair.start)+'—'+shortDate(pair.end)+'）的对比。':'连续完整日窗积累后显示对比。')+'次日参考依据历史完整日窗计算。':hasEstimates?'走势图虚线为预估；原帖数量与日窗对比沿用实测，次日参考依据完整日窗计算。':'';
  $('trendRows').innerHTML=d.themes.map(t=>'<tr><td><button data-theme-trend="'+esc(t.theme)+'"><i class="dot" style="background:'+t.color+'"></i>'+esc(t.theme)+'</button></td><td>'+spark(t.timeline,t.color)+'</td><td>'+num(t.posts_24h)+' 篇'+(!d.coverage.at(-1)?.ready?'<small class="window-note">已采集</small>':'')+'</td><td>'+comparisonMarkup(t)+'</td><td>'+referenceMarkup(t.reference)+'</td><td><button data-theme-trend="'+esc(t.theme)+'">走势与原帖 ↗</button></td></tr>').join('');
  // 贴纸墙：大小随独立帖数，倾斜角由词本身决定（刷新不乱跳），热门词排在中间
  const words=d.wordcloud.slice(0,35),max=Math.max(1,...words.map(w=>w.df)),min=Math.min(max,...words.map(w=>w.df)),tones=['sun','lilac','peach','mint','sky','paper'];
@@ -65,53 +86,104 @@ function renderTrends(){
  $('wordcloud').innerHTML=centered.map(({w,i})=>'<button class="word-chip tone-'+tones[i%tones.length]+'" data-word="'+esc(w.term)+'" style="--k:'+scale(w.df).toFixed(3)+';--tilt:'+tilt(w.term).toFixed(1)+'deg" title="'+esc(w.term)+' · '+w.df+' 篇独立帖">'+(i<3?'<i class="word-rank">'+(i+1)+'</i>':'')+esc(w.term)+'<small>'+num(w.df)+'</small></button>').join('')||empty('采集后将显示校园关键词');
 }
 function showDialog(title){
- const dialog=$('detailDialog');state.modalVersion++;$('detailTitle').textContent=title;$('detailBody').innerHTML=empty('正在读取…');if(!dialog.open)dialog.showModal();$('detailBody').scrollTop=0;return state.modalVersion;
+ const dialog=$('detailDialog');state.modalVersion++;state.postPaging=null;$('detailTitle').textContent=title;$('detailBody').innerHTML=empty('正在读取…');if(!dialog.open)dialog.showModal();$('detailBody').scrollTop=0;return state.modalVersion;
 }
 function renderPosts(posts){return posts.map(p=>'<article class="post"><div class="post-head"><span>'+esc(NAMES[p.source]||p.source||p.platform||'平台来源')+' · '+date(p.published||p.ts)+(p.time_basis==='first_observed'?' · 首次采集':'')+'</span><span>'+esc(p.theme||p.crisis_level||'')+'</span></div><p>'+esc(p.content||p.title||'正文待补充')+'</p><div class="post-tags">'+esc(p.filter_reason||'')+(p.emotion?' · <button class="text-button" data-method="emotion">'+esc(p.emotion)+'表达</button>':'')+(p.heat!=null?' · <button class="text-button" data-method="heat">来源内互动分位 '+num(p.heat)+'</button>':'')+'</div>'+sourceLink(p.link||p.url,p.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开原帖 ↗')+'</article>').join('')||empty('当前范围暂无对应帖子');}
-async function openPosts(params,title){const version=showDialog(title);try{const d=await api('/pulse/api/revision/posts?'+qs(params));if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="muted">'+num(d.total)+' 条 · 按发布时间倒序</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
+const POST_PAGE_SIZE=30;
+function postPage(d,params,version){
+ state.postPaging={params,next:d.next_offset,version};
+ return '<p class="muted">'+num(d.total)+' 条 · 按发布时间倒序</p><div id="detailPosts">'+renderPosts(d.posts)+'</div>'+(d.next_offset!=null?'<button class="text-button" data-more-posts>加载更多原帖 ↗</button>':'');
+}
+async function loadMorePosts(){
+ const page=state.postPaging,button=document.querySelector('#detailBody [data-more-posts]');if(!page||page.next==null||!button||button.disabled)return;
+ button.disabled=true;button.textContent='正在读取…';
+ try{const d=await api('/pulse/api/revision/posts?'+qs({...page.params,limit:POST_PAGE_SIZE,offset:page.next}));if(page.version!==state.modalVersion)return;
+  $('detailPosts').insertAdjacentHTML('beforeend',renderPosts(d.posts));page.next=d.next_offset;if(page.next==null)button.remove();else{button.disabled=false;button.textContent='加载更多原帖 ↗';}
+ }catch(e){if(page.version===state.modalVersion){button.disabled=false;button.textContent='重试加载更多原帖';notice(e.message);}}
+}
+async function openPosts(params,title){const version=showDialog(title);try{const d=await api('/pulse/api/revision/posts?'+qs({...params,limit:POST_PAGE_SIZE}));if(version!==state.modalVersion)return;$('detailBody').innerHTML=postPage(d,params,version);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
 function fullChart(t){
- const r=t.reference||{};
+ const r=t.reference||{},display=trendDisplayPoints(t.timeline),hasEstimates=display.some(p=>p.estimated);
  function plot(mobile){
- const points=t.timeline,width=mobile?360:720,height=mobile?240:255,left=40,right=mobile?14:20,top=30,bottom=36;
- const valid=points.map(p=>p.new_posts).filter(v=>v!=null),max=Math.max(4,...valid),nice=Math.ceil(max/4)*4,dx=(width-left-right)/Math.max(1,points.length-1),y=v=>height-bottom-v/nice*(height-top-bottom);let path='',pen=false;
- points.forEach((p,i)=>{if(p.new_posts==null){pen=false;return;}path+=(pen?' L':' M')+(left+i*dx)+','+y(p.new_posts);pen=true;});
- const gaps=[];for(let i=0;i<points.length;i++){if(points[i].new_posts!=null)continue;let j=i;while(j+1<points.length&&points[j+1].new_posts==null)j++;const x=Math.max(left,left+(i-.45)*dx),end=Math.min(width-right,left+(j+.45)*dx);gaps.push('<g class="collection-gap"><rect x="'+x+'" y="'+top+'" width="'+(end-x)+'" height="'+(height-bottom-top)+'" rx="6" fill="#ece8df" opacity=".7"/><text x="'+((x+end)/2)+'" y="'+(top+22)+'" text-anchor="middle" fill="#81796f" font-size="'+(mobile?10:12)+'">'+(end-x>(mobile?40:90)?'采集间断':'缺测')+'</text></g>');i=j;}
+ const points=display,width=mobile?360:720,height=mobile?240:255,left=40,right=mobile?14:20,top=30,bottom=36;
+ const valid=points.map(p=>p.value).filter(v=>v!=null),max=Math.max(4,...valid),nice=Math.ceil(max/4)*4,dx=(width-left-right)/Math.max(1,points.length-1),y=v=>height-bottom-v/nice*(height-top-bottom),paths=trendPaths(points,i=>left+i*dx,y);
  const grid=[0,1,2,3,4].map(i=>'<line x1="'+left+'" x2="'+(width-right)+'" y1="'+y(i*nice/4)+'" y2="'+y(i*nice/4)+'" stroke="#e8e4dd"/><text x="'+(left-9)+'" y="'+(y(i*nice/4)+4)+'" text-anchor="end" fill="#8a818c" font-size="12">'+i*nice/4+'</text>').join('');
  const last=points.findLastIndex(p=>p.new_posts!=null),n=points.length-1;
  const tickCandidates=[0,Math.round(n*.25),Math.round(n*.5),last>=0&&last<n?last:Math.round(n*.75),n].filter((v,i,all)=>all.indexOf(v)===i).sort((a,b)=>a-b);
  const ticks=new Set(tickCandidates.filter((v,i)=>i===tickCandidates.length-1||tickCandidates[i+1]-v>=2));
- const dates=points.map((p,i)=>mobile&&!ticks.has(i)?'':'<text class="trend-date-label" x="'+(left+i*dx)+'" y="'+(height-10)+'" text-anchor="middle" fill="#8a818c" font-size="12">'+shortDate(p.ts+DAY)+'</text>').join('');
- const dots=points.map((p,i)=>p.new_posts==null?'':'<circle class="observed-point" cx="'+(left+i*dx)+'" cy="'+y(p.new_posts)+'" r="'+(i===last?4.5:3.5)+'" fill="'+t.color+'"><title>'+shortDate(p.ts+DAY)+'：'+p.new_posts+' 篇</title></circle>'+(i===last?'<text x="'+(left+i*dx)+'" y="'+Math.max(18,y(p.new_posts)-12)+'" text-anchor="middle" fill="'+t.color+'" font-size="13" font-weight="700">'+p.new_posts+' 篇</text>':'')).join('');
- return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart '+(mobile?'trend-chart-mobile':'trend-chart-desktop')+'" role="img" aria-label="'+esc(t.theme)+'十日完整日窗新增帖走势">'+gaps.join('')+grid+'<path class="observed-series" d="'+path+'" fill="none" stroke="'+t.color+'" stroke-width="2.5" stroke-linejoin="round"/>'+dots+dates+'</svg>';
+ const dates=points.map((p,i)=>mobile&&!ticks.has(i)?'':'<text class="trend-date-label" x="'+(left+i*dx)+'" y="'+(height-10)+'" text-anchor="'+(i===points.length-1?'end':'middle')+'" fill="#8a818c" font-size="12">'+shortDate(p.ts+DAY)+'</text>').join('');
+ const lastDisplay=points.findLastIndex(p=>p.value!=null);
+ const dots=points.map((p,i)=>p.value==null?'':'<circle class="'+(p.estimated?'estimated-point':'observed-point')+'" cx="'+(left+i*dx)+'" cy="'+y(p.value)+'" r="'+(i===lastDisplay?4.5:3.5)+'" fill="'+(p.estimated?'#fffdf8':t.color)+'" stroke="'+t.color+'" stroke-width="'+(p.estimated?2:0)+'"><title>'+shortDate(p.ts+DAY)+'：'+p.value+' 篇'+(p.estimated?'（预估；已收录 '+num(p.posts||0)+' 篇）':'')+'</title></circle>'+(i===lastDisplay?'<text class="trend-last-label" x="'+(left+i*dx)+'" y="'+Math.max(18,y(p.value)-12)+'" text-anchor="'+(i===points.length-1?'end':'middle')+'" fill="'+t.color+'" font-size="13" font-weight="700">'+p.value+' 篇'+(p.estimated?' · 预估':'')+'</text>':'')).join('');
+ return '<svg viewBox="0 0 '+width+' '+height+'" class="trend-chart '+(mobile?'trend-chart-mobile':'trend-chart-desktop')+'" role="img" aria-label="'+esc(t.theme)+'十日讨论走势，虚线为预估">'+grid+'<path class="observed-series" d="'+paths.observed+'" fill="none" stroke="'+t.color+'" stroke-width="2.5" stroke-linejoin="round"/><path class="estimated-series" d="'+paths.estimated+'" fill="none" stroke="'+t.color+'" stroke-width="2.5" stroke-dasharray="6 5" stroke-linejoin="round"/>'+dots+dates+'</svg>';
+
  }
  const svg=plot(false)+plot(true);
  const reference='<aside class="trend-reference-card" aria-label="次日参考"><div class="trend-reference-heading"><span>次日参考</span><time>'+ (r.target_end?shortDate(r.target_end):'')+'</time></div><div class="trend-reference-number">'+(r.value==null?'—':'<small>约</small> '+num(r.value)+'<small>篇</small>')+'</div><p>'+(r.value==null?'积累3个完整日窗后生成':'按 '+num(r.windows)+' 个完整日窗的平均值')+'</p>'+(r.lower!=null?'<dl><dt>参考范围</dt><dd>'+num(r.lower)+'—'+num(r.upper)+' 篇</dd></dl>':'')+(r.as_of?'<p class="trend-reference-date">最近完整数据 · '+shortDate(r.as_of)+'</p>':'')+'</aside>';
- return '<div class="trend-detail-layout"><section class="trend-plot-panel"><div class="trend-plot-heading"><strong>近十日新增讨论</strong><span><i style="background:'+t.color+'"></i>完整日窗</span></div><div class="trend-plot-scroll">'+svg+'</div></section>'+reference+'</div>';
+ return '<div class="trend-detail-layout"><section class="trend-plot-panel"><div class="trend-plot-heading"><strong>近十日新增讨论</strong><span class="trend-legend"><span><i style="background:'+t.color+'"></i>实测</span>'+(hasEstimates?'<span><i class="estimate-line" style="border-color:'+t.color+'"></i>预估</span>':'')+'</span></div><div class="trend-plot-scroll">'+svg+'</div></section>'+reference+'</div>';
 }
 function trendDetail(t){
  const c=t.comparison||{},partial=t.timeline.at(-1)?.new_posts==null,change=c.value==null?'—':(c.value>0?'+':'')+num(c.value),missing=t.timeline.filter(p=>p.new_posts==null);
  const summary='<div class="trend-detail-metrics"><div><span>十日采集</span><strong>'+num(t.posts)+'<small>篇</small></strong></div><div><span>近24h'+(partial?' · 已采集':'新增')+'</span><strong>'+num(t.posts_24h)+'<small>篇</small></strong></div><div><span>'+(c.basis==='latest_complete'?'最近完整日窗变化':'较前窗')+'</span><strong>'+change+(c.value==null?'':'<small>篇</small>')+'</strong><small>'+(c.start?shortDate(c.start)+'—'+shortDate(c.end):'待连续完整日窗')+'</small></div></div>';
- const gapNote=missing.length?'<p class="trend-gap-note"><span>间断期已采集</span>'+missing.map(p=>shortDate(p.ts+DAY)+'：'+num(p.posts||0)+' 篇').join(' · ')+'</p>':'';
- const r=t.reference,method='<details class="trend-method"><summary>统计与参考依据</summary><p>横轴为向前滚动的24小时日窗，实线连接完整采集的窗口，阴影标出采集间断。间断期的已采集数量列在图下。</p><p>次日参考取最近十日完整日窗的平均新增帖数，共 '+num(r.windows)+' 个有效窗口。'+(r.mae!=null?'历史平均绝对误差 '+num(r.mae)+' 篇；参考范围按缺测间隔扩宽。':'历史误差随完整窗口积累。')+'参考范围用于展示历史误差。</p></details>';
- return summary+fullChart(t)+gapNote+method;
+ const gapNote=missing.length?'<p class="trend-gap-note"><span>同期已收录原帖</span>'+missing.map(p=>shortDate(p.ts+DAY)+'：'+num(p.posts||0)+' 篇').join(' · ')+'</p>':'';
+ const r=t.reference,method='<details class="trend-method"><summary>统计与参考依据</summary>'+gapNote+'<p>横轴为向前滚动的24小时日窗。实线为完整日窗实测值，虚线与空心点为预估：两侧有实测值时线性插值；边界取最近三个完整日窗的加权平均，近处权重更高，结果不低于已收录量。至少积累三个完整日窗才提供预估。预估仅用于图表展示，不计入原帖总量、周报或次日参考。</p><p>次日参考取最近十日完整日窗的平均新增帖数，共 '+num(r.windows)+' 个有效窗口。'+(r.mae!=null?'历史平均绝对误差 '+num(r.mae)+' 篇；参考范围按缺测间隔扩宽。':'历史误差随完整窗口积累。')+'参考范围用于展示历史误差。</p></details>';
+ return summary+fullChart(t)+method;
 }
 async function openTrend(name){
- const version=showDialog(name+' · 走势与原帖');try{const d=await overview(),t=d.themes.find(x=>x.theme===name);if(!t)throw Error('议题不存在');const posts=await api('/pulse/api/revision/posts?'+qs({theme:name}));if(version!==state.modalVersion)return;
- $('detailBody').innerHTML=trendDetail(t)+'<h3 class="post-group-title">对应原帖 · '+num(posts.total)+' 条</h3>'+renderPosts(posts.posts);
+ const version=showDialog(name+' · 走势与原帖');try{const d=await overview(),t=d.themes.find(x=>x.theme===name);if(!t)throw Error('议题不存在');if(version!==state.modalVersion)return;
+ $('detailBody').innerHTML=trendDetail(t)+'<h3 class="post-group-title">对应原帖</h3><div id="trendPostsLoading" class="muted">正在读取原帖…</div>';
+ const params={theme:name},posts=await api('/pulse/api/revision/posts?'+qs({...params,limit:POST_PAGE_SIZE}));if(version!==state.modalVersion)return;
+ $('trendPostsLoading').outerHTML=postPage(posts,params,version);
  }catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}
 }
 async function loadCare(){
  try{const d=await api('/pulse/api/campus');const c=d.voice?.crisis||{};$('carePosts').querySelector('strong').textContent=num((c.高危||0)+(c.关注||0));}catch{$('carePosts').querySelector('strong').textContent='—';}
 }
+let officialNewsPromise;
+async function officialNews(){
+ if(state.officialNews&&Date.now()-state.officialNewsLoaded<300000)return state.officialNews;
+ if(officialNewsPromise)return officialNewsPromise;
+ officialNewsPromise=api('/pulse/api/revision/official-news').then(d=>{state.officialNews=d;state.officialNewsLoaded=Date.now();return d;}).finally(()=>officialNewsPromise=null);
+ return officialNewsPromise;
+}
+const newsDate=ts=>new Date(ts*1000).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'numeric',day:'numeric'});
+async function loadOfficialNewsPreview(){
+ if(!$('officialNewsCount'))return;
+ try{const d=await officialNews();$('officialNewsCount').textContent=num(d.total);
+  $('officialNewsHeadlines').innerHTML=d.items.slice(0,2).map(n=>'<li>'+sourceLink(n.link,n.title)+'<time>'+newsDate(n.published)+'</time></li>').join('');
+  $('officialNewsStatus').textContent=d.status==='error'?'新闻采集暂未完成，可稍后重试':d.status==='waiting'?'等待首次新闻采集':d.status==='stale'||d.status==='partial'?'更新暂缓，保留已收录报道':'';
+ }catch{$('officialNewsCount').textContent='—';$('officialNewsStatus').textContent='新闻读取失败，可点击重试';}
+}
+async function openOfficialNews(){
+ const version=showDialog('红色育人观察 · 官方新闻');
+ try{const d=await officialNews();if(version!==state.modalVersion)return;
+  $('detailBody').innerHTML='<p class="data-note">近'+num(d.window_days)+'天 · '+num(d.total)+'篇已收录的华理新闻网报道</p>'+(d.status==='stale'||d.status==='partial'?'<p role="status">更新暂缓，以下为此前收录的报道。</p>':'')+
+   d.items.map(n=>'<article class="official-news-item"><div class="post-head"><span>华理新闻网'+(n.department?' · '+esc(n.department):'')+'</span><time>'+newsDate(n.published)+'</time></div><h3>'+sourceLink(n.link,n.title)+'</h3><p>'+esc(n.summary.slice(0,120)+(n.summary.length>120?'…':''))+'</p><div class="official-news-meta">'+esc(n.categories.join(' · '))+' · 官方报道</div>'+sourceLink(n.link,'阅读新闻原文 ↗')+'</article>').join('')+
+   (!d.total?empty(d.status==='error'?'新闻采集暂未完成，请稍后重新打开。':d.status==='waiting'?'首次采集完成后，将显示育人主题的官方报道。':'近半年暂无已收录的相关报道。'):'')+'<p class="data-note">按原文发布日期展示；官方报道单独计数。</p>';
+ }catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}
+}
+
 async function openCare(){const version=showDialog('心育关怀线索 · 原帖核查');try{const d=await api('/pulse/api/campus/crisis-posts?level=all');if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="data-note">'+num(d.total)+' 条建议关怀，供人工结合原帖核查。</p>'+renderPosts(d.posts)+(d.filtered_posts?.length?'<h3 class="post-group-title">已过滤的日常表达 · '+num(d.filtered_total)+' 条</h3>'+renderPosts(d.filtered_posts):'');}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
+const feedLoadedAt={hot:0,memes:0},feedPromises={};
+function requestFeed(kind){
+ if(!feedPromises[kind])feedPromises[kind]=api('/pulse/api/revision/feed/'+kind).then(data=>{
+  state[kind]=data;feedLoadedAt[kind]=Date.now();if(state.tab===kind)renderFeed(kind,data);return data;
+ }).finally(()=>{feedPromises[kind]=null;});
+ return feedPromises[kind];
+}
 async function loadFeed(kind,force=false){
- if(kind==='memes'||!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
- const d=state[kind],current=state.hotPlatform;
+ const cached=state[kind];if(cached)renderFeed(kind,cached);
+ if(cached&&!force&&Date.now()-feedLoadedAt[kind]<60000)return cached;
+ const pending=requestFeed(kind);if(cached){pending.catch(()=>{});return cached;}
+ return pending;
+}
+let hotFocusPoll;
+function renderFeed(kind,d){
+ const current=state.hotPlatform;
+ if(kind==='hot'){clearTimeout(hotFocusPoll);if(d.focus_pending)hotFocusPoll=setTimeout(()=>{if(state.tab==='hot')loadFeed('hot',true).catch(()=>{});},15000);}
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);
- $('hotScope').hidden=current!=='小红书';$('hotScope').textContent=current==='小红书'?'近24小时已发现 '+num(d.candidate_counts?.小红书??items.length)+' 个话题 · 每半小时核对热榜 · 当前展示 '+items.length+' 条':'';
- $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2>${x.recent_topic?'<p class="muted">近24小时曾上榜</p>':signalPill(x.signal)}<div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,x.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty(current==='小红书'?'当前小红书热榜源未返回有效榜单，暂无可展示数据。':'这个平台暂无可展示内容。');
+ $('hotFeed').innerHTML=items.map((x,i)=>`<article class="feed-card"><div class="feed-meta"><span class="feed-index">${String(i+1).padStart(2,'0')} · ${esc(x.platform)}</span><span>${date(x.ts)}</span></div><h2>${esc(x.title)}</h2>${x.recent_topic?'<p class="muted">近24小时曾上榜</p>':signalPill(x.signal)}<div class="hot-focus"><h3>关注焦点</h3><p>${esc(x.focus||('话题要点：'+x.title))}</p></div><div class="feed-links">${sourceLink(x.url,x.link_kind==='platform_search'?'在平台搜索话题 ↗':'打开对应话题 ↗')}${sourceSearchUrl(x.platform,x.title)?sourceLink(sourceSearchUrl(x.platform,x.title),'站内搜索 ↗'):''}</div></article>`).join('')||empty('这个平台暂无可展示内容。');
 }
 
 function signalPill(signal){
@@ -161,7 +233,7 @@ function focusDonut(card,i){
 function bars(rows,action){const max=Math.max(1,...rows.map(r=>r.value));return rows.map(r=>'<button class="bar-row" '+action(r)+'><span>'+esc(r.label)+'</span><span class="bar-track"><i style="width:'+(r.value/max*100)+'%;background:'+r.color+'"></i></span><b>'+num(r.value)+'</b></button>').join('');}
 async function loadLedger(force=false){
  const d=await overview(force);if(!state.ledger||force)state.ledger=await api('/pulse/api/revision/ledger');const l=state.ledger;
- const hotSources=['xiaohongshu','douyin','thepaper','bilibili-hot-search','bilibili-popular','toutiao'],memeSources=['douyin','bilibili-hot-search','bilibili-popular','weibo','baidu'];
+ const hotSources=['douyin','thepaper','bilibili-hot-search','bilibili-popular','toutiao'],memeSources=['douyin','bilibili-hot-search','bilibili-popular','weibo','baidu'];
  $('ledgerMetrics').innerHTML=metric('累计校内独立帖',l.unique_school_posts)+metric('青年热点来源记录',l.sources.filter(s=>hotSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('梗文化来源记录',l.sources.filter(s=>memeSources.includes(s.source)).reduce((n,s)=>n+s.unique,0))+metric('已完成研究报告',l.reports_completed);
  const themeRows=d.themes.map(t=>({label:t.theme,value:t.posts,color:t.color})),sourceRows=l.sources.filter(s=>!s.source.endsWith('-school')||s.unique>0).map((s,i)=>({label:NAMES[s.source]||s.source,key:s.source,value:s.unique,color:d.themes[i%d.themes.length].color}));
  const emotions=['积极','中性','消极'].map((label,i)=>({label,value:d.emotion[label]||0,color:['#5fb98f','#a9b8cc','#f28f6b'][i]}));
@@ -171,16 +243,16 @@ async function loadLedger(force=false){
  const total=l.daily_usage.reduce((n,x)=>n+(x.tokens||0),0),unknown=l.daily_usage.reduce((n,x)=>n+(x.unknown_calls||0),0);
  $('tokenChart').innerHTML='<div class="usage-summary"><div><span>近14天已记录用量</span><strong>'+num(total)+' <small>Token</small></strong></div><p>'+l.daily_usage.length+' 天 · 含今天'+(unknown?' · '+num(unknown)+' 次调用未返回用量':'')+'</p></div><div class="usage-days">'+l.daily_usage.map(x=>'<article class="usage-day"><time>'+esc(x.day)+'</time><strong>'+(x.has_records===false?'—':num(x.tokens))+'</strong><span>Token</span>'+(x.unknown_calls?'<small>'+num(x.unknown_calls)+' 次调用未提供用量</small>':(x.has_records===false?'<small>当日暂无记录</small>':'<small>当日已记录</small>'))+'</article>').join('')+'</div>'+(l.daily_usage.length?'':'<p class="empty">开始研究后，这里会留下每天的用量记录。</p>');
 }
-async function openSource(source){if(['huyou-school','tieba-school','xiaohongshu-school','douyin-school'].includes(source))return openPosts({source},NAMES[source]+' · 原帖');const version=showDialog((NAMES[source]||source)+' · 采集记录');try{const d=await api('/pulse/api/revision/source-posts?'+qs({source}));if(version===state.modalVersion)$('detailBody').innerHTML='<p class="muted">近7天 '+num(d.total)+' 条独立记录</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
-const METHODS={sample:['采集范围','校内讨论来自狐友华理圈、华理贴吧，以及公开搜索索引收录的小红书和抖音华理讨论；索引摘要不代表平台完整正文或全量讨论。首页显示近7天，趋势显示近10天。帖子按来源与帖子标识合并，同一帖多次采集合并计数；各平台分别计数。'],emotion:['文本表达倾向','使用固定词典 lexicon-1 统计积极与消极词出现次数，前三字内否定词反转。积极命中数高于消极记为积极，低于记为消极，相等记为中性；比例按帖子数计算。此项描述采集文本，词典与规则可复查。'],heat:['来源内互动分位','狐友互动原始量 = ln(1+累计曝光)+2ln(1+累计回复)，贴吧 = 2ln(1+累计回复)。在同来源样本中计算百分位，零互动记为0，同互动量同分。曝光单位为展示次数。'],trend:['新增帖与次日参考','每24小时按帖子发布时间统计独立新帖，缺少发布时间时采用首次采集时间。相邻两个完整日窗计算增量；缺测保留空值。次日参考取最近十日完整日窗的算术平均值并四舍五入为整数篇，至少3个完整日窗才提供。历史误差通过逐窗回看、只使用此前资料计算平均绝对误差。'],signal:['升温信号','排名权重 w=1/log₂(排名+1)。取同平台此前24小时各采集批次的权重序列，未上榜记为0；S=(当前权重−历史均值)/√(历史方差+0.05)。至少3次历史观测，按S降序排列，信号相同按采集记录的来源序位排序。该指标由排名记录计算。']};
+async function openSource(source){if(source==='ecust-news')return openOfficialNews();if(['huyou-school','tieba-school','douyin-school'].includes(source))return openPosts({source},NAMES[source]+' · 原帖');const version=showDialog((NAMES[source]||source)+' · 采集记录');try{const d=await api('/pulse/api/revision/source-posts?'+qs({source}));if(version===state.modalVersion)$('detailBody').innerHTML='<p class="muted">近7天 '+num(d.total)+' 条独立记录</p>'+renderPosts(d.posts);}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
+const METHODS={sample:['采集范围','校内讨论来自狐友华理圈、华理贴吧，以及公开搜索索引收录的抖音华理讨论；索引摘要不代表平台完整正文或全量讨论。首页显示近7天，趋势显示近10天。帖子按来源与帖子标识合并，同一帖多次采集合并计数；各平台分别计数。'],emotion:['文本表达倾向','使用固定词典 lexicon-1 统计积极与消极词出现次数，前三字内否定词反转。积极命中数高于消极记为积极，低于记为消极，相等记为中性；比例按帖子数计算。此项描述采集文本，词典与规则可复查。'],heat:['来源内互动分位','狐友互动原始量 = ln(1+累计曝光)+2ln(1+累计回复)，贴吧 = 2ln(1+累计回复)。在同来源样本中计算百分位，零互动记为0，同互动量同分。曝光单位为展示次数。'],trend:['新增帖与次日参考','每24小时按帖子发布时间统计独立新帖，缺少发布时间时采用首次采集时间。相邻两个完整日窗计算增量；缺测保留空值。次日参考取最近十日完整日窗的算术平均值并四舍五入为整数篇，至少3个完整日窗才提供。历史误差通过逐窗回看、只使用此前资料计算平均绝对误差。'],signal:['升温信号','排名权重 w=1/log₂(排名+1)。取同平台此前24小时各采集批次的权重序列，未上榜记为0；S=(当前权重−历史均值)/√(历史方差+0.05)。至少3次历史观测，按S降序排列，信号相同按采集记录的来源序位排序。该指标由排名记录计算。']};
 function showMethod(key){const m=METHODS[key]||METHODS.sample;const dialog=document.createElement('dialog');dialog.className='config-dialog';dialog.innerHTML='<div class="dialog-head"><h2>'+esc(m[0])+'</h2><button aria-label="关闭">×</button></div><div class="dialog-body method-text"><p>'+esc(m[1])+'</p></div>';document.body.append(dialog);dialog.querySelector('button').onclick=()=>dialog.close();dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
-async function loadReports(){try{const d=await api('/pulse/api/revision/research');$('researchHistory').innerHTML=d.items.map(t=>'<article class="record"><div><strong>'+esc(t.query)+'</strong><p>'+date(t.created_at)+' · '+esc(({completed:'已完成',running:'研究中',reporting:'报告汇总中',awaiting_report:'待生成报告',queued:'排队中',failed:'未完成'})[t.status]||t.status)+'</p></div><div class="record-actions">'+(t.status==='completed'?'<button data-report="'+esc(t.task_id)+'">阅读报告 ↗</button><a href="/pulse/api/revision/research/'+encodeURIComponent(t.task_id)+'/report?format=pdf" target="_blank" rel="noopener">导出 PDF</a>':(t.status==='awaiting_report'||t.can_resume_report)?'<button data-resume-report="'+esc(t.task_id)+'">继续生成报告 ↗</button>':t.status!=='failed'?'<button data-resume="'+esc(t.task_id)+'">查看进度</button>':'<button data-repeat-query="'+esc(t.query)+'">重新研究 ↗</button>')+'</div></article>').join('')||empty('生成的研究报告将在这里归档');}catch(e){$('researchHistory').innerHTML=errorState(e.message,'research');}}
-function openReport(task){const version=showDialog('事件分析报告');$('detailBody').innerHTML='<p class="muted">事件分析 · A4 自然分页 <a href="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report?format=pdf" target="_blank" rel="noopener">下载 PDF ↗</a></p><iframe title="事件分析报告" sandbox="allow-scripts allow-popups" style="width:100%;height:65dvh;border:0;margin-top:15px" src="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report"></iframe>';return version;}
+async function loadReports(){try{const d=await api('/pulse/api/revision/research');$('researchHistory').innerHTML=d.items.map(t=>'<article class="record"><div><strong>'+esc(t.query)+'</strong><p>'+date(t.created_at)+' · '+esc(({completed:'已完成',running:'研究中',reporting:'报告汇总中',awaiting_report:'待生成报告',queued:'排队中',failed:'未完成'})[t.status]||t.status)+'</p></div><div class="record-actions">'+(t.status==='completed'?'<button data-report="'+esc(t.task_id)+'">阅读报告 ↗</button><a href="/pulse/api/revision/research/'+encodeURIComponent(t.task_id)+'/report?format=pdf" target="_blank" rel="noopener">导出 PDF</a><a href="/pulse/api/revision/research/'+encodeURIComponent(t.task_id)+'/report?format=md" target="_blank" rel="noopener">导出 Markdown</a>':(t.status==='awaiting_report'||t.can_resume_report)?'<button data-resume-report="'+esc(t.task_id)+'">继续生成报告 ↗</button>':t.status!=='failed'?'<button data-resume="'+esc(t.task_id)+'">查看进度</button>':'<button data-repeat-query="'+esc(t.query)+'">重新研究 ↗</button>')+'</div></article>').join('')||empty('生成的研究报告将在这里归档');}catch(e){$('researchHistory').innerHTML=errorState(e.message,'research');}}
+function openReport(task){const version=showDialog('事件分析报告');$('detailBody').innerHTML='<p class="muted">事件分析 · A4 自然分页 <a href="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report?format=pdf" target="_blank" rel="noopener">下载 PDF ↗</a> · <a href="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report?format=md" target="_blank" rel="noopener">下载 Markdown ↗</a></p><iframe title="事件分析报告" sandbox="allow-scripts allow-popups" style="width:100%;height:65dvh;border:0;margin-top:15px" src="/pulse/api/revision/research/'+encodeURIComponent(task)+'/report"></iframe>';return version;}
 async function pollTask(task){
  clearTimeout(state.poll);state.task=task;$('researchProgress').hidden=false;$('researchSubmit').disabled=true;
  try{const d=await api('/pulse/api/revision/research/'+encodeURIComponent(task));if(state.task!==task)return;
   const names={query:'查询取证',media:'媒体检索',insight:'公众讨论分析'},labels={idle:'准备中',queued:'排队中',running:'进行中',completed:'已完成',failed:'未完成'};
-  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='awaiting_report'?'研究材料已齐备，等待生成报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+((d.status==='awaiting_report'||d.can_resume_report)?'<p><button data-resume-report="'+esc(task)+'">继续生成报告 ↗</button></p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
+  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='awaiting_report'?'研究材料已齐备，等待生成报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.report_detail?.total_chapters?'<p class="muted">已核验 '+num(d.report_detail.completed_chapters)+' / '+num(d.report_detail.total_chapters)+' 章</p>':'')+(d.message?'<p class="muted">'+esc(d.message)+'</p>':'')+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+((d.status==='awaiting_report'||d.can_resume_report)?'<p><button data-resume-report="'+esc(task)+'">继续生成报告 ↗</button></p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
   if(['completed','failed'].includes(d.status)){$('researchForm').hidden=false;$('researchSubmit').disabled=false;state.lastSubmittedQuery=null;state.requestId=null;localStorage.removeItem('ecust-active-research-v2');if(d.status==='failed'&&activeBrief){$('researchBrief').hidden=false;showResearchStep(true);}else{activeBrief=null;showResearchStep(false);}updateResearchAction();await loadReports();}
   else state.poll=setTimeout(()=>pollTask(task),4000);
  }catch(e){$('researchProgress').innerHTML=errorState(e.message)+'<button data-resume="'+esc(task)+'">继续查看进度</button>';$('researchSubmit').disabled=false;}
@@ -250,7 +322,7 @@ $('researchForm').addEventListener('submit',e=>{e.preventDefault();researchActio
 
 try{const saved=JSON.parse(localStorage.getItem('ecust-research-brief-v1')||'null');if(saved&&!localStorage.getItem('ecust-active-research-v2')){$('researchQuery').value=saved.query;$('researchSubmit').disabled=true;pollBrief(saved.id,++briefVersion);}}catch{}
 
-$('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{await api('/pulse/api/collect',{method:'POST',body:'{}'});notice('采集任务已提交，完成后可刷新页面查看。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
+$('collectButton').onclick=async()=>{const b=$('collectButton');b.disabled=true;try{const result=await api('/pulse/api/collect',{method:'POST',body:'{}'});notice(result.message||'采集任务已排队。');}catch(e){notice(e.message);}finally{b.disabled=false;}};
 let service='llm',serviceConfig=null,serviceDraft={};
 function stashService(){if(service==='llm'||service==='search')Object.assign(serviceDraft,Object.fromEntries(new FormData($('configForm')).entries()));}
 async function config(tab='llm'){
@@ -275,6 +347,7 @@ $('configForm').onsubmit=async e=>{e.preventDefault();const updates=Object.fromE
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[role="button"]');if(!b)return;
  if(b.classList.contains('close-dialog')){b.closest('dialog').close();return;}
+ if(b.hasAttribute('data-more-posts'))return loadMorePosts();
  if(b.dataset.tab)return activate(b.dataset.tab);
  if(b.dataset.theme)return openPosts({theme:b.dataset.theme,from:state.overview.generated_at-7*DAY},b.dataset.theme+' · 原帖');
  if(b.dataset.themeTrend)return openTrend(b.dataset.themeTrend);
@@ -283,7 +356,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.source)return openSource(b.dataset.source);
  if(b.dataset.method)return showMethod(b.dataset.method);
  if(b.dataset.feed){if(b.dataset.feed==='hot')state.hotPlatform=b.dataset.platform;return loadFeed(b.dataset.feed).catch(x=>notice(x.message));}
- if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;return activate(b.dataset.retry);}
+ if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;if(['hot','memes'].includes(b.dataset.retry)){state[b.dataset.retry]=null;feedLoadedAt[b.dataset.retry]=0;}return activate(b.dataset.retry);}
  if(b.dataset.report)return openReport(b.dataset.report);
  if(b.dataset.resumeReport){b.disabled=true;api('/pulse/api/revision/research/'+encodeURIComponent(b.dataset.resumeReport)+'/resume-report',{method:'POST',body:'{}'}).then(()=>{localStorage.setItem('ecust-active-research-v2',b.dataset.resumeReport);pollTask(b.dataset.resumeReport);loadReports();}).catch(error=>{b.disabled=false;notice(error.message);});return;}
  if(b.dataset.resume)return pollTask(b.dataset.resume);
@@ -297,7 +370,9 @@ setInterval(async()=>{
  else if(['hot','memes'].includes(state.tab))await loadFeed(state.tab,true);
  }catch{/* Keep the last successful view and its displayed timestamp. */}
 },120000);
+if($('officialNewsButton'))$('officialNewsButton').onclick=()=>{loadOfficialNewsPreview();openOfficialNews();};
 $('practicePosts').onclick=async()=>{try{const data=await overview();openPosts({red:'1',from:data.generated_at-7*DAY},'红色育人观察 · 实践原帖');}catch(e){notice(e.message);}};$('carePosts').onclick=openCare;
 $('refreshReports').onclick=loadReports;$('refreshLedger').onclick=()=>loadLedger(true).catch(e=>notice(e.message));
 activate(location.hash.slice(1)||'campus');loadCare();try{const active=localStorage.getItem('ecust-active-research-v2');if(active)pollTask(active);}catch{}
+setTimeout(()=>{for(const kind of ['hot','memes'])if(state.tab!==kind)requestFeed(kind).catch(()=>{});},1200);
 })();

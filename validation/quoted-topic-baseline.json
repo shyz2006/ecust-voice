@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "path": "utils/topic_guard.py",
+      "candidate_sha256": "1fa56dc1cdf1cc74883cfbf038685065e1c0d6257a01fcb3d1421d88dcc913e2",
+      "host_sha256": "1fa56dc1cdf1cc74883cfbf038685065e1c0d6257a01fcb3d1421d88dcc913e2"
+    },
+    {
+      "path": "CampusPulse/research_brief.py",
+      "candidate_sha256": "2ea7e4114542b958ffdceb5ca9c10e96225f40cff794402978f757b0bd1197f7",
+      "host_sha256": "2ea7e4114542b958ffdceb5ca9c10e96225f40cff794402978f757b0bd1197f7"
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "8656db29a79c8cbe5a9f024af9405d67b852f55c4ae2c3782bb22d88cd669834",
+      "host_sha256": "8656db29a79c8cbe5a9f024af9405d67b852f55c4ae2c3782bb22d88cd669834"
+    },
+    {
+      "path": "tests/test_quoted_topic_context.py",
+      "candidate_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "utils/search_gateway.py",
+      "candidate_sha256": "da52e03b5b3eea6f9e1266c4bae8c73227765667119cb4c043c7dbbb43bd9cd5",
+      "host_sha256": "da52e03b5b3eea6f9e1266c4bae8c73227765667119cb4c043c7dbbb43bd9cd5"
+    }
+  ]
+}

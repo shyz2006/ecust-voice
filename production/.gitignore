@@ -345,3 +345,8 @@ media_engine_streamlit_reports/
 query_engine_streamlit_reports/
 final_reports/
 forward_prs.sh
+
+# Reviewed local browser helper distributed with the application.
+!/static/downloads/
+/static/downloads/*
+!/static/downloads/ecust-xhs-browser-helper.zip

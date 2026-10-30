@@ -67,7 +67,7 @@ class ReportRepairTests(unittest.TestCase):
             with storage.connect() as conn:
                 self.assertFalse(conn.in_transaction)
                 conn.execute('BEGIN IMMEDIATE')
-    def test_ledger_includes_empty_xiaohongshu_sources(self):
+    def test_ledger_excludes_retired_sources(self):
         app=Flask(__name__)
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'usage.sqlite'
@@ -79,7 +79,7 @@ class ReportRepairTests(unittest.TestCase):
             with app.test_request_context('/pulse/api/revision/ledger'),patch('CampusPulse.telemetry.dashboard',return_value=sample),patch.object(blueprint.storage,'connect',connect),patch.object(blueprint.access,'is_admin',return_value=False):
                 body=blueprint.revision_ledger().get_json()
             sources={r['source']:r['unique'] for r in body['sources']}
-            self.assertEqual(sources['xiaohongshu'],0);self.assertEqual(sources['xiaohongshu-school'],0)
+            self.assertNotIn('xiaohongshu',sources);self.assertNotIn('xiaohongshu-school',sources)
             self.assertNotIn('daily_usage',body)
 
 class WeeklyCheckpointTests(unittest.TestCase):
@@ -93,16 +93,16 @@ class WeeklyCheckpointTests(unittest.TestCase):
         data={'current_total':5,'evidence':evidence,'observed_days':3,'previous_observed_days':3}
         with connect() as c:c.execute("INSERT INTO pulse_weekly(id,cutoff,kind,created,status,data) VALUES('test',1,'preview',1,'failed',?)",(json.dumps(data),))
         self.insights={'headline':'本周观察','signals':[{'title':'学习','observation':'关注学习体验','evidence':['S1']}],'follow_up':[]}
+        self.insights.update(schema_version=2,overview={'title':'综合研判','observation':'本周关注学习体验。','evidence':['S1']},psychology=[{'title':'确定感','observation':'期待更明确的信息。','evidence':['S1']}],outlook=[{'title':'下周关注','observation':'若信息持续更新，可观察诉求是否缓和。','evidence':['S1']}])
     def tearDown(self):self.patch.stop();self.temp.cleanup()
-    def test_summary_and_chapters_survive_report_failure(self):
-        def fail(*args,**kwargs):kwargs['checkpoint']([{'title':'saved'}]);raise contract.ReportInvalid('报告篇幅待完善')
-        def complete(*args,**kwargs):
-            self.assertEqual(kwargs['resume'],[{'title':'saved'}]);return {'chapters':[]}
-        with patch.object(weekly,'summarize',return_value=(self.insights,'model')) as summarize,patch.object(contract,'generate',side_effect=[None]):
-            with patch.object(contract,'generate',side_effect=fail):weekly.generate('test')
-            failed=weekly.get('test');self.assertEqual(failed['status'],'failed');self.assertIn('长报告生成',failed['error']);self.assertIn('insights',failed['data'])
-            with patch.object(contract,'generate',side_effect=complete):weekly.generate('test')
+    def test_validated_summary_survives_weekly_composition_failure(self):
+        from CampusPulse import weekly_report
+        with patch.object(weekly,'summarize',return_value=(self.insights,'model')) as summarize:
+            with patch.object(weekly_report,'build',side_effect=ValueError('周报编排待完善')):weekly.generate('test')
+            failed=weekly.get('test');self.assertEqual(failed['status'],'failed');self.assertIn('周报编排',failed['error']);self.assertIn('insights',failed['data'])
+            weekly.generate('test')
             self.assertEqual(summarize.call_count,1);self.assertEqual(weekly.get('test')['status'],'ready')
+            self.assertEqual(weekly.get('test')['data']['report']['version'],'campus-weekly-v2')
     def test_complete_json_with_literal_newline_is_repaired_without_model(self):
         value=weekly.parse_model_json('{"content":"第一行\n第二行"}')
         self.assertEqual(value['content'],'第一行\n第二行')
@@ -114,7 +114,8 @@ class WeeklyCheckpointTests(unittest.TestCase):
         data['evidence']=[{'id':'S1','period':'current','text':'第一条','published':1,'url':'https://example.invalid/1'},
                           {'id':'S2','period':'current','text':'第二条','published':1,'url':'https://example.invalid/2'}]
         html=weekly.report_html({'status':'ready','data':data})
-        self.assertIn('id="S2"',html);self.assertIn('href="#S2"',html)
+        self.assertIn('id="S2"',html);self.assertNotIn('href="#S2"',html)
+        self.assertNotIn('href=',html.split('class="report-references"')[0])
         self.assertIn('&lt;script&gt;',html);self.assertNotIn('<script>',html)
     def test_excess_observations_are_selected_only_after_evidence_checks(self):
         data=weekly.get('test')['data']
@@ -139,7 +140,7 @@ class WeeklyCheckpointTests(unittest.TestCase):
         with patch('config.reload_settings',return_value=settings),patch('openai.OpenAI',return_value=Mock()),patch('CampusPulse.model_connection.completion',return_value=response),patch('CampusPulse.telemetry.record_response'):
             with self.assertRaisesRegex(ValueError,'截断'):weekly.summarize(weekly.get('test')['data'])
     def test_summary_validation_repair_is_bounded_and_explained(self):
-        with patch.object(weekly,'summarize',side_effect=[ValueError('周报引用无法对应采集材料'),(self.insights,'model')]) as summarize,patch.object(contract,'generate',return_value={'chapters':[]}):weekly.generate('test')
+        with patch.object(weekly,'summarize',side_effect=[ValueError('周报引用无法对应采集材料'),(self.insights,'model')]) as summarize,patch('CampusPulse.weekly_report.build',return_value={'chapters':[]}):weekly.generate('test')
         self.assertEqual(summarize.call_count,2);self.assertIn('周报引用',summarize.call_args.args[1]);self.assertEqual(weekly.get('test')['status'],'ready')
 
 if __name__=='__main__':unittest.main()

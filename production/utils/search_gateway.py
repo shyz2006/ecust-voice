@@ -83,8 +83,12 @@ def _event(scope: str, kind: str, query: str, local: int = 0, detail: str = "") 
         pass
 
 
-def cache_get(endpoint: str, query: str, freshness: str, count: int, answer: bool) -> Optional[dict]:
+def cache_get(endpoint: str, query: str, freshness: str, count: int, answer: bool, *, max_age_seconds: Optional[float] = None) -> Optional[dict]:
     ttl = _TTL_HOURS.get(freshness or "", DEFAULT_TTL_HOURS) * 3600
+    if max_age_seconds is not None:
+        ttl = min(ttl, max(0, float(max_age_seconds)))
+    if ttl <= 0:
+        return None
     try:
         conn = _connect()
         row = conn.execute("SELECT created, count, answer, payload FROM cache WHERE key=?",
@@ -181,7 +185,7 @@ def local_search(query: str, limit: int = 10) -> Tuple[List[Dict], int]:
     # Short named subjects must be present, even when the local index scores generic words highly.
     from utils.topic_guard import subject,relevant
     topic=subject(query)
-    if topic['strict']:
+    if topic['strict'] or topic.get('quote_identity'):
         merged=[r for r in merged if relevant((r.get('title') or '')+' '+(r.get('snippet') or ''),topic)]
     return merged[:limit], hidden if merged else 0
 

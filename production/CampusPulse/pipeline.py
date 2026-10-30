@@ -22,7 +22,7 @@ from loguru import logger
 from . import campus, collectors, lens, memes, metrics, storage, transitions, video_features
 from .burst import AccelerationSketch, batch_observations
 from .config import settings
-from .sources import bilibili, huyou, tieba, campus_social
+from .sources import bilibili, huyou, tieba, campus_social, ecust_news
 from .topics import build_topics
 
 _run_lock = threading.Lock()
@@ -33,8 +33,9 @@ def _save_attempt(attempt):
     try:storage.record_collection_attempt(attempt)
     except Exception as exc:logger.warning('[CampusPulse] 采集尝试记录未保存：{}',type(exc).__name__)
 
-FORUM_SOURCES = ["huyou-school", "huyou-national", "tieba-school", "xiaohongshu-school", "douyin-school"]
+FORUM_SOURCES = ["huyou-school", "huyou-national", "tieba-school", "douyin-school"]
 UGC_SOURCES = ["bilibili-popular", *FORUM_SOURCES]
+CAMPUS_SOURCES = [*FORUM_SOURCES, ecust_news.SOURCE]
 
 
 # ------------------------------------------------------------------ 设置（页面可改，无需重启）
@@ -109,6 +110,12 @@ def _fetch_all() -> Dict:
         logger.warning('[CampusPulse] 新增校园来源未完成：{}',type(exc).__name__)
         for source in campus_social.PLATFORMS:
             errors[source] = '该来源检索未完成，其他来源继续采集'
+    try:
+        news = ecust_news.collect()
+        items += news['items']
+        errors.update(news['errors'])
+    except Exception:
+        errors[ecust_news.SOURCE] = '新闻网采集暂未完成，其他来源继续采集'
     if settings.bilibili_enabled:
         try:
             bl = bilibili.collect()
@@ -123,7 +130,9 @@ def _fetch_all() -> Dict:
 
 def _build_views(batch_ts: int, items: List[Dict], use_llm: bool, sketch: AccelerationSketch) -> Dict:
     """从一个批次的条目构建页面视图（公开话题、梗与玩法、本校声音）。use_llm=False 时只用规则与缓存。"""
-    public = [i for i in items if i["source"] not in FORUM_SOURCES]
+    from .source_policy import active
+    items = [item for item in items if active(item['source'])]
+    public = [i for i in items if i["source"] not in CAMPUS_SOURCES]
     if not any(i["source"] in settings.sources for i in public):
         # 公开热榜源全部失败（如 newsnow 故障）：沿用上一批的公开话题并标注来源时间，避免雷达只剩 B 站内容
         prev = storage.latest_topics("public")
@@ -175,7 +184,7 @@ def analyze_batch(batch_ts: int, items: List[Dict], use_llm: bool = True) -> Dic
     started = time.time()
     sketch = AccelerationSketch.load()
     if not (sketch.last_ts and batch_ts <= sketch.last_ts):  # 同一批次重复分析时不重复计入
-        public = [i for i in items if i["source"] not in FORUM_SOURCES]
+        public = [i for i in items if i["source"] not in CAMPUS_SOURCES]
         sketch.update(batch_observations(public), batch_ts, max(300, settings.collect_interval_min * 60))
     before = metrics.snapshot()
     views = _build_views(batch_ts, items, use_llm=False, sketch=sketch)
@@ -314,11 +323,13 @@ def _fmt(ts: int) -> str:
 
 
 def status() -> Dict:
+    from . import collection_queue
+    queue_state = collection_queue.status()
     fetch = storage.latest_batch()
     complete = storage.latest_batch("complete")
     lagging = bool(fetch and (not complete or fetch["batch_ts"] != complete["batch_ts"]))
     alert = None
-    if lagging and not _state["running"]:
+    if lagging and not (_state["running"] or queue_state["running"]):
         alert = (f"最新抓取的数据（{_fmt(fetch['batch_ts'])}）"
                  f"尚未完成分析，页面展示的是上一个完整批次"
                  + (f"：{fetch.get('error')}" if fetch.get("error") else ""))
@@ -330,10 +341,15 @@ def status() -> Dict:
     if not alert and failed_hot:
         alert = (f"公开热榜源异常：{len(failed_hot)}/{len(settings.sources)} 个获取失败（第三方聚合服务 newsnow）"
                  + ("，热点雷达沿用上一批数据" if len(failed_hot) == len(settings.sources) else ""))
+    if not alert and not queue_state["available"]:
+        alert = "采集队列暂时不可用，已有页面数据仍可查看"
+    elif not alert and queue_state["running"] and not queue_state["worker_alive"]:
+        alert = "采集任务已排队，但处理程序暂时未运行"
     return {
         "source_errors": errors,
-        "running": _state["running"],
-        "stage": _state["stage"],
+        "running": _state["running"] or queue_state["running"],
+        "stage": _state["stage"] or queue_state["stage"],
+        "collection_queue": queue_state,
         "enriching": bool(_state.get("enriching")),
         "last_error": _state["last_error"],
         "last_attempt": last_attempt,
@@ -358,17 +374,14 @@ _scheduler: Optional[threading.Thread] = None
 
 
 def start_scheduler() -> None:
-    """在 Flask 进程内启动后台采集线程（守护线程，随主进程退出）。"""
+    """在 Flask 进程内定时提交任务；实际采集只由独立 Worker 执行。"""
     global _scheduler
     if settings.collect_interval_min <= 0 or (_scheduler and _scheduler.is_alive()):
         return
 
     def loop():
         time.sleep(20)  # 等待主应用完成启动
-        try:
-            recover_pending()
-        except Exception as exc:
-            logger.warning(f"[CampusPulse] 补做批次失败: {exc}")
+        from . import collection_queue
         retry_at=0
         while True:
             try:
@@ -376,8 +389,10 @@ def start_scheduler() -> None:
                 last = latest["fetched_at"] if latest else 0
                 now=time.time()
                 if now>=retry_at and now-last>=settings.collect_interval_min*60-30:
-                    result=run_once()
-                    retry_at=time.time()+300 if result.get('error') else 0
+                    result=collection_queue.enqueue("scheduled")
+                    if result["created"]:
+                        logger.info("[CampusPulse] 定时采集已入队：{}", result["job_id"])
+                    retry_at=time.time()+300
             except Exception as exc:
                 # A temporary database/driver error must not silently kill scheduling.
                 _state['last_error']='定时采集暂未完成：'+str(exc)[:200]

@@ -148,11 +148,20 @@ def auth_check():
 
     nginx 直接反代的 Streamlit 引擎页（/insight/ 等）不经过 Flask，所以在这里按原始路径拦截普通用户。
     """
+    original = urlsplit(request.headers.get('X-Original-URI') or '/').path
+    from CampusPulse.source_policy import RETIRED_API
+    if original.startswith(RETIRED_API):return ('',204)
     if not access.session_valid():
         return ('', 401)
     original = urlsplit(request.headers.get('X-Original-URI') or '/').path
     if not access.is_admin() and not access.user_may_access(original):
         return ('', 403)
+    if COMPACT_ENGINE_ON_DEMAND:
+        for engine_name in STREAMLIT_SCRIPTS:
+            if original.startswith(f'/{engine_name}/'):
+                if not _ensure_streamlit_on_demand(engine_name):
+                    return ('', 503)
+                break
     return ('', 204)
 
 
@@ -270,6 +279,9 @@ def manage_account(username):
 def enforce_account_role():
     """普通用户只能使用校园观察与研究服务；模型、检索、邮件、采集与引擎接口仅管理员可用。"""
     path = request.path
+    from CampusPulse.source_policy import RETIRED_API
+    if path.startswith(RETIRED_API):
+        return jsonify(success=False,message='该采集入口已下线'),410
     if session.get('authenticated') is True and not access.session_valid():
         # 账号被停用、删除或改过密码：旧会话作废
         session.clear()
@@ -585,6 +597,9 @@ def initialize_system_components():
     for app_name, script_path in STREAMLIT_SCRIPTS.items():
         logs.append(f"检查文件: {script_path}")
         if os.path.exists(script_path):
+            if COMPACT_ENGINE_ON_DEMAND:
+                logs.append(f"{app_name}: 按需启动，空闲时自动关闭")
+                continue
             success, message = start_streamlit_app(app_name, script_path, processes[app_name]['port'])
             logs.append(f"{app_name}: {message}")
             if success:
@@ -780,6 +795,10 @@ STREAMLIT_SCRIPTS = {
     'media': 'SingleEngineApp/media_engine_streamlit_app.py',
     'query': 'SingleEngineApp/query_engine_streamlit_app.py'
 }
+COMPACT_ENGINE_ON_DEMAND = os.environ.get('COMPACT_ENGINE_ON_DEMAND') == '1'
+ENGINE_IDLE_SECONDS = max(300, int(os.environ.get('STREAMLIT_IDLE_SECONDS', '900') or 900))
+_engine_lifecycle_lock = threading.RLock()
+_engine_last_seen = {}
 
 def _log_shutdown_step(message: str):
     """统一记录关机步骤，便于排查。"""
@@ -905,6 +924,7 @@ def start_streamlit_app(app_name, script_path, port):
         processes[app_name]['status'] = 'starting'
         processes[app_name]['output'] = []
         processes[app_name]['healthcheck_started_at'] = time.time()
+        _engine_last_seen[app_name] = time.time()
 
         threading.Thread(
             target=read_process_output,
@@ -946,6 +966,69 @@ def stop_streamlit_app(app_name):
     except Exception as exc:
         _log_shutdown_step(f"{app_name} 停止失败: {exc}")
         return False, f"停止失败: {exc}"
+
+
+def _ensure_streamlit_on_demand(app_name):
+    """Nginx auth subrequest starts the authorised viewer before proxying it."""
+    with _engine_lifecycle_lock:
+        _engine_last_seen[app_name] = time.time()
+        info = processes[app_name]
+        process = info['process']
+        if process is not None and process.poll() is not None:
+            info['process'] = None
+            info['status'] = 'stopped'
+            process = None
+        if process is not None and info['status'] == 'running':
+            return True
+        if process is None:
+            success, message = start_streamlit_app(
+                app_name, STREAMLIT_SCRIPTS[app_name], info['port'])
+            if not success:
+                logger.error(f"{app_name} 按需启动失败: {message}")
+                return False
+        ready, message = wait_for_app_startup(app_name, 30)
+        if not ready:
+            logger.error(f"{app_name} 按需启动未就绪: {message}")
+        return ready
+
+
+def _established_engine_connections(port):
+    """Count live proxy-to-Streamlit connections in this container's network namespace."""
+    count = 0
+    try:
+        for table in ('/proc/net/tcp', '/proc/net/tcp6'):
+            for line in Path(table).read_text().splitlines()[1:]:
+                fields = line.split()
+                if len(fields) > 3 and fields[3] == '01' and int(fields[1].rsplit(':', 1)[1], 16) == port:
+                    count += 1
+    except (OSError, ValueError, IndexError) as exc:
+        logger.warning(f"无法检测分析页连接，保留进程: {exc}")
+        return -1
+    return count
+
+
+def _idle_streamlit_monitor():
+    while True:
+        time.sleep(60)
+        with _engine_lifecycle_lock:
+            now = time.time()
+            for app_name in STREAMLIT_SCRIPTS:
+                info = processes[app_name]
+                process = info['process']
+                if process is None or process.poll() is not None:
+                    continue
+                last_seen = _engine_last_seen.setdefault(app_name, now)
+                if now - last_seen < ENGINE_IDLE_SECONDS:
+                    continue
+                connections = _established_engine_connections(info['port'])
+                if connections == 0:
+                    logger.info(f"{app_name} 分析页空闲 {ENGINE_IDLE_SECONDS}s，自动关闭以释放内存")
+                    stop_streamlit_app(app_name)
+
+
+if COMPACT_ENGINE_ON_DEMAND:
+    threading.Thread(target=_idle_streamlit_monitor,
+                     name='streamlit-idle-monitor', daemon=True).start()
 
 
 HEALTHCHECK_PATH = "/_stcore/health"

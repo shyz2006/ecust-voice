@@ -1,7 +1,7 @@
 import sqlite3,unittest
 from contextlib import contextmanager
 from unittest.mock import patch,Mock
-from CampusPulse import pipeline,storage,revision
+from CampusPulse import pipeline,storage,revision,collection_queue
 
 
 class CollectionAuditTests(unittest.TestCase):
@@ -52,7 +52,7 @@ class SchedulerResilienceTests(unittest.TestCase):
         def sleep(seconds):
             sleeps.append(seconds)
             if len(sleeps)>iterations:raise StopLoop()
-        with patch.object(pipeline,'_scheduler',None),patch.object(pipeline,'logger',Mock()),patch.object(pipeline.settings,'collect_interval_min',30),patch.object(pipeline.threading,'Thread',return_value=fake) as thread,patch.object(pipeline,'recover_pending'),patch.object(storage,'latest_batch',side_effect=latest) as latest_read,patch.object(pipeline,'run_once',side_effect=results) as run,patch.object(pipeline.time,'time',side_effect=times),patch.object(pipeline.time,'sleep',side_effect=sleep):
+        with patch.object(pipeline,'_scheduler',None),patch.object(pipeline,'logger',Mock()),patch.object(pipeline.settings,'collect_interval_min',30),patch.object(pipeline.threading,'Thread',return_value=fake) as thread,patch.object(pipeline,'recover_pending'),patch.object(storage,'latest_batch',side_effect=latest) as latest_read,patch.object(collection_queue,'enqueue',side_effect=results) as run,patch.object(pipeline.time,'time',side_effect=times),patch.object(pipeline.time,'sleep',side_effect=sleep):
             pipeline.start_scheduler()
             loop=thread.call_args.kwargs['target']
             with self.assertRaises(StopLoop):loop()
@@ -60,11 +60,11 @@ class SchedulerResilienceTests(unittest.TestCase):
             return run.call_count
 
     def test_database_error_does_not_terminate_scheduler(self):
-        count=self.run_loop([RuntimeError('temporary database error'),None],[1000,2000],[{}],2)
+        count=self.run_loop([RuntimeError('temporary database error'),None],[1000,2000,2000],[{'created':True,'job_id':'test'}],2)
         self.assertEqual(count,1)
 
-    def test_failed_fetch_waits_five_minutes_instead_of_retrying_each_minute(self):
-        count=self.run_loop([None,None,None],[2000,2000,2100,2301],[{'error':'source failure'},{}],3)
+    def test_failed_enqueue_waits_five_minutes_instead_of_retrying_each_minute(self):
+        count=self.run_loop([None,None,None],[2000,2000,2100,2301,2301],[RuntimeError('queue failure'),{'created':True,'job_id':'test'}],3)
         self.assertEqual(count,2)
 
 

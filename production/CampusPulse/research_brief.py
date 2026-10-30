@@ -191,7 +191,10 @@ def exploratory(brief_id,focus,context,owner,index=None):
             value['supplement']=context.strip()
             if context.strip()!=row.get('context','').strip():value['sources']=[]
             return value
-    # No inferred identity or stale suggested anchors: the explicit scope and supplement
-    # are the instructions; ordinary evidence relevance and citation checks still apply.
+    # Recheck real preliminary sources against the user's edited scope. Empty suggested
+    # directions do not mean the already-retrieved sources should all be discarded.
+    from utils.topic_guard import subject,relevant
+    topic=subject(focus.strip()+' '+context.strip())
+    sources=[source for source in row.get('sources',[]) if relevant(source.get('title','')+' '+source.get('snippet',''),topic)]
     return {'original_query':row['query'],'supplement':context.strip(),'query':focus.strip(),
-            'sources':[],'brief_id':brief_id,'confirmed':True,'exploratory':True}
+            'sources':sources,'brief_id':brief_id,'confirmed':True,'exploratory':True}

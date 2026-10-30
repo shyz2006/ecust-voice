@@ -1,0 +1,16 @@
+{
+  "items": 40,
+  "methods": {
+    "llm_summary": 40
+  },
+  "by_platform": {
+    "B站": 10,
+    "头条": 10,
+    "抖音": 10,
+    "澎湃": 10
+  },
+  "all_model_summaries": true,
+  "public_login": 200,
+  "static_requires_authentication": true,
+  "emails_sent_by_validation": 0
+}

@@ -64,7 +64,11 @@ def validate_sources(document,task_id):
         return ' '.join(v if k=='text' and isinstance(v,str) else text_content(v) for k,v in value.items())
     for chapter in document.get('chapters') or []:
         cited=set(links(chapter))
-        if not cited or not cited<=allowed:raise ValueError('报告原始来源链接尚未通过核对，需要补充检索记录中的逐章引用')
+        if not cited or not cited<=allowed:
+            invalid=sorted(cited-allowed)
+            detail=('未在原始检索目录中的URL：'+json.dumps(invalid,ensure_ascii=False)) if invalid else '本章缺少原始来源链接'
+            catalogue=[{'url':r['url'],'title':r['title']} for r in list(records.values())[:6]]
+            raise ValueError('报告原始来源链接待修正：'+detail+'。保留已核对的引用；删除无依据的断言，逐字复制证据目录中的URL，不要自行拼接或猜测。目录示例：'+json.dumps(catalogue,ensure_ascii=False))
         source_text=' '.join(records[url]['excerpt'] for url in cited)
         percentages=lambda text:{re.sub(r'\s','',x).replace('％','%') for x in re.findall(r'\d+(?:\.\d+)?\s*[%％]',text)}
         if not percentages(text_content(chapter))<=percentages(source_text):

@@ -1,0 +1,10 @@
+{
+  "activated": true,
+  "database_unchanged": true,
+  "mounts_unchanged": true,
+  "files_verified": 10,
+  "existing_event_reader": {
+    "chapters": 5,
+    "body_links": 0
+  }
+}

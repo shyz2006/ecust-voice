@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "fixture_only": true,
+  "real_user_page_verified": false,
+  "checks": [
+    {
+      "name": "hidden_identity_link_visible_title",
+      "passed": true,
+      "old_failure_reproduced": true
+    },
+    {
+      "name": "generic_wrapper_cover_alt_not_title",
+      "passed": true,
+      "old_failure_reproduced": true
+    },
+    {
+      "name": "feed_article_not_one_card",
+      "passed": true,
+      "old_failure_reproduced": false
+    },
+    {
+      "name": "hidden_card_cannot_borrow_page_title",
+      "passed": true,
+      "old_failure_reproduced": false
+    },
+    {
+      "name": "diagnostic_counts_are_retained",
+      "passed": true,
+      "old_failure_reproduced": false
+    }
+  ]
+}

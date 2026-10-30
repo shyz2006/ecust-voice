@@ -1,15 +1,33 @@
 """Teacher revision read model: one taxonomy, reproducible counts, source-linked feeds."""
-import hashlib,json,math,re,threading,time
+import hashlib,json,logging,math,re,threading,time
 from collections import Counter,defaultdict
 from functools import lru_cache
 from urllib.parse import urlsplit
-from . import campus,observatory,storage,taxonomy
+from . import cache,campus,observatory,storage,taxonomy
 
 DAY=86400
-HOT_PLATFORMS={'xiaohongshu':'小红书','douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站','bilibili-popular':'B站','toutiao':'头条'}
+HOT_PLATFORMS={'douyin':'抖音','thepaper':'澎湃','bilibili-hot-search':'B站','bilibili-popular':'B站','toutiao':'头条'}
 MEME_PLATFORMS={'douyin':'抖音','bilibili-hot-search':'B站','bilibili-popular':'B站','weibo':'微博','baidu':'百度'}
 _cache={};_lock=threading.Lock()
 _feed_cache={};_feed_locks={kind:threading.Lock() for kind in ('hot','memes')}
+
+def _refresh_feed(kind):
+    try:
+        network_feed(kind,force=True)
+    except Exception:
+        logging.getLogger(__name__).exception('Campus %s feed refresh failed',kind)
+    finally:
+        with _feed_locks[kind]:
+            if kind in _feed_cache:_feed_cache[kind]['refreshing']=False
+
+def _refresh_snapshot():
+    try:
+        snapshot(force=True)
+    except Exception:
+        logging.getLogger(__name__).exception('Campus trend refresh failed')
+    finally:
+        with _lock:
+            _cache['refreshing']=False
 
 @lru_cache(maxsize=10000)
 def cached_tokens(text):return frozenset(observatory.tokens(text))
@@ -65,6 +83,14 @@ def snapshot(force=False):
     now=int(time.time())
     with _lock:
         if not force and _cache.get('expires',0)>now:return _cache['data']
+        if not force:
+            cached=_cache.get('data') or cache.get_json('campuspulse:revision:v2-no-xhs')
+            if isinstance(cached,dict) and cached.get('generated_at',0)+600>now:
+                _cache.update(expires=cached['generated_at']+60,data=cached)
+                if _cache['expires']<=now and not _cache.get('refreshing'):
+                    _cache['refreshing']=True
+                    threading.Thread(target=_refresh_snapshot,name='campus-trend-refresh',daemon=True).start()
+                return cached
         rows=storage.recent_items(list(observatory.SOURCES),now-10*DAY)
         annotations={r['key']:json.loads(r['value']) for r in storage.kv_prefix(campus._PREFIX,limit=100000)}
         for key,raw in list(annotations.items()):
@@ -125,60 +151,62 @@ def snapshot(force=False):
                          'heat':'同来源互动量分位数。狐友使用ln(1+曝光)+2ln(1+回复)，贴吧使用2ln(1+回复)。',
                          'increment':'相邻两个覆盖完整的24小时窗口新增帖数之差。最近日窗缺测时，展示最近一组连续完整日窗的对比及日期；近期已采集数量单独保留。'}}
         _cache.update(expires=time.time()+60,data=data)
+        cache.set_json('campuspulse:revision:v2-no-xhs',data,ttl=600)
         return data
 
 def network_feed(kind,force=False):
     if kind=='memes':return _network_feed(kind)
+    now=int(time.time())
+    latest=storage.latest_batch()
+    batch_ts=latest['batch_ts'] if latest and latest['status'] in ('fetched','complete') else 0
+    # Never substitute an older platform snapshot when the latest collection failed.
+    if not batch_ts or now-batch_ts>600:
+        return {'items':[],'platforms':list(dict.fromkeys(HOT_PLATFORMS.values())),
+                'generated_at':now,'source_batch':batch_ts,'candidate_counts':{},
+                'message':'最近十分钟没有成功采集的新榜单'}
     with _feed_locks[kind]:
         cached=_feed_cache.get(kind)
-        if not force and cached and cached['expires']>time.time():return cached['data']
-        data=_network_feed(kind)
-        _feed_cache[kind]={'expires':time.time()+60,'data':data}
+        if not force and cached and cached['data'].get('source_batch')==batch_ts and (not cached['data'].get('focus_pending') or cached.get('expires',0)>time.time()):return cached['data']
+        if not force:
+            data=cache.get_json('campuspulse:feed:'+kind+':v4-llm-focus')
+            if isinstance(data,dict) and data.get('source_batch')==batch_ts and (not data.get('focus_pending') or data.get('generated_at',0)+10>time.time()):
+                _feed_cache[kind]={'data':data,'expires':time.time()+10}
+                return data
+        data=_network_feed(kind,batch_ts=batch_ts)
+        _feed_cache[kind]={'data':data,'expires':time.time()+10}
+        cache.set_json('campuspulse:feed:'+kind+':v4-llm-focus',data,ttl=600)
         return data
 
 
-def _network_feed(kind):
+def _network_feed(kind,batch_ts=None):
     now=int(time.time());platforms=HOT_PLATFORMS if kind=='hot' else MEME_PLATFORMS
     if kind=='memes':
         from .dynamic_memes import snapshot
         return snapshot()
-    stamps=storage.latest_source_batches(list(platforms),now-7*DAY)
-    since=max(now-7*DAY,min(stamps.values())-DAY) if stamps else now-7*DAY
-    rows=storage.recent_items(list(platforms),since)
-    latest={}
-    for row in rows:latest[row['source']]=max(latest.get(row['source'],0),row['batch_ts'])
+    batch_ts=batch_ts or (storage.latest_batch() or {}).get('batch_ts',0)
+    rows=storage.recent_items(list(platforms),max(0,batch_ts-DAY))
+    rows=[row for row in rows if row['source'] in platforms]
     grouped={};history=defaultdict(dict);source_stamps=defaultdict(set)
     for row in rows:
         key=(row['source'],row['title'].strip())
         weight=1/math.log2(max(1,int(observatory.numeric(row.get('rank')) or 1))+1)
         source_stamps[row['source']].add(row['batch_ts'])
         history[key][row['batch_ts']]=weight
-        keep=row['batch_ts']>=now-DAY if row['source']=='xiaohongshu' else row['batch_ts']==latest[row['source']]
+        keep=row['batch_ts']==batch_ts
         if keep and (key not in grouped or row['batch_ts']>=grouped[key]['batch_ts']):grouped[key]=row
-    focus={}
-    # Existing annotations call the short public-interest explanation one_liner.
-    # It is descriptive only and never enters the numerical ranking.
-    for cached in storage.kv_prefix('annot2:',limit=100000):
-        try:
-            annotation=json.loads(cached['value'])
-            if annotation.get('one_liner'):focus[cached['key'].removeprefix('annot2:')]=annotation['one_liner']
-        except (ValueError,TypeError):continue
-    for topic in storage.latest_topics('public').get('topics',[]):
-        explanation=topic.get('summary') or (topic.get('lens') or {}).get('focus') or (topic.get('lens') or {}).get('one_liner') or ''
-        for entry in topic.get('entries') or []:
-            if isinstance(entry,dict) and explanation:focus[entry.get('title')]=explanation
     items=[]
     for key,row in grouped.items():
         h=history[key];stamp=row['batch_ts'];past=[h.get(ts,0) for ts in sorted(source_stamps[row['source']]) if stamp-DAY<=ts<stamp]
         baseline=sum(past)/len(past) if past else 0
         variance=sum((v-baseline)**2 for v in past)/len(past) if past else 0
-        recent_topic=row['source']=='xiaohongshu' and stamp<latest[row['source']]
+        recent_topic=False
         score=(h[stamp]-baseline)/math.sqrt(variance+0.05) if len(past)>=3 and not recent_topic else None
         items.append({'id':hashlib.sha1(('|'.join(key)).encode()).hexdigest()[:16],
                       'title':row['title'],'source':row['source'],'platform':platforms[row['source']],
                       'rank':row['rank'],'url':source_link((row.get('extra') or {}).get('link') or row.get('url')),
                       'ts':stamp,'signal':round(score,3) if score is not None else None,
-                      'baseline_samples':len(past),'focus':focus.get(row['title'],''),'link_kind':(row.get('extra') or {}).get('link_kind'),
+                      '_focus_context':' '.join(str((row.get('extra') or {}).get(k) or '') for k in ('desc','description','summary','content'))[:800],
+                      'baseline_samples':len(past),'focus':'','link_kind':(row.get('extra') or {}).get('link_kind'),
                       'recent_topic':recent_topic})
     if kind=='hot':
         candidate_counts=dict(Counter(item['platform'] for item in items))
@@ -189,9 +217,12 @@ def _network_feed(kind):
             if title in seen_titles[platform] or len(seen_titles[platform])>=10:continue
             seen_titles[platform].add(title);kept.append(item)
         items=kept
-        from .hot_focus import brief
+        from .hot_focus import brief,attach
         for item in items:
-            item['focus'],item['focus_method']=brief(item['title'],item['focus'])
-        return {'items':items,'platforms':list(dict.fromkeys(HOT_PLATFORMS.values())),'generated_at':now,
-                'candidate_counts':candidate_counts,'xiaohongshu_pool_hours':24,
+            # Public reading prompts must not repeat unsourced cached annotations as facts.
+            item['focus'],item['focus_method']=brief(item['title'])
+        focus_pending=attach(items)
+        return {'focus_pending':focus_pending,'items':items,'platforms':list(dict.fromkeys(HOT_PLATFORMS.values())),'generated_at':now,
+                'source_batch':batch_ts,
+                'candidate_counts':candidate_counts,
                 'method':'S=(当前排名权重−此前24小时排名权重均值)/√(历史方差+0.05)，权重=1/log₂(排名+1)；至少3次历史观测。'}

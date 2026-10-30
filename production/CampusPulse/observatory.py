@@ -11,8 +11,8 @@ import threading
 import time
 from collections import Counter, defaultdict
 
-SOURCES = ('huyou-school', 'tieba-school', 'xiaohongshu-school', 'douyin-school')
-NAMES = {'huyou-school': '狐友华理圈', 'tieba-school': '华理贴吧', 'xiaohongshu-school':'小红书华理讨论（搜索摘要）', 'douyin-school':'抖音华理讨论（搜索摘要）'}
+SOURCES = ('huyou-school', 'tieba-school', 'douyin-school')
+NAMES = {'huyou-school': '狐友华理圈', 'tieba-school': '华理贴吧', 'douyin-school':'抖音华理讨论（搜索摘要）'}
 DAY = 86400
 RED_TERMS = ('党建', '党支部', '入党', '党员', '党史', '团支部', '团课', '团员', '理论学习', '思政',
              '爱国', '国庆', '报国', '家国', '红色', '志愿服务', '志愿者', '乡村振兴', '社会实践', '校史', '青年使命')

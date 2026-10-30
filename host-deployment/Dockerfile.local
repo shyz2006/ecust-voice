@@ -39,6 +39,8 @@ COPY MediaEngine/agent.py MediaEngine/agent.py
 COPY MediaEngine/nodes/summary_node.py MediaEngine/nodes/summary_node.py
 COPY MediaEngine/llms/base.py MediaEngine/llms/base.py
 COPY InsightEngine/agent.py InsightEngine/agent.py
+COPY InsightEngine/prompts/prompts.py InsightEngine/prompts/prompts.py
+COPY InsightEngine/tools/search.py InsightEngine/tools/search.py
 COPY InsightEngine/nodes/summary_node.py InsightEngine/nodes/summary_node.py
 COPY InsightEngine/llms/base.py InsightEngine/llms/base.py
 COPY InsightEngine/utils/db.py InsightEngine/utils/db.py
@@ -60,6 +62,9 @@ COPY SingleEngineApp/media_engine_streamlit_app.py SingleEngineApp/media_engine_
 COPY SingleEngineApp/insight_engine_streamlit_app.py SingleEngineApp/insight_engine_streamlit_app.py
 COPY SingleEngineApp/research_worker.py SingleEngineApp/research_worker.py
 COPY MindSpider/BroadTopicExtraction/topic_extractor.py MindSpider/BroadTopicExtraction/topic_extractor.py
+COPY MindSpider/DeepSentimentCrawling/main.py MindSpider/DeepSentimentCrawling/main.py
+COPY MindSpider/DeepSentimentCrawling/platform_crawler.py MindSpider/DeepSentimentCrawling/platform_crawler.py
+COPY MindSpider/DeepSentimentCrawling/keyword_manager.py MindSpider/DeepSentimentCrawling/keyword_manager.py
 COPY CampusPulse CampusPulse
 
 COPY static/css/campus-play.css static/css/campus-play.css
@@ -69,3 +74,13 @@ COPY static/js/campus-play.js static/js/campus-play.js
 COPY utils/topic_guard.py utils/topic_guard.py
 
 COPY static/js/campus-weekly.js static/js/campus-weekly.js
+
+
+
+COPY static/js/campus-model-settings.js static/js/campus-model-settings.js
+
+COPY ReportEngine/core/template_parser.py ReportEngine/core/template_parser.py
+COPY ReportEngine/renderers/markdown_renderer.py ReportEngine/renderers/markdown_renderer.py
+COPY ReportEngine/renderers/libs/mermaid-10.9.3.min.js ReportEngine/renderers/libs/mermaid-10.9.3.min.js
+COPY ReportEngine/renderers/libs/mermaid-LICENSE ReportEngine/renderers/libs/mermaid-LICENSE
+COPY ReportEngine/report_template/社会公共热点事件分析报告模板.md ReportEngine/report_template/社会公共热点事件分析报告模板.md

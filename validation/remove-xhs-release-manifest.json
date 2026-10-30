@@ -1,0 +1,280 @@
+{
+  "name": "remove-xhs-20261029-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/remove-xhs-20261029-r1",
+  "base_image_id": "sha256:2891fe3d127cc48951b710d5cf44670c778bb9f181ddd8a0539838d49d3ca1b1",
+  "base_image": "bettafish:base-remove-xhs-20261029-r1",
+  "candidate_image": "bettafish:candidate-remove-xhs-20261029-r1",
+  "candidate_image_id": "sha256:29344220765830df244cc7549cb2c3f78049973128fa1da65cc1ce2722c1935e",
+  "files": [
+    {
+      "path": "CampusPulse/agents/sources_quality.py",
+      "candidate_sha256": "e06d9c1e679b9bb0f991964f6898aef2f0f4bdaff3421c0451a91cbe2ac44159",
+      "expected_before": "6bd55b09acdca0cc2a25412f13c308b5674c0d3427132a34340619f3dcf9a55b",
+      "before_sha256": "6bd55b09acdca0cc2a25412f13c308b5674c0d3427132a34340619f3dcf9a55b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/blueprint.py",
+      "candidate_sha256": "47a855ecfe4fa62cd6927a73bccb9ec4b2c6de944acaf6546a7d0ead808c2488",
+      "expected_before": "900f19f43872536a573589a6fc30a8ace4c24fa39ba7449871f6c6c214163005",
+      "before_sha256": "900f19f43872536a573589a6fc30a8ace4c24fa39ba7449871f6c6c214163005",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/campus.py",
+      "candidate_sha256": "9da60213a93a5ee2c34cce05e8976c9adfcf2f1ee186c1797ba284b3d78eb851",
+      "expected_before": "dc461108ec2e2b9851619290c5122f1ffd8cdcf7ea24c30fb1c30c88d581056a",
+      "before_sha256": "dc461108ec2e2b9851619290c5122f1ffd8cdcf7ea24c30fb1c30c88d581056a",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/collectors.py",
+      "candidate_sha256": "03312de5b5a14641a0d97887ab33add0498293a13b9102e861b8304e1e2f3e7b",
+      "expected_before": "3a2ef93e526247ec937a535e8e2e7b454ac8328ce6a92e89edc87605f3f60935",
+      "before_sha256": "3a2ef93e526247ec937a535e8e2e7b454ac8328ce6a92e89edc87605f3f60935",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/config.py",
+      "candidate_sha256": "985e31d2088ae1bba54d90e335841d9f0ed70620f1d17ba612b7c05dbb3eb272",
+      "expected_before": "742019a13ceacebdc137d3f931bde8ce5df89a740976e765bacbe06e8a273232",
+      "before_sha256": "742019a13ceacebdc137d3f931bde8ce5df89a740976e765bacbe06e8a273232",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/observatory.py",
+      "candidate_sha256": "84d96de233be516c37716ff01a14d786ca8d584b7065cb35d2c12394dd746fa6",
+      "expected_before": "b99438a924a189d97da2d057a4ab0bbe8d95b56fe5f1a3f37a37d9b9763e13bb",
+      "before_sha256": "b99438a924a189d97da2d057a4ab0bbe8d95b56fe5f1a3f37a37d9b9763e13bb",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/pipeline.py",
+      "candidate_sha256": "b1dd92002288a1fb664347a54a0ffc7028475164796eabfeb1dc122074122df0",
+      "expected_before": "d3f395760d29ff1ff5d143938868f145fe5357ea173b2be90f4e5b28deda2c44",
+      "before_sha256": "d3f395760d29ff1ff5d143938868f145fe5357ea173b2be90f4e5b28deda2c44",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/post_identity.py",
+      "candidate_sha256": "3fad7a701e7ae41109d163cb5b746ce8bf94bce1653cfdb2e54f7cd986379037",
+      "expected_before": "e1aac352ad60da44f0089b93b6476a8ef2cae056d41bf7336139950ac4402864",
+      "before_sha256": "e1aac352ad60da44f0089b93b6476a8ef2cae056d41bf7336139950ac4402864",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/revision.py",
+      "candidate_sha256": "f58068c3b5dea9cd52be94f311c9e5b5062383bd64fbe434db16484fab629f10",
+      "expected_before": "266459a5bba16dbe94639020f034ce10654038e8e58083d06c6e2468348c72b1",
+      "before_sha256": "266459a5bba16dbe94639020f034ce10654038e8e58083d06c6e2468348c72b1",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/search.py",
+      "candidate_sha256": "39623abb7e0e5d33dce30a99ef0c9e8dfa54c6df26c0c9a6a5ee1b01cea06025",
+      "expected_before": "e041c76fbbab20467bed079a5dda74099b304033dc2250572e6fbe5e2fa109ed",
+      "before_sha256": "e041c76fbbab20467bed079a5dda74099b304033dc2250572e6fbe5e2fa109ed",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/sources/campus_social.py",
+      "candidate_sha256": "ef56b109bcfa5c107977dff1532e959e3f27456245cb6deb0ff063a5e621b9eb",
+      "expected_before": "4ae8485adef3076b8df58cb4672ed22a32e8baac58fc8965266ef2528b411556",
+      "before_sha256": "4ae8485adef3076b8df58cb4672ed22a32e8baac58fc8965266ef2528b411556",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/sources/xiaohongshu_hot.py",
+      "candidate_sha256": null,
+      "expected_before": "3f93a835edc9d6f495f63c6dd92a64f3e9822217d514096c33d4e7dbda28fb0b",
+      "before_sha256": "3f93a835edc9d6f495f63c6dd92a64f3e9822217d514096c33d4e7dbda28fb0b",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/storage.py",
+      "candidate_sha256": "18c140d902413f6dbfab31b6fcfdba06b5a33740e333f17cbae81c92d13a52fd",
+      "expected_before": "b8b6ef5d2f312cfa172c22b7461454c02b479f0ef23f5a3a8d3d59aae818262a",
+      "before_sha256": "b8b6ef5d2f312cfa172c22b7461454c02b479f0ef23f5a3a8d3d59aae818262a",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/telemetry.py",
+      "candidate_sha256": "df1926a4f3f14227bc76c1177a3bbc31eb76eea79577611c56f3db68d9de25cd",
+      "expected_before": "5a9e655e452bc8e8041fbe00ce0f3ee16d28ff9985540691f0abd8dd26d4dbb3",
+      "before_sha256": "5a9e655e452bc8e8041fbe00ce0f3ee16d28ff9985540691f0abd8dd26d4dbb3",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/templates/pulse.html",
+      "candidate_sha256": "6e178b014a6f6f93a04739218219ec1796394dbcc25ca4f8189ef86a43bfa4da",
+      "expected_before": "e0ce9bd46905cb901ec761e67a3ab498d357179720c4fcee43bac10bfcb50f55",
+      "before_sha256": "e0ce9bd46905cb901ec761e67a3ab498d357179720c4fcee43bac10bfcb50f55",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/xhs_browser_import.py",
+      "candidate_sha256": null,
+      "expected_before": "b20ac556cd2242e9bfbabdf8cec9152dd836f051ccc5dcfeba72ea0b540ae565",
+      "before_sha256": "b20ac556cd2242e9bfbabdf8cec9152dd836f051ccc5dcfeba72ea0b540ae565",
+      "host_existed": true
+    },
+    {
+      "path": "InsightEngine/prompts/prompts.py",
+      "candidate_sha256": "10dbda2206aeff5c1ae9375b2a238b7f0c6cd4ae99c70a9542fa018e4f674d5e",
+      "expected_before": "efc6e420d60f2e1a404381e31110d8bdfb661ebcf40bf31ec3563997eac8771b",
+      "before_sha256": "efc6e420d60f2e1a404381e31110d8bdfb661ebcf40bf31ec3563997eac8771b",
+      "host_existed": false
+    },
+    {
+      "path": "InsightEngine/tools/search.py",
+      "candidate_sha256": "07e936e8be8ea07645f14a1295e0ac21b20f3ef2cb5500d0ac027b936b59f078",
+      "expected_before": "2111e43c50c0990a4cda4429b02c2f61e51e0492c3ecb650674dbc337d4d2cf3",
+      "before_sha256": "2111e43c50c0990a4cda4429b02c2f61e51e0492c3ecb650674dbc337d4d2cf3",
+      "host_existed": false
+    },
+    {
+      "path": "MindSpider/DeepSentimentCrawling/keyword_manager.py",
+      "candidate_sha256": "5baae5c3c772e1f15d81281fee64e01c8611fb0b667dfeb4650aaa5b4ee6f2b7",
+      "expected_before": "76108f9d8cbbe6800cf8c40f2f0ad2d57ee7ccc0e016310cd5894f079bcb8055",
+      "before_sha256": "76108f9d8cbbe6800cf8c40f2f0ad2d57ee7ccc0e016310cd5894f079bcb8055",
+      "host_existed": false
+    },
+    {
+      "path": "MindSpider/DeepSentimentCrawling/main.py",
+      "candidate_sha256": "c86b9ee828df24180dd1c8a4dfff42cd9ec69b7a6bafa8463b0551fd3e672da7",
+      "expected_before": "460f0b5093b71b5efdd170d668f5e522c16d14fe6cd3889ee6dc15e2573c373a",
+      "before_sha256": "460f0b5093b71b5efdd170d668f5e522c16d14fe6cd3889ee6dc15e2573c373a",
+      "host_existed": false
+    },
+    {
+      "path": "MindSpider/DeepSentimentCrawling/platform_crawler.py",
+      "candidate_sha256": "49e429b1f2edc6691e84427ef010e408be729bf6862c2a2d5d60635b80479b1a",
+      "expected_before": "461d3927434b4d0f353c10d79aca04e688d12c357d82d6ff1a394ce2ec88349a",
+      "before_sha256": "461d3927434b4d0f353c10d79aca04e688d12c357d82d6ff1a394ce2ec88349a",
+      "host_existed": false
+    },
+    {
+      "path": "SingleEngineApp/media_engine_streamlit_app.py",
+      "candidate_sha256": "7700c04d8fcb50aead05a3e376a4a40ef69641ff7127864799b1d3c0f5c17356",
+      "expected_before": "af73cb90aeb02c103d853d714e06ef9614fdafc122dce9f5380511f6e8da54d6",
+      "before_sha256": "af73cb90aeb02c103d853d714e06ef9614fdafc122dce9f5380511f6e8da54d6",
+      "host_existed": true
+    },
+    {
+      "path": "app.py",
+      "candidate_sha256": "a0e98b44d3d96df773085bbef7795b4bf1d425a13b2a4c7415396687485ad653",
+      "expected_before": "683a3fa5ee7562006b08075505f9efcc0f55ece39df6e3bede21fa8ab06f1ff3",
+      "before_sha256": "683a3fa5ee7562006b08075505f9efcc0f55ece39df6e3bede21fa8ab06f1ff3",
+      "host_existed": true
+    },
+    {
+      "path": "static/css/campus-play.css",
+      "candidate_sha256": "6b4296032cc3db15200ff8f4825419cff998551973afb94648e864203c3cc3b5",
+      "expected_before": "dfb8d570cee0a73ecb828f632b0ba409f8df9ccefa083664d5f2fb84a9ed7911",
+      "before_sha256": "dfb8d570cee0a73ecb828f632b0ba409f8df9ccefa083664d5f2fb84a9ed7911",
+      "host_existed": true
+    },
+    {
+      "path": "static/downloads/ecust-xhs-browser-helper.zip",
+      "candidate_sha256": null,
+      "expected_before": "287c1719bed9de1e7dec6c5c873d13db74b01ee3d2638fb59f813273eed675ad",
+      "before_sha256": "287c1719bed9de1e7dec6c5c873d13db74b01ee3d2638fb59f813273eed675ad",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "e4cca8f9f98b501969854511f9e323d8153255fd948f75722e4cf66bd76faf2a",
+      "expected_before": "104cf1f00d31fe5b6b9a176fecce16a16944bc28df75876a25676b5cb455d5c3",
+      "before_sha256": "104cf1f00d31fe5b6b9a176fecce16a16944bc28df75876a25676b5cb455d5c3",
+      "host_existed": true
+    },
+    {
+      "path": "static/js/campus-xhs-sync.js",
+      "candidate_sha256": null,
+      "expected_before": "4062ab165e64f5c70353eec0ee1a7451866a7705f4dc5d7f887fdca421048f66",
+      "before_sha256": "4062ab165e64f5c70353eec0ee1a7451866a7705f4dc5d7f887fdca421048f66",
+      "host_existed": true
+    },
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "fd5ead0da18fc4ac85074134d93ec2468e4088f62a86e9ddf128cf30eb3287c6",
+      "expected_before": "d7c318284d5c3060f6d52a2244a63a865907a974f636164e7e8291b98bdef681",
+      "before_sha256": "d7c318284d5c3060f6d52a2244a63a865907a974f636164e7e8291b98bdef681",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_collection_recovery.py",
+      "candidate_sha256": "c3eceebc16726cebb229a5b2dd4ab87d0ba098462bd2743fbfd2c1333aba39d9",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_report_contract.py",
+      "candidate_sha256": "11dc0c9c5fa265711d82454439f9f8b55fee0a5a7135384f23ca73d09db87adb",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "b11d4a4edd1e12e1416756fd1a613e3a0b946cdb951e908dbf75ea897086bcff",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_trends_search_expansion.py",
+      "candidate_sha256": "c4dc2b6788d0a164558e0e42219edf5cd2ff5e68bb3a3a70fc8081d13459f9ee",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_xhs_browser_import.py",
+      "candidate_sha256": null,
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_xhs_school_discovery.py",
+      "candidate_sha256": null,
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_xiaohongshu_hotlist.py",
+      "candidate_sha256": null,
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/source_policy.py",
+      "candidate_sha256": "db37e8ae4e61337c7fb9696b8a2fc335d3c1898d69574e17de1e455a304b02f9",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_source_retirement.py",
+      "candidate_sha256": "068183d8a3651e2c5b271aa553ba74164a1cfe1d504fd33edf2d294c7f5c607b",
+      "expected_before": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "companions": {
+    "collection-api": {
+      "image_id": "sha256:2891fe3d127cc48951b710d5cf44670c778bb9f181ddd8a0539838d49d3ca1b1",
+      "base_image": "bettafish:base-remove-xhs-20261029-r1-collection-api"
+    },
+    "collection-worker": {
+      "image_id": "sha256:2891fe3d127cc48951b710d5cf44670c778bb9f181ddd8a0539838d49d3ca1b1",
+      "base_image": "bettafish:base-remove-xhs-20261029-r1-collection-worker"
+    }
+  },
+  "activated": false
+}

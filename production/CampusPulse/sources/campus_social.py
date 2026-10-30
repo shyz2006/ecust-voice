@@ -5,8 +5,12 @@ import time
 from urllib.parse import urlsplit
 from .. import search, storage
 
-PLATFORMS = {'xiaohongshu-school': ('www.xiaohongshu.com', r'^/(?:explore|discovery/item)/[a-zA-Z0-9]+'),
-             'douyin-school': ('www.douyin.com', r'^/(?:video|note)/[0-9]+')}
+PLATFORMS = {'douyin-school': ('www.douyin.com', r'^/(?:video|note)/[0-9]+')}
+CACHE_SECONDS = 21600
+
+def school_context(text):
+    if not re.search(r'华东理工|华理|ECUST', text, re.I):return False
+    return bool(re.search(r'华东理工|ECUST', text, re.I) or not re.search(r'华北理工|东华理工|华南理工|华中科技', text))
 
 
 def parse(source, rows):
@@ -22,11 +26,9 @@ def parse(source, rows):
             continue
         if url.scheme=='http':link=url._replace(scheme='https').geturl()
         content = str(row.get('title') or '') + '｜' + str(row.get('snippet') or '')
-        if not re.search(r'华东理工|华理|ECUST', content, re.I):
+        if not school_context(content):
             continue
-        if not re.search(r'华东理工|ECUST', content, re.I) and re.search(r'华北理工|东华理工|华南理工|华中科技',content):
-            continue
-        identity = url.path.rstrip('/').rsplit('/',1)[-1] if source=='xiaohongshu-school' else url.hostname.removeprefix('www.') + url.path
+        identity = url.hostname.removeprefix('www.') + url.path
         if identity in seen:
             continue
         seen.add(identity)
@@ -38,11 +40,6 @@ def parse(source, rows):
 
 
 def search_plan(source):
-    if source=='xiaohongshu-school':
-        return [('华东理工大学','xiaohongshu.com',50),
-                ('华理 奉贤','xiaohongshu.com',50),
-                ('华理 徐汇','xiaohongshu.com',50),
-                ('华东理工大学 小红书 笔记',None,50)]
     return [('华东理工大学 华理','douyin.com',20),('华东理工大学 华理 抖音',None,20)]
 
 
@@ -51,7 +48,7 @@ def retrieve(source):
     for query,include,count in search_plan(source):
         try:
             rows=search.web_search(query,count=count,freshness='noLimit',include=include,
-                                   plain=source=='xiaohongshu-school')
+                                   plain=False)
             found=parse(source,rows)
         except search.SearchUnavailable:
             failed=True;break
@@ -59,13 +56,13 @@ def retrieve(source):
             failed=True;continue
         for item in found:
             path=urlsplit(item['url']).path.rstrip('/')
-            identity=path.rsplit('/',1)[-1] if source=='xiaohongshu-school' else path
+            identity=path
             if identity not in merged:
                 item['extra']['search_queries']=[query];merged[identity]=item
             elif query not in merged[identity]['extra']['search_queries']:
                 merged[identity]['extra']['search_queries'].append(query)
         # The second Douyin query remains a fallback, not a second scheduled call.
-        if source!='xiaohongshu-school' and merged:break
+        if merged:break
         if len(merged)>=100:break
     found=list(merged.values())[:100]
     for i,item in enumerate(found):item['rank']=i+1
@@ -77,13 +74,13 @@ def retrieve(source):
 def collect():
     items, errors = [], {}
     for source, (domain, _) in PLATFORMS.items():
-        key = ('social-search:v2:' if source=='xiaohongshu-school' else 'social-search:v1:')+source
+        key = 'social-search:v1:'+source
         blob = storage.kv_get(key)
         try:
             cached = json.loads(blob) if blob else None
             if not isinstance(cached,dict) or not isinstance(cached.get('ts'),(int,float)) or not isinstance(cached.get('items'),list):cached=None
         except (ValueError,TypeError):cached=None
-        if cached and time.time()-cached['ts'] < 21600:
+        if cached and time.time()-cached['ts'] < CACHE_SECONDS:
             items.extend(cached['items'])
             if cached.get('error'):
                 errors[source] = cached['error']

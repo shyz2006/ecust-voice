@@ -74,7 +74,7 @@ class MediaCrawlerDB:
         初始化客户端。
         """
         pass
-        
+
     def _execute_query(self, query: str, params: tuple = None) -> List[Dict[str, Any]]:
         try:
             # 获取或创建event loop
@@ -86,10 +86,10 @@ class MediaCrawlerDB:
             except RuntimeError:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-            
+
             # 直接运行协程
             return loop.run_until_complete(fetch_all(query, params))
-        
+
         except Exception as e:
             logger.exception(f"数据库查询时发生错误: {e}")
             return []
@@ -144,7 +144,7 @@ class MediaCrawlerDB:
         """
         params_for_log = {'time_period': time_period, 'limit': limit}
         logger.info(f"--- TOOL: 查找热点内容 (params: {params_for_log}) ---")
-        
+
         now = datetime.now()
         start_time = now - timedelta(days={'24h': 1, 'week': 7}.get(time_period, 365))
 
@@ -153,7 +153,7 @@ class MediaCrawlerDB:
             'bilibili_video': f"(COALESCE(CAST(liked_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(video_comment AS UNSIGNED), 0) * {self.W_COMMENT} + COALESCE(CAST(video_share_count AS UNSIGNED), 0) * {self.W_SHARE} + COALESCE(CAST(video_favorite_count AS UNSIGNED), 0) * {self.W_SHARE} + COALESCE(CAST(video_coin_count AS UNSIGNED), 0) * {self.W_SHARE} + COALESCE(CAST(video_danmaku AS UNSIGNED), 0) * {self.W_DANMAKU} + COALESCE(CAST(video_play_count AS DECIMAL(20,2)), 0) * {self.W_VIEW})",
             'douyin_aweme':   f"(COALESCE(CAST(liked_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(comment_count AS UNSIGNED), 0) * {self.W_COMMENT} + COALESCE(CAST(share_count AS UNSIGNED), 0) * {self.W_SHARE} + COALESCE(CAST(collected_count AS UNSIGNED), 0) * {self.W_SHARE})",
             'weibo_note':     f"(COALESCE(CAST(liked_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(comments_count AS UNSIGNED), 0) * {self.W_COMMENT} + COALESCE(CAST(shared_count AS UNSIGNED), 0) * {self.W_SHARE})",
-            'xhs_note':       f"(COALESCE(CAST(liked_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(comment_count AS UNSIGNED), 0) * {self.W_COMMENT} + COALESCE(CAST(share_count AS UNSIGNED), 0) * {self.W_SHARE} + COALESCE(CAST(collected_count AS UNSIGNED), 0) * {self.W_SHARE})",
+
             'kuaishou_video': f"(COALESCE(CAST(liked_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(viewd_count AS DECIMAL(20,2)), 0) * {self.W_VIEW})",
             'zhihu_content':  f"(COALESCE(CAST(voteup_count AS UNSIGNED), 0) * {self.W_LIKE} + COALESCE(CAST(comment_count AS UNSIGNED), 0) * {self.W_COMMENT})",
         }
@@ -162,27 +162,26 @@ class MediaCrawlerDB:
         for table, formula in hotness_formulas.items():
             time_filter_sql, time_filter_param = "", None
             if table == 'weibo_note': time_filter_sql, time_filter_param = "`create_date_time` >= %s", start_time.strftime('%Y-%m-%d %H:%M:%S')
-            elif table in ['kuaishou_video', 'xhs_note', 'douyin_aweme']: time_col = 'time' if table == 'xhs_note' else 'create_time'; time_filter_sql, time_filter_param = f"`{time_col}` >= %s", str(int(start_time.timestamp() * 1000))
+            elif table in ['kuaishou_video', 'douyin_aweme']: time_col = 'create_time'; time_filter_sql, time_filter_param = f"`{time_col}` >= %s", str(int(start_time.timestamp() * 1000))
             elif table == 'zhihu_content': time_filter_sql, time_filter_param = "CAST(`created_time` AS UNSIGNED) >= %s", str(int(start_time.timestamp()))
             else: time_filter_sql, time_filter_param = "`create_time` >= %s", str(int(start_time.timestamp()))
 
-            content_type = 'note' if table in ['weibo_note', 'xhs_note'] else 'content' if table == 'zhihu_content' else 'video'
+            content_type = 'note' if table in ['weibo_note'] else 'content' if table == 'zhihu_content' else 'video'
             query_template = "SELECT '{platform}' as p, '{type}' as t, {title} as title, {author} as author, {url} as url, {ts} as ts, {formula} as hotness_score, source_keyword, '{tbl}' as tbl FROM `{tbl}` WHERE {time_filter}"
-            
+
             field_subs = {'platform': table.split('_')[0], 'type': content_type, 'title': 'title', 'author': 'nickname', 'url': 'video_url', 'ts': 'create_time', 'formula': formula, 'tbl': table, 'time_filter': time_filter_sql}
             if table == 'weibo_note': field_subs.update({'title': 'content', 'url': 'note_url', 'ts': 'create_date_time'})
-            elif table == 'xhs_note': field_subs.update({'ts': 'time', 'url': 'note_url'})
             elif table == 'zhihu_content': field_subs.update({'author': 'user_nickname', 'url': 'content_url', 'ts': 'created_time'})
             elif table == 'douyin_aweme': field_subs.update({'url': 'aweme_url'})
 
             all_queries.append(query_template.format(**field_subs))
             params.append(time_filter_param)
-        
+
         final_query = f"({' ) UNION ALL ( '.join(all_queries)}) ORDER BY hotness_score DESC LIMIT %s"
         raw_results = self._execute_query(final_query, tuple(params) + (limit,))
 
         formatted_results = [QueryResult(platform=r['p'], content_type=r['t'], title_or_content=r['title'], author_nickname=r.get('author'), url=r['url'], publish_time=self._to_datetime(r['ts']), engagement=self._extract_engagement(r), hotness_score=r.get('hotness_score', 0.0), source_keyword=r.get('source_keyword'), source_table=r['tbl']) for r in raw_results]
-        return DBResponse("search_hot_content", params_for_log, results=formatted_results, results_count=len(formatted_results))    
+        return DBResponse("search_hot_content", params_for_log, results=formatted_results, results_count=len(formatted_results))
 
     def _wrap_query_field_with_dialect(self, field: str) -> str:
         """根据数据库方言包装SQL查询"""
@@ -203,10 +202,10 @@ class MediaCrawlerDB:
         """
         params_for_log = {'topic': topic, 'limit_per_table': limit_per_table}
         logger.info(f"--- TOOL: 全局话题搜索 (params: {params_for_log}) ---")
-        
+
         search_term, all_results = f"%{topic}%", []
-        search_configs = { 'bilibili_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'bilibili_video_comment': {'fields': ['content'], 'type': 'comment'}, 'douyin_aweme': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'douyin_aweme_comment': {'fields': ['content'], 'type': 'comment'}, 'kuaishou_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'kuaishou_video_comment': {'fields': ['content'], 'type': 'comment'}, 'weibo_note': {'fields': ['content', 'source_keyword'], 'type': 'note'}, 'weibo_note_comment': {'fields': ['content'], 'type': 'comment'}, 'xhs_note': {'fields': ['title', 'desc', 'tag_list', 'source_keyword'], 'type': 'note'}, 'xhs_note_comment': {'fields': ['content'], 'type': 'comment'}, 'zhihu_content': {'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content'}, 'zhihu_comment': {'fields': ['content'], 'type': 'comment'}, 'tieba_note': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'note'}, 'tieba_comment': {'fields': ['content'], 'type': 'comment'}, 'daily_news': {'fields': ['title'], 'type': 'news'}, }
-        
+        search_configs = { 'bilibili_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'bilibili_video_comment': {'fields': ['content'], 'type': 'comment'}, 'douyin_aweme': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'douyin_aweme_comment': {'fields': ['content'], 'type': 'comment'}, 'kuaishou_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video'}, 'kuaishou_video_comment': {'fields': ['content'], 'type': 'comment'}, 'weibo_note': {'fields': ['content', 'source_keyword'], 'type': 'note'}, 'weibo_note_comment': {'fields': ['content'], 'type': 'comment'},   'zhihu_content': {'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content'}, 'zhihu_comment': {'fields': ['content'], 'type': 'comment'}, 'tieba_note': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'note'}, 'tieba_comment': {'fields': ['content'], 'type': 'comment'}, 'daily_news': {'fields': ['title'], 'type': 'news'}, }
+
         for table, config in search_configs.items():
             param_dict = {}
             where_clauses = []
@@ -248,17 +247,17 @@ class MediaCrawlerDB:
         """
         params_for_log = {'topic': topic, 'start_date': start_date, 'end_date': end_date, 'limit_per_table': limit_per_table}
         logger.info(f"--- TOOL: 按日期搜索话题 (params: {params_for_log}) ---")
-        
+
         try:
             start_dt, end_dt = datetime.strptime(start_date, '%Y-%m-%d'), datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
         except ValueError:
             return DBResponse("search_topic_by_date", params_for_log, error_message="日期格式错误，请使用 'YYYY-MM-DD' 格式。")
-        
+
         search_term, all_results = f"%{topic}%", []
         search_configs = {
             'bilibili_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'sec'}, 'douyin_aweme': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'},
             'kuaishou_video': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'}, 'weibo_note': {'fields': ['content', 'source_keyword'], 'type': 'note', 'time_col': 'create_date_time', 'time_type': 'str'},
-            'xhs_note': {'fields': ['title', 'desc', 'tag_list', 'source_keyword'], 'type': 'note', 'time_col': 'time', 'time_type': 'ms'}, 'zhihu_content': {'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content', 'time_col': 'created_time', 'time_type': 'sec_str'},
+             'zhihu_content': {'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content', 'time_col': 'created_time', 'time_type': 'sec_str'},
             'tieba_note': {'fields': ['title', 'desc', 'source_keyword'], 'type': 'note', 'time_col': 'publish_time', 'time_type': 'str'}, 'daily_news': {'fields': ['title'], 'type': 'news', 'time_col': 'crawl_date', 'time_type': 'date_str'},
         }
 
@@ -287,7 +286,7 @@ class MediaCrawlerDB:
                     source_table=table
                 ))
         return DBResponse("search_topic_by_date", params_for_log, results=all_results, results_count=len(all_results))
-        
+
     def get_comments_for_topic(self, topic: str, limit: int = 500) -> DBResponse:
         """
         【工具】获取话题评论: 专门搜索并返回所有平台中与特定话题相关的公众评论数据。
@@ -301,10 +300,10 @@ class MediaCrawlerDB:
         """
         params_for_log = {'topic': topic, 'limit': limit}
         logger.info(f"--- TOOL: 获取话题评论 (params: {params_for_log}) ---")
-        
+
         search_term = f"%{topic}%"
-        comment_tables = ['bilibili_video_comment', 'douyin_aweme_comment', 'kuaishou_video_comment', 'weibo_note_comment', 'xhs_note_comment', 'zhihu_comment', 'tieba_comment']
-        
+        comment_tables = ['bilibili_video_comment', 'douyin_aweme_comment', 'kuaishou_video_comment', 'weibo_note_comment', 'zhihu_comment', 'tieba_comment']
+
         all_queries = []
         for table in comment_tables:
             cols = self._get_table_columns(table)
@@ -312,7 +311,7 @@ class MediaCrawlerDB:
             like_col = 'comment_like_count' if 'comment_like_count' in cols else 'like_count' if 'like_count' in cols else None
             time_col = 'publish_time' if 'publish_time' in cols else 'create_date_time' if 'create_date_time' in cols else 'create_time'
             like_select = f"`{like_col}` as likes" if like_col else "'0' as likes"
-            
+
             query = (f"SELECT '{table.split('_')[0]}' as platform, `content`, `{author_col}` as author, "
                      f"`{time_col}` as ts, {like_select}, '{table}' as source_table "
                      f"FROM `{table}` WHERE `content` LIKE %s")
@@ -321,13 +320,13 @@ class MediaCrawlerDB:
         final_query = f"({' ) UNION ALL ( '.join(all_queries)}) ORDER BY ts DESC LIMIT %s"
         params = (search_term,) * len(comment_tables) + (limit,)
         raw_results = self._execute_query(final_query, params)
-        
+
         formatted = [QueryResult(platform=r['platform'], content_type='comment', title_or_content=r['content'], author_nickname=r['author'], publish_time=self._to_datetime(r['ts']), engagement={'likes': int(r['likes']) if str(r['likes']).isdigit() else 0}, source_table=r['source_table']) for r in raw_results]
         return DBResponse("get_comments_for_topic", params_for_log, results=formatted, results_count=len(formatted))
 
     def search_topic_on_platform(
         self,
-        platform: Literal['bilibili', 'weibo', 'douyin', 'kuaishou', 'xhs', 'zhihu', 'tieba'],
+        platform: Literal['bilibili', 'weibo', 'douyin', 'kuaishou', 'zhihu', 'tieba'],
         topic: str,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
@@ -349,8 +348,8 @@ class MediaCrawlerDB:
         params_for_log = {'platform': platform, 'topic': topic, 'start_date': start_date, 'end_date': end_date, 'limit': limit}
         logger.info(f"--- TOOL: 平台定向搜索 (params: {params_for_log}) ---")
 
-        all_configs = { 'bilibili': [{'table': 'bilibili_video', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'sec'}, {'table': 'bilibili_video_comment', 'fields': ['content'], 'type': 'comment'}], 'douyin': [{'table': 'douyin_aweme', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'}, {'table': 'douyin_aweme_comment', 'fields': ['content'], 'type': 'comment'}], 'kuaishou': [{'table': 'kuaishou_video', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'}, {'table': 'kuaishou_video_comment', 'fields': ['content'], 'type': 'comment'}], 'weibo': [{'table': 'weibo_note', 'fields': ['content', 'source_keyword'], 'type': 'note', 'time_col': 'create_date_time', 'time_type': 'str'}, {'table': 'weibo_note_comment', 'fields': ['content'], 'type': 'comment'}], 'xhs': [{'table': 'xhs_note', 'fields': ['title', 'desc', 'tag_list', 'source_keyword'], 'type': 'note', 'time_col': 'time', 'time_type': 'ms'}, {'table': 'xhs_note_comment', 'fields': ['content'], 'type': 'comment'}], 'zhihu': [{'table': 'zhihu_content', 'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content', 'time_col': 'created_time', 'time_type': 'sec_str'}, {'table': 'zhihu_comment', 'fields': ['content'], 'type': 'comment'}], 'tieba': [{'table': 'tieba_note', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'note', 'time_col': 'publish_time', 'time_type': 'str'}, {'table': 'tieba_comment', 'fields': ['content'], 'type': 'comment'}] }
-        
+        all_configs = { 'bilibili': [{'table': 'bilibili_video', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'sec'}, {'table': 'bilibili_video_comment', 'fields': ['content'], 'type': 'comment'}], 'douyin': [{'table': 'douyin_aweme', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'}, {'table': 'douyin_aweme_comment', 'fields': ['content'], 'type': 'comment'}], 'kuaishou': [{'table': 'kuaishou_video', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'video', 'time_col': 'create_time', 'time_type': 'ms'}, {'table': 'kuaishou_video_comment', 'fields': ['content'], 'type': 'comment'}], 'weibo': [{'table': 'weibo_note', 'fields': ['content', 'source_keyword'], 'type': 'note', 'time_col': 'create_date_time', 'time_type': 'str'}, {'table': 'weibo_note_comment', 'fields': ['content'], 'type': 'comment'}],  'zhihu': [{'table': 'zhihu_content', 'fields': ['title', 'desc', 'content_text', 'source_keyword'], 'type': 'content', 'time_col': 'created_time', 'time_type': 'sec_str'}, {'table': 'zhihu_comment', 'fields': ['content'], 'type': 'comment'}], 'tieba': [{'table': 'tieba_note', 'fields': ['title', 'desc', 'source_keyword'], 'type': 'note', 'time_col': 'publish_time', 'time_type': 'str'}, {'table': 'tieba_comment', 'fields': ['content'], 'type': 'comment'}] }
+
         if platform not in all_configs:
             return DBResponse("search_topic_on_platform", params_for_log, error_message=f"不支持的平台: {platform}")
 
@@ -378,10 +377,10 @@ class MediaCrawlerDB:
                 elif time_type == 'ms': t_params = (int(start_dt.timestamp() * 1000), int(end_dt.timestamp() * 1000))
                 elif time_type in ['str', 'date_str']: t_params = (start_dt.strftime('%Y-%m-%d'), end_dt.strftime('%Y-%m-%d'))
                 else: t_params = (str(int(start_dt.timestamp())), str(int(end_dt.timestamp())))
-                
+
                 t_clause = f"`{time_col}` >= %s AND `{time_col}` < %s"
                 if table == 'zhihu_content': t_clause = f"CAST(`{time_col}` AS UNSIGNED) >= %s AND CAST(`{time_col}` AS UNSIGNED) < %s"
-                
+
                 query += f" AND ({t_clause})"
                 params.extend(t_params)
 
@@ -393,7 +392,7 @@ class MediaCrawlerDB:
                 content = (row.get('title') or row.get('content') or row.get('desc') or row.get('content_text', ''))
                 time_key = config.get('time_col') and row.get(config.get('time_col'))
                 all_results.append(QueryResult(platform=platform, content_type=config['type'], title_or_content=content if content else '', author_nickname=row.get('nickname') or row.get('user_nickname'), url=row.get('video_url') or row.get('note_url') or row.get('content_url') or row.get('url') or row.get('aweme_url'), publish_time=self._to_datetime(time_key), engagement=self._extract_engagement(row), source_keyword=row.get('source_keyword'), source_table=table))
-        
+
         return DBResponse("search_topic_on_platform", params_for_log, results=all_results, results_count=len(all_results))
 
 # --- 3. 测试与使用示例 ---
@@ -406,7 +405,7 @@ def print_response_summary(response: DBResponse):
     params_str = ", ".join(f"{k}='{v}'" for k, v in response.parameters.items())
     logger.info(f"查询: 工具='{response.tool_name}', 参数=[{params_str}]")
     logger.info(f"找到 {response.results_count} 条相关记录。")
-    
+
     # 统一为一个消息输出
     output_lines = []
     output_lines.append("==== 查询结果预览（最多前5条） ====")
@@ -431,11 +430,11 @@ def print_response_summary(response: DBResponse):
     logger.info('\n'.join(output_lines))
 
 if __name__ == "__main__":
-    
+
     try:
         db_agent_tools = MediaCrawlerDB()
         logger.info("数据库工具初始化成功，开始执行测试场景...\n")
-        
+
         # 场景1: (新) 查找过去一周综合热度最高的内容 (不再需要sort_by)
         response1 = db_agent_tools.search_hot_content(time_period='week', limit=5)
         print_response_summary(response1)

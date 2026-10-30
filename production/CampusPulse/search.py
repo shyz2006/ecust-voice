@@ -40,7 +40,7 @@ def _parse_web_search(payload: Dict) -> List[Dict]:
     return ((data.get("webPages") or {}).get("value")) or []
 
 
-def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain: bool = False, include: Optional[str] = None) -> List[Dict]:
+def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain: bool = False, include: Optional[str] = None, cache_max_age_seconds: Optional[int] = None) -> List[Dict]:
     if not settings.search_ready:
         raise SearchUnavailable("未配置 BOCHA_WEB_SEARCH_API_KEY")
     url = settings.bocha_base_url
@@ -56,7 +56,8 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain
         from utils import search_gateway as gateway
     except Exception:  # pragma: no cover - 独立运行 / 测试环境
         gateway = None
-    payload = gateway.cache_get(url, cache_query, freshness, count, False) if gateway else None
+    cache_options = {'max_age_seconds': cache_max_age_seconds} if cache_max_age_seconds is not None else {}
+    payload = gateway.cache_get(url, cache_query, freshness, count, False, **cache_options) if gateway else None
     if payload is None:
         scope = gateway.current_scope() if gateway else ""
         if gateway and not gateway.try_consume(scope):
@@ -89,6 +90,8 @@ def web_search(query: str, count: int = 8, freshness: str = "oneMonth", *, plain
     raw = _parse_ai_search(payload) or _parse_web_search(payload)
     results = []
     for page in raw[:count]:
+        from .source_policy import retired_url
+        if retired_url(page.get('url')):continue
         snippet = page.get("summary") or page.get("snippet") or ""
         results.append(
             {

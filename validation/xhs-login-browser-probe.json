@@ -1,0 +1,11 @@
+{
+  "chromium_available": true,
+  "http": 200,
+  "url_path": "/website-login/error",
+  "title": "安全限制",
+  "image_count": 1,
+  "canvas_count": 0,
+  "login_text_count": 0,
+  "screenshot_saved": true,
+  "visible_controls": []
+}

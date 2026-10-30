@@ -14,7 +14,7 @@ _A = re.compile(r"(\.gov\.cn|\.edu\.cn|people\.com\.cn|xinhuanet\.com|news\.cn|c
                 r"gmw\.cn|thepaper\.cn|china\.com\.cn|youth\.cn|chinadaily\.com\.cn|cnr\.cn|ce\.cn|jyb\.cn|"
                 r"bjnews\.com\.cn|caixin\.com|yicai\.com|cyol\.com|81\.cn|ecnu\.edu|ecust\.edu)$")
 _B = re.compile(r"(bilibili\.com|b23\.tv|weibo\.com|weibo\.cn|douyin\.com|zhihu\.com|tieba\.baidu\.com|"
-                r"xiaohongshu\.com|hy\.sns\.sohu\.com|kuaishou\.com|v\.qq\.com)$")
+                r"hy\.sns\.sohu\.com|kuaishou\.com|v\.qq\.com)$")
 _D = re.compile(r"(baike\.baidu\.com|baike\.sogou\.com|jikipedia\.com|wiki|baijiahao\.baidu\.com|mbd\.baidu\.com|"
                 r"163\.com|sohu\.com|toutiao\.com|sina\.cn|qq\.com|ifeng\.com|zol\.com\.cn|360doc\.com|"
                 r"jianshu\.com|csdn\.net|douban\.com|smzdm\.com|ximalaya\.com|xiaoheihe)$")

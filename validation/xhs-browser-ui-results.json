@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "fixture_only": true,
+  "real_user_capture_verified": false,
+  "collector_dedup_school_filter_hidden_filter_and_cap": true,
+  "account_state_not_exported": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "preview_import_and_reject": true
+    },
+    {
+      "viewport": "mobile",
+      "preview_import_and_reject": true
+    }
+  ]
+}
