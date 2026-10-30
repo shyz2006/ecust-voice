@@ -163,9 +163,21 @@ async function openOfficialNews(){
 }
 
 async function openCare(){const version=showDialog('心育关怀线索 · 原帖核查');try{const d=await api('/pulse/api/campus/crisis-posts?level=all');if(version!==state.modalVersion)return;$('detailBody').innerHTML='<p class="data-note">'+num(d.total)+' 条建议关怀，供人工结合原帖核查。</p>'+renderPosts(d.posts)+(d.filtered_posts?.length?'<h3 class="post-group-title">已过滤的日常表达 · '+num(d.filtered_total)+' 条</h3>'+renderPosts(d.filtered_posts):'');}catch(e){if(version===state.modalVersion)$('detailBody').innerHTML=errorState(e.message);}}
+const feedLoadedAt={hot:0,memes:0},feedPromises={};
+function requestFeed(kind){
+ if(!feedPromises[kind])feedPromises[kind]=api('/pulse/api/revision/feed/'+kind).then(data=>{
+  state[kind]=data;feedLoadedAt[kind]=Date.now();if(state.tab===kind)renderFeed(kind,data);return data;
+ }).finally(()=>{feedPromises[kind]=null;});
+ return feedPromises[kind];
+}
 async function loadFeed(kind,force=false){
- if(kind==='memes'||!state[kind]||force)state[kind]=await api('/pulse/api/revision/feed/'+kind);
- const d=state[kind],current=state.hotPlatform;
+ const cached=state[kind];if(cached)renderFeed(kind,cached);
+ if(cached&&!force&&Date.now()-feedLoadedAt[kind]<60000)return cached;
+ const pending=requestFeed(kind);if(cached){pending.catch(()=>{});return cached;}
+ return pending;
+}
+function renderFeed(kind,d){
+ const current=state.hotPlatform;
  if(kind==='memes'){renderMemes(d);return;}
  $('hotPlatforms').innerHTML=d.platforms.map(p=>'<button data-feed="hot" data-platform="'+esc(p)+'" aria-selected="'+(p===current)+'">'+esc(p)+'</button>').join('');
  const items=d.items.filter(x=>x.platform===current).slice(0,10);
@@ -238,7 +250,7 @@ async function pollTask(task){
  clearTimeout(state.poll);state.task=task;$('researchProgress').hidden=false;$('researchSubmit').disabled=true;
  try{const d=await api('/pulse/api/revision/research/'+encodeURIComponent(task));if(state.task!==task)return;
   const names={query:'查询取证',media:'媒体检索',insight:'公众讨论分析'},labels={idle:'准备中',queued:'排队中',running:'进行中',completed:'已完成',failed:'未完成'};
-  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='awaiting_report'?'研究材料已齐备，等待生成报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.message?'<p class="muted">'+esc(d.message)+'</p>':'')+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+((d.status==='awaiting_report'||d.can_resume_report)?'<p><button data-resume-report="'+esc(task)+'">继续生成报告 ↗</button></p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
+  $('researchProgress').innerHTML='<strong>'+esc(d.status==='reporting'?'资料已汇集，正在生成事件报告':d.status==='awaiting_report'?'研究材料已齐备，等待生成报告':d.status==='completed'?'报告已生成':d.status==='failed'?'研究未完成':'正在开展事件研究')+'</strong><div class="engine-status">'+Object.entries(d.engines).map(([e,s])=>'<span>'+esc(names[e]||e)+' · '+esc(labels[s]||s)+'</span>').join('')+'</div>'+(d.report_detail?.total_chapters?'<p class="muted">已核验 '+num(d.report_detail.completed_chapters)+' / '+num(d.report_detail.total_chapters)+' 章</p>':'')+(d.message?'<p class="muted">'+esc(d.message)+'</p>':'')+(d.error?'<p class="error">'+esc(d.error)+'</p>':'')+((d.status==='awaiting_report'||d.can_resume_report)?'<p><button data-resume-report="'+esc(task)+'">继续生成报告 ↗</button></p>':'')+(d.status==='completed'?'<p><button data-report="'+esc(task)+'">阅读报告 ↗</button></p>':'');
   if(['completed','failed'].includes(d.status)){$('researchForm').hidden=false;$('researchSubmit').disabled=false;state.lastSubmittedQuery=null;state.requestId=null;localStorage.removeItem('ecust-active-research-v2');if(d.status==='failed'&&activeBrief){$('researchBrief').hidden=false;showResearchStep(true);}else{activeBrief=null;showResearchStep(false);}updateResearchAction();await loadReports();}
   else state.poll=setTimeout(()=>pollTask(task),4000);
  }catch(e){$('researchProgress').innerHTML=errorState(e.message)+'<button data-resume="'+esc(task)+'">继续查看进度</button>';$('researchSubmit').disabled=false;}
@@ -342,7 +354,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.source)return openSource(b.dataset.source);
  if(b.dataset.method)return showMethod(b.dataset.method);
  if(b.dataset.feed){if(b.dataset.feed==='hot')state.hotPlatform=b.dataset.platform;return loadFeed(b.dataset.feed).catch(x=>notice(x.message));}
- if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;return activate(b.dataset.retry);}
+ if(b.dataset.retry){if(b.dataset.retry==='campus'||b.dataset.retry==='trends')state.overview=null;if(['hot','memes'].includes(b.dataset.retry)){state[b.dataset.retry]=null;feedLoadedAt[b.dataset.retry]=0;}return activate(b.dataset.retry);}
  if(b.dataset.report)return openReport(b.dataset.report);
  if(b.dataset.resumeReport){b.disabled=true;api('/pulse/api/revision/research/'+encodeURIComponent(b.dataset.resumeReport)+'/resume-report',{method:'POST',body:'{}'}).then(()=>{localStorage.setItem('ecust-active-research-v2',b.dataset.resumeReport);pollTask(b.dataset.resumeReport);loadReports();}).catch(error=>{b.disabled=false;notice(error.message);});return;}
  if(b.dataset.resume)return pollTask(b.dataset.resume);
@@ -360,4 +372,5 @@ if($('officialNewsButton'))$('officialNewsButton').onclick=()=>{loadOfficialNews
 $('practicePosts').onclick=async()=>{try{const data=await overview();openPosts({red:'1',from:data.generated_at-7*DAY},'红色育人观察 · 实践原帖');}catch(e){notice(e.message);}};$('carePosts').onclick=openCare;
 $('refreshReports').onclick=loadReports;$('refreshLedger').onclick=()=>loadLedger(true).catch(e=>notice(e.message));
 activate(location.hash.slice(1)||'campus');loadCare();try{const active=localStorage.getItem('ecust-active-research-v2');if(active)pollTask(active);}catch{}
+setTimeout(()=>{for(const kind of ['hot','memes'])if(state.tab!==kind)requestFeed(kind).catch(()=>{});},1200);
 })();

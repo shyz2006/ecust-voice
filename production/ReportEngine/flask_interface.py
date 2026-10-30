@@ -383,6 +383,8 @@ class ReportTask:
         self.event_history: deque = deque(maxlen=1000)
         self._event_lock = threading.Lock()
         self.last_event_id = 0
+        self._progress_events = []
+        self._progress_activity = None
 
     def update_status(self, status: str, progress: int = None, error_message: str = ""):
         """
@@ -421,6 +423,7 @@ class ReportTask:
             'query': self.query,
             'status': self.status,
             'progress': self.progress,
+            'report_detail': self.progress_detail(),
             'error_message': self.error_message,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
@@ -436,6 +439,13 @@ class ReportTask:
             'markdown_file_name': self.markdown_file_name,
             'markdown_file_path': self.markdown_file_relative_path or self.markdown_file_path
         }
+
+    def progress_detail(self):
+        from CampusPulse.report_progress import describe
+        with self._event_lock:
+            detail=describe(list(self._progress_events))
+            detail['last_activity_at']=self._progress_activity
+        return detail
 
     def publish_event(self, event_type: str, payload: Dict[str, Any]) -> None:
         """
@@ -457,6 +467,10 @@ class ReportTask:
             self.last_event_id += 1
             event['id'] = self.last_event_id
             self.event_history.append(event)
+            if event_type in ('stage','chapter_status','progress'):
+                self._progress_events.append(event)
+            if event_type in ('stage','chapter_status','progress','chapter_chunk'):
+                self._progress_activity=timestamp
         _broadcast_event(self.task_id, event)
 
     def history_since(self, last_event_id: Optional[int]) -> List[Dict[str, Any]]:

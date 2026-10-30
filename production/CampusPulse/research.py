@@ -81,6 +81,9 @@ def status(task_id, auto=True):
         else:
             result.update(status='awaiting_report',progress=0,message='研究材料已齐备，最终报告尚未启动，可继续生成报告。',can_resume_report=True)
     else:result['status']='queued' if any(v=='queued' for v in result['engines'].values()) else 'running'
+    if result.get('status')=='reporting' and report and hasattr(report,'progress_detail'):
+        detail=report.progress_detail()
+        result.update(report_detail=detail,message=detail['message'])
     with _resume_lock:
         recovery=dict(_resume_jobs.get(task_id) or {})
     if recovery.get('pending'):

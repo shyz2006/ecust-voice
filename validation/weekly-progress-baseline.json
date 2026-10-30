@@ -1,0 +1,71 @@
+{
+  "files": [
+    {
+      "path": "ReportEngine/evidence.py",
+      "live_sha256": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "host_sha256": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "matches": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "live_sha256": "ba9ed2bf70394ca6eea8eb4281c3e18b2b807cde958a14370c8e32fff16a86d6",
+      "host_sha256": "81d9b0875e530ca7539ccb6b4cff9ee79efdaf1f5974bc7fce64cc713831aebd",
+      "matches": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "live_sha256": "7634cd40ebb28d86c1baca8a32a7dfab0cd7480004a1cb7188138ac8ef452977",
+      "host_sha256": "8df46128332a90351ae18843400214bc04b9caca4c1a88f6c379bd4eaf202db2",
+      "matches": true
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "live_sha256": "076b95cf6e70c0ec6f56a3aa99d064c1edda45ee7f0b6eb872029ccf409bcecd",
+      "host_sha256": "726566b25b11afe78a44b68eb60efaf674e1d3d1d68e6f0497f31d5b5def3937",
+      "matches": true
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "live_sha256": "a42e8a6a920f3fe21f8bc2693dacb34eaeb55b43d15e4b625981320b396af3f5",
+      "host_sha256": "4997b3ceadcf3fb88511832681e079ac2b259d1dca197a1156327acc2cfa1c82",
+      "matches": false
+    },
+    {
+      "path": "templates/campus.html",
+      "live_sha256": null,
+      "host_sha256": null,
+      "matches": true
+    },
+    {
+      "path": "templates/campus_review.html",
+      "live_sha256": null,
+      "host_sha256": null,
+      "matches": true
+    },
+    {
+      "path": "CampusPulse/weekly_report.py",
+      "live_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "CampusPulse/report_progress.py",
+      "live_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "tests/test_weekly_progress.py",
+      "live_sha256": null,
+      "host_sha256": null
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "live_sha256": "522e9c60d211ff4b08695bc283e72d40cafd91e1afb936d9e7a4bc3d63a384c9",
+      "host_sha256": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471"
+    },
+    {
+      "path": "templates/index.html",
+      "live_sha256": "8f1f2778960f947f4b623aef687d314413ff6b5c823df88e8588ecf1119ee64e",
+      "host_sha256": "2ac078504c8ebae8a717771c000c393ea41aced0006a3b9d7ec522f47ca807a4"
+    }
+  ]
+}

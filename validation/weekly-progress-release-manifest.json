@@ -1,0 +1,101 @@
+{
+  "name": "weekly-progress-20261030-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/weekly-progress-20261030-r1",
+  "base_image_id": "sha256:e7d1b4968c6661e45eec6c565164fd7b49ec2a03bbac37e7650893bd7085f3ca",
+  "base_image": "bettafish:base-weekly-progress-20261030-r1",
+  "candidate_image": "bettafish:candidate-weekly-progress-20261030-r1",
+  "candidate_image_id": "sha256:b4d04a3900c5c7cdba081f0549633786954f69483d1242a09bc7c78729b10d22",
+  "files": [
+    {
+      "path": "ReportEngine/evidence.py",
+      "candidate_sha256": "64ef7fa76749e72416310c7a215b030ffc23a3c0af1a3ccda34c94c8edd3c20d",
+      "expected_before": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "host_expected": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "before_sha256": "777c799f796c54be12e0f3554a95392ff44cc80ac125cd0f9349782b73e95fcc",
+      "host_existed": true
+    },
+    {
+      "path": "ReportEngine/flask_interface.py",
+      "candidate_sha256": "8ccea7c330f1132e4c655c0fea04c06c11986b4ea21ba0a4ec462ea4a5c8dc3f",
+      "expected_before": "ba9ed2bf70394ca6eea8eb4281c3e18b2b807cde958a14370c8e32fff16a86d6",
+      "host_expected": "81d9b0875e530ca7539ccb6b4cff9ee79efdaf1f5974bc7fce64cc713831aebd",
+      "before_sha256": "81d9b0875e530ca7539ccb6b4cff9ee79efdaf1f5974bc7fce64cc713831aebd",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/research.py",
+      "candidate_sha256": "d0e49fff2a85e2094829b1784383b772ccb062c76b44c1e6b9a611811260da38",
+      "expected_before": "7634cd40ebb28d86c1baca8a32a7dfab0cd7480004a1cb7188138ac8ef452977",
+      "host_expected": "8df46128332a90351ae18843400214bc04b9caca4c1a88f6c379bd4eaf202db2",
+      "before_sha256": "8df46128332a90351ae18843400214bc04b9caca4c1a88f6c379bd4eaf202db2",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "4b8a39ad7da06f8f3100dca66b8cce302851f4a4db0e26ef1a5d381b11d6314e",
+      "expected_before": "076b95cf6e70c0ec6f56a3aa99d064c1edda45ee7f0b6eb872029ccf409bcecd",
+      "host_expected": "726566b25b11afe78a44b68eb60efaf674e1d3d1d68e6f0497f31d5b5def3937",
+      "before_sha256": "726566b25b11afe78a44b68eb60efaf674e1d3d1d68e6f0497f31d5b5def3937",
+      "host_existed": true
+    },
+    {
+      "path": "CampusPulse/weekly_report.py",
+      "candidate_sha256": "debe0bc493c4293f52bddb9b2b24cbebb0bbf1a368974ccd089b2681da4f65c6",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "CampusPulse/report_progress.py",
+      "candidate_sha256": "2888a0a33d90dccd27a682bb9d372fea376c500d969403410124fcf513325877",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    },
+    {
+      "path": "static/js/campus-review.js",
+      "candidate_sha256": "1d77d37990c3c3fdf84e448251b2137bdf3c05d6c4bea1b6fa92133212578b8d",
+      "expected_before": "a42e8a6a920f3fe21f8bc2693dacb34eaeb55b43d15e4b625981320b396af3f5",
+      "host_expected": "4997b3ceadcf3fb88511832681e079ac2b259d1dca197a1156327acc2cfa1c82",
+      "before_sha256": "4997b3ceadcf3fb88511832681e079ac2b259d1dca197a1156327acc2cfa1c82",
+      "host_existed": true
+    },
+    {
+      "path": "templates/index.html",
+      "candidate_sha256": "739ac353b74235394885c122144c7d2c01c138bdf9b66164ec1b45c717fcfa78",
+      "expected_before": "8f1f2778960f947f4b623aef687d314413ff6b5c823df88e8588ecf1119ee64e",
+      "host_expected": "2ac078504c8ebae8a717771c000c393ea41aced0006a3b9d7ec522f47ca807a4",
+      "before_sha256": "2ac078504c8ebae8a717771c000c393ea41aced0006a3b9d7ec522f47ca807a4",
+      "host_existed": true
+    },
+    {
+      "path": "tests/test_report_repairs.py",
+      "candidate_sha256": "111ef2adcf1b3ab7606e2b7661e95e0a680d1b6d6c82fe9944a0381802e6617e",
+      "expected_before": "522e9c60d211ff4b08695bc283e72d40cafd91e1afb936d9e7a4bc3d63a384c9",
+      "host_expected": "f474d05e40192b5d4d5025402160e784de8dfb1331b7b43d60a26455e36bd471",
+      "before_sha256": "8459017b5b9b88b043e18730d783360c16386ca7aa0fa1108b4e4edd15cac927",
+      "host_existed": false
+    },
+    {
+      "path": "tests/test_weekly_progress.py",
+      "candidate_sha256": "6ef8de9c2240e9a9fe7243ffc2b5d4cc3ab1ee99a022a8b45140ea9e19f38dd4",
+      "expected_before": null,
+      "host_expected": null,
+      "before_sha256": null,
+      "host_existed": false
+    }
+  ],
+  "companions": {
+    "collection-api": {
+      "image_id": "sha256:54920174c9e045c85ab7ea925505673cc0cf5e34cfe2d4a188c17ed6ff35527d",
+      "base_image": "bettafish:base-weekly-progress-20261030-r1-collection-api"
+    },
+    "collection-worker": {
+      "image_id": "sha256:e7d1b4968c6661e45eec6c565164fd7b49ec2a03bbac37e7650893bd7085f3ca",
+      "base_image": "bettafish:base-weekly-progress-20261030-r1-collection-worker"
+    }
+  },
+  "activated": true
+}
