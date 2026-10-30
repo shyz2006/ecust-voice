@@ -1,0 +1,29 @@
+{
+  "name": "weekly-trim-20261030-r1",
+  "stage": "/home/ubuntu/bettafish/deploy/weekly-trim-20261030-r1",
+  "base_image_id": "sha256:934c116a4620085b21936ddbaf93532c6b7075ffff640b906a24339f571cb4e0",
+  "base_image": "bettafish:base-weekly-trim-20261030-r1",
+  "candidate_image": "bettafish:candidate-weekly-trim-20261030-r1",
+  "candidate_image_id": "sha256:3758365f6dbec7e8f02d226ae6c382550845d6d5ff944a36cb7c4e83501f8186",
+  "files": [
+    {
+      "path": "CampusPulse/weekly.py",
+      "candidate_sha256": "28905655159537524416a2642023d5f109bf6f2f32fa881818a32f3f22677cbf",
+      "expected_before": "93a655330de05ffa73b1649e98c80224910a9edd130fe2afdf0bac0acb910abd",
+      "host_expected": "068bd374565632ace29ff29dad294c27eaf6765f3bb11cd293215fbbd51bd124",
+      "before_sha256": "068bd374565632ace29ff29dad294c27eaf6765f3bb11cd293215fbbd51bd124",
+      "host_existed": true
+    }
+  ],
+  "companions": {
+    "collection-api": {
+      "image_id": "sha256:4ad49fd8b2afcbbfd78deff7aba3cda0d97934fe416faddbf6e1169aae6d8da2",
+      "base_image": "bettafish:base-weekly-trim-20261030-r1-collection-api"
+    },
+    "collection-worker": {
+      "image_id": "sha256:934c116a4620085b21936ddbaf93532c6b7075ffff640b906a24339f571cb4e0",
+      "base_image": "bettafish:base-weekly-trim-20261030-r1-collection-worker"
+    }
+  },
+  "activated": true
+}

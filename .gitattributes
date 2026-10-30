@@ -111,3 +111,6 @@ validation/weekly_formal* text eol=lf
 
 validation/hot-focus-*.json text eol=lf
 validation/hot_focus* text eol=lf
+
+validation/weekly-trim-*.json text eol=lf
+validation/weekly_trim* text eol=lf
